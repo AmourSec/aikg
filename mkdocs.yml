@@ -1,0 +1,73 @@
+site_name: AI Knowledge Graph
+site_description: AI computing knowledge base for people and AI agents
+site_url: https://amoursec.github.io/aikg/
+repo_url: https://github.com/AmourSec/aikg
+repo_name: AmourSec/aikg
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+  - mermaid2:
+      javascript: assets/javascripts/mermaid.min.js
+      arguments:
+        startOnLoad: true
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+nav:
+  - 首页: index.md
+  - 知识地图: knowledge-map.md
+  - AI 基础理论:
+      - 01-ai-basics/index.md
+  - AI 软件栈:
+      - 02-ai-software-stack/index.md
+  - AI 计算与基础设施:
+      - 03-ai-hardware/index.md
+  - 系统与集群:
+      - 04-system-architecture/index.md
+  - 性能与 Benchmark:
+      - 05-benchmark/index.md
+  - AI 系统架构:
+      - 06-ai-system-architecture/index.md
+  - ADR 设计决策:
+      - 07-adr/index.md
+  - 故障与经验:
+      - 08-failure-cases/index.md
+  - AI 可读知识层:
+      - 09-ai-indexing/index.md
+  - 模板:
+      - 99-templates/knowledge-note.md
+      - 99-templates/adr.md
+      - 99-templates/benchmark-report.md
