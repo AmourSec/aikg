@@ -61,6 +61,10 @@ nav:
       - 01-getting-started/index.md
   - AI 计算工作负载基础:
       - 02-ai-workloads/index.md
+      - AI 基础概念: 02-ai-workloads/ai-fundamentals.md
+      - Transformer 流程与原理: 02-ai-workloads/transformer.md
+      - 训练过程与原理: 02-ai-workloads/training-primer.md
+      - 推理过程与原理: 02-ai-workloads/inference-primer.md
       - 数据与输入路径: 02-ai-workloads/data-paths.md
   - 推理系统与服务优化:
       - 03-inference-systems/index.md

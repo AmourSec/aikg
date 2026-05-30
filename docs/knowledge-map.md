@@ -29,8 +29,12 @@ updated: 2026-05-30
       <a class="kg-branch-title" href="../02-ai-workloads/">工作负载</a>
       <ul>
         <li><a href="../02-ai-workloads/">02 AI 计算工作负载基础</a></li>
+        <li><a href="../02-ai-workloads/ai-fundamentals/">AI 基础概念</a></li>
+        <li><a href="../02-ai-workloads/transformer/">Transformer 流程与原理</a></li>
+        <li><a href="../02-ai-workloads/training-primer/">训练过程与原理</a></li>
+        <li><a href="../02-ai-workloads/inference-primer/">推理过程与原理</a></li>
         <li><a href="../02-ai-workloads/data-paths/">数据与输入路径</a></li>
-        <li><span>Attention / KV Cache / MoE / batch / precision</span></li>
+        <li><span>token / loss / Attention / KV Cache / batch / precision</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -90,7 +94,7 @@ updated: 2026-05-30
 | 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [01 入门导读](01-getting-started/index.md) |
-| 工作负载 | 只学习与性能有关的模型背景：Attention、KV Cache、MoE、上下文长度、batch shape、精度格式和数据路径。 | [02 AI 计算工作负载基础](02-ai-workloads/index.md)、[数据与输入路径](02-ai-workloads/data-paths.md) |
+| 工作负载 | 先补齐 AI 基础、Transformer、训练和推理流程，再学习与性能有关的模型背景：Attention、KV Cache、MoE、上下文长度、batch shape、精度格式和数据路径。 | [02 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[数据与输入路径](02-ai-workloads/data-paths.md) |
 | 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [03 推理系统与服务优化](03-inference-systems/index.md)、[05 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[06 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [04 训练系统与分布式计算](04-training-systems/index.md)、[07 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[09 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
@@ -99,8 +103,9 @@ updated: 2026-05-30
 
 | 当前目标 | 优先阅读 |
 | --- | --- |
-| 刚进入 AI Infra 方向 | [01 入门导读](01-getting-started/index.md) -> [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 刚进入 AI Infra 方向 | [01 入门导读](01-getting-started/index.md) -> [AI 基础概念](02-ai-workloads/ai-fundamentals.md) -> [Transformer 流程与原理](02-ai-workloads/transformer.md) -> [02 AI 计算工作负载基础](02-ai-workloads/index.md) |
 | 想降低 LLM 推理延迟 | [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [03 推理系统与服务优化](03-inference-systems/index.md) -> [05 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想先搞懂训练和推理怎么回事 | [训练过程与原理](02-ai-workloads/training-primer.md) -> [推理过程与原理](02-ai-workloads/inference-primer.md) -> [03 推理系统与服务优化](03-inference-systems/index.md) -> [04 训练系统与分布式计算](04-training-systems/index.md) |
 | 想提高吞吐和 GPU 利用率 | [03 推理系统与服务优化](03-inference-systems/index.md) -> [07 集群、网络、存储与调度](07-cluster-infra/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
 | 想做分布式训练系统 | [04 训练系统与分布式计算](04-training-systems/index.md) -> [06 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [07 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 想做 Triton Kernel 或编译优化 | [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [05 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [06 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
@@ -113,7 +118,7 @@ updated: 2026-05-30
 | 模块 | 上游依赖 | 主要产出 |
 | --- | --- | --- |
 | 01 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
-| 02 AI 计算工作负载基础 | 01 | 性能相关模型背景、shape 分析、数据流和负载画像 |
+| 02 AI 计算工作负载基础 | 01 | AI 基础概念、Transformer、训练/推理流程、shape 分析、数据流和负载画像 |
 | 03 推理系统与服务优化 | 02、05、06、08 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
 | 04 训练系统与分布式计算 | 02、06、07、08 | 并行策略、通信模型、训练稳定性和扩展效率 |
 | 05 Kernel、算子与编译优化 | 02、06、08 | Triton Kernel、TorchInductor、算子实现、图优化、编译和自动调优 |

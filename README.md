@@ -13,7 +13,7 @@ An open AI infrastructure and efficient computing knowledge base for systems-ori
 
 The outline is organized around AI systems, infrastructure, and efficient computing:
 
-- Workloads: Transformer, Attention, MoE, precision formats, sequence length, batch shape, and data movement.
+- Foundations and workloads: AI basics, Transformer, training/inference flow, Attention, MoE, precision formats, sequence length, batch shape, and data movement.
 - Runtime path: inference serving, training systems, kernels, operators, compilers, and runtime systems.
 - Infrastructure path: accelerators, memory hierarchy, interconnects, clusters, storage, networking, and schedulers.
 - Measurement path: profiling, benchmark design, capacity modeling, efficiency analysis, observability, and incident review.
