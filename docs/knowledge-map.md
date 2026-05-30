@@ -8,87 +8,82 @@ updated: 2026-05-30
 
 # AI 知识地图
 
-这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。主线不是提升模型任务指标，而是理解一个 AI workload 如何经过推理服务、训练系统、Kernel、编译器、加速器、集群和 Benchmark，最终被做快、做省、做稳、做可复现。图中带编号的模块可以点击跳转到对应章节。
+这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。主线不是提升模型任务指标，而是理解一个 AI workload 如何经过推理服务、训练系统、Kernel、编译器、加速器、集群和 Benchmark，最终被做快、做省、做稳、做可复现。图中的节点都可以点击跳转到对应章节。
 
 ## 总览思维导图
 
-```mermaid
-flowchart TB
-  KG(("AI Knowledge Graph<br/>更快 / 更省 / 更稳 / 可复现"))
-
-  KG --> S0["学习入口<br/>建立系统视角"]
-  S0 --> M01["01 入门导读"]
-
-  M01 --> S1["工作负载<br/>性能问题从哪里来"]
-  S1 --> M02["02 AI 计算工作负载基础"]
-  M02 --> M02A["数据与输入路径"]
-
-  M02A --> S2["执行链路<br/>单机如何跑快"]
-  S2 --> M03["03 推理系统与服务优化"]
-  M03 --> M03A["RAG 与 Agent 推理负载"]
-  M03A --> M05["05 Kernel、算子与编译优化"]
-  M05 --> M05A["Triton Kernel 编程"]
-  M05A --> M05B["TorchInductor 与 PyTorch 编译栈"]
-  M05B --> M06["06 AI 加速器与计算架构"]
-
-  M06 --> S3["基础设施<br/>多机如何跑稳"]
-  S3 --> M04["04 训练系统与分布式计算"]
-  M04 --> M07["07 集群、网络、存储与调度"]
-
-  M07 --> S4["研究沉淀<br/>如何度量、复现和复用"]
-  S4 --> M08["08 性能分析、Benchmark 与容量建模"]
-  M08 --> M09["09 可靠性、可观测性与故障复盘"]
-  M09 --> M10["10 论文复现与系统案例"]
-  M10 --> M11["11 知识组织、模板与 AI 可读索引"]
-  M11 --> M99["99 模板与资源"]
-
-  click KG "../" "打开首页"
-  click M01 "../01-getting-started/" "打开入门导读"
-  click M02 "../02-ai-workloads/" "打开 AI 计算工作负载基础"
-  click M02A "../02-ai-workloads/data-paths/" "打开数据与输入路径"
-  click M03 "../03-inference-systems/" "打开推理系统与服务优化"
-  click M03A "../03-inference-systems/rag-agent-workloads/" "打开 RAG 与 Agent 推理负载"
-  click M04 "../04-training-systems/" "打开训练系统与分布式计算"
-  click M05 "../05-kernels-compilers/" "打开 Kernel、算子与编译优化"
-  click M05A "../05-kernels-compilers/triton/" "打开 Triton Kernel 编程"
-  click M05B "../05-kernels-compilers/torchinductor/" "打开 TorchInductor 与 PyTorch 编译栈"
-  click M06 "../06-accelerators-architecture/" "打开 AI 加速器与计算架构"
-  click M07 "../07-cluster-infra/" "打开集群、网络、存储与调度"
-  click M08 "../08-benchmark-capacity/" "打开性能分析、Benchmark 与容量建模"
-  click M09 "../09-reliability-observability/" "打开可靠性、可观测性与故障复盘"
-  click M10 "../10-papers-cases/" "打开论文复现与系统案例"
-  click M11 "../11-knowledge-index/" "打开知识组织、模板与 AI 可读索引"
-  click M99 "../99-templates/knowledge-note/" "打开模板"
-
-  classDef root fill:#111827,color:#ffffff,stroke:#111827,stroke-width:2px;
-  classDef trunk fill:#ecfeff,color:#164e63,stroke:#0891b2,stroke-width:1.2px;
-  classDef module fill:#ffffff,color:#111827,stroke:#64748b,stroke-width:1.4px;
-  classDef sub fill:#f8fafc,color:#334155,stroke:#94a3b8,stroke-width:1px;
-  class KG root;
-  class S0,S1,S2,S3,S4 trunk;
-  class M01,M02,M03,M04,M05,M06,M07,M08,M09,M10,M11,M99 module;
-  class M02A,M03A,M05A,M05B sub;
-```
-
-## 系统链路
-
-```mermaid
-flowchart TB
-  W["AI Workload<br/>模型结构、输入长度、batch、精度"] --> R["Runtime<br/>推理服务 / 训练框架"]
-  R --> K["Kernel 与编译<br/>Triton / Inductor / 融合 / 自动调优"]
-  K --> H["Accelerator<br/>计算单元、内存层次、互连"]
-  H --> C["Cluster<br/>网络、存储、调度、隔离"]
-  C --> M["Measurement<br/>Benchmark、Profiling、容量模型"]
-  M --> P["Knowledge<br/>论文复现、案例、决策记录"]
-
-  click W "../02-ai-workloads/" "打开 AI 计算工作负载基础"
-  click R "../03-inference-systems/" "打开推理系统与服务优化"
-  click K "../05-kernels-compilers/" "打开 Kernel、算子与编译优化"
-  click H "../06-accelerators-architecture/" "打开 AI 加速器与计算架构"
-  click C "../07-cluster-infra/" "打开集群、网络、存储与调度"
-  click M "../08-benchmark-capacity/" "打开性能分析、Benchmark 与容量建模"
-  click P "../10-papers-cases/" "打开论文复现与系统案例"
-```
+<nav class="kg-mindmap" aria-label="AI Knowledge Graph mind map">
+  <a class="kg-mindmap-root" href="../">
+    <strong>AI Knowledge Graph</strong>
+    <span>更快 / 更省 / 更稳 / 可复现</span>
+  </a>
+  <div class="kg-mindmap-branches">
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../01-getting-started/">学习入口</a>
+      <ul>
+        <li><a href="../01-getting-started/">01 入门导读</a></li>
+        <li><span>问题意识 / 阅读方法 / 实验纪律</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../02-ai-workloads/">工作负载</a>
+      <ul>
+        <li><a href="../02-ai-workloads/">02 AI 计算工作负载基础</a></li>
+        <li><a href="../02-ai-workloads/data-paths/">数据与输入路径</a></li>
+        <li><span>Attention / KV Cache / MoE / batch / precision</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../03-inference-systems/">推理与服务</a>
+      <ul>
+        <li><a href="../03-inference-systems/">03 推理系统与服务优化</a></li>
+        <li><a href="../03-inference-systems/rag-agent-workloads/">RAG 与 Agent 推理负载</a></li>
+        <li><span>TTFT / TPOT / batching / KV Cache / routing</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../05-kernels-compilers/">Kernel 与编译</a>
+      <ul>
+        <li><a href="../05-kernels-compilers/">05 Kernel、算子与编译优化</a></li>
+        <li><a href="../05-kernels-compilers/triton/">Triton Kernel 编程</a></li>
+        <li><a href="../05-kernels-compilers/torchinductor/">TorchInductor 与 PyTorch 编译栈</a></li>
+        <li><span>tiling / fusion / codegen / auto-tuning</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../06-accelerators-architecture/">计算架构</a>
+      <ul>
+        <li><a href="../06-accelerators-architecture/">06 AI 加速器与计算架构</a></li>
+        <li><span>GPU / NPU / Tensor Core / HBM / interconnect</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../04-training-systems/">训练与集群</a>
+      <ul>
+        <li><a href="../04-training-systems/">04 训练系统与分布式计算</a></li>
+        <li><a href="../07-cluster-infra/">07 集群、网络、存储与调度</a></li>
+        <li><span>parallelism / NCCL / scheduler / storage</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与复现</a>
+      <ul>
+        <li><a href="../08-benchmark-capacity/">08 性能分析、Benchmark 与容量建模</a></li>
+        <li><a href="../09-reliability-observability/">09 可靠性、可观测性与故障复盘</a></li>
+        <li><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
+        <li><span>profiling / roofline / capacity / incidents</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
+      <ul>
+        <li><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
+        <li><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
+        <li><span>metadata / tags / sources / AI-readable skills</span></li>
+      </ul>
+    </section>
+  </div>
+</nav>
 
 ## 地图逻辑
 
