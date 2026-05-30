@@ -1,5 +1,5 @@
 ---
-title: 推理与应用构建
+title: 推理算法与高效服务
 domain: inference-apps
 status: draft
 owner: maintainers
@@ -7,24 +7,23 @@ license: CC-BY-4.0
 updated: 2026-05-30
 ---
 
-# 推理与应用构建
+# 推理算法与高效服务
 
-本目录沉淀模型推理、服务化、应用开发、接口设计和用户体验相关知识。
+本目录关注模型推理阶段的算法、系统实现和性能分析，重点是理解高效推理论文和系统实现如何被复现、比较和扩展。
 
 ## 建议主题
 
 - 在线推理、离线批处理、流式输出
-- KV Cache、Batching、Speculative Decoding
-- 模型服务、API 设计、限流、缓存
-- Chatbot、Copilot、检索问答、多模态应用
-- 结构化输出、函数调用、工具调用
-- 成本、延迟、吞吐、可用性权衡
+- KV Cache、PagedAttention、Continuous Batching
+- Speculative Decoding、Early Exit、MoE Routing
+- 量化、剪枝、蒸馏、权重共享
+- Serving Runtime、调度、缓存、隔离和容错
+- Latency、Throughput、TTFT、TPOT、显存占用
 
 ## 关键问题
 
-- 应用是否需要实时响应
-- 输出是否需要结构化和可验证
-- 系统如何处理失败、超时和重试
-- 用户反馈如何进入后续优化闭环
-- 推理成本是否能随规模线性控制
-
+- 推理瓶颈来自计算、显存、内存带宽还是通信
+- Batch size、上下文长度和并发如何影响性能
+- 论文中的吞吐和延迟指标是否可复现
+- Serving 系统如何处理长尾请求、失败和资源隔离
+- 模型压缩是否改变质量、鲁棒性和校准性

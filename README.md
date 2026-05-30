@@ -1,6 +1,6 @@
 # AI Knowledge Graph
 
-An open AI knowledge base for human learning, structured browsing, and AI-assisted retrieval.
+An open AI research knowledge base for graduate student onboarding, structured browsing, and AI-assisted retrieval.
 
 ## Structure
 
@@ -11,14 +11,13 @@ An open AI knowledge base for human learning, structured browsing, and AI-assist
 
 ## Knowledge Map
 
-The v2 outline organizes the knowledge base into these layers:
+The outline is organized as an academic and technical study map:
 
-- Foundations: AI basics, models and tasks, data engineering.
-- Model lifecycle: training, fine-tuning, alignment, inference, and applications.
-- AI application patterns: prompt engineering, RAG, agents, and tool use.
-- Engineering systems: software stack, compute infrastructure, systems, clusters, and MLOps.
-- Quality and risk: evaluation, benchmark, optimization, safety, governance, and responsible AI.
-- Reusable knowledge: architecture cases, ADRs, incident reviews, AI-readable metadata, and templates.
+- Foundations: mathematics, statistical learning, deep learning, and task formulation.
+- Core methods: model architectures, datasets, training algorithms, fine-tuning, and alignment.
+- Inference and interaction: efficient inference, retrieval augmentation, tool use, and agents.
+- Systems and hardware: ML frameworks, compilers, runtime systems, accelerators, clusters, and experiment platforms.
+- Research practice: evaluation, reproducibility, trustworthy AI, paper reproduction, research records, and AI-readable knowledge organization.
 
 ## Local Preview
 

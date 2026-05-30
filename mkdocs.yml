@@ -1,5 +1,5 @@
 site_name: AI Knowledge Graph
-site_description: AI computing knowledge base for people and AI agents
+site_description: AI research and systems knowledge base for graduate students and AI agents
 site_url: https://amoursec.github.io/aikg/
 repo_url: https://github.com/AmourSec/aikg
 repo_name: AmourSec/aikg
@@ -57,36 +57,36 @@ markdown_extensions:
 nav:
   - 首页: index.md
   - 知识地图: knowledge-map.md
-  - AI 基础理论:
+  - 数学与机器学习基础:
       - 01-ai-basics/index.md
-  - 模型与任务:
+  - 模型架构与任务范式:
       - 02-models-and-tasks/index.md
-  - 数据与数据工程:
+  - 数据集、标注与基准:
       - 03-data-engineering/index.md
-  - 训练、微调与对齐:
+  - 训练算法、微调与对齐:
       - 04-training-finetuning-alignment/index.md
-  - 推理与应用构建:
+  - 推理算法与高效服务:
       - 05-inference-apps/index.md
-  - Prompt、RAG 与 Agents:
+  - 检索增强、工具使用与智能体:
       - 06-prompt-rag-agents/index.md
-  - AI 软件栈:
+  - 框架、编译器与运行时:
       - 07-ai-software-stack/index.md
-  - AI 计算与基础设施:
+  - AI 计算架构与硬件基础:
       - 08-ai-compute-infra/index.md
-  - 系统、集群与 MLOps:
+  - 分布式系统与实验平台:
       - 09-systems-mlops/index.md
-  - 评测、Benchmark 与优化:
+  - 评测、复现与性能分析:
       - 10-evaluation-benchmark-optimization/index.md
-  - 安全、治理与 Responsible AI:
+  - 可信、安全与 AI 治理:
       - 11-safety-governance/index.md
-  - 架构案例、ADR 与故障复盘:
+  - 论文复现、研究案例与决策记录:
       - 12-architecture-cases/index.md
-      - AI 系统架构: 12-architecture-cases/ai-system-architecture.md
-      - ADR 设计决策: 12-architecture-cases/adr.md
-      - 故障与经验: 12-architecture-cases/failure-cases.md
-  - AI 可读知识层:
+      - AI 系统论文与架构: 12-architecture-cases/ai-system-architecture.md
+      - 研究决策记录: 12-architecture-cases/adr.md
+      - 实验故障与复盘: 12-architecture-cases/failure-cases.md
+  - 知识组织与研究工作流:
       - 13-ai-indexing/index.md
   - 模板:
-      - 99-templates/knowledge-note.md
-      - 99-templates/adr.md
-      - 99-templates/benchmark-report.md
+      - 知识点模板: 99-templates/knowledge-note.md
+      - 研究决策模板: 99-templates/adr.md
+      - 基准实验报告模板: 99-templates/benchmark-report.md
