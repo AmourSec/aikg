@@ -27,6 +27,12 @@ plugins:
       javascript: assets/javascripts/mermaid.min.js
       arguments:
         startOnLoad: true
+        securityLevel: loose
+        flowchart:
+          useMaxWidth: true
+          htmlLabels: true
+          nodeSpacing: 28
+          rankSpacing: 42
 markdown_extensions:
   - admonition
   - attr_list
