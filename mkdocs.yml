@@ -69,6 +69,8 @@ nav:
       - 04-training-systems/index.md
   - Kernel、算子与编译优化:
       - 05-kernels-compilers/index.md
+      - Triton Kernel 编程: 05-kernels-compilers/triton.md
+      - TorchInductor 与 PyTorch 编译栈: 05-kernels-compilers/torchinductor.md
   - AI 加速器与计算架构:
       - 06-accelerators-architecture/index.md
   - 集群、网络、存储与调度:
