@@ -8,160 +8,227 @@ updated: 2026-05-30
 
 # AI 知识地图
 
-```mermaid
-flowchart TB
-  A["AI Knowledge Graph"] --> B["01 AI 基础理论"]
-  B --> C["02 模型与任务"]
-  C --> D["03 数据与数据工程"]
-  D --> E["04 训练、微调与对齐"]
-  E --> F["05 推理与应用构建"]
-  F --> G["06 Prompt、RAG 与 Agents"]
-  G --> H["07 AI 软件栈"]
-  H --> I["08 AI 计算与基础设施"]
-  I --> J["09 系统、集群与 MLOps"]
-  J --> K["10 评测、Benchmark 与优化"]
-  K --> L["11 安全、治理与 Responsible AI"]
-  L --> M["12 架构案例、ADR 与故障复盘"]
-  M --> N["13 AI 可读知识层"]
-  N --> O["99 模板与资源"]
+这张地图按“学习理解 -> 模型生产 -> 应用交付 -> 系统支撑 -> 经验复用”的闭环组织。先看总览图建立方向，再看每条主线的分支展开；图中带编号的模块可以点击跳转到对应章节。
 
-  click A "../" "打开首页"
-  click B "../01-ai-basics/" "打开 AI 基础理论"
-  click C "../02-models-and-tasks/" "打开模型与任务"
-  click D "../03-data-engineering/" "打开数据与数据工程"
-  click E "../04-training-finetuning-alignment/" "打开训练、微调与对齐"
-  click F "../05-inference-apps/" "打开推理与应用构建"
-  click G "../06-prompt-rag-agents/" "打开 Prompt、RAG 与 Agents"
-  click H "../07-ai-software-stack/" "打开 AI 软件栈"
-  click I "../08-ai-compute-infra/" "打开 AI 计算与基础设施"
-  click J "../09-systems-mlops/" "打开系统、集群与 MLOps"
-  click K "../10-evaluation-benchmark-optimization/" "打开评测、Benchmark 与优化"
-  click L "../11-safety-governance/" "打开安全、治理与 Responsible AI"
-  click M "../12-architecture-cases/" "打开架构案例、ADR 与故障复盘"
-  click N "../13-ai-indexing/" "打开 AI 可读知识层"
-  click O "../99-templates/knowledge-note/" "打开模板"
+## 总览思维导图
+
+```mermaid
+flowchart LR
+  KG(("AI Knowledge Graph<br/>学习 / 工程 / 知识复用"))
+
+  KG --> S1["学习理解<br/>先建立共同语言"]
+  KG --> S2["模型生产<br/>从数据到可用模型"]
+  KG --> S3["应用交付<br/>把模型变成产品能力"]
+  KG --> S4["系统支撑<br/>稳定、高效、可扩展"]
+  KG --> S5["风险与资产闭环<br/>治理、复盘、AI 可读"]
+
+  S1 --> M01["01 AI 基础理论"]
+  S1 --> M02["02 模型与任务"]
+
+  S2 --> M03["03 数据与数据工程"]
+  S2 --> M04["04 训练、微调与对齐"]
+  S2 --> M10["10 评测、Benchmark 与优化"]
+
+  S3 --> M05["05 推理与应用构建"]
+  S3 --> M06["06 Prompt、RAG 与 Agents"]
+
+  S4 --> M07["07 AI 软件栈"]
+  S4 --> M08["08 AI 计算与基础设施"]
+  S4 --> M09["09 系统、集群与 MLOps"]
+
+  S5 --> M11["11 安全、治理与 Responsible AI"]
+  S5 --> M12["12 架构案例、ADR 与故障复盘"]
+  S5 --> M13["13 AI 可读知识层"]
+  S5 --> M99["99 模板与资源"]
+
+  click KG "../" "打开首页"
+  click M01 "../01-ai-basics/" "打开 AI 基础理论"
+  click M02 "../02-models-and-tasks/" "打开模型与任务"
+  click M03 "../03-data-engineering/" "打开数据与数据工程"
+  click M04 "../04-training-finetuning-alignment/" "打开训练、微调与对齐"
+  click M05 "../05-inference-apps/" "打开推理与应用构建"
+  click M06 "../06-prompt-rag-agents/" "打开 Prompt、RAG 与 Agents"
+  click M07 "../07-ai-software-stack/" "打开 AI 软件栈"
+  click M08 "../08-ai-compute-infra/" "打开 AI 计算与基础设施"
+  click M09 "../09-systems-mlops/" "打开系统、集群与 MLOps"
+  click M10 "../10-evaluation-benchmark-optimization/" "打开评测、Benchmark 与优化"
+  click M11 "../11-safety-governance/" "打开安全、治理与 Responsible AI"
+  click M12 "../12-architecture-cases/" "打开架构案例、ADR 与故障复盘"
+  click M13 "../13-ai-indexing/" "打开 AI 可读知识层"
+  click M99 "../99-templates/knowledge-note/" "打开模板"
+
+  classDef root fill:#111827,color:#ffffff,stroke:#111827,stroke-width:2px;
+  classDef trunk fill:#eef2ff,color:#312e81,stroke:#4f46e5,stroke-width:1.2px;
+  classDef module fill:#ffffff,color:#111827,stroke:#64748b,stroke-width:1.4px;
+  class KG root;
+  class S1,S2,S3,S4,S5 trunk;
+  class M01,M02,M03,M04,M05,M06,M07,M08,M09,M10,M11,M12,M13,M99 module;
 ```
 
-## 导航目录
+## 分支展开
 
-| 模块 | 关注问题 | 入口 |
+### 学习理解
+
+```mermaid
+flowchart LR
+  S1["学习理解"] --> M01["01 AI 基础理论"]
+  S1 --> M02["02 模型与任务"]
+
+  M01 --> A1["数学 / ML / DL"]
+  M01 --> A2["Attention / Transformer / LLM"]
+  M01 --> A3["训练、推理、压缩基本概念"]
+
+  M02 --> B1["任务范式<br/>分类 / 检索 / 生成 / 多模态"]
+  M02 --> B2["模型谱系<br/>LLM / VLM / Diffusion / MoE"]
+  M02 --> B3["能力边界与选型"]
+
+  click M01 "../01-ai-basics/" "打开 AI 基础理论"
+  click M02 "../02-models-and-tasks/" "打开模型与任务"
+```
+
+### 模型生产
+
+```mermaid
+flowchart LR
+  S2["模型生产"] --> M03["03 数据与数据工程"]
+  S2 --> M04["04 训练、微调与对齐"]
+  S2 --> M10["10 评测、Benchmark 与优化"]
+
+  M03 --> C1["采集 / 清洗 / 去重 / 脱敏"]
+  M03 --> C2["标注 / 数据质量 / 数据泄漏"]
+  M03 --> C3["Tokenization / Synthetic Data / 版本管理"]
+
+  M04 --> D1["预训练 / 继续预训练 / SFT"]
+  M04 --> D2["LoRA / QLoRA / Adapter"]
+  M04 --> D3["RLHF / DPO / 偏好优化"]
+  M04 --> D4["分布式训练 / 稳定性 / 可复现"]
+
+  M10 --> E1["模型能力评测"]
+  M10 --> E2["训练性能 / 推理性能"]
+  M10 --> E3["Profiling / Roofline / TCO"]
+
+  click M03 "../03-data-engineering/" "打开数据与数据工程"
+  click M04 "../04-training-finetuning-alignment/" "打开训练、微调与对齐"
+  click M10 "../10-evaluation-benchmark-optimization/" "打开评测、Benchmark 与优化"
+```
+
+### 应用交付
+
+```mermaid
+flowchart LR
+  S3["应用交付"] --> M05["05 推理与应用构建"]
+  S3 --> M06["06 Prompt、RAG 与 Agents"]
+
+  M05 --> F1["在线推理 / 批处理 / 流式输出"]
+  M05 --> F2["KV Cache / Batching / Speculative Decoding"]
+  M05 --> F3["API / 限流 / 缓存 / 重试"]
+  M05 --> F4["结构化输出 / 工具调用 / 多模态应用"]
+
+  M06 --> G1["Prompt / Context Engineering"]
+  M06 --> G2["Embedding / Hybrid Search / Rerank"]
+  M06 --> G3["RAG 切分 / 召回 / 引用 / 评测"]
+  M06 --> G4["Tool Calling / MCP / Agent 记忆"]
+
+  click M05 "../05-inference-apps/" "打开推理与应用构建"
+  click M06 "../06-prompt-rag-agents/" "打开 Prompt、RAG 与 Agents"
+```
+
+### 系统支撑
+
+```mermaid
+flowchart LR
+  S4["系统支撑"] --> M07["07 AI 软件栈"]
+  S4 --> M08["08 AI 计算与基础设施"]
+  S4 --> M09["09 系统、集群与 MLOps"]
+
+  M07 --> H1["PyTorch / JAX / ONNX"]
+  M07 --> H2["CUDA / ROCm / Triton / Kernel"]
+  M07 --> H3["编译器 / Runtime / Serving"]
+
+  M08 --> I1["CPU / GPU / NPU / ASIC / FPGA"]
+  M08 --> I2["HBM / DDR / Cache / NUMA"]
+  M08 --> I3["PCIe / CXL / NVLink / NoC"]
+  M08 --> I4["能效 / 可靠性 / 容量规划"]
+
+  M09 --> J1["Kubernetes / Slurm / 调度"]
+  M09 --> J2["网络 / 存储 / 监控"]
+  M09 --> J3["实验管理 / 模型注册 / CI-CD"]
+  M09 --> J4["漂移检测 / 反馈闭环"]
+
+  click M07 "../07-ai-software-stack/" "打开 AI 软件栈"
+  click M08 "../08-ai-compute-infra/" "打开 AI 计算与基础设施"
+  click M09 "../09-systems-mlops/" "打开系统、集群与 MLOps"
+```
+
+### 风险与资产闭环
+
+```mermaid
+flowchart LR
+  S5["风险与资产闭环"] --> M11["11 安全、治理与 Responsible AI"]
+  S5 --> M12["12 架构案例、ADR 与故障复盘"]
+  S5 --> M13["13 AI 可读知识层"]
+  S5 --> M99["99 模板与资源"]
+
+  M11 --> K1["Prompt Injection / 越权工具调用"]
+  M11 --> K2["幻觉 / 事实性 / 偏见"]
+  M11 --> K3["Guardrails / Red Teaming"]
+  M11 --> K4["数据许可 / 模型许可 / 审计"]
+
+  M12 --> L1["端到端系统案例"]
+  M12 --> L2["设计决策与取舍"]
+  M12 --> L3["故障复盘 / 模式 / 反模式"]
+
+  M13 --> N1["Front Matter / 标签 / 来源路径"]
+  M13 --> N2["向量索引 / 知识图谱"]
+  M13 --> N3["AI Skills / Agent 工具说明"]
+
+  M99 --> T1["知识点模板"]
+  M99 --> T2["ADR 模板"]
+  M99 --> T3["Benchmark 模板"]
+
+  click M11 "../11-safety-governance/" "打开安全、治理与 Responsible AI"
+  click M12 "../12-architecture-cases/" "打开架构案例、ADR 与故障复盘"
+  click M13 "../13-ai-indexing/" "打开 AI 可读知识层"
+  click M99 "../99-templates/knowledge-note/" "打开模板"
+```
+
+## 地图逻辑
+
+| 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
-| AI 基础理论 | 数学、机器学习、深度学习、Transformer 和 LLM 基础 | [进入](01-ai-basics/index.md) |
-| 模型与任务 | 模型类型、任务范式、能力边界和选型标准 | [进入](02-models-and-tasks/index.md) |
-| 数据与数据工程 | 数据集、标注、清洗、Tokenization、数据质量和数据管道 | [进入](03-data-engineering/index.md) |
-| 训练、微调与对齐 | 预训练、微调、LoRA、RLHF、DPO 和训练稳定性 | [进入](04-training-finetuning-alignment/index.md) |
-| 推理与应用构建 | 模型服务、应用接口、结构化输出、成本和延迟权衡 | [进入](05-inference-apps/index.md) |
-| Prompt、RAG 与 Agents | 提示词、上下文工程、检索增强、工具调用和智能体 | [进入](06-prompt-rag-agents/index.md) |
-| AI 软件栈 | 框架、Runtime、编译器、算子库、Serving 和分布式执行 | [进入](07-ai-software-stack/index.md) |
-| AI 计算与基础设施 | 计算、内存、互连、能效、可靠性和部署约束 | [进入](08-ai-compute-infra/index.md) |
-| 系统、集群与 MLOps | 调度、存储、监控、实验管理、发布和反馈闭环 | [进入](09-systems-mlops/index.md) |
-| 评测、Benchmark 与优化 | 模型评测、系统 Benchmark、Profiling、Roofline 和 TCO | [进入](10-evaluation-benchmark-optimization/index.md) |
-| 安全、治理与 Responsible AI | Prompt Injection、Guardrails、红队、许可、隐私和治理 | [进入](11-safety-governance/index.md) |
-| 架构案例、ADR 与故障复盘 | 架构案例、设计决策、方案取舍、故障复盘和反模式 | [进入](12-architecture-cases/index.md) |
-| AI 可读知识层 | 元数据、RAG 索引、知识图谱、引用溯源和 AI skills | [进入](13-ai-indexing/index.md) |
-| 模板与资源 | 知识点、ADR、Benchmark 文档模板 | [知识点](99-templates/knowledge-note.md) / [ADR](99-templates/adr.md) / [Benchmark](99-templates/benchmark-report.md) |
+| 学习理解 | 先统一基础概念，再理解模型类型、任务边界和选型方式。 | [01 AI 基础理论](01-ai-basics/index.md)、[02 模型与任务](02-models-and-tasks/index.md) |
+| 模型生产 | 数据决定上限，训练和对齐决定能力形态，评测负责判断是否真的可用。 | [03 数据与数据工程](03-data-engineering/index.md)、[04 训练、微调与对齐](04-training-finetuning-alignment/index.md)、[10 评测、Benchmark 与优化](10-evaluation-benchmark-optimization/index.md) |
+| 应用交付 | 推理服务负责把模型稳定暴露出来，Prompt、RAG 和 Agents 负责把模型接入业务知识、工具和流程。 | [05 推理与应用构建](05-inference-apps/index.md)、[06 Prompt、RAG 与 Agents](06-prompt-rag-agents/index.md) |
+| 系统支撑 | 软件栈、计算基础设施、集群与 MLOps 决定训练和推理能否规模化、低成本、可观测地运行。 | [07 AI 软件栈](07-ai-software-stack/index.md)、[08 AI 计算与基础设施](08-ai-compute-infra/index.md)、[09 系统、集群与 MLOps](09-systems-mlops/index.md) |
+| 风险与资产闭环 | 安全治理控制风险，架构案例和 ADR 沉淀判断依据，AI 可读层让知识能被检索、引用和复用。 | [11 安全、治理与 Responsible AI](11-safety-governance/index.md)、[12 架构案例、ADR 与故障复盘](12-architecture-cases/index.md)、[13 AI 可读知识层](13-ai-indexing/index.md) |
 
-## 模块细分
+## 按问题导航
 
-### 01 AI 基础理论
+| 我想解决的问题 | 优先阅读 |
+| --- | --- |
+| 我刚开始系统学习 AI | [01 AI 基础理论](01-ai-basics/index.md) -> [02 模型与任务](02-models-and-tasks/index.md) |
+| 我想判断某个任务该用什么模型 | [02 模型与任务](02-models-and-tasks/index.md) -> [10 评测、Benchmark 与优化](10-evaluation-benchmark-optimization/index.md) |
+| 我想建设训练或微调能力 | [03 数据与数据工程](03-data-engineering/index.md) -> [04 训练、微调与对齐](04-training-finetuning-alignment/index.md) -> [10 评测、Benchmark 与优化](10-evaluation-benchmark-optimization/index.md) |
+| 我想做 RAG、Agent 或知识库应用 | [05 推理与应用构建](05-inference-apps/index.md) -> [06 Prompt、RAG 与 Agents](06-prompt-rag-agents/index.md) -> [13 AI 可读知识层](13-ai-indexing/index.md) |
+| 我想把模型服务跑稳、跑快、跑便宜 | [05 推理与应用构建](05-inference-apps/index.md) -> [07 AI 软件栈](07-ai-software-stack/index.md) -> [08 AI 计算与基础设施](08-ai-compute-infra/index.md) -> [09 系统、集群与 MLOps](09-systems-mlops/index.md) |
+| 我想分析性能瓶颈、算力效率和系统成本 | [07 AI 软件栈](07-ai-software-stack/index.md) -> [08 AI 计算与基础设施](08-ai-compute-infra/index.md) -> [10 评测、Benchmark 与优化](10-evaluation-benchmark-optimization/index.md) -> [12 架构案例、ADR 与故障复盘](12-architecture-cases/index.md) |
+| 我想避免安全、许可、隐私和治理风险 | [11 安全、治理与 Responsible AI](11-safety-governance/index.md) -> [12 架构案例、ADR 与故障复盘](12-architecture-cases/index.md) |
+| 我想让资料库更适合 AI 检索和引用 | [13 AI 可读知识层](13-ai-indexing/index.md) -> [知识点模板](99-templates/knowledge-note.md) -> [ADR 模板](99-templates/adr.md) |
 
-- 机器学习 / 深度学习
-- 概率统计、优化、表示学习
-- Transformer / Attention / LLM 基础
-- 训练、推理、压缩、对齐的基本概念
+## 模块关系
 
-### 02 模型与任务
-
-- 分类、回归、排序、推荐、检索
-- CV、NLP、语音、多模态任务
-- LLM、VLM、SLM、Reasoning Model
-- Diffusion、Embedding、MoE、Agentic Model
-
-### 03 数据与数据工程
-
-- 数据采集、清洗、去重、脱敏
-- 标注、数据质量、数据泄漏
-- Tokenization、数据增强、Synthetic Data
-- Dataset、DataLoader、数据版本管理
-
-### 04 训练、微调与对齐
-
-- 预训练、继续预训练、监督微调
-- LoRA、QLoRA、Adapter、Prompt Tuning
-- RLHF、DPO、RLAIF、偏好优化
-- 分布式训练、实验管理、训练稳定性
-
-### 05 推理与应用构建
-
-- 在线推理、批处理、流式输出
-- KV Cache、Batching、Speculative Decoding
-- 模型服务、API、缓存、限流、重试
-- 结构化输出、函数调用、多模态应用
-
-### 06 Prompt、RAG 与 Agents
-
-- Prompt 技术和上下文工程
-- Embedding、向量数据库、Hybrid Search、Rerank
-- RAG 切分、召回、引用、评测
-- Tool Calling、MCP、Agent 工作流和记忆
-
-### 07 AI 软件栈
-
-- PyTorch / JAX / ONNX
-- CUDA / ROCm / Triton
-- 编译器 / Runtime / 算子库
-- Serving、调度、分布式训练与推理
-
-### 08 AI 计算与基础设施
-
-- CPU / GPU / NPU / ASIC / FPGA
-- HBM / DDR / Cache / NUMA
-- PCIe / CXL / NVLink / NoC
-- 能效、可靠性、可扩展性和容量规划
-
-### 09 系统、集群与 MLOps
-
-- AI 系统部署架构
-- Kubernetes、Slurm、存储、网络、监控
-- 实验跟踪、模型注册、CI/CD、灰度发布
-- 漂移检测、线上反馈、持续学习
-
-### 10 评测、Benchmark 与优化
-
-- 模型能力评测、人工评估、安全评测
-- 训练性能、推理性能、系统 Benchmark
-- Profiling、Roofline、瓶颈定位
-- TCO、能效、稳定性和成本优化
-
-### 11 安全、治理与 Responsible AI
-
-- Prompt Injection、越权工具调用、数据泄露
-- 幻觉、事实性、偏见、公平性
-- Guardrails、Red Teaming、安全策略
-- 数据许可、模型许可、审计和治理
-
-### 12 架构案例、ADR 与故障复盘
-
-- AI 系统架构案例
-- 设计决策记录 ADR
-- 方案取舍和架构约束
-- 故障复盘、经验教训、模式和反模式
-
-### 13 AI 可读知识层
-
-- 结构化元数据
-- 向量检索 RAG
-- 知识图谱和实体关系
-- AI Skills / Agent 工具说明
-
-## 知识分层
-
-| 层级 | 说明 | 典型内容 |
+| 模块 | 上游依赖 | 主要产出 |
 | --- | --- | --- |
-| 基础知识 | 建立概念体系 | 数学、ML、DL、Transformer、LLM |
-| 模型知识 | 理解能力边界 | 模型类型、任务、数据、训练、评测 |
-| 应用知识 | 面向落地使用 | 推理、Prompt、RAG、Agents、应用架构 |
-| 工程知识 | 面向稳定运行 | 软件栈、计算基础设施、MLOps、Benchmark |
-| 治理知识 | 面向风险控制 | 安全、隐私、许可、Responsible AI |
-| 经验知识 | 面向复用判断 | 架构案例、ADR、故障复盘、反模式 |
-| AI 可读层 | 面向检索和推理 | 元数据、标签、实体关系、索引、skills |
+| 01 AI 基础理论 | 无 | 统一概念、术语和基本原理 |
+| 02 模型与任务 | 01 | 任务分类、模型选型、能力边界 |
+| 03 数据与数据工程 | 02 | 可训练、可评测、可追溯的数据资产 |
+| 04 训练、微调与对齐 | 01、02、03 | 可用模型、对齐策略、训练经验 |
+| 05 推理与应用构建 | 02、04、07、08 | 服务接口、推理链路、应用能力 |
+| 06 Prompt、RAG 与 Agents | 02、05、13 | 上下文工程、检索增强、工具化工作流 |
+| 07 AI 软件栈 | 01、04、05 | 框架、Runtime、Kernel、Serving 能力 |
+| 08 AI 计算与基础设施 | 04、05、07 | 算力、内存、互连、容量和能效模型 |
+| 09 系统、集群与 MLOps | 05、07、08 | 部署、调度、监控、发布和反馈闭环 |
+| 10 评测、Benchmark 与优化 | 02、03、04、05、08、09 | 能力评测、性能评测、瓶颈定位、成本判断 |
+| 11 安全、治理与 Responsible AI | 03、05、06、13 | 风险边界、治理策略、安全评测 |
+| 12 架构案例、ADR 与故障复盘 | 05、07、08、09、10、11 | 可复用设计判断、失败模式、反模式 |
+| 13 AI 可读知识层 | 全部模块 | 元数据、索引、实体关系、AI skills |

@@ -3,6 +3,8 @@ site_description: AI computing knowledge base for people and AI agents
 site_url: https://amoursec.github.io/aikg/
 repo_url: https://github.com/AmourSec/aikg
 repo_name: AmourSec/aikg
+extra_css:
+  - assets/stylesheets/extra.css
 theme:
   name: material
   language: zh
