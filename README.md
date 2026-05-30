@@ -1,6 +1,6 @@
 # AI Knowledge Graph
 
-An open AI research knowledge base for graduate student onboarding, structured browsing, and AI-assisted retrieval.
+An open AI infrastructure and efficient computing knowledge base for systems-oriented graduate students, engineers, and AI-assisted retrieval.
 
 ## Structure
 
@@ -11,13 +11,13 @@ An open AI research knowledge base for graduate student onboarding, structured b
 
 ## Knowledge Map
 
-The outline is organized as an academic and technical study map:
+The outline is organized around AI systems, infrastructure, and efficient computing:
 
-- Foundations: mathematics, statistical learning, deep learning, and task formulation.
-- Core methods: model architectures, datasets, training algorithms, fine-tuning, and alignment.
-- Inference and interaction: efficient inference, retrieval augmentation, tool use, and agents.
-- Systems and hardware: ML frameworks, compilers, runtime systems, accelerators, clusters, and experiment platforms.
-- Research practice: evaluation, reproducibility, trustworthy AI, paper reproduction, research records, and AI-readable knowledge organization.
+- Workloads: Transformer, Attention, MoE, precision formats, sequence length, batch shape, and data movement.
+- Runtime path: inference serving, training systems, kernels, operators, compilers, and runtime systems.
+- Infrastructure path: accelerators, memory hierarchy, interconnects, clusters, storage, networking, and schedulers.
+- Measurement path: profiling, benchmark design, capacity modeling, efficiency analysis, observability, and incident review.
+- Knowledge path: paper reproduction, system case studies, technical decision records, templates, metadata, and AI-readable indexing.
 
 ## Local Preview
 

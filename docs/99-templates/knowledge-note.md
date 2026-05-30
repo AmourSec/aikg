@@ -1,37 +1,51 @@
 ---
 title: 知识点模板
-domain: TBD
-layer: TBD
-scope: TBD
-owner: TBD
-status: draft
+domain: template
+status: reviewed
+owner: maintainers
 license: CC-BY-4.0
 updated: 2026-05-30
-related: []
 ---
 
 # 知识点模板
 
 ## 摘要
 
-用三到五句话说明这个知识点对应的研究问题、适用范围、核心结论和主要来源。
+用 3 到 5 句话说明这个知识点解决的 AI Infra 问题、所属系统层级和主要结论。
+
+## 元数据
+
+| 字段 | 内容 |
+| --- | --- |
+| domain | inference / training / kernel / compiler / accelerator / cluster / benchmark / reliability |
+| system_layer | workload / runtime / kernel / accelerator / cluster / measurement |
+| workload | 模型、shape、batch、sequence length、precision、并发 |
+| hardware | GPU/NPU/CPU、内存、网络、存储 |
+| software | framework、runtime、driver、compiler、library version |
+| source | 论文、代码、实验、故障单或讨论记录 |
+| status | draft / reviewed / verified / deprecated |
 
 ## 背景
 
-说明问题来源、论文背景、实验上下文或相关系统。
+- 问题出现在哪个系统层级。
+- 目标是降低延迟、提升吞吐、减少显存、提高能效、改善稳定性还是增强复现性。
+- 当前已知约束是什么。
 
 ## 核心内容
 
-沉淀可复用的技术知识、公式推导、架构图、代码片段、实验方法或反例。
+- 关键概念。
+- 机制说明。
+- 公式、伪代码或执行链路。
+- 与上游 workload 和下游系统的关系。
 
-## 适用范围
+## 证据
 
-说明该结论适用于哪些任务、数据集、模型、硬件、软件版本和约束。
+- Benchmark 或 profiler 结果。
+- 论文、代码或硬件规格来源。
+- 适用范围和不适用场景。
 
-## 验证方式
+## 相关链接
 
-说明数据、实验、复现脚本、测试报告或评审记录。
-
-## 相关资料
-
-- 待补充
+- 上游知识点：
+- 下游知识点：
+- 相关论文或代码：

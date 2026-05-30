@@ -8,223 +8,120 @@ updated: 2026-05-30
 
 # AI 知识地图
 
-这张地图面向 AI 方向课题组新生，按“基础课 -> 经典模型 -> 数据与实验 -> 系统实现 -> 论文复现 -> 研究沉淀”的训练路径组织。图中带编号的模块可以点击跳转到对应章节。
+这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。主线不是提升模型任务指标，而是理解一个 AI workload 如何经过推理服务、训练系统、Kernel、编译器、加速器、集群和 Benchmark，最终被做快、做省、做稳、做可复现。图中带编号的模块可以点击跳转到对应章节。
 
 ## 总览思维导图
 
 ```mermaid
-flowchart LR
-  KG(("AI Knowledge Graph<br/>研究生入门 / 技术研究 / AI 检索"))
+flowchart TD
+  KG(("AI Knowledge Graph<br/>更快 / 更省 / 更稳 / 可复现"))
 
-  KG --> S1["理论与模型基础<br/>先读懂论文语言"]
-  KG --> S2["数据、训练与评测<br/>把实验做扎实"]
-  KG --> S3["推理、检索与智能体<br/>研究模型交互能力"]
-  KG --> S4["系统软件与计算架构<br/>理解 AI 如何跑起来"]
-  KG --> S5["可信 AI 与研究工作流<br/>复现、记录、沉淀"]
+  KG --> S0["学习入口<br/>建立系统视角"]
+  KG --> S1["工作负载<br/>性能问题从哪里来"]
+  KG --> S2["执行链路<br/>单机如何跑快"]
+  KG --> S3["基础设施<br/>多机如何跑稳"]
+  KG --> S4["研究沉淀<br/>如何度量、复现和复用"]
 
-  S1 --> M01["01 数学与机器学习基础"]
-  S1 --> M02["02 模型架构与任务范式"]
+  S0 --> M01["01 入门导读"]
 
-  S2 --> M03["03 数据集、标注与基准"]
-  S2 --> M04["04 训练算法、微调与对齐"]
-  S2 --> M10["10 评测、复现与性能分析"]
+  S1 --> M02["02 AI 计算工作负载基础"]
+  M02 --> M02A["数据与输入路径"]
 
-  S3 --> M05["05 推理算法与高效服务"]
-  S3 --> M06["06 检索增强、工具使用与智能体"]
+  S2 --> M03["03 推理系统与服务优化"]
+  M03 --> M03A["RAG 与 Agent 推理负载"]
+  S2 --> M05["05 Kernel、算子与编译优化"]
+  S2 --> M06["06 AI 加速器与计算架构"]
 
-  S4 --> M07["07 框架、编译器与运行时"]
-  S4 --> M08["08 AI 计算架构与硬件基础"]
-  S4 --> M09["09 分布式系统与实验平台"]
+  S3 --> M04["04 训练系统与分布式计算"]
+  S3 --> M07["07 集群、网络、存储与调度"]
 
-  S5 --> M11["11 可信、安全与 AI 治理"]
-  S5 --> M12["12 论文复现、研究案例与决策记录"]
-  S5 --> M13["13 知识组织与研究工作流"]
-  S5 --> M99["99 模板与资源"]
+  S4 --> M08["08 性能分析、Benchmark 与容量建模"]
+  S4 --> M09["09 可靠性、可观测性与故障复盘"]
+  S4 --> M10["10 论文复现与系统案例"]
+  S4 --> M11["11 知识组织、模板与 AI 可读索引"]
+  S4 --> M99["99 模板与资源"]
 
   click KG "../" "打开首页"
-  click M01 "../01-ai-basics/" "打开数学与机器学习基础"
-  click M02 "../02-models-and-tasks/" "打开模型架构与任务范式"
-  click M03 "../03-data-engineering/" "打开数据集、标注与基准"
-  click M04 "../04-training-finetuning-alignment/" "打开训练算法、微调与对齐"
-  click M05 "../05-inference-apps/" "打开推理算法与高效服务"
-  click M06 "../06-prompt-rag-agents/" "打开检索增强、工具使用与智能体"
-  click M07 "../07-ai-software-stack/" "打开框架、编译器与运行时"
-  click M08 "../08-ai-compute-infra/" "打开 AI 计算架构与硬件基础"
-  click M09 "../09-systems-mlops/" "打开分布式系统与实验平台"
-  click M10 "../10-evaluation-benchmark-optimization/" "打开评测、复现与性能分析"
-  click M11 "../11-safety-governance/" "打开可信、安全与 AI 治理"
-  click M12 "../12-architecture-cases/" "打开论文复现、研究案例与决策记录"
-  click M13 "../13-ai-indexing/" "打开知识组织与研究工作流"
+  click M01 "../01-getting-started/" "打开入门导读"
+  click M02 "../02-ai-workloads/" "打开 AI 计算工作负载基础"
+  click M02A "../02-ai-workloads/data-paths/" "打开数据与输入路径"
+  click M03 "../03-inference-systems/" "打开推理系统与服务优化"
+  click M03A "../03-inference-systems/rag-agent-workloads/" "打开 RAG 与 Agent 推理负载"
+  click M04 "../04-training-systems/" "打开训练系统与分布式计算"
+  click M05 "../05-kernels-compilers/" "打开 Kernel、算子与编译优化"
+  click M06 "../06-accelerators-architecture/" "打开 AI 加速器与计算架构"
+  click M07 "../07-cluster-infra/" "打开集群、网络、存储与调度"
+  click M08 "../08-benchmark-capacity/" "打开性能分析、Benchmark 与容量建模"
+  click M09 "../09-reliability-observability/" "打开可靠性、可观测性与故障复盘"
+  click M10 "../10-papers-cases/" "打开论文复现与系统案例"
+  click M11 "../11-knowledge-index/" "打开知识组织、模板与 AI 可读索引"
   click M99 "../99-templates/knowledge-note/" "打开模板"
 
   classDef root fill:#111827,color:#ffffff,stroke:#111827,stroke-width:2px;
-  classDef trunk fill:#eef2ff,color:#312e81,stroke:#4f46e5,stroke-width:1.2px;
+  classDef trunk fill:#ecfeff,color:#164e63,stroke:#0891b2,stroke-width:1.2px;
   classDef module fill:#ffffff,color:#111827,stroke:#64748b,stroke-width:1.4px;
+  classDef sub fill:#f8fafc,color:#334155,stroke:#94a3b8,stroke-width:1px;
   class KG root;
-  class S1,S2,S3,S4,S5 trunk;
-  class M01,M02,M03,M04,M05,M06,M07,M08,M09,M10,M11,M12,M13,M99 module;
+  class S0,S1,S2,S3,S4 trunk;
+  class M01,M02,M03,M04,M05,M06,M07,M08,M09,M10,M11,M99 module;
+  class M02A,M03A sub;
 ```
 
-## 分支展开
-
-### 理论与模型基础
+## 系统链路
 
 ```mermaid
 flowchart LR
-  S1["理论与模型基础"] --> M01["01 数学与机器学习基础"]
-  S1 --> M02["02 模型架构与任务范式"]
+  W["AI Workload<br/>模型结构、输入长度、batch、精度"] --> R["Runtime<br/>推理服务 / 训练框架"]
+  R --> K["Kernel 与编译<br/>算子、融合、调度、自动调优"]
+  K --> H["Accelerator<br/>计算单元、内存层次、互连"]
+  H --> C["Cluster<br/>网络、存储、调度、隔离"]
+  C --> M["Measurement<br/>Benchmark、Profiling、容量模型"]
+  M --> P["Knowledge<br/>论文复现、案例、决策记录"]
 
-  M01 --> A1["线性代数 / 概率统计 / 最优化"]
-  M01 --> A2["统计学习 / 泛化 / 正则化"]
-  M01 --> A3["神经网络 / 反向传播 / 表示学习"]
-
-  M02 --> B1["任务形式化<br/>分类 / 检索 / 生成 / 多模态"]
-  M02 --> B2["架构谱系<br/>CNN / Transformer / Diffusion / MoE"]
-  M02 --> B3["归纳偏置 / 能力边界 / 失效模式"]
-
-  click M01 "../01-ai-basics/" "打开数学与机器学习基础"
-  click M02 "../02-models-and-tasks/" "打开模型架构与任务范式"
-```
-
-### 数据、训练与评测
-
-```mermaid
-flowchart LR
-  S2["数据、训练与评测"] --> M03["03 数据集、标注与基准"]
-  S2 --> M04["04 训练算法、微调与对齐"]
-  S2 --> M10["10 评测、复现与性能分析"]
-
-  M03 --> C1["数据集构建 / 标注协议 / 数据卡"]
-  M03 --> C2["数据泄漏 / 污染检测 / 分布偏移"]
-  M03 --> C3["Benchmark 设计 / 训练验证测试切分"]
-
-  M04 --> D1["预训练 / SFT / 参数高效微调"]
-  M04 --> D2["Optimizer / Schedule / 正则化"]
-  M04 --> D3["RLHF / DPO / 偏好优化"]
-  M04 --> D4["随机性控制 / Checkpoint / 可复现训练"]
-
-  M10 --> E1["能力评测 / 消融实验 / 对照基线"]
-  M10 --> E2["统计显著性 / 置信区间 / 误差分析"]
-  M10 --> E3["Profiling / Roofline / 资源效率"]
-
-  click M03 "../03-data-engineering/" "打开数据集、标注与基准"
-  click M04 "../04-training-finetuning-alignment/" "打开训练算法、微调与对齐"
-  click M10 "../10-evaluation-benchmark-optimization/" "打开评测、复现与性能分析"
-```
-
-### 推理、检索与智能体
-
-```mermaid
-flowchart LR
-  S3["推理、检索与智能体"] --> M05["05 推理算法与高效服务"]
-  S3 --> M06["06 检索增强、工具使用与智能体"]
-
-  M05 --> F1["KV Cache / PagedAttention / Continuous Batching"]
-  M05 --> F2["Speculative Decoding / 量化 / 蒸馏"]
-  M05 --> F3["Latency / Throughput / TTFT / TPOT"]
-
-  M06 --> G1["In-context Learning / CoT / ReAct"]
-  M06 --> G2["Embedding / Hybrid Search / Rerank"]
-  M06 --> G3["RAG 忠实度 / 引用 / 归因评测"]
-  M06 --> G4["Tool Use / Planning / Agent Benchmark"]
-
-  click M05 "../05-inference-apps/" "打开推理算法与高效服务"
-  click M06 "../06-prompt-rag-agents/" "打开检索增强、工具使用与智能体"
-```
-
-### 系统软件与计算架构
-
-```mermaid
-flowchart LR
-  S4["系统软件与计算架构"] --> M07["07 框架、编译器与运行时"]
-  S4 --> M08["08 AI 计算架构与硬件基础"]
-  S4 --> M09["09 分布式系统与实验平台"]
-
-  M07 --> H1["PyTorch / JAX / ONNX"]
-  M07 --> H2["Triton / CUDA / ROCm / Kernel"]
-  M07 --> H3["编译器 / Runtime / 自动调优"]
-
-  M08 --> I1["GPU / NPU / ASIC / FPGA"]
-  M08 --> I2["HBM / Cache / NUMA / Memory Wall"]
-  M08 --> I3["PCIe / CXL / NVLink / NoC"]
-  M08 --> I4["算术强度 / 带宽瓶颈 / 能效"]
-
-  M09 --> J1["数据并行 / 张量并行 / 流水线并行"]
-  M09 --> J2["AllReduce / 通信重叠 / 容错"]
-  M09 --> J3["Slurm / Kubernetes / Ray / 实验追踪"]
-
-  click M07 "../07-ai-software-stack/" "打开框架、编译器与运行时"
-  click M08 "../08-ai-compute-infra/" "打开 AI 计算架构与硬件基础"
-  click M09 "../09-systems-mlops/" "打开分布式系统与实验平台"
-```
-
-### 可信 AI 与研究工作流
-
-```mermaid
-flowchart LR
-  S5["可信 AI 与研究工作流"] --> M11["11 可信、安全与 AI 治理"]
-  S5 --> M12["12 论文复现、研究案例与决策记录"]
-  S5 --> M13["13 知识组织与研究工作流"]
-  S5 --> M99["99 模板与资源"]
-
-  M11 --> K1["对抗样本 / 投毒 / 后门 / 模型窃取"]
-  M11 --> K2["幻觉 / 偏见 / 校准 / 可解释性"]
-  M11 --> K3["隐私保护 / 许可 / 模型卡"]
-
-  M12 --> L1["论文精读 / 代码走读 / 复现报告"]
-  M12 --> L2["研究决策 / 实验假设 / 负结果"]
-  M12 --> L3["实验故障 / 失败模式 / 复盘"]
-
-  M13 --> N1["Front Matter / 标签 / 来源路径"]
-  M13 --> N2["向量索引 / 知识图谱 / 引用溯源"]
-  M13 --> N3["AI Skills / Agent 工具说明"]
-
-  M99 --> T1["知识点模板"]
-  M99 --> T2["研究决策模板"]
-  M99 --> T3["Benchmark 报告模板"]
-
-  click M11 "../11-safety-governance/" "打开可信、安全与 AI 治理"
-  click M12 "../12-architecture-cases/" "打开论文复现、研究案例与决策记录"
-  click M13 "../13-ai-indexing/" "打开知识组织与研究工作流"
-  click M99 "../99-templates/knowledge-note/" "打开模板"
+  click W "../02-ai-workloads/" "打开 AI 计算工作负载基础"
+  click R "../03-inference-systems/" "打开推理系统与服务优化"
+  click K "../05-kernels-compilers/" "打开 Kernel、算子与编译优化"
+  click H "../06-accelerators-architecture/" "打开 AI 加速器与计算架构"
+  click C "../07-cluster-infra/" "打开集群、网络、存储与调度"
+  click M "../08-benchmark-capacity/" "打开性能分析、Benchmark 与容量建模"
+  click P "../10-papers-cases/" "打开论文复现与系统案例"
 ```
 
 ## 地图逻辑
 
 | 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
-| 理论与模型基础 | 先补足数学、统计学习和深度学习基础，再理解任务形式化和模型架构谱系。 | [01 数学与机器学习基础](01-ai-basics/index.md)、[02 模型架构与任务范式](02-models-and-tasks/index.md) |
-| 数据、训练与评测 | 数据定义实验边界，训练算法产生模型能力，评测与复现判断结论是否可靠。 | [03 数据集、标注与基准](03-data-engineering/index.md)、[04 训练算法、微调与对齐](04-training-finetuning-alignment/index.md)、[10 评测、复现与性能分析](10-evaluation-benchmark-optimization/index.md) |
-| 推理、检索与智能体 | 研究模型在推理阶段的效率、外部知识接入、工具使用和长程任务能力。 | [05 推理算法与高效服务](05-inference-apps/index.md)、[06 检索增强、工具使用与智能体](06-prompt-rag-agents/index.md) |
-| 系统软件与计算架构 | 理解模型如何被框架、编译器、运行时、加速器和分布式系统共同执行。 | [07 框架、编译器与运行时](07-ai-software-stack/index.md)、[08 AI 计算架构与硬件基础](08-ai-compute-infra/index.md)、[09 分布式系统与实验平台](09-systems-mlops/index.md) |
-| 可信 AI 与研究工作流 | 控制研究风险，沉淀论文复现、实验决策、失败经验和 AI 可读知识。 | [11 可信、安全与 AI 治理](11-safety-governance/index.md)、[12 论文复现、研究案例与决策记录](12-architecture-cases/index.md)、[13 知识组织与研究工作流](13-ai-indexing/index.md) |
+| 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [01 入门导读](01-getting-started/index.md) |
+| 工作负载 | 只学习与性能有关的模型背景：Attention、KV Cache、MoE、上下文长度、batch shape、精度格式和数据路径。 | [02 AI 计算工作负载基础](02-ai-workloads/index.md)、[数据与输入路径](02-ai-workloads/data-paths.md) |
+| 单机执行 | 研究推理服务、算子、Kernel、编译器、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [03 推理系统与服务优化](03-inference-systems/index.md)、[05 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[06 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [04 训练系统与分布式计算](04-training-systems/index.md)、[07 集群、网络、存储与调度](07-cluster-infra/index.md) |
+| 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[09 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 
-## 按研究任务导航
+## 按目标导航
 
-| 研究生当前任务 | 优先阅读 |
+| 当前目标 | 优先阅读 |
 | --- | --- |
-| 刚入组，需要补基础 | [01 数学与机器学习基础](01-ai-basics/index.md) -> [02 模型架构与任务范式](02-models-and-tasks/index.md) |
-| 准备读一篇模型论文 | [02 模型架构与任务范式](02-models-and-tasks/index.md) -> [03 数据集、标注与基准](03-data-engineering/index.md) -> [10 评测、复现与性能分析](10-evaluation-benchmark-optimization/index.md) |
-| 准备复现训练或微调论文 | [03 数据集、标注与基准](03-data-engineering/index.md) -> [04 训练算法、微调与对齐](04-training-finetuning-alignment/index.md) -> [12 论文复现、研究案例与决策记录](12-architecture-cases/index.md) |
-| 做 LLM 推理、RAG 或 Agent 方向 | [05 推理算法与高效服务](05-inference-apps/index.md) -> [06 检索增强、工具使用与智能体](06-prompt-rag-agents/index.md) -> [10 评测、复现与性能分析](10-evaluation-benchmark-optimization/index.md) |
-| 做 AI 系统、编译器或硬件方向 | [07 框架、编译器与运行时](07-ai-software-stack/index.md) -> [08 AI 计算架构与硬件基础](08-ai-compute-infra/index.md) -> [09 分布式系统与实验平台](09-systems-mlops/index.md) |
-| 做可信 AI 或安全方向 | [11 可信、安全与 AI 治理](11-safety-governance/index.md) -> [10 评测、复现与性能分析](10-evaluation-benchmark-optimization/index.md) -> [12 论文复现、研究案例与决策记录](12-architecture-cases/index.md) |
-| 准备沉淀组会、论文笔记或实验记录 | [13 知识组织与研究工作流](13-ai-indexing/index.md) -> [知识点模板](99-templates/knowledge-note.md) -> [Benchmark 报告模板](99-templates/benchmark-report.md) |
+| 刚进入 AI Infra 方向 | [01 入门导读](01-getting-started/index.md) -> [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想降低 LLM 推理延迟 | [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [03 推理系统与服务优化](03-inference-systems/index.md) -> [05 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想提高吞吐和 GPU 利用率 | [03 推理系统与服务优化](03-inference-systems/index.md) -> [07 集群、网络、存储与调度](07-cluster-infra/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想做分布式训练系统 | [04 训练系统与分布式计算](04-training-systems/index.md) -> [06 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [07 集群、网络、存储与调度](07-cluster-infra/index.md) |
+| 想做 Kernel 或编译优化 | [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [05 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [06 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 想做 AI 加速器或硬件架构 | [02 AI 计算工作负载基础](02-ai-workloads/index.md) -> [05 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [06 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想建设稳定集群或实验平台 | [07 集群、网络、存储与调度](07-cluster-infra/index.md) -> [09 可靠性、可观测性与故障复盘](09-reliability-observability/index.md) -> [11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
+| 想复现系统论文 | [10 论文复现与系统案例](10-papers-cases/index.md) -> [08 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) -> [技术决策模板](99-templates/adr.md) |
 
 ## 模块关系
 
 | 模块 | 上游依赖 | 主要产出 |
 | --- | --- | --- |
-| 01 数学与机器学习基础 | 无 | 术语、公式、基础理论和论文阅读前置知识 |
-| 02 模型架构与任务范式 | 01 | 任务形式化、模型谱系、架构理解和开放问题 |
-| 03 数据集、标注与基准 | 02 | 数据卡、标注协议、benchmark 边界和数据风险 |
-| 04 训练算法、微调与对齐 | 01、02、03 | 训练方案、优化配置、对齐方法和复现实验 |
-| 05 推理算法与高效服务 | 02、04、07、08 | 推理算法、服务运行时、性能指标和瓶颈分析 |
-| 06 检索增强、工具使用与智能体 | 02、05、10、13 | RAG、Tool Use、Agent 工作流和评测协议 |
-| 07 框架、编译器与运行时 | 01、04、05 | Kernel、编译优化、Runtime 和系统实现知识 |
-| 08 AI 计算架构与硬件基础 | 04、05、07 | 计算、内存、互连、能效和体系结构分析 |
-| 09 分布式系统与实验平台 | 04、07、08 | 并行训练、调度、容错、实验追踪和复现平台 |
-| 10 评测、复现与性能分析 | 02、03、04、05、06、08、09 | 指标体系、消融实验、复现协议和性能诊断 |
-| 11 可信、安全与 AI 治理 | 03、05、06、10 | 威胁模型、安全评测、隐私与许可边界 |
-| 12 论文复现、研究案例与决策记录 | 全部模块 | 论文笔记、复现报告、负结果和研究决策 |
-| 13 知识组织与研究工作流 | 全部模块 | 元数据、索引、引用溯源、AI-readable skills |
+| 01 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
+| 02 AI 计算工作负载基础 | 01 | 性能相关模型背景、shape 分析、数据流和负载画像 |
+| 03 推理系统与服务优化 | 02、05、06、08 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
+| 04 训练系统与分布式计算 | 02、06、07、08 | 并行策略、通信模型、训练稳定性和扩展效率 |
+| 05 Kernel、算子与编译优化 | 02、06、08 | 算子实现、Kernel 优化、图优化、编译和自动调优 |
+| 06 AI 加速器与计算架构 | 02、05、08 | 计算、存储、互连、能效和体系结构分析 |
+| 07 集群、网络、存储与调度 | 03、04、06 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
+| 08 性能分析、Benchmark 与容量建模 | 02、03、04、05、06、07 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
+| 09 可靠性、可观测性与故障复盘 | 03、04、07、08 | 监控、告警、故障模式、复盘和改进项 |
+| 10 论文复现与系统案例 | 全部模块 | 论文笔记、代码走读、复现报告、系统案例和技术决策 |
+| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 元数据、标签、引用溯源、向量索引和 AI skills |
