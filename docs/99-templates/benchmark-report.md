@@ -2,7 +2,7 @@
 title: Benchmark 报告标题
 domain: benchmark
 layer: TBD
-product: TBD
+scope: TBD
 owner: maintainers
 status: draft
 license: CC-BY-4.0

@@ -24,8 +24,8 @@ updated: 2026-05-30
 | --- | --- |
 | `title` | 文档标题 |
 | `domain` | 知识领域 |
-| `layer` | 计算、软件、系统、Benchmark、架构等层级 |
-| `product` | 适用产品或平台 |
+| `layer` | 基础理论、数据、模型、应用、系统、评测、治理等层级 |
+| `scope` | 适用任务、系统或场景 |
 | `owner` | 负责人或团队 |
 | `status` | draft、reviewed、deprecated |
 | `license` | 内容授权，例如 CC-BY-4.0 |

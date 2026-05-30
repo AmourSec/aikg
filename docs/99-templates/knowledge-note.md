@@ -2,7 +2,7 @@
 title: 知识点标题
 domain: TBD
 layer: TBD
-product: TBD
+scope: TBD
 owner: TBD
 status: draft
 license: CC-BY-4.0

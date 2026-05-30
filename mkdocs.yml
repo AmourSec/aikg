@@ -57,22 +57,33 @@ nav:
   - 知识地图: knowledge-map.md
   - AI 基础理论:
       - 01-ai-basics/index.md
+  - 模型与任务:
+      - 02-models-and-tasks/index.md
+  - 数据与数据工程:
+      - 03-data-engineering/index.md
+  - 训练、微调与对齐:
+      - 04-training-finetuning-alignment/index.md
+  - 推理与应用构建:
+      - 05-inference-apps/index.md
+  - Prompt、RAG 与 Agents:
+      - 06-prompt-rag-agents/index.md
   - AI 软件栈:
-      - 02-ai-software-stack/index.md
+      - 07-ai-software-stack/index.md
   - AI 计算与基础设施:
-      - 03-ai-hardware/index.md
-  - 系统与集群:
-      - 04-system-architecture/index.md
-  - 性能与 Benchmark:
-      - 05-benchmark/index.md
-  - AI 系统架构:
-      - 06-ai-system-architecture/index.md
-  - ADR 设计决策:
-      - 07-adr/index.md
-  - 故障与经验:
-      - 08-failure-cases/index.md
+      - 08-ai-compute-infra/index.md
+  - 系统、集群与 MLOps:
+      - 09-systems-mlops/index.md
+  - 评测、Benchmark 与优化:
+      - 10-evaluation-benchmark-optimization/index.md
+  - 安全、治理与 Responsible AI:
+      - 11-safety-governance/index.md
+  - 架构案例、ADR 与故障复盘:
+      - 12-architecture-cases/index.md
+      - AI 系统架构: 12-architecture-cases/ai-system-architecture.md
+      - ADR 设计决策: 12-architecture-cases/adr.md
+      - 故障与经验: 12-architecture-cases/failure-cases.md
   - AI 可读知识层:
-      - 09-ai-indexing/index.md
+      - 13-ai-indexing/index.md
   - 模板:
       - 99-templates/knowledge-note.md
       - 99-templates/adr.md

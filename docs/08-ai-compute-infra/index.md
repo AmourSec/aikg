@@ -1,6 +1,6 @@
 ---
 title: AI 计算与基础设施
-domain: ai-hardware
+domain: ai-compute-infra
 status: draft
 owner: maintainers
 license: CC-BY-4.0

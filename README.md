@@ -9,6 +9,17 @@ An open AI knowledge base for human learning, structured browsing, and AI-assist
 - `mkdocs.yml`: MkDocs site configuration.
 - `.github/workflows/deploy-pages.yml`: GitHub Pages build and deployment workflow.
 
+## Knowledge Map
+
+The v2 outline organizes the knowledge base into these layers:
+
+- Foundations: AI basics, models and tasks, data engineering.
+- Model lifecycle: training, fine-tuning, alignment, inference, and applications.
+- AI application patterns: prompt engineering, RAG, agents, and tool use.
+- Engineering systems: software stack, compute infrastructure, systems, clusters, and MLOps.
+- Quality and risk: evaluation, benchmark, optimization, safety, governance, and responsible AI.
+- Reusable knowledge: architecture cases, ADRs, incident reviews, AI-readable metadata, and templates.
+
 ## Local Preview
 
 ```bash
