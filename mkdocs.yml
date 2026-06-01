@@ -3,6 +3,7 @@ site_description: AI infrastructure and efficient computing knowledge base for s
 site_url: https://amoursec.github.io/aikg/
 repo_url: https://github.com/AmourSec/aikg
 repo_name: AmourSec/aikg
+dev_addr: 127.0.0.1:8801
 extra_css:
   - assets/stylesheets/extra.css
 theme:
