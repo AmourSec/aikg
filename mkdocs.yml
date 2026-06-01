@@ -11,7 +11,6 @@ theme:
   features:
     - navigation.sections
     - navigation.expand
-    - navigation.indexes
     - navigation.top
     - search.suggest
     - search.highlight
@@ -58,38 +57,38 @@ nav:
   - 首页: index.md
   - 知识地图: knowledge-map.md
   - 入门导读:
-      - 01-getting-started/index.md
+      - 概览: 01-getting-started/index.md
   - AI 计算工作负载基础:
-      - 02-ai-workloads/index.md
+      - 概览: 02-ai-workloads/index.md
       - AI 基础概念: 02-ai-workloads/ai-fundamentals.md
       - Transformer 流程与原理: 02-ai-workloads/transformer.md
       - 训练过程与原理: 02-ai-workloads/training-primer.md
       - 推理过程与原理: 02-ai-workloads/inference-primer.md
       - 数据与输入路径: 02-ai-workloads/data-paths.md
   - 推理系统与服务优化:
-      - 03-inference-systems/index.md
+      - 概览: 03-inference-systems/index.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与分布式计算:
-      - 04-training-systems/index.md
+      - 概览: 04-training-systems/index.md
   - Kernel、算子与编译优化:
-      - 05-kernels-compilers/index.md
+      - 概览: 05-kernels-compilers/index.md
       - Triton Kernel 编程: 05-kernels-compilers/triton.md
       - TorchInductor 与 PyTorch 编译栈: 05-kernels-compilers/torchinductor.md
   - AI 加速器与计算架构:
-      - 06-accelerators-architecture/index.md
+      - 概览: 06-accelerators-architecture/index.md
   - 集群、网络、存储与调度:
-      - 07-cluster-infra/index.md
+      - 概览: 07-cluster-infra/index.md
   - 性能分析、Benchmark 与容量建模:
-      - 08-benchmark-capacity/index.md
+      - 概览: 08-benchmark-capacity/index.md
   - 可靠性、可观测性与故障复盘:
-      - 09-reliability-observability/index.md
+      - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:
-      - 10-papers-cases/index.md
+      - 概览: 10-papers-cases/index.md
       - AI 系统论文与架构: 10-papers-cases/ai-system-architecture.md
       - 技术决策记录: 10-papers-cases/adr.md
       - 故障复盘: 10-papers-cases/failure-cases.md
   - 知识组织、模板与 AI 可读索引:
-      - 11-knowledge-index/index.md
+      - 概览: 11-knowledge-index/index.md
   - 模板:
       - 知识点模板: 99-templates/knowledge-note.md
       - 技术决策模板: 99-templates/adr.md
