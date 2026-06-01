@@ -121,6 +121,16 @@
   padding-left: 1rem;
 }
 
+.kg-mindmap-branch .kg-node-child {
+  margin-left: 1.45rem;
+  padding-left: 1.25rem;
+}
+
+.kg-mindmap-branch .kg-node-note {
+  margin-left: 1.45rem;
+  padding-left: 1.25rem;
+}
+
 .kg-mindmap-branch li::before {
   content: "";
   position: absolute;
@@ -129,6 +139,11 @@
   width: 0.7rem;
   height: 2px;
   background: var(--kg-line);
+}
+
+.kg-mindmap-branch .kg-node-child::before,
+.kg-mindmap-branch .kg-node-note::before {
+  width: 0.95rem;
 }
 
 .kg-mindmap-branch li > a,
@@ -142,9 +157,24 @@
   line-height: 1.35;
 }
 
+.kg-mindmap-branch .kg-node-main > a {
+  border-color: #99f6e4;
+  background: #f0fdfa;
+  font-weight: 700;
+}
+
+.kg-mindmap-branch .kg-node-child > a {
+  font-size: 0.9rem;
+}
+
 .kg-mindmap-branch li > span {
   background: var(--kg-muted);
   color: #475569;
+}
+
+.kg-mindmap-branch .kg-node-note > span {
+  border-style: dashed;
+  font-size: 0.84rem;
 }
 
 .kg-mindmap-root:hover,
@@ -171,5 +201,11 @@
 
   .kg-branch-title {
     text-align: left;
+  }
+
+  .kg-mindmap-branch .kg-node-child,
+  .kg-mindmap-branch .kg-node-note {
+    margin-left: 0.8rem;
+    padding-left: 1rem;
   }
 }
