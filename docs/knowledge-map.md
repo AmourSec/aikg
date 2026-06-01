@@ -22,43 +22,43 @@ updated: 2026-05-30
       <a class="kg-branch-title" href="../01-getting-started/">学习入口</a>
       <ul>
         <li><a href="../01-getting-started/">01 入门导读</a></li>
-        <li><span>问题意识 / 阅读方法 / 实验纪律</span></li>
+        <li><span>关键词：问题意识 / 阅读方法 / 实验纪律</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../02-ai-workloads/">工作负载</a>
       <ul>
         <li><a href="../02-ai-workloads/">02 AI 计算工作负载基础</a></li>
-        <li><a href="../02-ai-workloads/ai-fundamentals/">AI 基础概念</a></li>
-        <li><a href="../02-ai-workloads/transformer/">Transformer 流程与原理</a></li>
-        <li><a href="../02-ai-workloads/training-primer/">训练过程与原理</a></li>
-        <li><a href="../02-ai-workloads/inference-primer/">推理过程与原理</a></li>
-        <li><a href="../02-ai-workloads/data-paths/">数据与输入路径</a></li>
-        <li><span>token / loss / Attention / KV Cache / batch / precision</span></li>
+        <li><a href="../02-ai-workloads/ai-fundamentals/">02.1 AI 基础概念</a></li>
+        <li><a href="../02-ai-workloads/transformer/">02.2 Transformer 流程与原理</a></li>
+        <li><a href="../02-ai-workloads/training-primer/">02.3 训练过程与原理</a></li>
+        <li><a href="../02-ai-workloads/inference-primer/">02.4 推理过程与原理</a></li>
+        <li><a href="../02-ai-workloads/data-paths/">02.5 数据与输入路径</a></li>
+        <li><span>关键词：token / loss / Attention / KV Cache / batch / precision</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../03-inference-systems/">推理与服务</a>
       <ul>
         <li><a href="../03-inference-systems/">03 推理系统与服务优化</a></li>
-        <li><a href="../03-inference-systems/rag-agent-workloads/">RAG 与 Agent 推理负载</a></li>
-        <li><span>TTFT / TPOT / batching / KV Cache / routing</span></li>
+        <li><a href="../03-inference-systems/rag-agent-workloads/">03.1 RAG 与 Agent 推理负载</a></li>
+        <li><span>关键词：TTFT / TPOT / batching / KV Cache / routing</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../05-kernels-compilers/">Kernel 与编译</a>
       <ul>
         <li><a href="../05-kernels-compilers/">05 Kernel、算子与编译优化</a></li>
-        <li><a href="../05-kernels-compilers/triton/">Triton Kernel 编程</a></li>
-        <li><a href="../05-kernels-compilers/torchinductor/">TorchInductor 与 PyTorch 编译栈</a></li>
-        <li><span>tiling / fusion / codegen / auto-tuning</span></li>
+        <li><a href="../05-kernels-compilers/triton/">05.1 Triton Kernel 编程</a></li>
+        <li><a href="../05-kernels-compilers/torchinductor/">05.2 TorchInductor 与 PyTorch 编译栈</a></li>
+        <li><span>关键词：tiling / fusion / codegen / auto-tuning</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../06-accelerators-architecture/">计算架构</a>
       <ul>
         <li><a href="../06-accelerators-architecture/">06 AI 加速器与计算架构</a></li>
-        <li><span>GPU / NPU / Tensor Core / HBM / interconnect</span></li>
+        <li><span>关键词：GPU / NPU / Tensor Core / HBM / interconnect</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -66,7 +66,7 @@ updated: 2026-05-30
       <ul>
         <li><a href="../04-training-systems/">04 训练系统与分布式计算</a></li>
         <li><a href="../07-cluster-infra/">07 集群、网络、存储与调度</a></li>
-        <li><span>parallelism / NCCL / scheduler / storage</span></li>
+        <li><span>关键词：parallelism / NCCL / scheduler / storage</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -75,7 +75,7 @@ updated: 2026-05-30
         <li><a href="../08-benchmark-capacity/">08 性能分析、Benchmark 与容量建模</a></li>
         <li><a href="../09-reliability-observability/">09 可靠性、可观测性与故障复盘</a></li>
         <li><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
-        <li><span>profiling / roofline / capacity / incidents</span></li>
+        <li><span>关键词：profiling / roofline / capacity / incidents</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -83,7 +83,7 @@ updated: 2026-05-30
       <ul>
         <li><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
-        <li><span>metadata / tags / sources / AI-readable skills</span></li>
+        <li><span>关键词：metadata / tags / sources / AI-readable skills</span></li>
       </ul>
     </section>
   </div>
