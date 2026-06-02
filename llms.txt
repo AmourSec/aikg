@@ -25,10 +25,9 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [入门导读](https://amoursec.github.io/aikg/01-getting-started/): 新读者入口，说明如何使用知识库。
 - [AI 计算工作负载基础](https://amoursec.github.io/aikg/02-ai-workloads/): AI 计算工作负载基础目录。
 - [AI 基础概念](https://amoursec.github.io/aikg/02-ai-workloads/ai-fundamentals/): AI 基础概念，面向刚入门读者。
-- [Transformer 流程与原理](https://amoursec.github.io/aikg/02-ai-workloads/transformer/): Transformer 流程、Q/K/V、训练与推理差异、KV Cache 和系统影响。
-- [训练过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/training-primer/): 训练过程、loss、backward、optimizer 和系统资源压力。
-- [推理过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/): 推理过程、prefill、decode、sampling 和服务阶段差异。
-- [数据与输入路径](https://amoursec.github.io/aikg/02-ai-workloads/data-paths/): 数据、token、batch shape、sequence length 和输入路径。
+- [Transformer 流程与原理](https://amoursec.github.io/aikg/02-ai-workloads/transformer/): Transformer 如何读取上下文、更新 token 表示并预测下一个 token。
+- [训练过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/training-primer/): 训练如何先预测、计算错误、反向传播并更新参数。
+- [推理过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [推理系统与服务优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与服务优化主题入口。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
 - [训练系统与分布式计算](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与分布式计算主题入口。
@@ -44,10 +43,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
 - [故障复盘](https://amoursec.github.io/aikg/10-papers-cases/failure-cases/): 故障复盘入口。
 - [知识组织、模板与 AI 可读索引](https://amoursec.github.io/aikg/11-knowledge-index/): 知识组织、模板、元数据和 AI 可读索引说明。
+- [知识点模板](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板。
 
 ## Optional Documents
 
-- [知识点模板](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板。
 - [技术决策模板](https://amoursec.github.io/aikg/99-templates/adr/): 技术决策模板。
 - [基准实验报告模板](https://amoursec.github.io/aikg/99-templates/benchmark-report/): 基准实验报告模板。
 
@@ -63,7 +62,6 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [02-ai-workloads/transformer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/transformer.md)
 - [02-ai-workloads/training-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/training-primer.md)
 - [02-ai-workloads/inference-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/inference-primer.md)
-- [02-ai-workloads/data-paths.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/data-paths.md)
 - [03-inference-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/index.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)

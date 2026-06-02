@@ -4,48 +4,64 @@ domain: ai-workloads
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 ---
 
 # AI 计算工作负载基础
 
-本目录是 AI Infra 的基础课。它先解释模型、Transformer、训练和推理的基本流程，再把这些流程翻译成计算量、访存量、显存占用、通信量和调度复杂度。
+本目录是 AI 入门科普层，只解决一个问题：**让完全不熟悉 AI 的读者先知道模型、Transformer、训练和推理大概是怎么回事。**
+
+这里不深入讲公式、调参、并行训练、推理优化、硬件架构或性能分析。读完后，读者应该能用自己的话说清楚：
+
+- AI 模型为什么能从数据里学到规律。
+- Transformer 为什么能理解一段上下文。
+- 训练过程为什么能让模型慢慢变好。
+- 推理过程为什么能根据提示词生成回答。
 
 ## 入门顺序
 
-1. [AI 基础概念](ai-fundamentals.md)：理解模型、参数、张量、token、loss、训练和推理这些共同语言。
-2. [Transformer 流程与原理](transformer.md)：理解 Embedding、Attention、MLP、残差、LayerNorm、Logits 的数据流。
-3. [训练过程与原理](training-primer.md)：理解 forward、loss、backward、optimizer、checkpoint 为什么消耗计算和显存。
-4. [推理过程与原理](inference-primer.md)：理解 prefill、decode、KV Cache、sampling、batching 为什么决定延迟和吞吐。
-5. [数据与输入路径](data-paths.md)：理解数据如何进入训练和推理系统。
+| 顺序 | 页面 | 读完应该懂什么 |
+| --- | --- | --- |
+| 1 | [AI 基础概念](ai-fundamentals.md) | 模型、参数、token、向量、概率、loss 是什么。 |
+| 2 | [Transformer 流程与原理](transformer.md) | 一段文字如何经过 token、embedding、attention、MLP，最后变成下一个 token 的概率。 |
+| 3 | [训练过程与原理](training-primer.md) | 模型如何先猜答案、计算错误、根据错误调整参数，并不断重复。 |
+| 4 | [推理过程与原理](inference-primer.md) | 模型参数固定后，如何读取 prompt，并一个 token 一个 token 生成输出。 |
 
-## 建议主题
+## 本目录的讲解边界
 
-- Transformer、Attention、MLP、Embedding、LayerNorm、MoE
-- Token、Embedding、Logits、Loss、Backpropagation、Optimizer
-- 训练循环、推理循环、Autoregressive Generation
-- Prefill 与 Decode 的计算特征差异
-- KV Cache 的显存占用、带宽压力和调度影响
-- sequence length、batch size、concurrency 对延迟和吞吐的影响
-- FP32、TF32、FP16、BF16、FP8、INT8、INT4
-- 参数量、激活、optimizer state、checkpoint 对显存的影响
-- arithmetic intensity、memory wall、compute-bound 与 memory-bound
-- dense workload、sparse workload、dynamic shape 和 ragged batch
+本目录只讲到“理论上为什么可行”和“流程上每一步做什么”。暂时不展开：
 
-## 关键问题
+- 训练如何并行到很多 GPU。
+- 推理服务如何提升吞吐和降低延迟。
+- Attention、KV Cache、batch、精度、显存的性能细节。
+- Triton、TorchInductor、FlashAttention 等工程优化。
+- 模型结构改造、微调方法和任务指标提升。
 
-- 一个模型层的 FLOPs 和内存访问量如何估算。
-- Attention、MLP、Embedding、MoE 分别容易卡在哪类资源上。
-- 长上下文为什么会改变 KV Cache、显存带宽和调度瓶颈。
-- 量化、稀疏化、MoE、投机解码等技术如何改变 workload 形态。
-- Workload 描述是否足以支持 Benchmark、容量估算和硬件选型。
+这些内容会放到后续系统、Kernel、硬件、集群和 Benchmark 章节里。这里先把地基打清楚。
 
-## 建议记录字段
+## 最小主线
 
-| 字段 | 说明 |
-| --- | --- |
-| workload | 模型结构、参数规模、层数、hidden size、head 数、MoE expert 数 |
-| shape | batch size、sequence length、prefill/decode 比例、并发 |
-| precision | 权重、激活、KV Cache、通信使用的数值格式 |
-| bottleneck | compute、memory bandwidth、capacity、communication、scheduler |
-| metrics | latency、throughput、tokens/s、MFU、HBM bandwidth、显存占用 |
+可以先把大语言模型理解成下面这条链路：
+
+```text
+很多文本样本
+  -> 训练：让模型学会根据前文预测后文
+  -> 得到一组固定参数
+  -> 推理：给模型一段 prompt
+  -> 模型预测下一个 token
+  -> 把新 token 接回上下文，继续预测
+  -> 得到完整回答
+```
+
+如果只记一句话：
+
+> 训练是在大量样本上调参数；推理是在参数固定后按上下文预测下一个 token；Transformer 是当前最常用的“读上下文并生成表示”的模型结构。
+
+## 学完后再往哪里走
+
+学完这 4 页后，再进入后续章节会更顺：
+
+- 想理解在线大模型服务，读 `推理系统与服务优化`。
+- 想理解大规模训练，读 `训练系统与分布式计算`。
+- 想理解 Triton、Inductor、算子优化，读 `Kernel、算子与编译优化`。
+- 想理解 GPU、NPU、内存和互连，读 `AI 加速器与计算架构`。

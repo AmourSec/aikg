@@ -16,7 +16,6 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 02-ai-workloads/transformer.md - Transformer 流程与原理
 - 02-ai-workloads/training-primer.md - 训练过程与原理
 - 02-ai-workloads/inference-primer.md - 推理过程与原理
-- 02-ai-workloads/data-paths.md - 数据与输入路径
 - 03-inference-systems/index.md - 推理系统与服务优化
 - 03-inference-systems/rag-agent-workloads.md - RAG 与 Agent 推理负载
 - 04-training-systems/index.md - 训练系统与分布式计算
@@ -45,7 +44,7 @@ URL: https://amoursec.github.io/aikg/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # AI Knowledge Graph
 
@@ -69,7 +68,7 @@ updated: 2026-05-30
 
 1. 从 `知识地图` 理解整体结构。
 2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`。
-3. 然后阅读 `AI 计算工作负载基础`，理解 Attention、KV Cache、MoE、batch、精度和数据搬运为什么影响性能。
+3. 然后阅读 `AI 计算工作负载基础`，先用浅显方式理解模型、Transformer、训练和推理为什么成立。
 4. 做推理方向重点阅读 `推理系统与服务优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
 5. 做训练和集群方向重点阅读 `训练系统与分布式计算`、`集群、网络、存储与调度`、`可靠性、可观测性与故障复盘`。
 6. 做硬件或算子方向重点阅读 `AI 加速器与计算架构`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
@@ -84,11 +83,11 @@ URL: https://amoursec.github.io/aikg/knowledge-map/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # AI 知识地图
 
-这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。主线不是提升模型任务指标，而是理解一个 AI workload 如何经过推理服务、训练系统、Kernel、编译器、加速器、集群和 Benchmark，最终被做快、做省、做稳、做可复现。图中的节点都可以点击跳转到对应章节。
+这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。前置科普层只负责讲清 AI 基础概念、Transformer、训练和推理四件事；后续章节再进入推理系统、训练系统、Kernel、加速器、集群和 Benchmark。图中的节点都可以点击跳转到对应章节。
 
 ## 总览思维导图
 
@@ -113,8 +112,7 @@ updated: 2026-05-30
         <li class="kg-node-child"><a href="../02-ai-workloads/transformer/">2.2 Transformer 流程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/training-primer/">2.3 训练过程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/inference-primer/">2.4 推理过程与原理</a></li>
-        <li class="kg-node-child"><a href="../02-ai-workloads/data-paths/">2.5 数据与输入路径</a></li>
-        <li class="kg-node-note"><span>关键词：token / loss / Attention / KV Cache / batch / precision</span></li>
+        <li class="kg-node-note"><span>关键词：模型 / token / 参数 / loss / Attention / 逐 token 生成</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -174,7 +172,7 @@ updated: 2026-05-30
 | 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
-| 工作负载 | 先补齐 AI 基础、Transformer、训练和推理流程，再学习与性能有关的模型背景：Attention、KV Cache、MoE、上下文长度、batch shape、精度格式和数据路径。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[数据与输入路径](02-ai-workloads/data-paths.md) |
+| 工作负载 | 只做入门科普：先讲清模型、token、参数、loss，再讲 Transformer 如何读上下文，训练如何调参数，推理如何逐 token 生成。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md) |
 | 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与服务优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [4 训练系统与分布式计算](04-training-systems/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
@@ -198,7 +196,7 @@ updated: 2026-05-30
 | 模块 | 上游依赖 | 主要产出 |
 | --- | --- | --- |
 | 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
-| 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练/推理流程、shape 分析、数据流和负载画像 |
+| 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程和推理流程的浅层科普 |
 | 3 推理系统与服务优化 | 2、5、6、8 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
 | 4 训练系统与分布式计算 | 2、6、7、8 | 并行策略、通信模型、训练稳定性和扩展效率 |
 | 5 Kernel、算子与编译优化 | 2、6、8 | Triton Kernel、TorchInductor、算子实现、图优化、编译和自动调优 |
@@ -270,50 +268,66 @@ domain: ai-workloads
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # AI 计算工作负载基础
 
-本目录是 AI Infra 的基础课。它先解释模型、Transformer、训练和推理的基本流程，再把这些流程翻译成计算量、访存量、显存占用、通信量和调度复杂度。
+本目录是 AI 入门科普层，只解决一个问题：**让完全不熟悉 AI 的读者先知道模型、Transformer、训练和推理大概是怎么回事。**
+
+这里不深入讲公式、调参、并行训练、推理优化、硬件架构或性能分析。读完后，读者应该能用自己的话说清楚：
+
+- AI 模型为什么能从数据里学到规律。
+- Transformer 为什么能理解一段上下文。
+- 训练过程为什么能让模型慢慢变好。
+- 推理过程为什么能根据提示词生成回答。
 
 ## 入门顺序
 
-1. [AI 基础概念](ai-fundamentals.md)：理解模型、参数、张量、token、loss、训练和推理这些共同语言。
-2. [Transformer 流程与原理](transformer.md)：理解 Embedding、Attention、MLP、残差、LayerNorm、Logits 的数据流。
-3. [训练过程与原理](training-primer.md)：理解 forward、loss、backward、optimizer、checkpoint 为什么消耗计算和显存。
-4. [推理过程与原理](inference-primer.md)：理解 prefill、decode、KV Cache、sampling、batching 为什么决定延迟和吞吐。
-5. [数据与输入路径](data-paths.md)：理解数据如何进入训练和推理系统。
+| 顺序 | 页面 | 读完应该懂什么 |
+| --- | --- | --- |
+| 1 | [AI 基础概念](ai-fundamentals.md) | 模型、参数、token、向量、概率、loss 是什么。 |
+| 2 | [Transformer 流程与原理](transformer.md) | 一段文字如何经过 token、embedding、attention、MLP，最后变成下一个 token 的概率。 |
+| 3 | [训练过程与原理](training-primer.md) | 模型如何先猜答案、计算错误、根据错误调整参数，并不断重复。 |
+| 4 | [推理过程与原理](inference-primer.md) | 模型参数固定后，如何读取 prompt，并一个 token 一个 token 生成输出。 |
 
-## 建议主题
+## 本目录的讲解边界
 
-- Transformer、Attention、MLP、Embedding、LayerNorm、MoE
-- Token、Embedding、Logits、Loss、Backpropagation、Optimizer
-- 训练循环、推理循环、Autoregressive Generation
-- Prefill 与 Decode 的计算特征差异
-- KV Cache 的显存占用、带宽压力和调度影响
-- sequence length、batch size、concurrency 对延迟和吞吐的影响
-- FP32、TF32、FP16、BF16、FP8、INT8、INT4
-- 参数量、激活、optimizer state、checkpoint 对显存的影响
-- arithmetic intensity、memory wall、compute-bound 与 memory-bound
-- dense workload、sparse workload、dynamic shape 和 ragged batch
+本目录只讲到“理论上为什么可行”和“流程上每一步做什么”。暂时不展开：
 
-## 关键问题
+- 训练如何并行到很多 GPU。
+- 推理服务如何提升吞吐和降低延迟。
+- Attention、KV Cache、batch、精度、显存的性能细节。
+- Triton、TorchInductor、FlashAttention 等工程优化。
+- 模型结构改造、微调方法和任务指标提升。
 
-- 一个模型层的 FLOPs 和内存访问量如何估算。
-- Attention、MLP、Embedding、MoE 分别容易卡在哪类资源上。
-- 长上下文为什么会改变 KV Cache、显存带宽和调度瓶颈。
-- 量化、稀疏化、MoE、投机解码等技术如何改变 workload 形态。
-- Workload 描述是否足以支持 Benchmark、容量估算和硬件选型。
+这些内容会放到后续系统、Kernel、硬件、集群和 Benchmark 章节里。这里先把地基打清楚。
 
-## 建议记录字段
+## 最小主线
 
-| 字段 | 说明 |
-| --- | --- |
-| workload | 模型结构、参数规模、层数、hidden size、head 数、MoE expert 数 |
-| shape | batch size、sequence length、prefill/decode 比例、并发 |
-| precision | 权重、激活、KV Cache、通信使用的数值格式 |
-| bottleneck | compute、memory bandwidth、capacity、communication、scheduler |
-| metrics | latency、throughput、tokens/s、MFU、HBM bandwidth、显存占用 |
+可以先把大语言模型理解成下面这条链路：
+
+```text
+很多文本样本
+  -> 训练：让模型学会根据前文预测后文
+  -> 得到一组固定参数
+  -> 推理：给模型一段 prompt
+  -> 模型预测下一个 token
+  -> 把新 token 接回上下文，继续预测
+  -> 得到完整回答
+```
+
+如果只记一句话：
+
+> 训练是在大量样本上调参数；推理是在参数固定后按上下文预测下一个 token；Transformer 是当前最常用的“读上下文并生成表示”的模型结构。
+
+## 学完后再往哪里走
+
+学完这 4 页后，再进入后续章节会更顺：
+
+- 想理解在线大模型服务，读 `推理系统与服务优化`。
+- 想理解大规模训练，读 `训练系统与分布式计算`。
+- 想理解 Triton、Inductor、算子优化，读 `Kernel、算子与编译优化`。
+- 想理解 GPU、NPU、内存和互连，读 `AI 加速器与计算架构`。
 
 ---
 
@@ -325,50 +339,159 @@ domain: ai-fundamentals
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # AI 基础概念
 
-本页面向刚开始接触 AI Infra 的读者，解释最小必要的 AI 基础。目标不是完整学习机器学习理论，而是能看懂训练、推理、Transformer、Benchmark 和系统论文里的基本词汇。
+学习 AI 时最容易被一堆术语吓住。先不要急着学公式，可以先把大语言模型理解成一句话：
 
-## 最小概念表
+> 模型读入一段文字，把它变成数字，在数字上做计算，然后预测“下一个最可能出现的 token 是什么”。
 
-| 概念 | 含义 | 系统视角 |
-| --- | --- | --- |
-| Tensor | 多维数组，是模型计算的基本数据结构 | shape 决定算子规模和内存访问 |
-| Token | 文本被 tokenizer 切分后的离散单位 | token 数决定序列长度和推理成本 |
-| Embedding | 把 token id 映射成向量 | 主要是查表和内存访问 |
-| Parameter | 模型中被训练出来的权重 | 参数量决定显存、加载时间和通信量 |
-| Activation | forward 中间结果 | 训练时需要保存，显存压力很大 |
-| Logits | 模型输出的未归一化分数 | 推理时用于选下一个 token |
-| Loss | 训练目标函数 | backward 从 loss 开始传播梯度 |
-| Gradient | loss 对参数的导数 | 训练时需要额外显存和通信 |
-| Optimizer | 用梯度更新参数的算法 | Adam 等优化器会保存额外状态 |
+本页只解释后面必须用到的最小概念。
 
-## 一个模型在做什么
+## AI 模型是什么
 
-语言模型的基本任务可以粗略理解为：给定前面的 token，预测下一个 token 的概率分布。
+模型可以先理解成一个很大的“函数”：
 
 ```text
-输入文本 -> Token IDs -> Embedding -> 多层网络 -> Logits -> 下一个 token 概率
+输入 -> 模型 -> 输出
 ```
 
-训练时，模型看到大量文本，比较预测和真实下一个 token 的差距，用 loss 更新参数。推理时，模型没有真实答案，只能反复预测下一个 token，再把生成的新 token 接回输入。
+普通函数的规则是人写死的，例如：
 
-## 为什么 Infra 需要懂这些
+```text
+温度 > 30 度 -> 提醒天气炎热
+```
 
-- token 数决定 sequence length，直接影响 Attention 计算量和 KV Cache 显存。
-- 参数量决定权重加载、显存容量、分布式切分和通信量。
-- activation 和 gradient 主要影响训练显存。
-- logits、sampling 和 decode loop 主要影响推理延迟。
-- shape、precision、batch size 决定 Kernel、编译器和硬件能否跑满。
+AI 模型的规则不是人一条条写出来的，而是从大量样本里学出来的。比如它看过很多句子后，会慢慢学到：
 
-## 关键问题
+- 问句后面通常需要回答。
+- “北京是中国的”后面很可能接“首都”。
+- 代码、数学、翻译、总结都有不同的语言模式。
 
-- 当前问题发生在训练还是推理。
-- 输入是固定长度、长上下文、动态 batch 还是多轮对话。
-- 主要资源瓶颈是参数、激活、KV Cache、梯度还是优化器状态。
-- 模型输出质量问题和系统性能问题是否被混在一起讨论。
+所以模型不是在数据库里查固定答案，而是在根据学到的规律做预测。
+
+## 参数是什么
+
+参数就是模型内部可以被调整的数字。
+
+可以把模型想象成一台有很多旋钮的机器。刚开始这些旋钮位置不合适，模型经常猜错。训练时，系统会根据错误一点点调整旋钮。调整很多次以后，模型的预测会越来越接近训练数据里的规律。
+
+这里的“旋钮”就是参数。
+
+参数不是人工写的知识点，而是训练过程自动学出来的数字。模型越大，参数通常越多，但参数多不一定等于一定更好，还要看数据、训练方法和使用方式。
+
+## Token 是什么
+
+模型不能直接读“文字”，它只能处理数字。所以第一步通常是把文本切成 token。
+
+token 可以粗略理解成模型眼里的“文字小块”。它可能是一个字、一个词、一个词的一部分，或者一个符号。
+
+例如：
+
+```text
+原文：我喜欢 AI
+token：我 / 喜欢 / AI
+token id：128 / 5632 / 9021
+```
+
+真实 tokenizer 会更复杂，但入门时只要记住：
+
+> 文本先被切成 token，再被映射成数字编号，模型处理的是这些编号。
+
+## 向量和 Embedding 是什么
+
+token id 只是编号，本身没有含义。比如 `9021` 并不天然表示 “AI”。
+
+所以模型会把 token id 转成一串数字，这串数字叫向量。这个转换过程叫 embedding。
+
+可以这样理解：
+
+```text
+token id -> embedding -> 一个向量
+```
+
+向量的作用是让模型能用数字表示含义。训练之后，意思相近、用法相近的 token，向量关系也会变得更有规律。
+
+入门时不用关心向量有多少维，只要知道：
+
+> embedding 是把离散文字编号变成模型能计算的数字表示。
+
+## Logits 和概率是什么
+
+模型最终会给很多候选 token 打分。例如前文是：
+
+```text
+北京是中国的
+```
+
+模型可能给下面几个 token 打分：
+
+```text
+首都：很高
+城市：较高
+苹果：很低
+```
+
+这些原始分数常叫 logits。把 logits 转成概率后，模型就能知道哪些 token 更可能成为下一个 token。
+
+推理时，模型会根据这些概率选择一个 token。最简单的方式是永远选概率最高的，也可以带一点随机性，让回答不那么死板。
+
+## Loss 是什么
+
+训练时模型会先猜，然后和标准答案比较。
+
+例如训练样本是：
+
+```text
+输入：北京是中国的
+正确下一个 token：首都
+```
+
+如果模型给“首都”的概率很高，loss 就小；如果模型给“苹果”的概率很高，loss 就大。
+
+可以把 loss 理解成“错误程度”：
+
+```text
+猜得越离谱 -> loss 越大
+猜得越接近 -> loss 越小
+```
+
+训练的目标就是让 loss 逐渐变小。
+
+## 训练和推理有什么区别
+
+训练和推理是两个阶段。
+
+| 阶段 | 模型参数会变吗 | 目标 |
+| --- | --- | --- |
+| 训练 | 会变 | 让模型从错误中调整参数，学到规律。 |
+| 推理 | 不变 | 使用已经训练好的参数，根据输入生成输出。 |
+
+训练像学习：看题、答题、对答案、改正。
+推理像考试：参数已经固定，只能根据已经学到的规律回答。
+
+## 最小流程
+
+```mermaid
+flowchart TD
+  A["文本"] --> B["切成 token"]
+  B --> C["token id"]
+  C --> D["embedding 向量"]
+  D --> E["模型计算"]
+  E --> F["logits 分数"]
+  F --> G["下一个 token 的概率"]
+```
+
+这就是后面 Transformer、训练和推理都会反复用到的基础流程。
+
+## 读完应该能回答
+
+- 为什么模型不能直接处理文字，而要先变成 token 和数字。
+- 参数为什么可以理解成模型内部可调整的数字。
+- embedding 为什么是把 token 变成可计算的表示。
+- logits 和概率为什么能用来选择下一个 token。
+- 训练和推理为什么不是一回事。
 
 ---
 
@@ -380,519 +503,226 @@ domain: transformer
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-01
+updated: 2026-06-02
 
 # Transformer 流程与原理
 
-Transformer 是当前大语言模型和很多多模态模型的核心结构。学习它时不要一开始就背公式，而要先抓住主线：
+Transformer 是当前大语言模型最常见的核心结构。入门时可以先把它理解成：
 
-```text
-把一串 token 变成一串向量；
-让每个位置用 Attention 读取上下文；
-再用 MLP 对每个位置做非线性变换；
-重复很多层；
-最后把当前位置向量映射成下一个 token 的概率。
-```
+> 一种让每个 token 读取上下文、更新自己表示、最后预测下一个 token 的方法。
 
-本页面面向刚进入 AI Infra 方向的读者。目标不是完整推导论文，而是让你能看懂 Transformer 的数据流、关键张量形状、训练和推理差异，以及为什么它会影响推理系统、Kernel、编译器和硬件架构。
-
-## 学习目标
-
-读完本页，你应该能回答：
-
-- 一个 token 从输入到 logits 经过哪些步骤。
-- Attention 中 Q、K、V 分别从哪里来，为什么会有 `QK^T`。
-- Multi-Head Attention、MLP、Residual、LayerNorm 在一个 block 里如何配合。
-- Encoder-only、Decoder-only、Encoder-Decoder 的区别。
-- 训练、prefill、decode 阶段为什么性能瓶颈不同。
-- sequence length、hidden size、head 数如何影响计算量和显存。
+本页只讲大概流程和为什么可行，不展开复杂公式和工程优化。
 
 ## 为什么需要 Transformer
 
-早期序列模型常用 RNN/LSTM/GRU。它们按时间步顺序处理 token：第 `i` 个位置依赖第 `i-1` 个位置的状态。这种结构有两个问题：
+一句话里的每个词，含义常常取决于上下文。
 
-- **并行性差**：必须从左到右逐步算，长序列训练很难充分利用 GPU/TPU。
-- **长距离依赖困难**：很远的 token 要经过很多步状态传递，信息容易衰减。
+例如：
 
-卷积模型可以并行，但单层卷积只能覆盖局部窗口；要让远距离 token 交互，需要堆很多层。
+```text
+苹果发布了新产品。
+我吃了一个苹果。
+```
 
-Transformer 的核心想法是：在每一层里，让序列中任意两个可见位置都可以直接交互。这个交互由 Self-Attention 完成。原始论文提出的 Transformer 完全基于 Attention 机制，不再使用 recurrence 或 convolution；它在机器翻译任务上获得更好的质量，同时更容易并行训练。
+同样是“苹果”，第一句更可能指公司，第二句更可能指水果。模型如果只看单个词，很难判断真正含义；它必须看上下文。
 
-## 三种常见 Transformer 形态
+Transformer 的关键能力就是：
 
-原始 Transformer 是 Encoder-Decoder 架构，但今天的大模型经常只使用其中一部分。
+> 让当前位置的 token 能够查看其他位置的 token，并决定哪些上下文更重要。
 
-| 架构 | 代表任务 | Attention 形式 | 输出方式 |
-| --- | --- | --- | --- |
-| Encoder-Decoder | 翻译、摘要、T5 类模型 | Encoder 双向 self-attention；Decoder masked self-attention + cross-attention | Decoder 自回归生成 |
-| Encoder-only | BERT 类理解模型 | 双向 self-attention，可以看左右上下文 | 输出每个位置或整体表示 |
-| Decoder-only | GPT、LLaMA 类语言模型 | masked self-attention，只能看当前位置和历史位置 | 逐 token 预测下一个 token |
+这个“查看上下文”的机制叫 Attention。
 
-对 AI Infra 来说，最常遇到的是 **Decoder-only LLM**，因为它对应在线推理中的 prefill、decode、KV Cache、batching 和长上下文问题。但理解 Encoder-Decoder 有助于读原始论文和很多教程。
+## 总体流程
 
-## 总体数据流
-
-以 Decoder-only 语言模型为例，推理时的数据流如下：
+以大语言模型生成为例，Transformer 的主流程如下：
 
 ```mermaid
 flowchart TD
-  A["文本 Prompt"] --> B["Tokenizer"]
-  B --> C["Token IDs<br/>shape: [B, S]"]
-  C --> D["Token Embedding<br/>shape: [B, S, D]"]
-  D --> E["位置信息<br/>Position Embedding / RoPE"]
-  E --> F0
-
-  subgraph BLOCK["Transformer Block × L（重复堆叠）"]
-    direction TB
-    F0["输入 Hidden States<br/>shape: [B, S, D]"] --> F1["Norm<br/>LayerNorm / RMSNorm"]
-    F1 --> F2["Masked Multi-Head Self-Attention<br/>跨 token 读取上下文"]
-    F2 --> F3["Residual Add"]
-    F3 --> F4["Norm<br/>LayerNorm / RMSNorm"]
-    F4 --> F5["MLP / FFN<br/>逐 token 非线性变换"]
-    F5 --> F6["Residual Add<br/>输出 Hidden States"]
-  end
-
-  F6 --> G["Final Norm"]
-  G --> H["LM Head<br/>shape: [B, S, Vocab]"]
-  H --> I["Logits"]
-  I --> J["Sampling / Greedy / Beam Search"]
-  J --> K["下一个 token"]
-  K --> L["接回上下文<br/>继续 decode，直到停止"]
+  A["输入文本"] --> B["Tokenizer<br/>切成 token"]
+  B --> C["Token ID<br/>把 token 变成编号"]
+  C --> D["Embedding<br/>把编号变成向量"]
+  D --> E["加入位置信息<br/>让模型知道顺序"]
+  E --> F["Transformer Block<br/>读取上下文并更新表示"]
+  F --> G["重复很多层"]
+  G --> H["输出分数 Logits"]
+  H --> I["选择下一个 token"]
+  I --> J["接回上下文<br/>继续生成"]
 ```
 
-其中：
+下面按步骤解释。
 
-- `B` 是 batch size。
-- `S` 是 sequence length。
-- `D` 是 hidden size，也叫 `d_model`。
-- `L` 是 Transformer block 层数。
-- `Vocab` 是词表大小。
+## 第一步：文本变成 token
 
-## Token、Embedding 和位置信息
-
-模型不能直接处理文本，第一步是 tokenizer 把文本切成 token，并映射成整数 ID。
+模型不能直接处理文字，所以先把文本切成 token，再把 token 变成数字编号。
 
 ```text
-"Transformer 很重要"
-  -> ["Transformer", " 很", "重要"]
-  -> [15342, 421, 9231]
+我喜欢 AI -> 我 / 喜欢 / AI -> 128 / 5632 / 9021
 ```
 
-Embedding 层是一个查表：
+这一步的意义是：把人类文字变成模型可以处理的离散编号。
+
+## 第二步：token 变成向量
+
+编号本身没有语义，所以模型会把每个 token id 转成向量，这叫 embedding。
 
 ```text
-embedding_table: [Vocab, D]
-token_ids:       [B, S]
-output:          [B, S, D]
+token id -> embedding vector
 ```
 
-每个 token ID 会查到一个 `D` 维向量。到这一步，模型知道“每个位置是什么 token”，但还不知道“它在第几个位置”。
+可以把向量理解成 token 的“数字化含义”。训练之后，模型会学到哪些 token 在语义和用法上更接近。
 
-Self-Attention 本身对顺序不敏感。如果把输入 token 打乱，只看一组向量之间的相似度，模型不能天然知道谁在前谁在后。因此 Transformer 需要加入位置信息。常见方式包括：
+## 第三步：加入位置信息
 
-- **Sinusoidal positional encoding**：原始论文使用的正弦/余弦位置编码。
-- **Learned positional embedding**：位置向量也作为参数学习。
-- **RoPE**：现代 LLM 常见的旋转位置编码，便于建模相对位置。
-
-在工程上，你会经常看到两类写法：
+Transformer 看到的是一组向量。如果不告诉它顺序，它很难区分：
 
 ```text
-x = token_embedding + position_embedding
+我 喜欢 AI
+AI 喜欢 我
 ```
 
-或在 Attention 里对 Q/K 注入 RoPE。
+这两个句子 token 相同，但顺序不同，含义完全不同。所以模型需要位置信息，让它知道每个 token 在第几个位置。
 
-## Self-Attention 的直觉
+## 第四步：Attention 读取上下文
 
-Self-Attention 回答的问题是：
+Attention 是 Transformer 最核心的直觉。
 
-> 当我更新当前位置的表示时，应该从哪些上下文位置读取信息？各读多少？
+当模型更新某个 token 的表示时，它会问：
+
+> 我现在这个位置，应该重点看上下文里的哪些 token？
 
 例如句子：
 
 ```text
-The animal didn't cross the street because it was tired.
+这只猫跳上桌子，因为它很饿。
 ```
 
-当模型处理 `it` 时，它需要知道 `it` 更可能指向 `animal`，而不是 `street`。Self-Attention 允许 `it` 这个位置直接查看上下文中其他位置，并根据相关性加权读取信息。
+当模型处理“它”时，需要知道“它”更可能指“猫”，不是“桌子”。Attention 就是在帮助模型给上下文分配重要程度。
 
-对第 `i` 个位置，可以把 Attention 理解成：
+可以这样理解：
 
 ```text
-第 i 个位置的新表示
-  = 对所有可见位置 j 的 value 向量做加权求和
+当前位置：它
+可看的上下文：这只猫 / 跳上 / 桌子 / 因为 / 它
+模型判断：这只猫 更重要
 ```
 
-权重不是固定参数，而是由当前位置和候选位置的内容动态算出来。
+为什么这件事可行？因为每个 token 都已经变成了向量。向量之间可以比较相似程度。训练会让模型逐渐学会：什么样的上下文关系应该被关注。
 
-## Attention 在做什么
+## Q、K、V 是什么
 
-给定输入 `X: [B, S, D]`，Attention 会用三组线性投影生成 Q、K、V：
+很多教程会说 Attention 里有 Q、K、V。入门时可以先用一个简单类比：
 
-```text
-Q = X Wq    # Query
-K = X Wk    # Key
-V = X Wv    # Value
-```
+| 名字 | 可以怎么理解 |
+| --- | --- |
+| Q，Query | 当前位置想找什么信息。 |
+| K，Key | 每个上下文位置提供什么匹配线索。 |
+| V，Value | 如果某个位置被关注，真正读走的内容。 |
 
-可以用一个检索类比理解：
+例如处理“它”时：
 
-- `Q`：当前位置想查什么。
-- `K`：每个位置提供什么匹配线索。
-- `V`：如果被关注，真正被读走的内容。
+- Query 像是在问：“我指的是谁？”
+- Key 像是每个词挂出的标签：“我是猫”“我是桌子”。
+- Value 像是被读走的实际信息。
 
-但要注意：Q/K/V 不是人工设计的数据库字段，而是模型通过训练学出来的线性变换结果。
+模型会比较 Query 和各个 Key，决定关注比例，再把对应 Value 加权合起来。
 
-Attention 的核心公式是：
+不需要把 Q、K、V 当成人手写的规则。它们本质上仍然是模型训练出来的数字变换。
 
-```text
-scores = Q K^T / sqrt(d_head)
-weights = softmax(scores + mask)
-output = weights V
-```
+## Multi-Head Attention 是什么
 
-含义是：
+一个 Attention 头可以从一种角度看上下文。多个头可以理解成“多种观察角度”。
 
-1. `QK^T` 计算每个 query 位置和每个 key 位置的匹配分数。
-2. 除以 `sqrt(d_head)` 是缩放，避免点积值过大导致 softmax 梯度不稳定。
-3. `mask` 用于屏蔽 padding 或未来 token。
-4. `softmax` 把分数变成权重。
-5. 权重乘以 `V`，得到每个位置从上下文读到的新信息。
+例如同一句话里：
 
-## 用 3 个 token 走一遍 Self-Attention
+- 一个头可能更关注前后相邻的词。
+- 一个头可能更关注代词指向谁。
+- 一个头可能更关注标点、结构或格式。
 
-为了避免公式太抽象，先用一个短序列做心智模型：
+这只是帮助理解的说法。真实模型里每个头学到什么，不一定能被人清楚命名。
 
-```text
-tokens = [我, 喜欢, AI]
-hidden = [x0, x1, x2]
-```
+入门时只要记住：
 
-假设现在要更新位置 2，也就是 `AI` 这个 token 的表示。
-
-第一步，每个位置都会从自己的 hidden state 生成 Q、K、V：
-
-```text
-x0 -> q0, k0, v0
-x1 -> q1, k1, v1
-x2 -> q2, k2, v2
-```
-
-第二步，用当前位置的 query `q2` 去匹配所有可见位置的 key：
-
-```text
-score(2, 0) = q2 dot k0
-score(2, 1) = q2 dot k1
-score(2, 2) = q2 dot k2
-```
-
-第三步，对这些分数做缩放、mask 和 softmax，得到权重：
-
-```text
-weights(2) = [0.20, 0.30, 0.50]
-```
-
-第四步，用权重加权求和 value：
-
-```text
-z2 = 0.20 * v0 + 0.30 * v1 + 0.50 * v2
-```
-
-`z2` 就是位置 2 从上下文读取后的新信息。它会再经过 output projection、residual add、norm 和 MLP，变成下一层的输入。
-
-注意两个关键点：
-
-- 对位置 2 来说，attention 权重是一行分布：它表示位置 2 读取各个历史位置的比例。
-- 实际实现不会用 Python for-loop 一个 token 一个 token 算，而是把所有位置打包成矩阵，一次性算出 `QK^T`。
-
-## 张量形状：从 X 到 Attention 输出
-
-假设：
-
-- `B = batch size`
-- `S = sequence length`
-- `D = hidden size`
-- `H = num_heads`
-- `Dh = D / H`
-
-典型 Multi-Head Attention 的形状如下：
-
-| 张量 | 形状 | 含义 |
-| --- | --- | --- |
-| `X` | `[B, S, D]` | 输入 hidden states |
-| `Q, K, V` | `[B, S, D]` | 一次线性层后通常仍是 D 维 |
-| reshape 后 | `[B, H, S, Dh]` | 拆成多个 head |
-| `QK^T` | `[B, H, S, S]` | 每个 head 的注意力分数矩阵 |
-| `softmax` 后 | `[B, H, S, S]` | 每个 query 对所有 key 的权重 |
-| `weights V` | `[B, H, S, Dh]` | 每个 head 的输出 |
-| concat 后 | `[B, S, D]` | 多个 head 拼回 hidden size |
-| output projection | `[B, S, D]` | 经过 `Wo` 混合多个 head |
-
-这张表对性能分析非常重要：`[B, H, S, S]` 说明 prefill 阶段的注意力分数矩阵会随序列长度平方增长。
-
-## Causal Mask：为什么 Decoder 不能看未来
-
-语言模型训练目标通常是预测下一个 token。
-
-```text
-输入:  [我, 喜欢, AI]
-目标:  [喜欢, AI, <eos>]
-```
-
-训练时为了并行，模型会一次性看到整段序列。但预测第 `i` 个位置时不能偷看第 `i+1` 个位置，否则训练目标就泄漏了答案。
-
-Decoder-only 模型使用 causal mask：
-
-```text
-位置 0 只能看 0
-位置 1 只能看 0, 1
-位置 2 只能看 0, 1, 2
-...
-```
-
-矩阵上就是屏蔽右上三角。被屏蔽的位置在 softmax 前通常被加上一个极小值，使其权重接近 0。
-
-## Multi-Head Attention 为什么需要多个头
-
-单个 attention head 会产生一套权重分布。Multi-Head Attention 则把 hidden size 分成多个子空间，让多个 head 并行做 Attention：
-
-```text
-head_1 = Attention(Q Wq_1, K Wk_1, V Wv_1)
-head_2 = Attention(Q Wq_2, K Wk_2, V Wv_2)
-...
-output = Concat(head_1, ..., head_H) Wo
-```
-
-直观上，不同 head 可以学习不同关系：
-
-- 一个 head 关注当前位置附近的词。
-- 一个 head 关注主语和谓语。
-- 一个 head 关注括号、代码缩进或引用关系。
-
-这只是帮助理解的类比。实际模型中，head 的功能由训练数据和目标函数共同决定，不一定能被简单命名。
-
-系统视角下，如果总 hidden size `D` 固定，多头通常不是把计算量乘以 `H`，因为每个 head 的维度是 `Dh = D / H`。但是 head 数会影响张量布局、并行粒度、Kernel 实现和 KV Cache 排布。
+> Multi-Head Attention 让模型可以从多个角度同时读取上下文。
 
 ## MLP 在做什么
 
-Attention 负责 token 之间的信息交互；MLP/FFN 负责对每个 token 的表示做非线性变换。
+Attention 负责“看上下文”。MLP 负责“消化和变换当前 token 的表示”。
 
-原始 Transformer 的 FFN 是：
-
-```text
-FFN(x) = LinearDown(Activation(LinearUp(x)))
-```
-
-典型形状：
+可以粗略理解成：
 
 ```text
-[B, S, D]
-  -> LinearUp:   [B, S, Dff]
-  -> Activation: [B, S, Dff]
-  -> LinearDown: [B, S, D]
+Attention：这个 token 应该参考哪些上下文？
+MLP：参考完之后，这个 token 自己的表示应该怎么更新？
 ```
 
-`Dff` 通常比 `D` 大，例如 4 倍。现代 LLM 常用 SwiGLU / GeGLU 等门控 MLP 变体，但主线仍然是“升维 -> 激活/门控 -> 降维”。
+Attention 让 token 之间交换信息；MLP 对每个 token 自己的表示做进一步处理。
 
-注意 MLP 是 **逐位置独立** 的：第 `i` 个 token 的 MLP 不直接读取第 `j` 个 token。跨 token 的信息交换主要发生在 Attention。
+## 残差连接和归一化为什么需要
 
-系统视角下：
+Transformer 会堆很多层。如果每一层都直接大幅改写信息，模型可能训练不稳定，也容易丢掉原始信息。
 
-- MLP 主要是大 GEMM，通常更偏 compute-bound。
-- Attention 涉及 QK、softmax、mask、PV 和 KV Cache，更容易受显存带宽、layout 和 kernel fusion 影响。
-- LayerNorm、RMSNorm、RoPE、residual add 等算子单次计算量不大，但在 decode 小 batch 场景中也可能显著影响延迟。
-
-## Residual 和 LayerNorm 为什么重要
-
-Transformer block 会堆很多层。深层网络训练时容易出现梯度不稳定，所以每个子层周围通常有：
+残差连接可以理解成：
 
 ```text
-x -> Sublayer -> + x -> Norm
+新结果 = 原来的信息 + 本层新学到的信息
 ```
 
-或现代 LLM 更常见的 Pre-Norm：
+这样模型不会轻易把旧信息完全覆盖。
+
+归一化可以理解成：把每一层的数字范围整理得更稳定，避免数值变得忽大忽小。
+
+入门时不用掌握细节，只要知道它们是为了让深层模型更容易训练、更稳定。
+
+## 一个 Transformer Block 做什么
+
+一个常见的 Transformer Block 可以理解成：
 
 ```text
-x -> Norm -> Sublayer -> + x
+输入 token 表示
+  -> 用 Attention 读取上下文
+  -> 加回原信息
+  -> 用 MLP 做进一步变换
+  -> 再加回原信息
+  -> 输出更新后的 token 表示
 ```
 
-Residual connection 让信息和梯度可以跨过子层直接流动。LayerNorm/RMSNorm 则稳定每个 token 的 hidden state 分布。
+模型会把这个 Block 重复很多层。层数越往后，每个 token 的表示就融合了越多上下文信息。
 
-原始 Transformer 使用 Add & Norm，也就是 Post-Norm；很多现代大模型为了更稳定地训练深层网络，使用 Pre-Norm 或 RMSNorm。
+## 最后如何生成下一个 token
 
-## 一个 Decoder-only Block 的完整流程
+经过多层 Transformer 后，模型会得到当前位置的最终表示。然后它会给词表里每个候选 token 打分。
 
-现代 Decoder-only LLM 的一个 block 可以概括为：
+例如：
 
 ```text
-输入 x: [B, S, D]
-
-1. Attention 子层
-   a = Norm(x)
-   q, k, v = Linear(a)
-   q, k = apply_position_info(q, k)  # 例如 RoPE
-   attn_out = CausalSelfAttention(q, k, v)
-   x = x + OutputProjection(attn_out)
-
-2. MLP 子层
-   m = Norm(x)
-   mlp_out = MLP(m)
-   x = x + mlp_out
-
-输出 x: [B, S, D]
+前文：北京是中国的
+候选：首都 / 城市 / 苹果 / 昨天
 ```
 
-堆叠 `L` 层后，每个 token 的向量已经多次读取上下文，并经过多次非线性变换。最后 LM Head 把 hidden state 映射到词表维度：
+模型会输出一组分数，表示哪个 token 更可能接在后面。推理阶段再从这些候选里选出一个 token，接回上下文，继续生成。
 
-```text
-logits = hidden @ W_vocab^T
-```
+## 常见误解
 
-推理时通常只关心最后一个位置的 logits，因为它决定下一个 token。
+### Transformer 不是直接“理解文字”
 
-## Training、Prefill、Decode 的区别
+它处理的是 token 编号和向量，不是直接处理人类文字。所谓理解，是训练后形成的统计规律和表示能力。
 
-Transformer 的同一套结构，在训练和推理时运行方式不同。
+### Attention 不是固定规则
 
-### 训练
+Attention 不是人手写“代词必须看主语”。模型是在训练中自己学到哪些上下文关系有用。
 
-训练时通常用 teacher forcing。模型一次性处理一整段 token，并在每个位置预测下一个 token。
+### Transformer 不只是一层 Attention
 
-```text
-输入:  [t0, t1, t2, t3]
-目标:  [t1, t2, t3, t4]
-```
+完整 Block 里还有 MLP、残差连接、归一化等结构。Attention 很重要，但不是全部。
 
-因为有 causal mask，所以每个位置不能看未来，但所有位置可以并行计算 loss。训练的主要显存压力来自：
+## 读完应该能回答
 
-- 参数。
-- activation。
-- gradient。
-- optimizer state。
-- attention 中间张量。
-
-训练时真正被学习的是模型参数，包括 embedding、Q/K/V 投影矩阵、MLP 权重、Norm 参数和 LM Head。模型先根据当前参数给出下一个 token 的概率分布，再用目标 token 计算 loss，最后通过反向传播更新这些参数。经过大量样本后，Q/K/V 投影会逐渐学会“什么样的 token 应该匹配什么上下文”，MLP 会学会对每个位置的表示做更复杂的变换。
-
-推理时参数不再更新。模型只是重复执行前向计算：读入 prompt，得到 logits，采样下一个 token，把新 token 接回输入，再继续。
-
-### Prefill
-
-在线推理时，用户先给一个 prompt。模型需要一次性处理整段 prompt，这叫 prefill。
-
-```text
-prompt: [t0, t1, ..., tS]
-输出: 最后位置的 logits
-同时保存每层 K/V 到 KV Cache
-```
-
-Prefill 的 Attention 会处理长度为 `S` 的序列，计算量和 `S^2` 强相关，但矩阵较大，比较容易利用 GPU 并行。
-
-### Decode
-
-生成第一个新 token 后，模型继续生成下一个 token。每次 decode 通常只输入一个新 token。
-
-```text
-新 token -> 生成 Q
-历史 token 的 K/V 从 KV Cache 读取
-Q attend to all cached K/V
-输出下一个 token
-```
-
-Decode 每步计算量比 prefill 小，但要重复很多次，并且需要不断读取 KV Cache。对于长上下文和大 batch，decode 很容易变成显存带宽和调度问题。
-
-## KV Cache 是什么
-
-在自回归生成中，历史 token 的 K/V 不会变。没有 KV Cache 时，每生成一个新 token 都要重新计算整个历史序列的 K/V，代价很高。
-
-KV Cache 保存每一层、每个历史 token 的 K 和 V：
-
-```text
-K cache: [L, B, H, S, Dh]
-V cache: [L, B, H, S, Dh]
-```
-
-粗略显存估算：
-
-```text
-KV Cache bytes ~= 2 * L * B * S * D * bytes_per_element
-```
-
-这里的 `2` 来自 K 和 V。这个公式解释了为什么：
-
-- 上下文越长，KV Cache 越大。
-- batch 越大，KV Cache 越大。
-- 层数和 hidden size 越大，KV Cache 越大。
-- FP16/BF16 比 FP32 省一半，FP8/量化 KV Cache 还能继续降低压力。
-
-## 为什么 Transformer 对 Infra 很重要
-
-从系统角度看，Transformer 不是一个抽象模型，而是一组非常具体的工作负载。
-
-| 模块 | 主要算子 | 常见瓶颈 | 优化方向 |
-| --- | --- | --- | --- |
-| Embedding | gather / lookup | 随机访存、cache miss | layout、缓存、并行读取 |
-| QKV Projection | GEMM | 算力利用率 | Tensor Core、融合 QKV |
-| Attention Scores | QK GEMM | `S^2` 计算和中间矩阵 | FlashAttention、tiling、mask fusion |
-| Softmax | exp / reduce | 内存访问、数值稳定 | online softmax、fusion |
-| Attention Output | PV GEMM | 带宽和算力 | tiling、layout |
-| RoPE / Norm / Residual | elementwise | 小算子开销 | kernel fusion |
-| MLP | GEMM + activation | 算力、显存带宽 | Tensor Core、SwiGLU fusion、quantization |
-| LM Head | GEMM / top-k | 大词表输出 | vocab parallel、采样优化 |
-| KV Cache | read/write | 显存容量和带宽 | paged attention、cache quantization、调度 |
-
-这也是为什么后续会学习 FlashAttention、Triton、TorchInductor、Tensor Core、HBM、interconnect、batching 和 serving scheduler。
-
-## 常见误区
-
-### 误区 1：Transformer 只有 Attention
-
-Attention 很关键，但 MLP、Residual、Norm、位置编码、训练目标都很重要。很多参数和计算量集中在 MLP 上。
-
-### 误区 2：Attention 权重就是完整解释
-
-Attention 权重能提示模型在某层某头关注了哪里，但不能直接等同于“模型为什么做出这个预测”。真正的表示会经过多层、多头、MLP 和 residual stream 混合。
-
-### 误区 3：Encoder-Decoder 和 GPT 是同一个结构
-
-原始 Transformer 是 Encoder-Decoder。GPT/LLaMA 这类模型通常是 Decoder-only，去掉 cross-attention，只保留 masked self-attention 和 MLP。
-
-### 误区 4：训练和推理性能是一回事
-
-训练通常大 batch、大矩阵、需要 backward 和 optimizer。推理分 prefill 和 decode；decode 小步迭代、依赖 KV Cache，瓶颈经常完全不同。
-
-### 误区 5：长上下文只是多放一些 token
-
-长上下文会同时放大 prefill 计算、attention 中间状态、KV Cache 容量和 decode 读带宽。它是模型能力问题，也是系统问题。
-
-## 关键问题
-
-- 当前模型是 Encoder-only、Decoder-only 还是 Encoder-Decoder。
-- 当前问题发生在训练、prefill 还是 decode。
-- 当前瓶颈来自 Attention、MLP、Embedding、Norm、LM Head 还是 KV Cache。
-- `B`、`S`、`D`、`H`、`L`、precision 如何改变计算量、显存和带宽。
-- Attention kernel 是否避免了物化完整 `[B, H, S, S]` 矩阵。
-- KV Cache 的 layout 是否适合当前 batch、beam、paged allocation 和并发调度。
-- 小算子是否被融合，是否存在 launch overhead。
-- 当前 shape 是否能让 Tensor Core、编译器和调度器跑满。
-
-## 推荐阅读顺序
-
-1. 先读 [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)：用图理解 encoder、decoder、Q/K/V、多头和位置编码。
-2. 再读 [The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html)：把论文结构对应到可运行代码。
-3. 再读 [Transformers from Scratch](https://peterbloem.nl/blog/transformers)：从最小 self-attention 和 PyTorch 实现理解矩阵化。
-4. 再读 [The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/)：理解 Decoder-only 语言模型、masked self-attention 和逐 token 生成。
-5. 需要系统化教材时，读 [Dive into Deep Learning: Transformer Architecture](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html)。
-6. 想补 Attention 历史和变体时，读 [Lilian Weng: Attention? Attention!](https://lilianweng.github.io/posts/2018-06-24-attention/)。
-
-## 参考资料
-
-- [Attention Is All You Need](https://arxiv.org/abs/1706.03762), Vaswani et al., 2017.
-- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/), Jay Alammar.
-- [The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html), Harvard NLP.
-- [Transformers from Scratch](https://peterbloem.nl/blog/transformers), Peter Bloem.
-- [The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/), Jay Alammar.
-- [Dive into Deep Learning: The Transformer Architecture](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html).
-- [Attention? Attention!](https://lilianweng.github.io/posts/2018-06-24-attention/), Lilian Weng.
+- Transformer 为什么需要上下文。
+- token 为什么要变成 embedding 向量。
+- 位置信息为什么必要。
+- Attention 为什么可以理解成“按重要程度读取上下文”。
+- Q、K、V 大概分别代表什么。
+- 一个 Transformer Block 大致由哪些步骤组成。
 
 ---
 
@@ -904,70 +734,168 @@ domain: training-primer
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # 训练过程与原理
 
-训练的目标是让模型参数逐步变得更适合目标数据。AI Infra 关注的是训练如何消耗计算、显存、网络和存储，以及如何把训练过程稳定、可复现地跑起来。
+训练就是让模型从大量例子中学规律。可以先把它理解成：
+
+> 模型先猜答案，系统计算它错得多离谱，再根据错误调整参数，重复很多次。
+
+本页只讲基本原理和流程，不展开分布式训练、显存优化和工程细节。
+
+## 训练要解决什么问题
+
+刚初始化的模型参数几乎是乱的，所以它一开始很容易胡乱预测。
+
+训练的目标是让模型在大量样本上逐渐学会：
+
+- 看到前文，预测合理的后文。
+- 看到问题，生成像回答的内容。
+- 看到代码上下文，补出更可能的代码。
+- 看到一段材料，学会总结、改写或翻译的语言模式。
+
+对大语言模型来说，最基本的训练任务通常是：
+
+> 给定前面的 token，预测下一个 token。
 
 ## 单步训练流程
 
-```text
-读取 batch
-  -> tokenizer / data loader
-  -> forward
-  -> loss
-  -> backward
-  -> gradient sync
-  -> optimizer step
-  -> checkpoint / logging
+```mermaid
+flowchart TD
+  A["准备训练样本"] --> B["切成 token"]
+  B --> C["模型前向计算<br/>先做预测"]
+  C --> D["计算 loss<br/>衡量错得多严重"]
+  D --> E["反向传播<br/>找出参数该怎么改"]
+  E --> F["优化器更新参数<br/>每次只改一点点"]
+  F --> G["重复很多轮"]
 ```
 
-## Forward
+下面逐步解释。
 
-Forward 是模型从输入 token 计算 logits 和 loss 的过程。训练时不仅要算出结果，还要保存大量中间 activation，供 backward 计算梯度。
+## 第一步：准备训练样本
 
-系统影响：
+训练样本可以先理解成很多段文本。模型会从这些文本里学习语言规律。
 
-- activation 会占用大量显存。
-- sequence length 和 batch size 越大，显存和计算压力越大。
-- activation checkpointing 可以省显存，但会增加重算开销。
+例如一句话：
 
-## Backward
+```text
+北京是中国的首都。
+```
 
-Backward 根据 loss 计算每个参数的 gradient。它通常比 forward 更耗时，并且会产生梯度张量。
+训练时可以把它变成“根据前文预测后文”的任务：
 
-系统影响：
+```text
+看到：北京 是 中国 的
+应该预测：首都
+```
 
-- gradient 需要显存。
-- 多 GPU 训练需要同步 gradient。
-- 通信库、网络拓扑和并行策略会影响 step time。
+真实训练会同时处理大量 token，但入门时先理解这个小例子就够了。
 
-## Optimizer
+## 第二步：模型先做预测
 
-Optimizer 用 gradient 更新参数。Adam 这类优化器会保存额外状态，例如一阶矩和二阶矩。
+模型拿到输入后，会给所有可能的下一个 token 打分。
 
-系统影响：
+例如它可能猜：
 
-- optimizer state 可能比参数本身还占显存。
-- ZeRO、FSDP 会切分参数、梯度和 optimizer state。
-- checkpoint 需要保存参数和优化器状态，带来存储压力。
+```text
+首都：0.70
+城市：0.20
+苹果：0.01
+```
 
-## 并行训练为什么复杂
+如果正确答案是“首都”，这个预测就还不错。如果模型把“苹果”概率给得很高，就说明它错得比较离谱。
 
-单卡放不下或太慢时，需要并行：
+## 第三步：用 loss 衡量错误
 
-- Data Parallel：每张卡处理不同 batch，梯度同步。
-- Tensor Parallel：把单层矩阵计算切到多张卡。
-- Pipeline Parallel：把不同层放到不同卡。
-- Expert Parallel：MoE 中不同 expert 分布到不同卡。
+loss 可以理解成“错误程度”。
 
-## 关键问题
+```text
+正确答案概率高 -> loss 小
+正确答案概率低 -> loss 大
+```
 
-- step time 主要花在 forward、backward、通信还是数据读取。
-- 显存主要被参数、activation、gradient 还是 optimizer state 占用。
-- 并行策略是否带来过多通信或 pipeline bubble。
-- checkpoint、resume、随机性和版本是否支持复现。
+训练不是只知道“对”或“错”，而是要知道错得有多严重。这样系统才知道是否需要大幅调整。
+
+## 第四步：反向传播找到调整方向
+
+模型里有很多参数。问题是：预测错了以后，到底该改哪些参数？
+
+反向传播就是用来回答这个问题的。它会从 loss 出发，沿着模型计算过程往回看，估计每个参数对错误的影响。
+
+可以用一个直觉理解：
+
+> 如果某些参数让正确答案分数变低了，就应该把它们往相反方向调一点；如果某些参数让正确答案分数变高了，就应该保留或加强这种趋势。
+
+这个“该往哪个方向调”的信息叫梯度。
+
+不需要先掌握微积分，只要知道：
+
+> 梯度告诉模型参数应该朝哪个方向小幅移动，才更可能让下一次 loss 变小。
+
+## 第五步：优化器更新参数
+
+有了梯度，还需要优化器真正修改参数。
+
+优化器不会一次把参数改得特别大，因为改太大可能越改越差。它通常每次只走一小步：
+
+```text
+旧参数 -> 按梯度方向小幅调整 -> 新参数
+```
+
+然后模型再看下一批样本，再预测、再算 loss、再调整。这个过程会重复非常多次。
+
+## 为什么训练理论上可行
+
+训练之所以可行，核心原因是：
+
+1. 模型的输出由参数决定。
+2. loss 能衡量当前输出和正确答案的差距。
+3. 反向传播能估计每个参数应该往哪个方向改。
+4. 小步多次调整后，模型会逐渐更适合训练数据里的规律。
+
+这不意味着模型真的“像人一样理解世界”。更准确地说，它是在大量数据中学到能帮助预测的统计规律和表示方式。
+
+## 为什么需要很多数据和很多轮
+
+单个样本只能告诉模型很少的信息。模型如果只记住少量样本，就容易变成死记硬背。
+
+大量数据的作用是让模型看到足够多的语言场景：
+
+- 同一个词在不同上下文里的用法。
+- 问答、翻译、代码、数学等不同格式。
+- 长句、短句、正式语气、口语表达。
+
+很多轮训练的作用是让参数逐步稳定下来。每一步只改一点点，长期累积后才形成有用能力。
+
+## 验证集是什么
+
+训练时不能只看模型在训练样本上表现好不好。因为模型可能只是记住了训练数据，而不是学到一般规律。
+
+所以通常会留出一部分数据作为验证集。模型不直接用验证集更新参数，只用它检查：
+
+- 模型是否真的在变好。
+- 是否开始过度记忆训练数据。
+- 训练是否出现异常。
+
+## 训练完成后得到什么
+
+训练结束后，最重要的产物是一组模型参数。
+
+推理阶段会加载这些参数，并保持它们固定。也就是说：
+
+```text
+训练：不断修改参数
+推理：使用固定参数
+```
+
+## 读完应该能回答
+
+- 训练为什么可以理解成“先猜、算错、再调整”。
+- loss 为什么能表示模型错得多严重。
+- 反向传播为什么用于找到参数调整方向。
+- 优化器为什么每次只小步更新。
+- 为什么训练需要大量数据和反复迭代。
 
 ---
 
@@ -979,116 +907,177 @@ domain: inference-primer
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 
 # 推理过程与原理
 
-推理是模型参数固定后，根据输入生成输出的过程。AI Infra 关注的是如何让推理低延迟、高吞吐、低成本、稳定且可观测。
+推理就是使用已经训练好的模型来生成结果。
 
-## 自回归生成流程
+训练时模型参数会不断变化；推理时参数已经固定。用户输入一段 prompt，模型根据已学到的规律预测输出。
 
-大语言模型通常按 token 逐个生成：
+## 推理在做什么
 
-```text
-prompt
-  -> tokenize
-  -> prefill
-  -> decode token 1
-  -> decode token 2
-  -> ...
-  -> detokenize
+大语言模型最基本的推理方式是：
+
+> 根据已有上下文，预测下一个 token；把这个 token 接回上下文，再预测下一个 token。
+
+所以大模型生成回答不是一次性把整段文字吐出来，而是一个 token 一个 token 生成。
+
+## 总体流程
+
+```mermaid
+flowchart TD
+  A["用户输入 Prompt"] --> B["Tokenizer<br/>切成 token"]
+  B --> C["模型读取上下文"]
+  C --> D["预测下一个 token 的概率"]
+  D --> E["选择一个 token"]
+  E --> F["把新 token 接回上下文"]
+  F --> G{"是否结束？"}
+  G -- "否" --> C
+  G -- "是" --> H["Detokenizer<br/>还原成文本"]
 ```
 
-每生成一个新 token，模型都会根据已有上下文预测下一个 token 的概率分布，然后通过 greedy、top-k、top-p、temperature 等采样策略选出 token。
+下面按步骤解释。
 
-## Prefill
+## 第一步：输入 prompt
 
-Prefill 处理完整 prompt，计算所有输入 token 的表示，并建立 KV Cache。
+prompt 就是用户给模型的输入。
 
-系统特征：
+例如：
 
-- 适合较大的矩阵计算。
-- prompt 越长，prefill 越重。
-- TTFT 很大程度受 prefill、排队和调度影响。
+```text
+请解释什么是 Transformer。
+```
 
-## Decode
+prompt 会影响模型后续生成什么内容。你给的信息越清楚，模型越容易生成符合预期的回答。
 
-Decode 每次生成一个 token，并复用历史 KV Cache。
+## 第二步：切成 token
 
-系统特征：
+和训练一样，推理时模型也不能直接处理文字。系统会先把 prompt 切成 token，再变成 token id。
 
-- 每一步计算规模小，但需要频繁访问 KV Cache。
-- 容易受显存带宽、调度和 batch 形态影响。
-- TPOT 主要反映 decode 阶段效率。
+```text
+请解释什么是 Transformer
+-> 请 / 解释 / 什么 / 是 / Transformer
+-> 101 / 2389 / 450 / 77 / 9021
+```
 
-## KV Cache
+这些编号会进入模型计算。
 
-KV Cache 保存历史 token 的 key/value，避免每次 decode 重新计算全部历史上下文。
+## 第三步：模型读取上下文
 
-系统影响：
+模型会把 prompt 里的 token 转成向量，并通过 Transformer 读取上下文。
 
-- 长上下文和高并发会让 KV Cache 占用大量显存。
-- PagedAttention、prefix cache、cache eviction 都围绕 KV Cache 管理展开。
-- KV Cache layout 会影响内存访问效率和 Kernel 性能。
+这一步的作用是让模型形成一个内部表示，大概知道：
 
-## Batching
+- 用户在问什么。
+- 前文出现了哪些关键词。
+- 现在应该接着生成哪类内容。
 
-推理服务会把多个请求合并运行，提高 GPU 利用率。
+## 第四步：预测下一个 token
 
-- Static batching 简单，但容易等待。
-- Dynamic batching 根据请求动态合并。
-- Continuous batching 允许请求在 decode 过程中加入或退出。
+模型不会直接输出一句完整的话。它会先预测下一个 token 的概率。
 
-## 关键指标
+例如 prompt 是：
 
-| 指标 | 含义 |
-| --- | --- |
-| TTFT | 从请求进入到第一个 token 返回的时间 |
-| TPOT | 每生成一个 token 的平均时间 |
-| Throughput | 单位时间生成的 token 或处理的请求 |
-| p95/p99 latency | 尾延迟，反映长尾体验 |
-| GPU memory | 权重和 KV Cache 等显存占用 |
+```text
+Transformer 是一种
+```
 
-## 关键问题
+模型可能认为：
 
-- 当前 workload 是 prefill-heavy、decode-heavy 还是混合负载。
-- 主要瓶颈是计算、显存容量、显存带宽、排队、调度还是网络。
-- batch size 和并发提升后，吞吐增加是否以尾延迟恶化为代价。
-- KV Cache 管理策略是否适合目标上下文长度和请求分布。
+```text
+模型：概率高
+架构：概率高
+水果：概率低
+```
 
----
+然后系统会从候选 token 里选一个。
 
-# Document: 数据与输入路径
+## 第五步：选择 token
 
-Source: docs/02-ai-workloads/data-paths.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/data-paths/
-domain: data-paths
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-05-30
+选择 token 有不同方式。
 
-# 数据与输入路径
+最简单的是永远选概率最高的 token，这叫 greedy。它稳定，但有时回答会比较死板。
 
-本页不讨论数据集如何提升任务指标，而关注数据如何进入训练和推理系统，以及数据路径如何成为性能瓶颈。
+也可以按概率随机选择，让结果更有变化。比如：
 
-## 建议主题
+- temperature 越高，随机性越强。
+- top-k 只从概率最高的 k 个候选里选。
+- top-p 只从累计概率较高的一组候选里选。
 
-- Tokenization、packing、padding、truncation
-- dynamic batching、bucketing、sequence packing
-- 数据格式：JSONL、Parquet、Arrow、WebDataset、二进制 shard
-- 训练数据读取、shuffle、prefetch、cache、NUMA 亲和性
-- 在线推理请求解析、输入校验、prompt 模板、上下文拼接
-- Embedding、检索、rerank、工具调用的额外数据路径
-- 对象存储、本地 NVMe、共享文件系统、数据缓存
+入门时只要知道：
 
-## 关键问题
+> 模型给出概率，采样策略决定最终选哪个 token。
 
-- 数据读取是否让 GPU 等待。
-- Padding 和动态 shape 是否浪费计算。
-- tokenizer、preprocess、postprocess 是否在 CPU 侧成为瓶颈。
-- 数据分片和 shuffle 是否影响可复现性和训练吞吐。
-- 推理服务中上下文拼接、检索和工具调用是否显著增加尾延迟。
+## 第六步：接回上下文，继续生成
+
+选出的 token 会被接回上下文。
+
+例如：
+
+```text
+原上下文：Transformer 是一种
+新 token：模型
+新上下文：Transformer 是一种 模型
+```
+
+然后模型根据新上下文继续预测下一个 token。这个过程不断循环，直到满足停止条件。
+
+## 为什么必须一个 token 一个 token 生成
+
+因为语言模型训练时学的是“根据前文预测下一个 token”。
+
+生成第 2 个 token 时，需要知道第 1 个 token 是什么；生成第 3 个 token 时，又需要知道前两个 token 是什么。
+
+所以输出是逐步展开的：
+
+```text
+第 1 步：生成 A
+第 2 步：根据 prompt + A 生成 B
+第 3 步：根据 prompt + A + B 生成 C
+```
+
+这就是自回归生成。
+
+## KV Cache 的直觉
+
+每次生成新 token 时，模型都需要参考前面的上下文。如果每一步都把所有历史 token 从头算一遍，会很浪费。
+
+所以推理系统通常会保存一部分已经算好的中间信息，下一步直接复用。这个保存下来的信息常叫 KV Cache。
+
+入门时可以把它理解成：
+
+> 模型生成时的“上下文计算备忘录”，用来避免每一步都从头重读历史。
+
+这里不展开它的显存、带宽和调度问题，这些属于后续推理系统和性能优化内容。
+
+## 什么时候停止
+
+模型生成会在某些条件下停止，例如：
+
+- 生成了特殊的结束 token。
+- 达到最大长度。
+- 应用层判断回答已经完整。
+- 用户或系统中断。
+
+停止后，系统会把 token 再转换回人能读的文本。
+
+## 推理和训练的区别
+
+| 对比项 | 训练 | 推理 |
+| --- | --- | --- |
+| 参数 | 会更新 | 固定不变 |
+| 目标 | 学规律 | 用规律生成输出 |
+| 是否有标准答案 | 通常有 | 通常没有 |
+| 核心动作 | 算 loss 并调整参数 | 预测并选择下一个 token |
+
+## 读完应该能回答
+
+- 推理为什么是使用固定参数生成结果。
+- prompt 为什么会影响输出。
+- 模型为什么通常逐 token 生成。
+- logits 和采样策略分别做什么。
+- KV Cache 可以先直观理解成什么。
 
 ---
 

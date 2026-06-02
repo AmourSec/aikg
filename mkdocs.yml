@@ -64,7 +64,6 @@ nav:
       - Transformer 流程与原理: 02-ai-workloads/transformer.md
       - 训练过程与原理: 02-ai-workloads/training-primer.md
       - 推理过程与原理: 02-ai-workloads/inference-primer.md
-      - 数据与输入路径: 02-ai-workloads/data-paths.md
   - 推理系统与服务优化:
       - 概览: 03-inference-systems/index.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md

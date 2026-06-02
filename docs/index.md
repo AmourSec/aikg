@@ -3,7 +3,7 @@ title: 首页
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 ---
 
 # AI Knowledge Graph
@@ -28,7 +28,7 @@ updated: 2026-05-30
 
 1. 从 `知识地图` 理解整体结构。
 2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`。
-3. 然后阅读 `AI 计算工作负载基础`，理解 Attention、KV Cache、MoE、batch、精度和数据搬运为什么影响性能。
+3. 然后阅读 `AI 计算工作负载基础`，先用浅显方式理解模型、Transformer、训练和推理为什么成立。
 4. 做推理方向重点阅读 `推理系统与服务优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
 5. 做训练和集群方向重点阅读 `训练系统与分布式计算`、`集群、网络、存储与调度`、`可靠性、可观测性与故障复盘`。
 6. 做硬件或算子方向重点阅读 `AI 加速器与计算架构`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
