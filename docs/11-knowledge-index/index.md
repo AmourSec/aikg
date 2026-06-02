@@ -4,7 +4,7 @@ domain: knowledge-index
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-02
 ---
 
 # 知识组织、模板与 AI 可读索引
@@ -33,6 +33,38 @@ updated: 2026-05-30
 | metrics | 使用的指标 |
 | source | 论文、代码、实验记录或故障单 |
 | status | draft / reviewed / verified / deprecated |
+
+## AI 可读入口
+
+本知识库同时维护面向 AI 的入口文件：
+
+| 文件 | 位置 | 作用 |
+| --- | --- | --- |
+| `llms.txt` | 仓库根目录与站点根路径 | 给 AI 的入口索引，说明知识库目标、推荐阅读路径、主要文档和 Markdown 源地址。 |
+| `llms-full.txt` | 仓库根目录与站点根路径 | 聚合 `docs/` 下 Markdown 文档，适合 AI 无法逐页抓取时一次性摄取上下文。 |
+
+推荐把下面几项一起提供给 AI：
+
+```text
+GitHub: https://github.com/AmourSec/aikg
+Docs: https://amoursec.github.io/aikg/
+LLM index: https://amoursec.github.io/aikg/llms.txt
+Full context: https://amoursec.github.io/aikg/llms-full.txt
+```
+
+建议提示语：
+
+```text
+请先读取 llms.txt，按其中的推荐路径理解知识库结构。
+需要完整上下文时读取 llms-full.txt。
+回答时优先引用仓库中的 Markdown 源路径。
+```
+
+当新增、删除或重排文档后，应重新生成 AI 入口文件：
+
+```bash
+python scripts/generate_llms_files.py
+```
 
 ## 关键问题
 

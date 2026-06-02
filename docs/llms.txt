@@ -1,0 +1,91 @@
+# AI Knowledge Graph
+
+> AI infrastructure and efficient computing knowledge base for systems-oriented graduate students, engineers, and AI-assisted retrieval.
+
+This repository is a public Markdown knowledge base rendered as a MkDocs site. Use `llms.txt` as the entry index and `llms-full.txt` when a single-file context dump is preferred.
+
+## Canonical Locations
+
+- [Documentation site](https://amoursec.github.io/aikg/): human-readable MkDocs site.
+- [GitHub repository](https://github.com/AmourSec/aikg): Markdown source, templates, configuration, and version history.
+- [Full LLM context](https://amoursec.github.io/aikg/llms-full.txt): aggregated Markdown source for AI ingestion.
+- [Knowledge map](https://amoursec.github.io/aikg/knowledge-map/): high-level map and navigation entry.
+
+## Recommended Reading Path
+
+1. Start with `首页` and `知识地图` to understand the scope and structure.
+2. Read `AI 基础概念`, `Transformer 流程与原理`, `训练过程与原理`, and `推理过程与原理` for baseline AI workload understanding.
+3. For efficient computing, move to `推理系统与服务优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
+4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, and the templates.
+
+## Primary Documents
+
+- [首页](https://amoursec.github.io/aikg/): 知识库首页，说明目标、写作原则和推荐阅读路径。
+- [AI 知识地图](https://amoursec.github.io/aikg/knowledge-map/): 面向人和 AI 的总览知识地图，适合先建立全局结构。
+- [入门导读](https://amoursec.github.io/aikg/01-getting-started/): 新读者入口，说明如何使用知识库。
+- [AI 计算工作负载基础](https://amoursec.github.io/aikg/02-ai-workloads/): AI 计算工作负载基础目录。
+- [AI 基础概念](https://amoursec.github.io/aikg/02-ai-workloads/ai-fundamentals/): AI 基础概念，面向刚入门读者。
+- [Transformer 流程与原理](https://amoursec.github.io/aikg/02-ai-workloads/transformer/): Transformer 流程、Q/K/V、训练与推理差异、KV Cache 和系统影响。
+- [训练过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/training-primer/): 训练过程、loss、backward、optimizer 和系统资源压力。
+- [推理过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/): 推理过程、prefill、decode、sampling 和服务阶段差异。
+- [数据与输入路径](https://amoursec.github.io/aikg/02-ai-workloads/data-paths/): 数据、token、batch shape、sequence length 和输入路径。
+- [推理系统与服务优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与服务优化主题入口。
+- [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
+- [训练系统与分布式计算](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与分布式计算主题入口。
+- [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
+- [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
+- [TorchInductor 与 PyTorch 编译栈](https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/): TorchInductor 与 PyTorch 编译栈学习入口。
+- [AI 加速器与计算架构](https://amoursec.github.io/aikg/06-accelerators-architecture/): AI 加速器与计算架构主题入口。
+- [集群、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/): 集群、网络、存储与调度主题入口。
+- [性能分析、Benchmark 与容量建模](https://amoursec.github.io/aikg/08-benchmark-capacity/): 性能分析、Benchmark 与容量建模主题入口。
+- [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
+- [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
+- [AI 系统论文与架构](https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/): AI 系统论文与架构案例索引。
+- [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
+- [故障复盘](https://amoursec.github.io/aikg/10-papers-cases/failure-cases/): 故障复盘入口。
+- [知识组织、模板与 AI 可读索引](https://amoursec.github.io/aikg/11-knowledge-index/): 知识组织、模板、元数据和 AI 可读索引说明。
+
+## Optional Documents
+
+- [知识点模板](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板。
+- [技术决策模板](https://amoursec.github.io/aikg/99-templates/adr/): 技术决策模板。
+- [基准实验报告模板](https://amoursec.github.io/aikg/99-templates/benchmark-report/): 基准实验报告模板。
+
+## Markdown Source
+
+Prefer Markdown source when exact wording, metadata, or citations are needed.
+
+- [index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/index.md)
+- [knowledge-map.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/knowledge-map.md)
+- [01-getting-started/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/01-getting-started/index.md)
+- [02-ai-workloads/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/index.md)
+- [02-ai-workloads/ai-fundamentals.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/ai-fundamentals.md)
+- [02-ai-workloads/transformer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/transformer.md)
+- [02-ai-workloads/training-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/training-primer.md)
+- [02-ai-workloads/inference-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/inference-primer.md)
+- [02-ai-workloads/data-paths.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/data-paths.md)
+- [03-inference-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/index.md)
+- [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
+- [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
+- [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
+- [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)
+- [05-kernels-compilers/torchinductor.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/torchinductor.md)
+- [06-accelerators-architecture/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/index.md)
+- [07-cluster-infra/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/index.md)
+- [08-benchmark-capacity/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/index.md)
+- [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
+- [10-papers-cases/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/index.md)
+- [10-papers-cases/ai-system-architecture.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/ai-system-architecture.md)
+- [10-papers-cases/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/adr.md)
+- [10-papers-cases/failure-cases.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/failure-cases.md)
+- [11-knowledge-index/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/11-knowledge-index/index.md)
+- [99-templates/knowledge-note.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/knowledge-note.md)
+- [99-templates/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/adr.md)
+- [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/benchmark-report.md)
+
+## AI Usage Notes
+
+- Treat front matter fields as metadata for domain, status, owner, license, and update time.
+- Prefer citing source document paths when answering from this knowledge base.
+- Performance claims should preserve workload, batch shape, sequence length, precision, hardware, software version, and benchmark context when available.
+- Draft pages are useful for orientation, but should not be treated as verified conclusions unless the page status says reviewed or verified.

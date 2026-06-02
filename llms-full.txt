@@ -1,0 +1,1890 @@
+# AI Knowledge Graph - Full LLM Context
+
+Repository: https://github.com/AmourSec/aikg
+Documentation site: https://amoursec.github.io/aikg/
+Generated from Markdown source files in `docs/`.
+
+Use this file as a compact ingestion target when an AI system cannot crawl the full repository. For exact source locations, each document section includes its repository path and site URL.
+
+## Document Index
+
+- index.md - 首页
+- knowledge-map.md - AI 知识地图
+- 01-getting-started/index.md - 入门导读
+- 02-ai-workloads/index.md - AI 计算工作负载基础
+- 02-ai-workloads/ai-fundamentals.md - AI 基础概念
+- 02-ai-workloads/transformer.md - Transformer 流程与原理
+- 02-ai-workloads/training-primer.md - 训练过程与原理
+- 02-ai-workloads/inference-primer.md - 推理过程与原理
+- 02-ai-workloads/data-paths.md - 数据与输入路径
+- 03-inference-systems/index.md - 推理系统与服务优化
+- 03-inference-systems/rag-agent-workloads.md - RAG 与 Agent 推理负载
+- 04-training-systems/index.md - 训练系统与分布式计算
+- 05-kernels-compilers/index.md - Kernel、算子与编译优化
+- 05-kernels-compilers/triton.md - Triton Kernel 编程
+- 05-kernels-compilers/torchinductor.md - TorchInductor 与 PyTorch 编译栈
+- 06-accelerators-architecture/index.md - AI 加速器与计算架构
+- 07-cluster-infra/index.md - 集群、网络、存储与调度
+- 08-benchmark-capacity/index.md - 性能分析、Benchmark 与容量建模
+- 09-reliability-observability/index.md - 可靠性、可观测性与故障复盘
+- 10-papers-cases/index.md - 论文复现与系统案例
+- 10-papers-cases/ai-system-architecture.md - AI 系统论文与架构
+- 10-papers-cases/adr.md - 技术决策记录
+- 10-papers-cases/failure-cases.md - 故障复盘
+- 11-knowledge-index/index.md - 知识组织、模板与 AI 可读索引
+- 99-templates/knowledge-note.md - 知识点模板
+- 99-templates/adr.md - 技术决策模板
+- 99-templates/benchmark-report.md - 基准实验报告模板
+
+---
+
+# Document: 首页
+
+Source: docs/index.md
+URL: https://amoursec.github.io/aikg/
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI Knowledge Graph
+
+这是一个面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的开放知识库。它不以提升模型任务指标为主线，而以“让 AI 负载跑得更快、更省、更稳、更可复现”为主线，沉淀推理系统、分布式训练、Kernel 与编译、加速器架构、集群基础设施、性能分析和系统论文复现。
+
+## 目标
+
+- 为系统方向新生提供一条从 AI 计算负载到推理、训练、Kernel、硬件、集群和 Benchmark 的学习路径。
+- 为研究者整理系统方法、性能方法、实验方法、容量模型和故障复盘。
+- 为 AI 检索、问答、知识图谱和 skills 提供可引用、可追溯的结构化知识源。
+
+## 写作原则
+
+- 每篇文档必须包含 front matter 元数据。
+- 重要结论需要标明论文、代码仓库、硬件规格、Benchmark 或实验记录来源。
+- 性能结论必须保留 workload、batch shape、sequence length、precision、硬件环境、软件版本、并发模型和复现状态。
+- 技术比较需要说明前提假设、瓶颈类型、适用范围和反例。
+- 临时讨论不要直接进入知识库，先沉淀成可复用的知识点、系统论文笔记、实验记录或技术决策。
+
+## 推荐阅读路径
+
+1. 从 `知识地图` 理解整体结构。
+2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`。
+3. 然后阅读 `AI 计算工作负载基础`，理解 Attention、KV Cache、MoE、batch、精度和数据搬运为什么影响性能。
+4. 做推理方向重点阅读 `推理系统与服务优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
+5. 做训练和集群方向重点阅读 `训练系统与分布式计算`、`集群、网络、存储与调度`、`可靠性、可观测性与故障复盘`。
+6. 做硬件或算子方向重点阅读 `AI 加速器与计算架构`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
+7. 做论文复现和长期沉淀时，优先使用 `论文复现与系统案例`、`知识组织、模板与 AI 可读索引` 和模板。
+
+---
+
+# Document: AI 知识地图
+
+Source: docs/knowledge-map.md
+URL: https://amoursec.github.io/aikg/knowledge-map/
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI 知识地图
+
+这张地图面向 AI Systems、AI Infrastructure 和高效 AI 计算方向的新生。主线不是提升模型任务指标，而是理解一个 AI workload 如何经过推理服务、训练系统、Kernel、编译器、加速器、集群和 Benchmark，最终被做快、做省、做稳、做可复现。图中的节点都可以点击跳转到对应章节。
+
+## 总览思维导图
+
+<nav class="kg-mindmap" aria-label="AI Knowledge Graph mind map">
+  <a class="kg-mindmap-root" href="../">
+    <strong>AI Knowledge Graph</strong>
+    <span>更快 / 更省 / 更稳 / 可复现</span>
+  </a>
+  <div class="kg-mindmap-branches">
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../01-getting-started/">学习入口</a>
+      <ul>
+        <li class="kg-node-main"><a href="../01-getting-started/">1 入门导读</a></li>
+        <li class="kg-node-note"><span>关键词：问题意识 / 阅读方法 / 实验纪律</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../02-ai-workloads/">工作负载</a>
+      <ul>
+        <li class="kg-node-main"><a href="../02-ai-workloads/">2 AI 计算工作负载基础</a></li>
+        <li class="kg-node-child"><a href="../02-ai-workloads/ai-fundamentals/">2.1 AI 基础概念</a></li>
+        <li class="kg-node-child"><a href="../02-ai-workloads/transformer/">2.2 Transformer 流程与原理</a></li>
+        <li class="kg-node-child"><a href="../02-ai-workloads/training-primer/">2.3 训练过程与原理</a></li>
+        <li class="kg-node-child"><a href="../02-ai-workloads/inference-primer/">2.4 推理过程与原理</a></li>
+        <li class="kg-node-child"><a href="../02-ai-workloads/data-paths/">2.5 数据与输入路径</a></li>
+        <li class="kg-node-note"><span>关键词：token / loss / Attention / KV Cache / batch / precision</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../03-inference-systems/">推理与服务</a>
+      <ul>
+        <li class="kg-node-main"><a href="../03-inference-systems/">3 推理系统与服务优化</a></li>
+        <li class="kg-node-child"><a href="../03-inference-systems/rag-agent-workloads/">3.1 RAG 与 Agent 推理负载</a></li>
+        <li class="kg-node-note"><span>关键词：TTFT / TPOT / batching / KV Cache / routing</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../05-kernels-compilers/">Kernel 与编译</a>
+      <ul>
+        <li class="kg-node-main"><a href="../05-kernels-compilers/">5 Kernel、算子与编译优化</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/triton/">5.1 Triton Kernel 编程</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">5.2 TorchInductor 与 PyTorch 编译栈</a></li>
+        <li class="kg-node-note"><span>关键词：tiling / fusion / codegen / auto-tuning</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../06-accelerators-architecture/">计算架构</a>
+      <ul>
+        <li class="kg-node-main"><a href="../06-accelerators-architecture/">6 AI 加速器与计算架构</a></li>
+        <li class="kg-node-note"><span>关键词：GPU / NPU / Tensor Core / HBM / interconnect</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../04-training-systems/">训练与集群</a>
+      <ul>
+        <li class="kg-node-main"><a href="../04-training-systems/">4 训练系统与分布式计算</a></li>
+        <li class="kg-node-main"><a href="../07-cluster-infra/">7 集群、网络、存储与调度</a></li>
+        <li class="kg-node-note"><span>关键词：parallelism / NCCL / scheduler / storage</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与复现</a>
+      <ul>
+        <li class="kg-node-main"><a href="../08-benchmark-capacity/">8 性能分析、Benchmark 与容量建模</a></li>
+        <li class="kg-node-main"><a href="../09-reliability-observability/">9 可靠性、可观测性与故障复盘</a></li>
+        <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / incidents</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
+      <ul>
+        <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
+        <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
+        <li class="kg-node-note"><span>关键词：metadata / tags / sources / AI-readable skills</span></li>
+      </ul>
+    </section>
+  </div>
+</nav>
+
+## 地图逻辑
+
+| 主线 | 组织逻辑 | 对应模块 |
+| --- | --- | --- |
+| 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
+| 工作负载 | 先补齐 AI 基础、Transformer、训练和推理流程，再学习与性能有关的模型背景：Attention、KV Cache、MoE、上下文长度、batch shape、精度格式和数据路径。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[数据与输入路径](02-ai-workloads/data-paths.md) |
+| 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与服务优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [4 训练系统与分布式计算](04-training-systems/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
+| 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
+
+## 按目标导航
+
+| 当前目标 | 优先阅读 |
+| --- | --- |
+| 刚进入 AI Infra 方向 | [1 入门导读](01-getting-started/index.md) -> [AI 基础概念](02-ai-workloads/ai-fundamentals.md) -> [Transformer 流程与原理](02-ai-workloads/transformer.md) -> [2 AI 计算工作负载基础](02-ai-workloads/index.md) |
+| 想降低 LLM 推理延迟 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [3 推理系统与服务优化](03-inference-systems/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想先搞懂训练和推理怎么回事 | [训练过程与原理](02-ai-workloads/training-primer.md) -> [推理过程与原理](02-ai-workloads/inference-primer.md) -> [3 推理系统与服务优化](03-inference-systems/index.md) -> [4 训练系统与分布式计算](04-training-systems/index.md) |
+| 想提高吞吐和 GPU 利用率 | [3 推理系统与服务优化](03-inference-systems/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想做分布式训练系统 | [4 训练系统与分布式计算](04-training-systems/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) |
+| 想做 Triton Kernel 或编译优化 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 想做 AI 加速器或硬件架构 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
+| 想建设稳定集群或实验平台 | [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md) -> [11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
+| 想复现系统论文 | [10 论文复现与系统案例](10-papers-cases/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) -> [技术决策模板](99-templates/adr.md) |
+
+## 模块关系
+
+| 模块 | 上游依赖 | 主要产出 |
+| --- | --- | --- |
+| 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
+| 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练/推理流程、shape 分析、数据流和负载画像 |
+| 3 推理系统与服务优化 | 2、5、6、8 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
+| 4 训练系统与分布式计算 | 2、6、7、8 | 并行策略、通信模型、训练稳定性和扩展效率 |
+| 5 Kernel、算子与编译优化 | 2、6、8 | Triton Kernel、TorchInductor、算子实现、图优化、编译和自动调优 |
+| 6 AI 加速器与计算架构 | 2、5、8 | 计算、存储、互连、能效和体系结构分析 |
+| 7 集群、网络、存储与调度 | 3、4、6 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
+| 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
+| 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、故障模式、复盘和改进项 |
+| 10 论文复现与系统案例 | 全部模块 | 论文笔记、代码走读、复现报告、系统案例和技术决策 |
+| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 元数据、标签、引用溯源、向量索引和 AI skills |
+
+---
+
+# Document: 入门导读
+
+Source: docs/01-getting-started/index.md
+URL: https://amoursec.github.io/aikg/01-getting-started/
+domain: getting-started
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 入门导读
+
+本目录面向 AI Infra / AI Systems / Efficient AI Computing 方向的新生。入门目标不是系统学习所有模型算法，而是建立一个性能视角：一个 AI workload 为什么慢、为什么贵、为什么不稳定，以及可以从哪些层面改进。
+
+## 建议先建立的共同语言
+
+- Workload、batch shape、sequence length、precision、concurrency
+- Latency、throughput、TTFT、TPOT、tail latency
+- FLOPs、memory bandwidth、HBM、cache、communication
+- GPU utilization、MFU、occupancy、kernel time、queueing delay
+- Prefill、decode、KV Cache、activation、optimizer state
+- Profiling、Benchmark、Roofline、capacity planning
+
+## 入门路径
+
+1. 用 `AI 基础概念` 建立 token、tensor、parameter、loss、gradient、optimizer 的共同语言。
+2. 用 `Transformer 流程与原理` 理解 Attention、MLP、LayerNorm、Logits 的基本数据流。
+3. 用 `训练过程与原理` 和 `推理过程与原理` 区分 forward/backward、prefill/decode、KV Cache 等关键过程。
+4. 用 `AI 计算工作负载基础` 理解性能瓶颈来自哪里。
+5. 用 `推理系统与服务优化` 理解在线服务的延迟、吞吐和调度。
+6. 用 `训练系统与分布式计算` 理解多卡、多机训练的并行和通信。
+7. 用 `Kernel、算子与编译优化` 理解单个算子如何被做快。
+8. 用 `AI 加速器与计算架构` 理解硬件如何约束上层系统。
+9. 用 `性能分析、Benchmark 与容量建模` 验证任何优化是否真实有效。
+
+## 写作要求
+
+- 不写泛泛的模型效果提升，只写与性能、效率、稳定性、复现有关的结论。
+- 所有性能结论都要写清楚 workload、硬件、软件版本、输入 shape、并发模型和指标口径。
+- 技术比较必须说明瓶颈假设，例如 compute-bound、memory-bound、communication-bound 或 scheduler-bound。
+- 论文笔记必须把核心方法映射到系统层级：workload、runtime、kernel、accelerator、cluster、measurement。
+
+## 关键问题
+
+- 这个问题的主要瓶颈是在计算、显存、带宽、通信、调度还是数据路径。
+- 指标是服务端吞吐、单请求延迟、尾延迟、训练 step time、扩展效率还是能效。
+- 优化是否改变了质量、稳定性、隔离性或复现性。
+- 结论是否能被后续实验、AI 检索或系统设计复用。
+
+---
+
+# Document: AI 计算工作负载基础
+
+Source: docs/02-ai-workloads/index.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/
+domain: ai-workloads
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI 计算工作负载基础
+
+本目录是 AI Infra 的基础课。它先解释模型、Transformer、训练和推理的基本流程，再把这些流程翻译成计算量、访存量、显存占用、通信量和调度复杂度。
+
+## 入门顺序
+
+1. [AI 基础概念](ai-fundamentals.md)：理解模型、参数、张量、token、loss、训练和推理这些共同语言。
+2. [Transformer 流程与原理](transformer.md)：理解 Embedding、Attention、MLP、残差、LayerNorm、Logits 的数据流。
+3. [训练过程与原理](training-primer.md)：理解 forward、loss、backward、optimizer、checkpoint 为什么消耗计算和显存。
+4. [推理过程与原理](inference-primer.md)：理解 prefill、decode、KV Cache、sampling、batching 为什么决定延迟和吞吐。
+5. [数据与输入路径](data-paths.md)：理解数据如何进入训练和推理系统。
+
+## 建议主题
+
+- Transformer、Attention、MLP、Embedding、LayerNorm、MoE
+- Token、Embedding、Logits、Loss、Backpropagation、Optimizer
+- 训练循环、推理循环、Autoregressive Generation
+- Prefill 与 Decode 的计算特征差异
+- KV Cache 的显存占用、带宽压力和调度影响
+- sequence length、batch size、concurrency 对延迟和吞吐的影响
+- FP32、TF32、FP16、BF16、FP8、INT8、INT4
+- 参数量、激活、optimizer state、checkpoint 对显存的影响
+- arithmetic intensity、memory wall、compute-bound 与 memory-bound
+- dense workload、sparse workload、dynamic shape 和 ragged batch
+
+## 关键问题
+
+- 一个模型层的 FLOPs 和内存访问量如何估算。
+- Attention、MLP、Embedding、MoE 分别容易卡在哪类资源上。
+- 长上下文为什么会改变 KV Cache、显存带宽和调度瓶颈。
+- 量化、稀疏化、MoE、投机解码等技术如何改变 workload 形态。
+- Workload 描述是否足以支持 Benchmark、容量估算和硬件选型。
+
+## 建议记录字段
+
+| 字段 | 说明 |
+| --- | --- |
+| workload | 模型结构、参数规模、层数、hidden size、head 数、MoE expert 数 |
+| shape | batch size、sequence length、prefill/decode 比例、并发 |
+| precision | 权重、激活、KV Cache、通信使用的数值格式 |
+| bottleneck | compute、memory bandwidth、capacity、communication、scheduler |
+| metrics | latency、throughput、tokens/s、MFU、HBM bandwidth、显存占用 |
+
+---
+
+# Document: AI 基础概念
+
+Source: docs/02-ai-workloads/ai-fundamentals.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/ai-fundamentals/
+domain: ai-fundamentals
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI 基础概念
+
+本页面向刚开始接触 AI Infra 的读者，解释最小必要的 AI 基础。目标不是完整学习机器学习理论，而是能看懂训练、推理、Transformer、Benchmark 和系统论文里的基本词汇。
+
+## 最小概念表
+
+| 概念 | 含义 | 系统视角 |
+| --- | --- | --- |
+| Tensor | 多维数组，是模型计算的基本数据结构 | shape 决定算子规模和内存访问 |
+| Token | 文本被 tokenizer 切分后的离散单位 | token 数决定序列长度和推理成本 |
+| Embedding | 把 token id 映射成向量 | 主要是查表和内存访问 |
+| Parameter | 模型中被训练出来的权重 | 参数量决定显存、加载时间和通信量 |
+| Activation | forward 中间结果 | 训练时需要保存，显存压力很大 |
+| Logits | 模型输出的未归一化分数 | 推理时用于选下一个 token |
+| Loss | 训练目标函数 | backward 从 loss 开始传播梯度 |
+| Gradient | loss 对参数的导数 | 训练时需要额外显存和通信 |
+| Optimizer | 用梯度更新参数的算法 | Adam 等优化器会保存额外状态 |
+
+## 一个模型在做什么
+
+语言模型的基本任务可以粗略理解为：给定前面的 token，预测下一个 token 的概率分布。
+
+```text
+输入文本 -> Token IDs -> Embedding -> 多层网络 -> Logits -> 下一个 token 概率
+```
+
+训练时，模型看到大量文本，比较预测和真实下一个 token 的差距，用 loss 更新参数。推理时，模型没有真实答案，只能反复预测下一个 token，再把生成的新 token 接回输入。
+
+## 为什么 Infra 需要懂这些
+
+- token 数决定 sequence length，直接影响 Attention 计算量和 KV Cache 显存。
+- 参数量决定权重加载、显存容量、分布式切分和通信量。
+- activation 和 gradient 主要影响训练显存。
+- logits、sampling 和 decode loop 主要影响推理延迟。
+- shape、precision、batch size 决定 Kernel、编译器和硬件能否跑满。
+
+## 关键问题
+
+- 当前问题发生在训练还是推理。
+- 输入是固定长度、长上下文、动态 batch 还是多轮对话。
+- 主要资源瓶颈是参数、激活、KV Cache、梯度还是优化器状态。
+- 模型输出质量问题和系统性能问题是否被混在一起讨论。
+
+---
+
+# Document: Transformer 流程与原理
+
+Source: docs/02-ai-workloads/transformer.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/transformer/
+domain: transformer
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-01
+
+# Transformer 流程与原理
+
+Transformer 是当前大语言模型和很多多模态模型的核心结构。学习它时不要一开始就背公式，而要先抓住主线：
+
+```text
+把一串 token 变成一串向量；
+让每个位置用 Attention 读取上下文；
+再用 MLP 对每个位置做非线性变换；
+重复很多层；
+最后把当前位置向量映射成下一个 token 的概率。
+```
+
+本页面面向刚进入 AI Infra 方向的读者。目标不是完整推导论文，而是让你能看懂 Transformer 的数据流、关键张量形状、训练和推理差异，以及为什么它会影响推理系统、Kernel、编译器和硬件架构。
+
+## 学习目标
+
+读完本页，你应该能回答：
+
+- 一个 token 从输入到 logits 经过哪些步骤。
+- Attention 中 Q、K、V 分别从哪里来，为什么会有 `QK^T`。
+- Multi-Head Attention、MLP、Residual、LayerNorm 在一个 block 里如何配合。
+- Encoder-only、Decoder-only、Encoder-Decoder 的区别。
+- 训练、prefill、decode 阶段为什么性能瓶颈不同。
+- sequence length、hidden size、head 数如何影响计算量和显存。
+
+## 为什么需要 Transformer
+
+早期序列模型常用 RNN/LSTM/GRU。它们按时间步顺序处理 token：第 `i` 个位置依赖第 `i-1` 个位置的状态。这种结构有两个问题：
+
+- **并行性差**：必须从左到右逐步算，长序列训练很难充分利用 GPU/TPU。
+- **长距离依赖困难**：很远的 token 要经过很多步状态传递，信息容易衰减。
+
+卷积模型可以并行，但单层卷积只能覆盖局部窗口；要让远距离 token 交互，需要堆很多层。
+
+Transformer 的核心想法是：在每一层里，让序列中任意两个可见位置都可以直接交互。这个交互由 Self-Attention 完成。原始论文提出的 Transformer 完全基于 Attention 机制，不再使用 recurrence 或 convolution；它在机器翻译任务上获得更好的质量，同时更容易并行训练。
+
+## 三种常见 Transformer 形态
+
+原始 Transformer 是 Encoder-Decoder 架构，但今天的大模型经常只使用其中一部分。
+
+| 架构 | 代表任务 | Attention 形式 | 输出方式 |
+| --- | --- | --- | --- |
+| Encoder-Decoder | 翻译、摘要、T5 类模型 | Encoder 双向 self-attention；Decoder masked self-attention + cross-attention | Decoder 自回归生成 |
+| Encoder-only | BERT 类理解模型 | 双向 self-attention，可以看左右上下文 | 输出每个位置或整体表示 |
+| Decoder-only | GPT、LLaMA 类语言模型 | masked self-attention，只能看当前位置和历史位置 | 逐 token 预测下一个 token |
+
+对 AI Infra 来说，最常遇到的是 **Decoder-only LLM**，因为它对应在线推理中的 prefill、decode、KV Cache、batching 和长上下文问题。但理解 Encoder-Decoder 有助于读原始论文和很多教程。
+
+## 总体数据流
+
+以 Decoder-only 语言模型为例，推理时的数据流如下：
+
+```mermaid
+flowchart TD
+  A["文本 Prompt"] --> B["Tokenizer"]
+  B --> C["Token IDs<br/>shape: [B, S]"]
+  C --> D["Token Embedding<br/>shape: [B, S, D]"]
+  D --> E["位置信息<br/>Position Embedding / RoPE"]
+  E --> F0
+
+  subgraph BLOCK["Transformer Block × L（重复堆叠）"]
+    direction TB
+    F0["输入 Hidden States<br/>shape: [B, S, D]"] --> F1["Norm<br/>LayerNorm / RMSNorm"]
+    F1 --> F2["Masked Multi-Head Self-Attention<br/>跨 token 读取上下文"]
+    F2 --> F3["Residual Add"]
+    F3 --> F4["Norm<br/>LayerNorm / RMSNorm"]
+    F4 --> F5["MLP / FFN<br/>逐 token 非线性变换"]
+    F5 --> F6["Residual Add<br/>输出 Hidden States"]
+  end
+
+  F6 --> G["Final Norm"]
+  G --> H["LM Head<br/>shape: [B, S, Vocab]"]
+  H --> I["Logits"]
+  I --> J["Sampling / Greedy / Beam Search"]
+  J --> K["下一个 token"]
+  K --> L["接回上下文<br/>继续 decode，直到停止"]
+```
+
+其中：
+
+- `B` 是 batch size。
+- `S` 是 sequence length。
+- `D` 是 hidden size，也叫 `d_model`。
+- `L` 是 Transformer block 层数。
+- `Vocab` 是词表大小。
+
+## Token、Embedding 和位置信息
+
+模型不能直接处理文本，第一步是 tokenizer 把文本切成 token，并映射成整数 ID。
+
+```text
+"Transformer 很重要"
+  -> ["Transformer", " 很", "重要"]
+  -> [15342, 421, 9231]
+```
+
+Embedding 层是一个查表：
+
+```text
+embedding_table: [Vocab, D]
+token_ids:       [B, S]
+output:          [B, S, D]
+```
+
+每个 token ID 会查到一个 `D` 维向量。到这一步，模型知道“每个位置是什么 token”，但还不知道“它在第几个位置”。
+
+Self-Attention 本身对顺序不敏感。如果把输入 token 打乱，只看一组向量之间的相似度，模型不能天然知道谁在前谁在后。因此 Transformer 需要加入位置信息。常见方式包括：
+
+- **Sinusoidal positional encoding**：原始论文使用的正弦/余弦位置编码。
+- **Learned positional embedding**：位置向量也作为参数学习。
+- **RoPE**：现代 LLM 常见的旋转位置编码，便于建模相对位置。
+
+在工程上，你会经常看到两类写法：
+
+```text
+x = token_embedding + position_embedding
+```
+
+或在 Attention 里对 Q/K 注入 RoPE。
+
+## Self-Attention 的直觉
+
+Self-Attention 回答的问题是：
+
+> 当我更新当前位置的表示时，应该从哪些上下文位置读取信息？各读多少？
+
+例如句子：
+
+```text
+The animal didn't cross the street because it was tired.
+```
+
+当模型处理 `it` 时，它需要知道 `it` 更可能指向 `animal`，而不是 `street`。Self-Attention 允许 `it` 这个位置直接查看上下文中其他位置，并根据相关性加权读取信息。
+
+对第 `i` 个位置，可以把 Attention 理解成：
+
+```text
+第 i 个位置的新表示
+  = 对所有可见位置 j 的 value 向量做加权求和
+```
+
+权重不是固定参数，而是由当前位置和候选位置的内容动态算出来。
+
+## Attention 在做什么
+
+给定输入 `X: [B, S, D]`，Attention 会用三组线性投影生成 Q、K、V：
+
+```text
+Q = X Wq    # Query
+K = X Wk    # Key
+V = X Wv    # Value
+```
+
+可以用一个检索类比理解：
+
+- `Q`：当前位置想查什么。
+- `K`：每个位置提供什么匹配线索。
+- `V`：如果被关注，真正被读走的内容。
+
+但要注意：Q/K/V 不是人工设计的数据库字段，而是模型通过训练学出来的线性变换结果。
+
+Attention 的核心公式是：
+
+```text
+scores = Q K^T / sqrt(d_head)
+weights = softmax(scores + mask)
+output = weights V
+```
+
+含义是：
+
+1. `QK^T` 计算每个 query 位置和每个 key 位置的匹配分数。
+2. 除以 `sqrt(d_head)` 是缩放，避免点积值过大导致 softmax 梯度不稳定。
+3. `mask` 用于屏蔽 padding 或未来 token。
+4. `softmax` 把分数变成权重。
+5. 权重乘以 `V`，得到每个位置从上下文读到的新信息。
+
+## 用 3 个 token 走一遍 Self-Attention
+
+为了避免公式太抽象，先用一个短序列做心智模型：
+
+```text
+tokens = [我, 喜欢, AI]
+hidden = [x0, x1, x2]
+```
+
+假设现在要更新位置 2，也就是 `AI` 这个 token 的表示。
+
+第一步，每个位置都会从自己的 hidden state 生成 Q、K、V：
+
+```text
+x0 -> q0, k0, v0
+x1 -> q1, k1, v1
+x2 -> q2, k2, v2
+```
+
+第二步，用当前位置的 query `q2` 去匹配所有可见位置的 key：
+
+```text
+score(2, 0) = q2 dot k0
+score(2, 1) = q2 dot k1
+score(2, 2) = q2 dot k2
+```
+
+第三步，对这些分数做缩放、mask 和 softmax，得到权重：
+
+```text
+weights(2) = [0.20, 0.30, 0.50]
+```
+
+第四步，用权重加权求和 value：
+
+```text
+z2 = 0.20 * v0 + 0.30 * v1 + 0.50 * v2
+```
+
+`z2` 就是位置 2 从上下文读取后的新信息。它会再经过 output projection、residual add、norm 和 MLP，变成下一层的输入。
+
+注意两个关键点：
+
+- 对位置 2 来说，attention 权重是一行分布：它表示位置 2 读取各个历史位置的比例。
+- 实际实现不会用 Python for-loop 一个 token 一个 token 算，而是把所有位置打包成矩阵，一次性算出 `QK^T`。
+
+## 张量形状：从 X 到 Attention 输出
+
+假设：
+
+- `B = batch size`
+- `S = sequence length`
+- `D = hidden size`
+- `H = num_heads`
+- `Dh = D / H`
+
+典型 Multi-Head Attention 的形状如下：
+
+| 张量 | 形状 | 含义 |
+| --- | --- | --- |
+| `X` | `[B, S, D]` | 输入 hidden states |
+| `Q, K, V` | `[B, S, D]` | 一次线性层后通常仍是 D 维 |
+| reshape 后 | `[B, H, S, Dh]` | 拆成多个 head |
+| `QK^T` | `[B, H, S, S]` | 每个 head 的注意力分数矩阵 |
+| `softmax` 后 | `[B, H, S, S]` | 每个 query 对所有 key 的权重 |
+| `weights V` | `[B, H, S, Dh]` | 每个 head 的输出 |
+| concat 后 | `[B, S, D]` | 多个 head 拼回 hidden size |
+| output projection | `[B, S, D]` | 经过 `Wo` 混合多个 head |
+
+这张表对性能分析非常重要：`[B, H, S, S]` 说明 prefill 阶段的注意力分数矩阵会随序列长度平方增长。
+
+## Causal Mask：为什么 Decoder 不能看未来
+
+语言模型训练目标通常是预测下一个 token。
+
+```text
+输入:  [我, 喜欢, AI]
+目标:  [喜欢, AI, <eos>]
+```
+
+训练时为了并行，模型会一次性看到整段序列。但预测第 `i` 个位置时不能偷看第 `i+1` 个位置，否则训练目标就泄漏了答案。
+
+Decoder-only 模型使用 causal mask：
+
+```text
+位置 0 只能看 0
+位置 1 只能看 0, 1
+位置 2 只能看 0, 1, 2
+...
+```
+
+矩阵上就是屏蔽右上三角。被屏蔽的位置在 softmax 前通常被加上一个极小值，使其权重接近 0。
+
+## Multi-Head Attention 为什么需要多个头
+
+单个 attention head 会产生一套权重分布。Multi-Head Attention 则把 hidden size 分成多个子空间，让多个 head 并行做 Attention：
+
+```text
+head_1 = Attention(Q Wq_1, K Wk_1, V Wv_1)
+head_2 = Attention(Q Wq_2, K Wk_2, V Wv_2)
+...
+output = Concat(head_1, ..., head_H) Wo
+```
+
+直观上，不同 head 可以学习不同关系：
+
+- 一个 head 关注当前位置附近的词。
+- 一个 head 关注主语和谓语。
+- 一个 head 关注括号、代码缩进或引用关系。
+
+这只是帮助理解的类比。实际模型中，head 的功能由训练数据和目标函数共同决定，不一定能被简单命名。
+
+系统视角下，如果总 hidden size `D` 固定，多头通常不是把计算量乘以 `H`，因为每个 head 的维度是 `Dh = D / H`。但是 head 数会影响张量布局、并行粒度、Kernel 实现和 KV Cache 排布。
+
+## MLP 在做什么
+
+Attention 负责 token 之间的信息交互；MLP/FFN 负责对每个 token 的表示做非线性变换。
+
+原始 Transformer 的 FFN 是：
+
+```text
+FFN(x) = LinearDown(Activation(LinearUp(x)))
+```
+
+典型形状：
+
+```text
+[B, S, D]
+  -> LinearUp:   [B, S, Dff]
+  -> Activation: [B, S, Dff]
+  -> LinearDown: [B, S, D]
+```
+
+`Dff` 通常比 `D` 大，例如 4 倍。现代 LLM 常用 SwiGLU / GeGLU 等门控 MLP 变体，但主线仍然是“升维 -> 激活/门控 -> 降维”。
+
+注意 MLP 是 **逐位置独立** 的：第 `i` 个 token 的 MLP 不直接读取第 `j` 个 token。跨 token 的信息交换主要发生在 Attention。
+
+系统视角下：
+
+- MLP 主要是大 GEMM，通常更偏 compute-bound。
+- Attention 涉及 QK、softmax、mask、PV 和 KV Cache，更容易受显存带宽、layout 和 kernel fusion 影响。
+- LayerNorm、RMSNorm、RoPE、residual add 等算子单次计算量不大，但在 decode 小 batch 场景中也可能显著影响延迟。
+
+## Residual 和 LayerNorm 为什么重要
+
+Transformer block 会堆很多层。深层网络训练时容易出现梯度不稳定，所以每个子层周围通常有：
+
+```text
+x -> Sublayer -> + x -> Norm
+```
+
+或现代 LLM 更常见的 Pre-Norm：
+
+```text
+x -> Norm -> Sublayer -> + x
+```
+
+Residual connection 让信息和梯度可以跨过子层直接流动。LayerNorm/RMSNorm 则稳定每个 token 的 hidden state 分布。
+
+原始 Transformer 使用 Add & Norm，也就是 Post-Norm；很多现代大模型为了更稳定地训练深层网络，使用 Pre-Norm 或 RMSNorm。
+
+## 一个 Decoder-only Block 的完整流程
+
+现代 Decoder-only LLM 的一个 block 可以概括为：
+
+```text
+输入 x: [B, S, D]
+
+1. Attention 子层
+   a = Norm(x)
+   q, k, v = Linear(a)
+   q, k = apply_position_info(q, k)  # 例如 RoPE
+   attn_out = CausalSelfAttention(q, k, v)
+   x = x + OutputProjection(attn_out)
+
+2. MLP 子层
+   m = Norm(x)
+   mlp_out = MLP(m)
+   x = x + mlp_out
+
+输出 x: [B, S, D]
+```
+
+堆叠 `L` 层后，每个 token 的向量已经多次读取上下文，并经过多次非线性变换。最后 LM Head 把 hidden state 映射到词表维度：
+
+```text
+logits = hidden @ W_vocab^T
+```
+
+推理时通常只关心最后一个位置的 logits，因为它决定下一个 token。
+
+## Training、Prefill、Decode 的区别
+
+Transformer 的同一套结构，在训练和推理时运行方式不同。
+
+### 训练
+
+训练时通常用 teacher forcing。模型一次性处理一整段 token，并在每个位置预测下一个 token。
+
+```text
+输入:  [t0, t1, t2, t3]
+目标:  [t1, t2, t3, t4]
+```
+
+因为有 causal mask，所以每个位置不能看未来，但所有位置可以并行计算 loss。训练的主要显存压力来自：
+
+- 参数。
+- activation。
+- gradient。
+- optimizer state。
+- attention 中间张量。
+
+训练时真正被学习的是模型参数，包括 embedding、Q/K/V 投影矩阵、MLP 权重、Norm 参数和 LM Head。模型先根据当前参数给出下一个 token 的概率分布，再用目标 token 计算 loss，最后通过反向传播更新这些参数。经过大量样本后，Q/K/V 投影会逐渐学会“什么样的 token 应该匹配什么上下文”，MLP 会学会对每个位置的表示做更复杂的变换。
+
+推理时参数不再更新。模型只是重复执行前向计算：读入 prompt，得到 logits，采样下一个 token，把新 token 接回输入，再继续。
+
+### Prefill
+
+在线推理时，用户先给一个 prompt。模型需要一次性处理整段 prompt，这叫 prefill。
+
+```text
+prompt: [t0, t1, ..., tS]
+输出: 最后位置的 logits
+同时保存每层 K/V 到 KV Cache
+```
+
+Prefill 的 Attention 会处理长度为 `S` 的序列，计算量和 `S^2` 强相关，但矩阵较大，比较容易利用 GPU 并行。
+
+### Decode
+
+生成第一个新 token 后，模型继续生成下一个 token。每次 decode 通常只输入一个新 token。
+
+```text
+新 token -> 生成 Q
+历史 token 的 K/V 从 KV Cache 读取
+Q attend to all cached K/V
+输出下一个 token
+```
+
+Decode 每步计算量比 prefill 小，但要重复很多次，并且需要不断读取 KV Cache。对于长上下文和大 batch，decode 很容易变成显存带宽和调度问题。
+
+## KV Cache 是什么
+
+在自回归生成中，历史 token 的 K/V 不会变。没有 KV Cache 时，每生成一个新 token 都要重新计算整个历史序列的 K/V，代价很高。
+
+KV Cache 保存每一层、每个历史 token 的 K 和 V：
+
+```text
+K cache: [L, B, H, S, Dh]
+V cache: [L, B, H, S, Dh]
+```
+
+粗略显存估算：
+
+```text
+KV Cache bytes ~= 2 * L * B * S * D * bytes_per_element
+```
+
+这里的 `2` 来自 K 和 V。这个公式解释了为什么：
+
+- 上下文越长，KV Cache 越大。
+- batch 越大，KV Cache 越大。
+- 层数和 hidden size 越大，KV Cache 越大。
+- FP16/BF16 比 FP32 省一半，FP8/量化 KV Cache 还能继续降低压力。
+
+## 为什么 Transformer 对 Infra 很重要
+
+从系统角度看，Transformer 不是一个抽象模型，而是一组非常具体的工作负载。
+
+| 模块 | 主要算子 | 常见瓶颈 | 优化方向 |
+| --- | --- | --- | --- |
+| Embedding | gather / lookup | 随机访存、cache miss | layout、缓存、并行读取 |
+| QKV Projection | GEMM | 算力利用率 | Tensor Core、融合 QKV |
+| Attention Scores | QK GEMM | `S^2` 计算和中间矩阵 | FlashAttention、tiling、mask fusion |
+| Softmax | exp / reduce | 内存访问、数值稳定 | online softmax、fusion |
+| Attention Output | PV GEMM | 带宽和算力 | tiling、layout |
+| RoPE / Norm / Residual | elementwise | 小算子开销 | kernel fusion |
+| MLP | GEMM + activation | 算力、显存带宽 | Tensor Core、SwiGLU fusion、quantization |
+| LM Head | GEMM / top-k | 大词表输出 | vocab parallel、采样优化 |
+| KV Cache | read/write | 显存容量和带宽 | paged attention、cache quantization、调度 |
+
+这也是为什么后续会学习 FlashAttention、Triton、TorchInductor、Tensor Core、HBM、interconnect、batching 和 serving scheduler。
+
+## 常见误区
+
+### 误区 1：Transformer 只有 Attention
+
+Attention 很关键，但 MLP、Residual、Norm、位置编码、训练目标都很重要。很多参数和计算量集中在 MLP 上。
+
+### 误区 2：Attention 权重就是完整解释
+
+Attention 权重能提示模型在某层某头关注了哪里，但不能直接等同于“模型为什么做出这个预测”。真正的表示会经过多层、多头、MLP 和 residual stream 混合。
+
+### 误区 3：Encoder-Decoder 和 GPT 是同一个结构
+
+原始 Transformer 是 Encoder-Decoder。GPT/LLaMA 这类模型通常是 Decoder-only，去掉 cross-attention，只保留 masked self-attention 和 MLP。
+
+### 误区 4：训练和推理性能是一回事
+
+训练通常大 batch、大矩阵、需要 backward 和 optimizer。推理分 prefill 和 decode；decode 小步迭代、依赖 KV Cache，瓶颈经常完全不同。
+
+### 误区 5：长上下文只是多放一些 token
+
+长上下文会同时放大 prefill 计算、attention 中间状态、KV Cache 容量和 decode 读带宽。它是模型能力问题，也是系统问题。
+
+## 关键问题
+
+- 当前模型是 Encoder-only、Decoder-only 还是 Encoder-Decoder。
+- 当前问题发生在训练、prefill 还是 decode。
+- 当前瓶颈来自 Attention、MLP、Embedding、Norm、LM Head 还是 KV Cache。
+- `B`、`S`、`D`、`H`、`L`、precision 如何改变计算量、显存和带宽。
+- Attention kernel 是否避免了物化完整 `[B, H, S, S]` 矩阵。
+- KV Cache 的 layout 是否适合当前 batch、beam、paged allocation 和并发调度。
+- 小算子是否被融合，是否存在 launch overhead。
+- 当前 shape 是否能让 Tensor Core、编译器和调度器跑满。
+
+## 推荐阅读顺序
+
+1. 先读 [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)：用图理解 encoder、decoder、Q/K/V、多头和位置编码。
+2. 再读 [The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html)：把论文结构对应到可运行代码。
+3. 再读 [Transformers from Scratch](https://peterbloem.nl/blog/transformers)：从最小 self-attention 和 PyTorch 实现理解矩阵化。
+4. 再读 [The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/)：理解 Decoder-only 语言模型、masked self-attention 和逐 token 生成。
+5. 需要系统化教材时，读 [Dive into Deep Learning: Transformer Architecture](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html)。
+6. 想补 Attention 历史和变体时，读 [Lilian Weng: Attention? Attention!](https://lilianweng.github.io/posts/2018-06-24-attention/)。
+
+## 参考资料
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762), Vaswani et al., 2017.
+- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/), Jay Alammar.
+- [The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html), Harvard NLP.
+- [Transformers from Scratch](https://peterbloem.nl/blog/transformers), Peter Bloem.
+- [The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/), Jay Alammar.
+- [Dive into Deep Learning: The Transformer Architecture](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html).
+- [Attention? Attention!](https://lilianweng.github.io/posts/2018-06-24-attention/), Lilian Weng.
+
+---
+
+# Document: 训练过程与原理
+
+Source: docs/02-ai-workloads/training-primer.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/training-primer/
+domain: training-primer
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 训练过程与原理
+
+训练的目标是让模型参数逐步变得更适合目标数据。AI Infra 关注的是训练如何消耗计算、显存、网络和存储，以及如何把训练过程稳定、可复现地跑起来。
+
+## 单步训练流程
+
+```text
+读取 batch
+  -> tokenizer / data loader
+  -> forward
+  -> loss
+  -> backward
+  -> gradient sync
+  -> optimizer step
+  -> checkpoint / logging
+```
+
+## Forward
+
+Forward 是模型从输入 token 计算 logits 和 loss 的过程。训练时不仅要算出结果，还要保存大量中间 activation，供 backward 计算梯度。
+
+系统影响：
+
+- activation 会占用大量显存。
+- sequence length 和 batch size 越大，显存和计算压力越大。
+- activation checkpointing 可以省显存，但会增加重算开销。
+
+## Backward
+
+Backward 根据 loss 计算每个参数的 gradient。它通常比 forward 更耗时，并且会产生梯度张量。
+
+系统影响：
+
+- gradient 需要显存。
+- 多 GPU 训练需要同步 gradient。
+- 通信库、网络拓扑和并行策略会影响 step time。
+
+## Optimizer
+
+Optimizer 用 gradient 更新参数。Adam 这类优化器会保存额外状态，例如一阶矩和二阶矩。
+
+系统影响：
+
+- optimizer state 可能比参数本身还占显存。
+- ZeRO、FSDP 会切分参数、梯度和 optimizer state。
+- checkpoint 需要保存参数和优化器状态，带来存储压力。
+
+## 并行训练为什么复杂
+
+单卡放不下或太慢时，需要并行：
+
+- Data Parallel：每张卡处理不同 batch，梯度同步。
+- Tensor Parallel：把单层矩阵计算切到多张卡。
+- Pipeline Parallel：把不同层放到不同卡。
+- Expert Parallel：MoE 中不同 expert 分布到不同卡。
+
+## 关键问题
+
+- step time 主要花在 forward、backward、通信还是数据读取。
+- 显存主要被参数、activation、gradient 还是 optimizer state 占用。
+- 并行策略是否带来过多通信或 pipeline bubble。
+- checkpoint、resume、随机性和版本是否支持复现。
+
+---
+
+# Document: 推理过程与原理
+
+Source: docs/02-ai-workloads/inference-primer.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/
+domain: inference-primer
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 推理过程与原理
+
+推理是模型参数固定后，根据输入生成输出的过程。AI Infra 关注的是如何让推理低延迟、高吞吐、低成本、稳定且可观测。
+
+## 自回归生成流程
+
+大语言模型通常按 token 逐个生成：
+
+```text
+prompt
+  -> tokenize
+  -> prefill
+  -> decode token 1
+  -> decode token 2
+  -> ...
+  -> detokenize
+```
+
+每生成一个新 token，模型都会根据已有上下文预测下一个 token 的概率分布，然后通过 greedy、top-k、top-p、temperature 等采样策略选出 token。
+
+## Prefill
+
+Prefill 处理完整 prompt，计算所有输入 token 的表示，并建立 KV Cache。
+
+系统特征：
+
+- 适合较大的矩阵计算。
+- prompt 越长，prefill 越重。
+- TTFT 很大程度受 prefill、排队和调度影响。
+
+## Decode
+
+Decode 每次生成一个 token，并复用历史 KV Cache。
+
+系统特征：
+
+- 每一步计算规模小，但需要频繁访问 KV Cache。
+- 容易受显存带宽、调度和 batch 形态影响。
+- TPOT 主要反映 decode 阶段效率。
+
+## KV Cache
+
+KV Cache 保存历史 token 的 key/value，避免每次 decode 重新计算全部历史上下文。
+
+系统影响：
+
+- 长上下文和高并发会让 KV Cache 占用大量显存。
+- PagedAttention、prefix cache、cache eviction 都围绕 KV Cache 管理展开。
+- KV Cache layout 会影响内存访问效率和 Kernel 性能。
+
+## Batching
+
+推理服务会把多个请求合并运行，提高 GPU 利用率。
+
+- Static batching 简单，但容易等待。
+- Dynamic batching 根据请求动态合并。
+- Continuous batching 允许请求在 decode 过程中加入或退出。
+
+## 关键指标
+
+| 指标 | 含义 |
+| --- | --- |
+| TTFT | 从请求进入到第一个 token 返回的时间 |
+| TPOT | 每生成一个 token 的平均时间 |
+| Throughput | 单位时间生成的 token 或处理的请求 |
+| p95/p99 latency | 尾延迟，反映长尾体验 |
+| GPU memory | 权重和 KV Cache 等显存占用 |
+
+## 关键问题
+
+- 当前 workload 是 prefill-heavy、decode-heavy 还是混合负载。
+- 主要瓶颈是计算、显存容量、显存带宽、排队、调度还是网络。
+- batch size 和并发提升后，吞吐增加是否以尾延迟恶化为代价。
+- KV Cache 管理策略是否适合目标上下文长度和请求分布。
+
+---
+
+# Document: 数据与输入路径
+
+Source: docs/02-ai-workloads/data-paths.md
+URL: https://amoursec.github.io/aikg/02-ai-workloads/data-paths/
+domain: data-paths
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 数据与输入路径
+
+本页不讨论数据集如何提升任务指标，而关注数据如何进入训练和推理系统，以及数据路径如何成为性能瓶颈。
+
+## 建议主题
+
+- Tokenization、packing、padding、truncation
+- dynamic batching、bucketing、sequence packing
+- 数据格式：JSONL、Parquet、Arrow、WebDataset、二进制 shard
+- 训练数据读取、shuffle、prefetch、cache、NUMA 亲和性
+- 在线推理请求解析、输入校验、prompt 模板、上下文拼接
+- Embedding、检索、rerank、工具调用的额外数据路径
+- 对象存储、本地 NVMe、共享文件系统、数据缓存
+
+## 关键问题
+
+- 数据读取是否让 GPU 等待。
+- Padding 和动态 shape 是否浪费计算。
+- tokenizer、preprocess、postprocess 是否在 CPU 侧成为瓶颈。
+- 数据分片和 shuffle 是否影响可复现性和训练吞吐。
+- 推理服务中上下文拼接、检索和工具调用是否显著增加尾延迟。
+
+---
+
+# Document: 推理系统与服务优化
+
+Source: docs/03-inference-systems/index.md
+URL: https://amoursec.github.io/aikg/03-inference-systems/
+domain: inference-systems
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 推理系统与服务优化
+
+本目录关注模型进入在线服务后的系统问题：如何降低延迟、提高吞吐、控制显存、隔离租户、处理长尾请求，并让服务行为可测、可复现。
+
+## 建议主题
+
+- Prefill、Decode、streaming output、request lifecycle
+- KV Cache、PagedAttention、prefix cache、cache eviction
+- continuous batching、dynamic batching、admission control
+- speculative decoding、early exit、parallel decoding
+- quantization、weight-only quantization、KV Cache quantization
+- vLLM、TensorRT-LLM、TGI、llama.cpp、SGLang
+- routing、rate limit、queueing、backpressure、fallback
+- TTFT、TPOT、p50/p95/p99 latency、tokens/s、GPU memory
+
+## 关键问题
+
+- 当前目标是降低单请求延迟、提升整体吞吐，还是控制尾延迟。
+- 请求队列、batching、KV Cache、kernel 执行和网络返回各占多少时间。
+- 长上下文和高并发下显存容量、带宽和碎片化如何变化。
+- 优化是否影响输出质量、稳定性、隔离性或可观测性。
+- Benchmark 是否区分 prefill-heavy、decode-heavy 和 mixed workload。
+
+---
+
+# Document: RAG 与 Agent 推理负载
+
+Source: docs/03-inference-systems/rag-agent-workloads.md
+URL: https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/
+domain: rag-agent-workloads
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# RAG 与 Agent 推理负载
+
+本页把 RAG 和 Agent 当作推理系统的复合 workload，而不是提示词技巧专题。重点是检索、rerank、工具调用、多轮规划和模型调用如何改变延迟、吞吐、成本和可靠性。
+
+## 建议主题
+
+- Embedding service、vector search、hybrid search、rerank
+- chunking、context packing、引用拼接、上下文窗口占用
+- tool calling、function execution、sandbox、timeout、retry
+- multi-step agent、planner/executor、并行工具调用
+- cache：query cache、embedding cache、retrieval cache、tool result cache
+- end-to-end latency breakdown、fan-out、tail amplification
+- RAG/Agent Benchmark、faithfulness、citation、tool success rate
+
+## 关键问题
+
+- 检索、rerank、LLM prefill、decode、工具调用分别贡献多少延迟。
+- Agent 多步调用是否放大尾延迟和失败概率。
+- 缓存命中率、召回质量和上下文长度之间如何取舍。
+- 工具失败、超时、重复调用和权限隔离如何处理。
+- 评测是否同时覆盖质量、延迟、成本和稳定性。
+
+---
+
+# Document: 训练系统与分布式计算
+
+Source: docs/04-training-systems/index.md
+URL: https://amoursec.github.io/aikg/04-training-systems/
+domain: training-systems
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 训练系统与分布式计算
+
+本目录关注训练如何在多 GPU、多节点上高效运行。这里不以提升模型任务指标为重点，而以 step time、扩展效率、显存占用、通信开销、故障恢复和复现实验为重点。
+
+## 建议主题
+
+- data parallel、tensor parallel、pipeline parallel、expert parallel
+- ZeRO、FSDP、DeepSpeed、Megatron-LM、NCCL
+- activation checkpointing、gradient accumulation、optimizer state sharding
+- AllReduce、AllGather、ReduceScatter、通信重叠
+- pipeline bubble、load balance、straggler、MoE dispatch
+- checkpoint、resume、fault tolerance、elastic training
+- mixed precision、loss scaling、determinism、random seed
+- step time breakdown、MFU、scaling efficiency、network utilization
+
+## 关键问题
+
+- 训练瓶颈来自计算、显存容量、内存带宽、跨卡通信还是数据输入。
+- 并行策略如何影响显存占用、通信量和实现复杂度。
+- 通信是否能与计算重叠，重叠失败时原因是什么。
+- Checkpoint 策略如何影响故障恢复时间和存储压力。
+- 扩展效率下降时，是网络、负载均衡、同步点还是输入 pipeline 导致。
+
+---
+
+# Document: Kernel、算子与编译优化
+
+Source: docs/05-kernels-compilers/index.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/
+domain: kernels-compilers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# Kernel、算子与编译优化
+
+本目录关注 AI workload 在单机和单卡上的执行效率：算子如何映射到硬件、Kernel 为什么慢、编译器如何做图优化和融合，以及自动调优如何找到更好的实现。Triton 和 TorchInductor 是本目录的核心专题，分别对应手写高性能 Kernel 和 PyTorch 编译栈中的自动代码生成路径。
+
+## 技术分层
+
+| 层级 | 关注问题 | 代表技术 |
+| --- | --- | --- |
+| 算子语义 | workload 需要什么计算和数据访问模式 | GEMM、Attention、LayerNorm、Softmax、Embedding、MoE dispatch |
+| 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS |
+| 图编译与代码生成 | 如何从 PyTorch graph 自动融合、调度和生成代码 | TorchDynamo、AOTAutograd、TorchInductor、Triton backend |
+| 性能诊断 | 如何证明 Kernel 或编译优化真的有效 | profiler、roofline、IR/PTX/SASS inspection |
+
+## 建议主题
+
+- GEMM、Attention、LayerNorm、Softmax、Embedding、MoE dispatch
+- tiling、vectorization、memory coalescing、shared memory、register pressure
+- occupancy、warp divergence、bank conflict、kernel launch overhead
+- FlashAttention、fused operator、persistent kernel
+- Triton、CUDA、ROCm、CUTLASS、cuDNN、cuBLAS
+- TorchDynamo、AOTAutograd、TorchInductor、XLA、TVM、MLIR、ONNX Runtime
+- graph capture、operator fusion、layout transform、auto-tuning
+- kernel profiling、roofline、SASS/PTX/IR inspection
+
+## 关键问题
+
+- 算子是 compute-bound 还是 memory-bound。
+- 是否存在多余的 memory read/write、layout transform 或 kernel launch。
+- Fusion 是否减少访存，是否引入寄存器压力和 occupancy 下降。
+- Triton Kernel 或 TorchInductor 生成的 kernel 是否符合 workload shape。
+- 优化在不同 batch、sequence length、precision 下是否仍然成立。
+
+## 专题入口
+
+- [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel、tiling、block program、memory layout 和 auto-tuning。
+- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、graph capture、fusion、scheduler、Triton codegen 和性能调试。
+
+---
+
+# Document: Triton Kernel 编程
+
+Source: docs/05-kernels-compilers/triton.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/triton/
+domain: triton
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# Triton Kernel 编程
+
+Triton 是本知识库中手写 AI Kernel 的核心专题。它适合用来理解一个算子如何从张量语义落到 block、tile、program、memory access 和硬件执行效率上。
+
+## 建议主题
+
+- Triton program model、program id、block pointer、mask
+- block size、num warps、num stages、tile shape
+- memory coalescing、shared memory、register pressure、occupancy
+- matmul、attention、layernorm、softmax、embedding、MoE dispatch
+- fused kernel、persistent kernel、pipeline、prefetch
+- auto-tuning、shape specialization、dynamic shape 处理
+- 与 CUDA、CUTLASS、cuBLAS、TorchInductor codegen 的关系
+- Triton profiler、IR、PTX、SASS、Nsight 分析
+
+## 关键问题
+
+- 这个算子是否适合用 Triton 手写，而不是调用库函数或依赖编译器生成。
+- 当前瓶颈是访存、计算、同步、寄存器压力还是 launch overhead。
+- tile shape 是否匹配输入 shape、cache 行为和矩阵单元。
+- mask、layout 和边界处理是否引入额外开销。
+- auto-tuning 搜索空间是否覆盖真实 workload，而不是只覆盖单一 shape。
+
+## 学习顺序
+
+1. 从 vector add、copy、reduce 理解 program model。
+2. 用 matmul 理解 tiling、block size、num warps 和 memory reuse。
+3. 用 softmax、layernorm 理解 memory-bound 算子。
+4. 用 attention 或 fused MLP 理解 fusion、pipeline 和中间结果落地成本。
+5. 用 profiler 对比 Triton、PyTorch eager、TorchInductor 和 vendor library。
+
+## 记录模板
+
+| 字段 | 说明 |
+| --- | --- |
+| Operator | 算子语义和输入输出 shape |
+| Bottleneck | compute / memory / launch / register / occupancy |
+| Baseline | PyTorch、cuBLAS、cuDNN、CUTLASS 或 Inductor 结果 |
+| Triton Config | block size、num warps、num stages、precision |
+| Evidence | profiler、roofline、吞吐、延迟、显存访问 |
+| Portability | 不同 GPU、shape、precision 下是否稳定 |
+
+---
+
+# Document: TorchInductor 与 PyTorch 编译栈
+
+Source: docs/05-kernels-compilers/torchinductor.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/
+domain: torchinductor
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# TorchInductor 与 PyTorch 编译栈
+
+TorchInductor 是理解 PyTorch 2.x 编译优化路径的核心专题。它连接上层 PyTorch graph 和底层 kernel codegen，适合研究图捕获、算子融合、调度、layout、Triton 代码生成和性能回归定位。
+
+## 建议主题
+
+- `torch.compile`、TorchDynamo、FX Graph、AOTAutograd
+- TorchInductor graph lowering、scheduler、fusion、layout planning
+- Triton codegen、C++ codegen、external kernel call
+- guard、graph break、dynamic shape、symbolic shape
+- operator decomposition、pattern matching、epilogue fusion
+- memory planning、buffer reuse、layout transform
+- compile time、cache、warmup、runtime performance
+- debug tools、generated code inspection、IR 分析、profiler 关联
+
+## 关键问题
+
+- `torch.compile` 是否真的捕获到目标计算图，是否存在 graph break。
+- Inductor 的 fusion 是否减少中间 tensor 落地，是否引入额外 layout transform。
+- 生成的 Triton kernel 是否适合当前 shape、precision 和硬件。
+- 编译开销、warmup、cache 命中和运行时收益是否平衡。
+- dynamic shape、控制流、非标准算子是否导致性能退化。
+
+## 学习顺序
+
+1. 从 eager vs `torch.compile` 的执行差异开始。
+2. 观察 graph break、FX graph 和 operator decomposition。
+3. 分析 Inductor 生成的代码、kernel 数量和 fusion 边界。
+4. 用 profiler 拆分 compile time、kernel time、memory copy 和 synchronization。
+5. 对比 Inductor 自动生成 kernel 与手写 Triton kernel 的差异。
+
+## 记录模板
+
+| 字段 | 说明 |
+| --- | --- |
+| Model Fragment | 被编译的模型片段或算子组合 |
+| Graph Capture | 是否有 graph break、guard、dynamic shape |
+| Generated Kernels | kernel 数量、fusion 边界、Triton/C++ codegen |
+| Bottleneck | compile time / runtime / memory / layout / graph break |
+| Evidence | FX graph、Inductor IR、生成代码、profiler |
+| Decision | 保持 eager、使用 Inductor、手写 Triton 或调用外部库 |
+
+---
+
+# Document: AI 加速器与计算架构
+
+Source: docs/06-accelerators-architecture/index.md
+URL: https://amoursec.github.io/aikg/06-accelerators-architecture/
+domain: accelerators-architecture
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI 加速器与计算架构
+
+本目录关注 GPU、NPU、TPU、ASIC、FPGA 等 AI 加速器如何支撑模型训练和推理。重点是计算、存储、互连、能效和可编程性如何约束上层系统。
+
+## 建议主题
+
+- SIMD、SIMT、Tensor Core、Systolic Array、Matrix Engine
+- HBM、SRAM、cache、register file、memory hierarchy
+- PCIe、NVLink、CXL、NoC、RDMA、chiplet interconnect
+- FP16、BF16、FP8、INT8、INT4、混合精度
+- arithmetic intensity、roofline、memory wall、data reuse
+- power、thermal、frequency、reliability、ECC
+- workload mapping、operator support、compiler/runtime interface
+- GPU、NPU、TPU、ASIC、FPGA 的体系结构取舍
+
+## 关键问题
+
+- 给定 workload 的瓶颈是否与硬件计算峰值、带宽或容量匹配。
+- 算子能否充分使用矩阵单元，数据搬运是否抵消计算收益。
+- 精度格式、存储层次和互连如何影响训练和推理效率。
+- 硬件特性是否需要编译器、runtime 或上层调度配合。
+- Benchmark 是否能真实反映目标负载，而不是只测峰值指标。
+
+---
+
+# Document: 集群、网络、存储与调度
+
+Source: docs/07-cluster-infra/index.md
+URL: https://amoursec.github.io/aikg/07-cluster-infra/
+domain: cluster-infra
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 集群、网络、存储与调度
+
+本目录关注 AI Infra 的集群底座：GPU 资源如何被调度、网络和存储如何支撑训练与推理、实验环境如何保持可复现、不同任务如何隔离并共享资源。
+
+## 建议主题
+
+- Slurm、Kubernetes、Ray、Volcano、Kueue
+- GPU topology、NUMA、MIG、MPS、资源隔离
+- InfiniBand、RoCE、RDMA、NCCL topology、拥塞控制
+- 本地 NVMe、并行文件系统、对象存储、数据缓存
+- container image、driver、CUDA、library version、environment lock
+- queueing、priority、quota、preemption、gang scheduling
+- online serving cluster、batch training cluster、mixed workload cluster
+- utilization、fragmentation、fairness、SLA、成本和能效指标
+
+## 关键问题
+
+- 调度策略是否让 GPU 空闲或碎片化。
+- 网络拓扑和作业拓扑是否匹配。
+- 存储吞吐是否让训练或检索任务等待。
+- 环境版本是否可复现，失败时是否能快速定位。
+- 多租户隔离是否影响性能、稳定性和安全边界。
+
+---
+
+# Document: 性能分析、Benchmark 与容量建模
+
+Source: docs/08-benchmark-capacity/index.md
+URL: https://amoursec.github.io/aikg/08-benchmark-capacity/
+domain: benchmark-capacity
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 性能分析、Benchmark 与容量建模
+
+本目录是整个知识库的度量核心。任何“更快、更省、更稳”的结论，都必须回到可复现的指标、实验设计、性能剖析和容量模型。
+
+## 建议主题
+
+- latency、throughput、TTFT、TPOT、p95/p99、tokens/s
+- step time、MFU、scaling efficiency、communication ratio
+- GPU utilization、SM occupancy、HBM bandwidth、memory footprint
+- power、energy per token、thermal、frequency throttling
+- profiler：Nsight、PyTorch Profiler、NVIDIA DCGM、perf、eBPF
+- Roofline model、queueing model、capacity planning
+- Benchmark workload design、warmup、sample size、confidence interval
+- A/B comparison、ablation、regression detection
+
+## 关键问题
+
+- 指标定义是否清晰，是否能被别人复现。
+- Benchmark workload 是否代表真实请求和训练任务。
+- 结果是否区分平均值、尾部、波动和异常值。
+- 性能瓶颈是否有 profiler 证据，而不是只看现象。
+- 容量模型能否解释现有结果并预测扩容后的表现。
+
+---
+
+# Document: 可靠性、可观测性与故障复盘
+
+Source: docs/09-reliability-observability/index.md
+URL: https://amoursec.github.io/aikg/09-reliability-observability/
+domain: reliability-observability
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 可靠性、可观测性与故障复盘
+
+本目录关注 AI 系统如何长期稳定运行。性能优化如果不能被观测、不能恢复、不能复盘，就无法沉淀成可靠的基础设施能力。
+
+## 建议主题
+
+- metrics、logs、traces、profiles、events
+- GPU health、ECC、Xid、temperature、power、clock、memory error
+- OOM、NCCL timeout、hang、kernel failure、driver reset
+- queue backlog、tail latency、straggler、checkpoint failure
+- alerting、SLO、error budget、runbook
+- fault injection、chaos test、rollback、fallback、graceful degradation
+- incident review、root cause analysis、corrective action
+- 性能回归、容量耗尽、版本升级风险
+
+## 关键问题
+
+- 失败是否能被快速发现、定位、隔离和恢复。
+- 监控指标是否覆盖 workload、runtime、kernel、hardware 和 cluster。
+- 故障复盘是否给出可验证的改进项。
+- 可靠性改动是否影响延迟、吞吐或资源利用率。
+- 线上故障经验是否能转化为 Benchmark、测试用例和知识库条目。
+
+---
+
+# Document: 论文复现与系统案例
+
+Source: docs/10-papers-cases/index.md
+URL: https://amoursec.github.io/aikg/10-papers-cases/
+domain: papers-cases
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 论文复现与系统案例
+
+本目录用于沉淀 AI 系统论文、开源系统、架构案例、复现实验和技术决策。重点不是记录“读过什么”，而是把论文方法转化为可验证的系统知识。
+
+## 建议主题
+
+- 推理系统论文：serving、batching、KV Cache、speculative decoding
+- 训练系统论文：parallelism、communication、checkpoint、elastic training
+- Kernel 与编译论文：operator fusion、attention kernel、auto-tuning
+- 加速器论文：architecture、memory hierarchy、interconnect、precision
+- 集群系统论文：scheduling、network、storage、multi-tenancy
+- 复现报告：环境、workload、指标、结果、差异和失败原因
+- 技术决策：方案选择、benchmark 证据、约束和后续验证
+
+## 关键问题
+
+- 论文解决的是哪个系统瓶颈。
+- 方法依赖的 workload、硬件和软件前提是什么。
+- 复现结果是否达到论文水平，差异来自哪里。
+- 方法能否迁移到不同模型、不同 shape、不同硬件或不同集群规模。
+- 案例是否给后续工程或研究留下可复用结论。
+
+---
+
+# Document: AI 系统论文与架构
+
+Source: docs/10-papers-cases/ai-system-architecture.md
+URL: https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/
+domain: ai-system-papers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# AI 系统论文与架构
+
+本页用于记录 AI 系统论文和开源系统的架构分析。每篇笔记都应把论文贡献映射到 workload、runtime、kernel、accelerator、cluster 和 measurement 中的具体层级。
+
+## 建议分析维度
+
+- 论文背景：解决什么系统瓶颈，假设的 workload 是什么。
+- 架构位置：推理、训练、Kernel、编译器、硬件、集群还是 Benchmark。
+- 核心机制：调度、缓存、并行、融合、量化、通信、存储或容错。
+- 实验设置：模型、shape、硬件、软件版本、基线、指标。
+- 复现难点：代码、数据、硬件、参数、未公开细节。
+- 适用边界：在哪些 workload 或硬件上可能失效。
+
+## 记录格式
+
+| 字段 | 说明 |
+| --- | --- |
+| Paper | 标题、作者、会议、年份、链接 |
+| System Layer | workload / runtime / kernel / accelerator / cluster / measurement |
+| Bottleneck | compute / memory / communication / scheduling / reliability |
+| Method | 核心方法和实现路径 |
+| Evidence | 论文实验、复现实验和 profiler 证据 |
+| Limits | 前提、反例和不可迁移之处 |
+
+---
+
+# Document: 技术决策记录
+
+Source: docs/10-papers-cases/adr.md
+URL: https://amoursec.github.io/aikg/10-papers-cases/adr/
+domain: technical-decision-records
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 技术决策记录
+
+本页用于记录 AI Infra 方向的重要技术选择。决策记录应基于明确 workload、Benchmark 结果和约束条件，而不是只记录主观偏好。
+
+## 适用场景
+
+- 选择推理 runtime、训练框架、通信库、调度系统或存储方案。
+- 决定是否采用量化、KV Cache 策略、batching 策略或 speculative decoding。
+- 决定某个 Kernel、编译器优化或硬件特性的投入方向。
+- 决定 Benchmark 口径、容量模型或线上 SLO。
+
+## 必填信息
+
+- 决策背景和目标指标。
+- workload、硬件、软件和数据路径约束。
+- 候选方案和拒绝原因。
+- Benchmark 证据、profiler 证据或论文依据。
+- 风险、回滚方式和后续验证计划。
+
+## 关键问题
+
+- 这个决策优化的是延迟、吞吐、成本、能效、可靠性还是可维护性。
+- 证据是否足以支持当前 workload，而不是只支持 toy benchmark。
+- 未来模型规模、上下文长度、并发或硬件变化后，决策是否仍然成立。
+
+---
+
+# Document: 故障复盘
+
+Source: docs/10-papers-cases/failure-cases.md
+URL: https://amoursec.github.io/aikg/10-papers-cases/failure-cases/
+domain: failure-cases
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 故障复盘
+
+本页用于沉淀 AI Infra 方向的失败案例、线上故障、复现实验失败和性能回归。复盘不是追责，而是把故障转化为测试用例、监控项、Runbook 和知识库条目。
+
+## 建议主题
+
+- 推理服务延迟抖动、吞吐下降、KV Cache OOM
+- NCCL timeout、训练 hang、checkpoint 损坏
+- Kernel 性能回归、编译器误优化、driver 或 CUDA 版本问题
+- 存储带宽不足、数据读取阻塞、网络拥塞
+- GPU 异常、ECC、Xid、温度或功耗限制
+- 调度错误、资源碎片、多租户互相影响
+
+## 复盘结构
+
+- 现象：用户可见影响和关键指标变化。
+- 时间线：发现、定位、缓解、恢复。
+- 根因：workload、runtime、kernel、hardware、cluster 或 process。
+- 证据：日志、metrics、profile、实验复现。
+- 改进：监控、告警、测试、容量模型、文档和流程。
+
+## 关键问题
+
+- 这类故障是否能被提前发现。
+- 是否可以构造成回归测试或 Benchmark case。
+- Runbook 是否能帮助新同学独立处理同类问题。
+- 故障结论是否能被 AI 检索系统准确引用。
+
+---
+
+# Document: 知识组织、模板与 AI 可读索引
+
+Source: docs/11-knowledge-index/index.md
+URL: https://amoursec.github.io/aikg/11-knowledge-index/
+domain: knowledge-index
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-02
+
+# 知识组织、模板与 AI 可读索引
+
+本目录定义知识库如何被人阅读，也如何被 AI 检索、引用和转化为可执行的技能。AI Infra 知识高度依赖环境、指标和上下文，因此元数据必须足够结构化。
+
+## 建议主题
+
+- front matter 字段、标签体系、状态流转
+- workload、hardware、software、metrics、source 的统一写法
+- 论文笔记、Benchmark 报告、技术决策、故障复盘模板
+- 引用溯源、版本记录、实验数据链接
+- 向量索引、知识图谱、实体关系、AI skills
+- 面向 agent 的任务说明、约束、输入输出格式和验证步骤
+
+## 元数据字段
+
+| 字段 | 说明 |
+| --- | --- |
+| title | 文档标题 |
+| domain | 所属技术域 |
+| workload | 相关 workload 或模型形态 |
+| system_layer | workload / runtime / kernel / accelerator / cluster / measurement |
+| hardware | GPU、NPU、CPU、网络、存储等环境 |
+| software | framework、runtime、driver、compiler、library version |
+| metrics | 使用的指标 |
+| source | 论文、代码、实验记录或故障单 |
+| status | draft / reviewed / verified / deprecated |
+
+## AI 可读入口
+
+本知识库同时维护面向 AI 的入口文件：
+
+| 文件 | 位置 | 作用 |
+| --- | --- | --- |
+| `llms.txt` | 仓库根目录与站点根路径 | 给 AI 的入口索引，说明知识库目标、推荐阅读路径、主要文档和 Markdown 源地址。 |
+| `llms-full.txt` | 仓库根目录与站点根路径 | 聚合 `docs/` 下 Markdown 文档，适合 AI 无法逐页抓取时一次性摄取上下文。 |
+
+推荐把下面几项一起提供给 AI：
+
+```text
+GitHub: https://github.com/AmourSec/aikg
+Docs: https://amoursec.github.io/aikg/
+LLM index: https://amoursec.github.io/aikg/llms.txt
+Full context: https://amoursec.github.io/aikg/llms-full.txt
+```
+
+建议提示语：
+
+```text
+请先读取 llms.txt，按其中的推荐路径理解知识库结构。
+需要完整上下文时读取 llms-full.txt。
+回答时优先引用仓库中的 Markdown 源路径。
+```
+
+当新增、删除或重排文档后，应重新生成 AI 入口文件：
+
+```bash
+python scripts/generate_llms_files.py
+```
+
+## 关键问题
+
+- AI 是否能从文档中知道结论适用的 workload 和环境。
+- 性能结论是否有指标、实验和来源支撑。
+- 文档之间是否能通过标签、实体和链接形成可检索网络。
+- 模板是否能降低新同学写复现实验和故障复盘的成本。
+
+---
+
+# Document: 知识点模板
+
+Source: docs/99-templates/knowledge-note.md
+URL: https://amoursec.github.io/aikg/99-templates/knowledge-note/
+domain: template
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 知识点模板
+
+## 摘要
+
+用 3 到 5 句话说明这个知识点解决的 AI Infra 问题、所属系统层级和主要结论。
+
+## 元数据
+
+| 字段 | 内容 |
+| --- | --- |
+| domain | inference / training / kernel / compiler / accelerator / cluster / benchmark / reliability |
+| system_layer | workload / runtime / kernel / accelerator / cluster / measurement |
+| workload | 模型、shape、batch、sequence length、precision、并发 |
+| hardware | GPU/NPU/CPU、内存、网络、存储 |
+| software | framework、runtime、driver、compiler、library version |
+| source | 论文、代码、实验、故障单或讨论记录 |
+| status | draft / reviewed / verified / deprecated |
+
+## 背景
+
+- 问题出现在哪个系统层级。
+- 目标是降低延迟、提升吞吐、减少显存、提高能效、改善稳定性还是增强复现性。
+- 当前已知约束是什么。
+
+## 核心内容
+
+- 关键概念。
+- 机制说明。
+- 公式、伪代码或执行链路。
+- 与上游 workload 和下游系统的关系。
+
+## 证据
+
+- Benchmark 或 profiler 结果。
+- 论文、代码或硬件规格来源。
+- 适用范围和不适用场景。
+
+## 相关链接
+
+- 上游知识点：
+- 下游知识点：
+- 相关论文或代码：
+
+---
+
+# Document: 技术决策模板
+
+Source: docs/99-templates/adr.md
+URL: https://amoursec.github.io/aikg/99-templates/adr/
+domain: template
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 技术决策模板
+
+## 标题
+
+ADR-0000: 简短描述技术决策
+
+## 状态
+
+Proposed / Accepted / Superseded / Deprecated
+
+## 背景
+
+- 需要解决的 AI Infra 问题。
+- 目标指标：latency、throughput、显存、MFU、能效、稳定性、复现性等。
+- workload、硬件、软件、集群和时间约束。
+
+## 候选方案
+
+| 方案 | 优点 | 缺点 | 证据 |
+| --- | --- | --- | --- |
+| 方案 A |  |  |  |
+| 方案 B |  |  |  |
+
+## 决策
+
+说明最终选择，以及选择它的 Benchmark、profiler、论文或工程证据。
+
+## 影响
+
+- 对性能、可靠性、可维护性和复现性的影响。
+- 对依赖模块、运行环境和文档的影响。
+- 需要新增的测试、监控和回滚方案。
+
+## 后续验证
+
+- 待补充实验。
+- 需要观测的线上指标。
+- 可能推翻该决策的条件。
+
+---
+
+# Document: 基准实验报告模板
+
+Source: docs/99-templates/benchmark-report.md
+URL: https://amoursec.github.io/aikg/99-templates/benchmark-report/
+domain: template
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-05-30
+
+# 基准实验报告模板
+
+## 实验目标
+
+说明本次 Benchmark 要回答的问题，例如降低 TTFT、提升 decode throughput、验证分布式扩展效率、比较 Kernel 实现或估算集群容量。
+
+## Workload
+
+- 模型或算子：
+- batch size：
+- sequence length / input-output tokens：
+- precision：
+- 并发或节点规模：
+- 数据路径：
+
+## 实验环境
+
+| 项目 | 配置 |
+| --- | --- |
+| 硬件 | GPU/NPU/CPU、显存、网络、存储 |
+| 软件 | OS、driver、CUDA/ROCm、framework、runtime、compiler |
+| 配置 | 环境变量、启动参数、调度参数 |
+| 版本 | Git commit、镜像 tag、依赖版本 |
+
+## 指标
+
+- latency：TTFT、TPOT、p50/p95/p99
+- throughput：requests/s、tokens/s、samples/s、step/s
+- resource：GPU utilization、SM occupancy、HBM bandwidth、显存占用
+- scaling：MFU、scaling efficiency、communication ratio
+- reliability：失败率、重试率、timeout、OOM
+- energy：power、energy per token、frequency throttling
+
+## 结果
+
+| 实验 | 配置 | 指标 | 结果 | 备注 |
+| --- | --- | --- | --- | --- |
+| baseline |  |  |  |  |
+| variant-a |  |  |  |  |
+
+## 分析
+
+- 主要瓶颈和 profiler 证据。
+- 与预期或论文结果的差异。
+- 对不同 shape、并发、硬件或版本的敏感性。
+- 不确定性、误差来源和统计置信度。
+
+## 结论
+
+- 本次实验支持的结论。
+- 不支持或尚不能判断的结论。
+- 后续实验和需要沉淀到知识库的条目。
+
+---

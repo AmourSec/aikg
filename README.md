@@ -6,6 +6,9 @@ An open AI infrastructure and efficient computing knowledge base for systems-ori
 
 - `docs/`: Markdown source documents.
 - `docs/99-templates/`: Templates for reusable knowledge records.
+- `llms.txt`: AI-readable entry index for the repository and documentation site.
+- `llms-full.txt`: Aggregated Markdown context for AI ingestion.
+- `scripts/generate_llms_files.py`: Generator for AI-readable index files.
 - `mkdocs.yml`: MkDocs site configuration.
 - `.github/workflows/deploy-pages.yml`: GitHub Pages build and deployment workflow.
 
@@ -26,7 +29,30 @@ python -m pip install -r requirements.txt
 mkdocs serve
 ```
 
-Then open `http://127.0.0.1:8000`.
+Then open `http://127.0.0.1:8801/aikg/`.
+
+## AI-readable Index
+
+When giving this knowledge base to an AI assistant, provide both the repository and the documentation entry files:
+
+```text
+GitHub: https://github.com/AmourSec/aikg
+Docs: https://amoursec.github.io/aikg/
+LLM index: https://amoursec.github.io/aikg/llms.txt
+Full context: https://amoursec.github.io/aikg/llms-full.txt
+```
+
+Recommended instruction:
+
+```text
+Please use llms.txt as the entry index. Read llms-full.txt when you need a single-file context dump. Prefer citing source Markdown paths from the repository.
+```
+
+After adding or reorganizing documents, regenerate the AI index files:
+
+```bash
+python scripts/generate_llms_files.py
+```
 
 ## Publishing
 
