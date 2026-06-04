@@ -32,6 +32,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [推理系统与优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与优化主题入口。
 - [推理请求生命周期](https://amoursec.github.io/aikg/03-inference-systems/request-lifecycle/): 推理请求从 API 接入到 Decode、流式返回和资源释放的端到端生命周期。
 - [Prefill 与 Decode](https://amoursec.github.io/aikg/03-inference-systems/prefill-decode/): Prefill 与 Decode 两阶段的计算形态、指标关系和系统瓶颈。
+- [指标体系](https://amoursec.github.io/aikg/03-inference-systems/metrics/): 推理系统的 TTFT、TPOT、吞吐、尾延迟、资源、成本和稳定性指标体系。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
@@ -43,10 +44,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
 - [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
 - [AI 系统论文与架构](https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/): AI 系统论文与架构案例索引。
-- [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
 
 ## Optional Documents
 
+- [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
 - [故障复盘](https://amoursec.github.io/aikg/10-papers-cases/failure-cases/): 故障复盘入口。
 - [知识组织、模板与 AI 可读索引](https://amoursec.github.io/aikg/11-knowledge-index/): 知识组织、模板、元数据和 AI 可读索引说明。
 - [知识点模板](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板。
@@ -69,6 +70,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/index.md)
 - [03-inference-systems/request-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/request-lifecycle.md)
 - [03-inference-systems/prefill-decode.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/prefill-decode.md)
+- [03-inference-systems/metrics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/metrics.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)

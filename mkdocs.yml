@@ -69,6 +69,7 @@ nav:
       - 概览: 03-inference-systems/index.md
       - 推理请求生命周期: 03-inference-systems/request-lifecycle.md
       - Prefill 与 Decode: 03-inference-systems/prefill-decode.md
+      - 指标体系: 03-inference-systems/metrics.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
