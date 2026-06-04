@@ -27,7 +27,7 @@ updated: 2026-06-04
 | 2 | [Transformer 流程与原理](transformer.md) | 一段文字如何经过 token、embedding、attention、MLP，最后变成下一个 token 的概率。 |
 | 3 | [训练过程与原理](training-primer.md) | 模型如何先猜答案、计算错误、根据错误调整参数，并不断重复。 |
 | 4 | [推理过程与原理](inference-primer.md) | 模型参数固定后，如何读取 prompt，并一个 token 一个 token 生成输出。 |
-| 5 | [多模态原理](multimodal-primer.md) | 图片、音频、视频如何变成向量，并和文字表示对齐。 |
+| 5 | [多模态原理](multimodal-primer.md) | 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。 |
 
 ## 本目录的讲解边界
 

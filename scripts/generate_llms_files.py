@@ -52,7 +52,7 @@ DESCRIPTIONS = {
     "02-ai-workloads/transformer.md": "Transformer 如何读取上下文、更新 token 表示并预测下一个 token。",
     "02-ai-workloads/training-primer.md": "训练如何先预测、计算错误、反向传播并更新参数。",
     "02-ai-workloads/inference-primer.md": "推理如何读取 prompt，并逐 token 生成回答。",
-    "02-ai-workloads/multimodal-primer.md": "多模态模型如何把图片、音频、视频和文字变成可共同理解的表示。",
+    "02-ai-workloads/multimodal-primer.md": "多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。",
     "03-inference-systems/index.md": "推理系统与服务优化主题入口。",
     "03-inference-systems/rag-agent-workloads.md": "RAG 与 Agent 推理负载的系统特征。",
     "04-training-systems/index.md": "训练系统与分布式计算主题入口。",
