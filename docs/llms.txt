@@ -15,7 +15,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 
 1. Start with `首页` and `知识地图` to understand the scope and structure.
 2. Read `AI 基础概念`, `Transformer 流程与原理`, `训练过程与原理`, `推理过程与原理`, and `多模态原理` for baseline AI workload understanding.
-3. For efficient computing, move to `推理系统与服务优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
+3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
 4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, and the templates.
 
 ## Primary Documents
@@ -29,9 +29,9 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [训练过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/training-primer/): 训练如何先预测、计算错误、反向传播并更新参数。
 - [推理过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [多模态原理](https://amoursec.github.io/aikg/02-ai-workloads/multimodal-primer/): 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。
-- [推理系统与服务优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与服务优化主题入口。
+- [推理系统与优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与优化主题入口。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
-- [训练系统与分布式计算](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与分布式计算主题入口。
+- [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
 - [TorchInductor 与 PyTorch 编译栈](https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/): TorchInductor 与 PyTorch 编译栈学习入口。

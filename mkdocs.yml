@@ -65,10 +65,10 @@ nav:
       - 训练过程与原理: 02-ai-workloads/training-primer.md
       - 推理过程与原理: 02-ai-workloads/inference-primer.md
       - 多模态原理: 02-ai-workloads/multimodal-primer.md
-  - 推理系统与服务优化:
+  - 推理系统与优化:
       - 概览: 03-inference-systems/index.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
-  - 训练系统与分布式计算:
+  - 训练系统与优化:
       - 概览: 04-training-systems/index.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md

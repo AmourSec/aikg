@@ -1,5 +1,5 @@
 ---
-title: 训练系统与分布式计算
+title: 训练系统与优化
 domain: training-systems
 status: draft
 owner: maintainers
@@ -7,7 +7,7 @@ license: CC-BY-4.0
 updated: 2026-05-30
 ---
 
-# 训练系统与分布式计算
+# 训练系统与优化
 
 本目录关注训练如何在多 GPU、多节点上高效运行。这里不以提升模型任务指标为重点，而以 step time、扩展效率、显存占用、通信开销、故障恢复和复现实验为重点。
 

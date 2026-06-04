@@ -1,5 +1,5 @@
 ---
-title: 推理系统与服务优化
+title: 推理系统与优化
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -7,7 +7,7 @@ license: CC-BY-4.0
 updated: 2026-05-30
 ---
 
-# 推理系统与服务优化
+# 推理系统与优化
 
 本目录关注模型进入在线服务后的系统问题：如何降低延迟、提高吞吐、控制显存、隔离租户、处理长尾请求，并让服务行为可测、可复现。
 
