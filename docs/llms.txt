@@ -30,6 +30,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [推理过程与原理](https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [多模态原理](https://amoursec.github.io/aikg/02-ai-workloads/multimodal-primer/): 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。
 - [推理系统与优化](https://amoursec.github.io/aikg/03-inference-systems/): 推理系统与优化主题入口。
+- [推理请求生命周期](https://amoursec.github.io/aikg/03-inference-systems/request-lifecycle/): 推理请求从 API 接入到 Decode、流式返回和资源释放的端到端生命周期。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
@@ -43,10 +44,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [AI 系统论文与架构](https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/): AI 系统论文与架构案例索引。
 - [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
 - [故障复盘](https://amoursec.github.io/aikg/10-papers-cases/failure-cases/): 故障复盘入口。
-- [知识组织、模板与 AI 可读索引](https://amoursec.github.io/aikg/11-knowledge-index/): 知识组织、模板、元数据和 AI 可读索引说明。
 
 ## Optional Documents
 
+- [知识组织、模板与 AI 可读索引](https://amoursec.github.io/aikg/11-knowledge-index/): 知识组织、模板、元数据和 AI 可读索引说明。
 - [知识点模板](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板。
 - [技术决策模板](https://amoursec.github.io/aikg/99-templates/adr/): 技术决策模板。
 - [基准实验报告模板](https://amoursec.github.io/aikg/99-templates/benchmark-report/): 基准实验报告模板。
@@ -65,6 +66,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [02-ai-workloads/inference-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/inference-primer.md)
 - [02-ai-workloads/multimodal-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/multimodal-primer.md)
 - [03-inference-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/index.md)
+- [03-inference-systems/request-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/request-lifecycle.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)

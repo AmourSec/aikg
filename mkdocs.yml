@@ -67,6 +67,7 @@ nav:
       - 多模态原理: 02-ai-workloads/multimodal-primer.md
   - 推理系统与优化:
       - 概览: 03-inference-systems/index.md
+      - 推理请求生命周期: 03-inference-systems/request-lifecycle.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
