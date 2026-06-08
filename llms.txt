@@ -52,7 +52,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [vLLM](https://amoursec.github.io/aikg/03-inference-systems/vllm/): vLLM 作为现代 LLM serving 引擎案例，串联 PagedAttention、continuous batching、KV Cache、OpenAI-compatible serving 和性能调优。
 - [TensorRT-LLM](https://amoursec.github.io/aikg/03-inference-systems/tensorrt-llm/): TensorRT-LLM 作为 NVIDIA GPU 高性能推理栈案例，串联 engine/runtime、in-flight batching、paged KV cache、量化、kernel 优化和多 GPU 并行。
 - [SGLang](https://amoursec.github.io/aikg/03-inference-systems/sglang/): SGLang 作为结构化生成和高性能 runtime 案例，串联 RadixAttention、prefix reuse、structured outputs、RAG/Agent 和多模态 serving。
-- [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
+- [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 作为复合推理 workload，拆解检索、rerank、context packing、工具调用、多轮 LLM 调用、缓存、容量、可靠性和端到端 benchmark。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。

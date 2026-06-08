@@ -92,7 +92,7 @@ DESCRIPTIONS = {
     "03-inference-systems/vllm.md": "vLLM 作为现代 LLM serving 引擎案例，串联 PagedAttention、continuous batching、KV Cache、OpenAI-compatible serving 和性能调优。",
     "03-inference-systems/tensorrt-llm.md": "TensorRT-LLM 作为 NVIDIA GPU 高性能推理栈案例，串联 engine/runtime、in-flight batching、paged KV cache、量化、kernel 优化和多 GPU 并行。",
     "03-inference-systems/sglang.md": "SGLang 作为结构化生成和高性能 runtime 案例，串联 RadixAttention、prefix reuse、structured outputs、RAG/Agent 和多模态 serving。",
-    "03-inference-systems/rag-agent-workloads.md": "RAG 与 Agent 推理负载的系统特征。",
+    "03-inference-systems/rag-agent-workloads.md": "RAG 与 Agent 作为复合推理 workload，拆解检索、rerank、context packing、工具调用、多轮 LLM 调用、缓存、容量、可靠性和端到端 benchmark。",
     "04-training-systems/index.md": "训练系统与优化主题入口。",
     "05-kernels-compilers/index.md": "Kernel、算子与编译优化主题入口。",
     "05-kernels-compilers/triton.md": "Triton Kernel 编程学习入口。",
