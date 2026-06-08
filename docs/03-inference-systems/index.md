@@ -30,7 +30,7 @@ updated: 2026-06-08
 | 5 | [KV Cache](kv-cache.md) | 解释 Decode 阶段为什么需要缓存历史上下文。 |
 | 6 | [PagedAttention](paged-attention.md) | 理解块式 KV Cache 管理如何降低显存浪费。 |
 | 7 | [Prefix Cache](prefix-cache.md) | 理解共享 prompt 前缀如何减少重复 Prefill。 |
-| 8 | 调度策略 | 研究请求队列、优先级、准入控制、抢占和公平性。 |
+| 8 | [调度策略](scheduling.md) | 研究请求队列、优先级、准入控制、抢占和公平性。 |
 | 9 | 量化推理 | 用更低精度减少显存、带宽和计算开销。 |
 | 10 | Speculative Decoding | 用草稿模型或多 token 预测减少串行解码等待。 |
 | 11 | Prefill/Decode 分离部署 | 将两类阶段放到不同资源池，缓解互相干扰。 |
@@ -91,11 +91,7 @@ Prefix Cache 复用不同请求之间相同的 prompt 前缀，例如 system pro
 
 推理调度决定哪些请求先进入 GPU、哪些请求等待、哪些请求被拒绝、哪些请求被迁移或拆分。调度策略会直接影响吞吐、尾延迟、公平性和资源利用率。
 
-本节后续重点回答：
-
-- FCFS、priority、SLO-aware、cache-aware routing 适合什么场景。
-- admission control、rate limit、queueing、backpressure 如何保护系统。
-- 高并发下如何避免少数长请求拖慢所有请求。
+详见：[调度策略](scheduling.md)
 
 ## 量化推理
 
