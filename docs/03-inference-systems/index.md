@@ -36,7 +36,7 @@ updated: 2026-06-08
 | 11 | [Prefill/Decode 分离部署](prefill-decode-disaggregation.md) | 将两类阶段放到不同资源池，缓解互相干扰。 |
 | 12 | [MoE 模型推理优化](moe-inference-optimization.md) | 处理专家路由、负载均衡、通信和显存问题。 |
 | 13 | [单机推理服务架构](single-node-serving-architecture.md) | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
-| 14 | 多机分布式推理 | 扩展到多 GPU、多节点和跨节点并行。 |
+| 14 | [多机分布式推理](distributed-inference.md) | 扩展到多 GPU、多节点和跨节点并行。 |
 | 15 | 缓存体系 | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
 | 16 | Benchmark 方法 | 设计可复现实验，避免只看单个吞吐数字。 |
 | 17 | vLLM | 作为现代开源推理引擎的主线案例。 |
@@ -127,11 +127,7 @@ MoE 模型每个 token 只激活部分专家，但系统上会引入专家路由
 
 当模型过大、吞吐要求过高或上下文过长时，推理需要扩展到多 GPU、多节点。常见方式包括 tensor parallel、pipeline parallel、expert parallel、data parallel 和分离式 serving。
 
-本节后续重点回答：
-
-- 多 GPU 推理为什么会引入通信瓶颈。
-- 不同并行方式如何影响 latency、throughput 和显存。
-- 多机推理中网络、调度、失败恢复和容量规划如何处理。
+详见：[多机分布式推理](distributed-inference.md)
 
 ## 缓存体系
 
