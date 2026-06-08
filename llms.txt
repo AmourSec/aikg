@@ -50,6 +50,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [缓存体系](https://amoursec.github.io/aikg/03-inference-systems/cache-system/): 缓存体系统一梳理 query、embedding、retrieval、prefix、KV、tool result、response 和 model artifact cache。
 - [Benchmark 方法](https://amoursec.github.io/aikg/03-inference-systems/benchmark-methodology/): Benchmark 方法说明如何设计可复现的推理压测 workload、指标、SLO 和实验记录。
 - [vLLM](https://amoursec.github.io/aikg/03-inference-systems/vllm/): vLLM 作为现代 LLM serving 引擎案例，串联 PagedAttention、continuous batching、KV Cache、OpenAI-compatible serving 和性能调优。
+- [TensorRT-LLM](https://amoursec.github.io/aikg/03-inference-systems/tensorrt-llm/): TensorRT-LLM 作为 NVIDIA GPU 高性能推理栈案例，串联 engine/runtime、in-flight batching、paged KV cache、量化、kernel 优化和多 GPU 并行。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
@@ -99,6 +100,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/cache-system.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/cache-system.md)
 - [03-inference-systems/benchmark-methodology.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/benchmark-methodology.md)
 - [03-inference-systems/vllm.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/vllm.md)
+- [03-inference-systems/tensorrt-llm.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/tensorrt-llm.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)

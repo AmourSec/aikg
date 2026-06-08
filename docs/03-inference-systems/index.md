@@ -40,7 +40,7 @@ updated: 2026-06-08
 | 15 | [缓存体系](cache-system.md) | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
 | 16 | [Benchmark 方法](benchmark-methodology.md) | 设计可复现实验，避免只看单个吞吐数字。 |
 | 17 | [vLLM](vllm.md) | 作为现代开源推理引擎的主线案例。 |
-| 18 | TensorRT-LLM | 作为 NVIDIA 高性能推理栈案例。 |
+| 18 | [TensorRT-LLM](tensorrt-llm.md) | 作为 NVIDIA 高性能推理栈案例。 |
 | 19 | SGLang | 作为结构化生成和高性能 runtime 案例。 |
 | 20 | RAG / Agent 推理负载 | 研究复合推理链路如何改变延迟、吞吐和可靠性。 |
 | 21 | Benchmark 方法与性能剖析 | 把压测、profiling 和容量分析连接起来。 |
@@ -151,11 +151,7 @@ vLLM 是现代开源 LLM serving 的重要案例，适合用来学习 PagedAtten
 
 TensorRT-LLM 是 NVIDIA 面向高性能 LLM 推理的优化栈，覆盖引擎构建、量化、并行、KV Cache、guided decoding、speculative decoding 和多种硬件优化。
 
-本节后续重点回答：
-
-- TensorRT-LLM 与通用 PyTorch runtime 的差异。
-- engine build、kernel optimization、CUDA Graph 和量化如何影响性能。
-- 在 NVIDIA GPU 上如何做高吞吐和低延迟部署。
+详见：[TensorRT-LLM](tensorrt-llm.md)
 
 ## SGLang
 
