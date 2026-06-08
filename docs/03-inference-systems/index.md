@@ -27,7 +27,7 @@ updated: 2026-06-08
 | 2 | [Prefill 与 Decode](prefill-decode.md) | 理解 LLM 推理的两阶段结构和不同瓶颈。 |
 | 3 | [指标体系](metrics.md) | 用 TTFT、TPOT、吞吐、尾延迟、显存和成本描述优化目标。 |
 | 4 | [Batching](batching.md) | 理解为什么合批能提高吞吐，以及为什么会影响延迟。 |
-| 5 | KV Cache | 解释 Decode 阶段为什么需要缓存历史上下文。 |
+| 5 | [KV Cache](kv-cache.md) | 解释 Decode 阶段为什么需要缓存历史上下文。 |
 | 6 | PagedAttention | 理解块式 KV Cache 管理如何降低显存浪费。 |
 | 7 | Prefix Cache | 理解共享 prompt 前缀如何减少重复 Prefill。 |
 | 8 | 调度策略 | 研究请求队列、优先级、准入控制、抢占和公平性。 |
@@ -73,11 +73,7 @@ Batching 的核心是把多个请求合在一起执行，让 GPU 一次处理更
 
 KV Cache 保存历史 token 的 key/value 表示，让 Decode 阶段不用每生成一个 token 都重新计算全部上下文。它是 LLM 推理显存占用和调度复杂度的核心来源之一。
 
-本节后续重点回答：
-
-- KV Cache 为什么随着 batch size 和 sequence length 增长。
-- KV Cache 如何影响最大并发、长上下文和显存容量。
-- cache eviction、offload、quantization 和复用分别解决什么问题。
+详见：[KV Cache](kv-cache.md)
 
 ## PagedAttention
 
