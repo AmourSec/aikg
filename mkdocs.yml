@@ -83,6 +83,7 @@ nav:
       - 多机分布式推理: 03-inference-systems/distributed-inference.md
       - 缓存体系: 03-inference-systems/cache-system.md
       - Benchmark 方法: 03-inference-systems/benchmark-methodology.md
+      - vLLM: 03-inference-systems/vllm.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
