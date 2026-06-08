@@ -87,6 +87,7 @@ nav:
       - TensorRT-LLM: 03-inference-systems/tensorrt-llm.md
       - SGLang: 03-inference-systems/sglang.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
+      - Benchmark 方法与性能剖析: 03-inference-systems/benchmark-profiling.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
   - Kernel、算子与编译优化:

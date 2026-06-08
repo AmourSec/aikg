@@ -53,6 +53,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [TensorRT-LLM](https://amoursec.github.io/aikg/03-inference-systems/tensorrt-llm/): TensorRT-LLM 作为 NVIDIA GPU 高性能推理栈案例，串联 engine/runtime、in-flight batching、paged KV cache、量化、kernel 优化和多 GPU 并行。
 - [SGLang](https://amoursec.github.io/aikg/03-inference-systems/sglang/): SGLang 作为结构化生成和高性能 runtime 案例，串联 RadixAttention、prefix reuse、structured outputs、RAG/Agent 和多模态 serving。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 作为复合推理 workload，拆解检索、rerank、context packing、工具调用、多轮 LLM 调用、缓存、容量、可靠性和端到端 benchmark。
+- [Benchmark 方法与性能剖析](https://amoursec.github.io/aikg/03-inference-systems/benchmark-profiling/): Benchmark 方法与性能剖析连接 benchmark 现象、trace、profiling、队列分析、GPU timeline、KV Cache、网络瓶颈和容量模型。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
@@ -104,6 +105,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/tensorrt-llm.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/tensorrt-llm.md)
 - [03-inference-systems/sglang.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/sglang.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
+- [03-inference-systems/benchmark-profiling.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/benchmark-profiling.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
 - [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)
