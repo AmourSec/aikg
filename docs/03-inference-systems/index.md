@@ -28,7 +28,7 @@ updated: 2026-06-08
 | 3 | [指标体系](metrics.md) | 用 TTFT、TPOT、吞吐、尾延迟、显存和成本描述优化目标。 |
 | 4 | [Batching](batching.md) | 理解为什么合批能提高吞吐，以及为什么会影响延迟。 |
 | 5 | [KV Cache](kv-cache.md) | 解释 Decode 阶段为什么需要缓存历史上下文。 |
-| 6 | PagedAttention | 理解块式 KV Cache 管理如何降低显存浪费。 |
+| 6 | [PagedAttention](paged-attention.md) | 理解块式 KV Cache 管理如何降低显存浪费。 |
 | 7 | Prefix Cache | 理解共享 prompt 前缀如何减少重复 Prefill。 |
 | 8 | 调度策略 | 研究请求队列、优先级、准入控制、抢占和公平性。 |
 | 9 | 量化推理 | 用更低精度减少显存、带宽和计算开销。 |
@@ -79,11 +79,7 @@ KV Cache 保存历史 token 的 key/value 表示，让 Decode 阶段不用每生
 
 PagedAttention 把 KV Cache 管理成固定大小的块，类似操作系统里的分页思想。它的价值在于减少显存碎片和重复复制，让系统能容纳更多并发请求。
 
-本节后续重点回答：
-
-- 连续 KV Cache 分配为什么容易浪费显存。
-- block table、physical block、copy-on-write 分别解决什么问题。
-- PagedAttention 与 continuous batching、prefix cache 如何配合。
+详见：[PagedAttention](paged-attention.md)
 
 ## Prefix Cache
 
