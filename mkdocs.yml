@@ -76,6 +76,7 @@ nav:
       - Prefix Cache: 03-inference-systems/prefix-cache.md
       - 调度策略: 03-inference-systems/scheduling.md
       - 量化推理: 03-inference-systems/quantization.md
+      - Speculative Decoding: 03-inference-systems/speculative-decoding.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md

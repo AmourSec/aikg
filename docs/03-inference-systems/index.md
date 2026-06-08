@@ -32,7 +32,7 @@ updated: 2026-06-08
 | 7 | [Prefix Cache](prefix-cache.md) | 理解共享 prompt 前缀如何减少重复 Prefill。 |
 | 8 | [调度策略](scheduling.md) | 研究请求队列、优先级、准入控制、抢占和公平性。 |
 | 9 | [量化推理](quantization.md) | 用更低精度减少显存、带宽和计算开销。 |
-| 10 | Speculative Decoding | 用草稿模型或多 token 预测减少串行解码等待。 |
+| 10 | [Speculative Decoding](speculative-decoding.md) | 用草稿模型或多 token 预测减少串行解码等待。 |
 | 11 | Prefill/Decode 分离部署 | 将两类阶段放到不同资源池，缓解互相干扰。 |
 | 12 | MoE 模型推理优化 | 处理专家路由、负载均衡、通信和显存问题。 |
 | 13 | 单机推理服务架构 | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
@@ -103,11 +103,7 @@ Prefix Cache 复用不同请求之间相同的 prompt 前缀，例如 system pro
 
 Speculative Decoding 用一个更快的草稿模型或额外预测头先猜多个 token，再由目标模型验证，从而减少严格逐 token 解码带来的串行等待。
 
-本节后续重点回答：
-
-- draft、verify、acceptance rate 是什么。
-- 为什么接受率、草稿模型速度和目标模型 batch 形态共同决定收益。
-- Medusa、EAGLE、ngram speculation 等变体解决什么问题。
+详见：[Speculative Decoding](speculative-decoding.md)
 
 ## Prefill/Decode 分离部署
 
