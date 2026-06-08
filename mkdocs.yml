@@ -73,6 +73,7 @@ nav:
       - Batching: 03-inference-systems/batching.md
       - KV Cache: 03-inference-systems/kv-cache.md
       - PagedAttention: 03-inference-systems/paged-attention.md
+      - Prefix Cache: 03-inference-systems/prefix-cache.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
