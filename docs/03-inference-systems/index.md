@@ -41,7 +41,7 @@ updated: 2026-06-08
 | 16 | [Benchmark 方法](benchmark-methodology.md) | 设计可复现实验，避免只看单个吞吐数字。 |
 | 17 | [vLLM](vllm.md) | 作为现代开源推理引擎的主线案例。 |
 | 18 | [TensorRT-LLM](tensorrt-llm.md) | 作为 NVIDIA 高性能推理栈案例。 |
-| 19 | SGLang | 作为结构化生成和高性能 runtime 案例。 |
+| 19 | [SGLang](sglang.md) | 作为结构化生成和高性能 runtime 案例。 |
 | 20 | RAG / Agent 推理负载 | 研究复合推理链路如何改变延迟、吞吐和可靠性。 |
 | 21 | Benchmark 方法与性能剖析 | 把压测、profiling 和容量分析连接起来。 |
 
@@ -157,11 +157,7 @@ TensorRT-LLM 是 NVIDIA 面向高性能 LLM 推理的优化栈，覆盖引擎构
 
 SGLang 同时关注高性能 serving runtime 和结构化生成。它适合学习 RadixAttention、prefix reuse、structured outputs、continuous batching、prefill-decode disaggregation 和多模态 serving。
 
-本节后续重点回答：
-
-- SGLang 如何把生成程序和 runtime 优化结合起来。
-- RadixAttention 与 prefix cache 的关系是什么。
-- 结构化输出、工具调用和多轮生成如何影响推理系统。
+详见：[SGLang](sglang.md)
 
 ## RAG / Agent 推理负载
 

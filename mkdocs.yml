@@ -85,6 +85,7 @@ nav:
       - Benchmark 方法: 03-inference-systems/benchmark-methodology.md
       - vLLM: 03-inference-systems/vllm.md
       - TensorRT-LLM: 03-inference-systems/tensorrt-llm.md
+      - SGLang: 03-inference-systems/sglang.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
