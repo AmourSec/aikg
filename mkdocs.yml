@@ -90,6 +90,7 @@ nav:
       - Benchmark 方法与性能剖析: 03-inference-systems/benchmark-profiling.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md
+      - 训练任务生命周期: 04-training-systems/training-lifecycle.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Triton Kernel 编程: 05-kernels-compilers/triton.md

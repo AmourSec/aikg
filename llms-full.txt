@@ -40,6 +40,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 03-inference-systems/rag-agent-workloads.md - RAG 与 Agent 推理负载
 - 03-inference-systems/benchmark-profiling.md - Benchmark 方法与性能剖析
 - 04-training-systems/index.md - 训练系统与优化
+- 04-training-systems/training-lifecycle.md - 训练任务生命周期
 - 05-kernels-compilers/index.md - Kernel、算子与编译优化
 - 05-kernels-compilers/triton.md - Triton Kernel 编程
 - 05-kernels-compilers/torchinductor.md - TorchInductor 与 PyTorch 编译栈
@@ -10770,30 +10771,792 @@ domain: training-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-08
 
 # 训练系统与优化
 
 本目录关注训练如何在多 GPU、多节点上高效运行。这里不以提升模型任务指标为重点，而以 step time、扩展效率、显存占用、通信开销、故障恢复和复现实验为重点。
 
-## 建议主题
+## 本章内容安排
 
-- data parallel、tensor parallel、pipeline parallel、expert parallel
-- ZeRO、FSDP、DeepSpeed、Megatron-LM、NCCL
-- activation checkpointing、gradient accumulation、optimizer state sharding
-- AllReduce、AllGather、ReduceScatter、通信重叠
-- pipeline bubble、load balance、straggler、MoE dispatch
-- checkpoint、resume、fault tolerance、elastic training
-- mixed precision、loss scaling、determinism、random seed
-- step time breakdown、MFU、scaling efficiency、network utilization
+训练系统的学习顺序可以按“一次训练 step 如何被放大到多 GPU、多节点”展开：
 
-## 关键问题
+1. 先理解训练任务生命周期，知道一个 step 由哪些阶段组成。
+2. 再学习数据输入、batch、activation、gradient、optimizer state 这些基础成本。
+3. 然后进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel 等并行策略。
+4. 接着学习通信重叠、混合精度、activation checkpointing、checkpoint/restart 和容错。
+5. 最后用 step time breakdown、MFU、scaling efficiency 和 profiler 证据评估训练效率。
 
-- 训练瓶颈来自计算、显存容量、内存带宽、跨卡通信还是数据输入。
-- 并行策略如何影响显存占用、通信量和实现复杂度。
-- 通信是否能与计算重叠，重叠失败时原因是什么。
-- Checkpoint 策略如何影响故障恢复时间和存储压力。
-- 扩展效率下降时，是网络、负载均衡、同步点还是输入 pipeline 导致。
+| 顺序 | 主题 | 本章中的作用 |
+| --- | --- | --- |
+| 1 | [训练任务生命周期](training-lifecycle.md) | 建立一个训练 step 的端到端系统视角。 |
+| 2 | 数据输入与 Data Pipeline | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
+| 3 | Batch、Micro-batch 与 Gradient Accumulation | 理解 global batch、显存、吞吐和优化稳定性的关系。 |
+| 4 | 显存组成与优化总览 | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
+| 5 | Data Parallel 与梯度同步 | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
+| 6 | ZeRO 与 FSDP | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
+| 7 | Tensor Parallel | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
+| 8 | Pipeline Parallel | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
+| 9 | Expert Parallel 与 MoE 训练 | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
+| 10 | Activation Checkpointing | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
+| 11 | 混合精度训练 | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
+| 12 | 通信与计算重叠 | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
+| 13 | Optimizer 与 Scheduler 系统成本 | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
+| 14 | Checkpoint、Resume 与容错 | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 15 | 训练性能指标与扩展效率 | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 16 | 训练性能剖析与 Benchmark | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 17 | DeepSpeed、Megatron-LM 与 PyTorch FSDP | 作为主流训练系统和框架案例。 |
+
+## 训练任务生命周期
+
+训练任务生命周期说明一个 step 从数据读取、forward、loss、backward、gradient sync、optimizer step 到 checkpoint 的完整链路。它是学习训练系统优化的入口。
+
+详见：[训练任务生命周期](training-lifecycle.md)
+
+## 数据输入与 Data Pipeline
+
+数据输入决定 GPU 是否能持续有活干。训练数据可能经历读取、解压、tokenization、增强、packing、batch 拼接和 host-to-device copy。数据慢会让 GPU 等待。
+
+本节后续重点回答：
+
+- DataLoader、数据存储和 tokenization 如何影响 step time。
+- packing、padding 和有效 token 比例如何影响训练吞吐。
+- 如何判断瓶颈在数据输入而不是模型计算。
+
+## Batch、Micro-batch 与 Gradient Accumulation
+
+训练里的 batch 概念包括 micro-batch、per-device batch、global batch 和 gradient accumulation。它们共同影响显存、吞吐、通信和训练稳定性。
+
+本节后续重点回答：
+
+- global batch 如何由 micro-batch、accumulation 和 data parallel size 决定。
+- gradient accumulation 如何用时间换显存。
+- batch 设置如何影响 step time 和收敛。
+
+## 显存组成与优化总览
+
+训练显存不只有模型权重，还包括 gradients、optimizer states、activations、temporary buffers 和 allocator fragmentation。不同优化方法减少的显存项不同。
+
+本节后续重点回答：
+
+- 训练显存为什么比推理复杂。
+- activation checkpointing、ZeRO/FSDP、mixed precision 分别节省哪类显存。
+- 如何做显存 breakdown 和优化决策。
+
+## Data Parallel 与梯度同步
+
+Data Parallel 让多张 GPU 处理不同数据，再同步梯度保持参数一致。它简单有效，但会引入 AllReduce、bucket 和同步等待。
+
+本节后续重点回答：
+
+- DDP 如何同步梯度。
+- gradient bucketing 和 overlap 如何降低通信等待。
+- 多机数据并行为什么容易受网络影响。
+
+## ZeRO 与 FSDP
+
+ZeRO 和 FSDP 通过切分参数、梯度和 optimizer state，降低数据并行副本之间的重复显存。它们是大模型训练的重要基础。
+
+本节后续重点回答：
+
+- ZeRO stage 1/2/3 分别切分什么。
+- FSDP 如何 shard 参数并在 forward/backward 时 all-gather。
+- sharding 如何影响通信、checkpoint 和调试复杂度。
+
+## Tensor Parallel
+
+Tensor Parallel 把单层里的大矩阵计算拆到多张 GPU，常用于单卡放不下或单卡算力不足的大模型训练。
+
+本节后续重点回答：
+
+- column parallel 和 row parallel 的基本思想。
+- Tensor Parallel 为什么引入频繁通信。
+- 如何避免跨节点 tensor parallel 带来的通信瓶颈。
+
+## Pipeline Parallel
+
+Pipeline Parallel 把模型不同层放到不同 GPU，并用 micro-batch 形成流水线。它能降低单卡权重压力，但会引入 pipeline bubble。
+
+本节后续重点回答：
+
+- pipeline stage 如何划分。
+- micro-batch 数量如何影响 bubble。
+- 1F1B 等调度如何改善流水线利用率。
+
+## Expert Parallel 与 MoE 训练
+
+MoE 训练中，每个 token 会被路由到部分专家。Expert Parallel 需要处理 token dispatch/combine、专家负载均衡和跨卡通信。
+
+本节后续重点回答：
+
+- MoE 训练为什么比 dense model 更依赖通信和负载均衡。
+- expert placement 和 routing 如何影响 step time。
+- capacity factor、token dropping 和 load balance loss 如何影响系统行为。
+
+## Activation Checkpointing
+
+Activation Checkpointing 不保存所有中间 activation，而是在 backward 时重算部分 forward。它用额外计算换显存。
+
+本节后续重点回答：
+
+- activation 为什么会占大量显存。
+- checkpoint 粒度如何影响重算开销。
+- 长上下文训练为什么常需要 activation checkpointing。
+
+## 混合精度训练
+
+混合精度训练用 FP16、BF16、FP8 等低精度降低显存和计算成本，同时要处理 loss scaling、overflow、NaN 和收敛稳定性。
+
+本节后续重点回答：
+
+- FP16、BF16、FP8 在训练中的差异。
+- loss scaling 为什么必要。
+- 如何同时评估性能提升和数值稳定性。
+
+## 通信与计算重叠
+
+训练通信不一定必须完全阻塞计算。通过 bucket、异步通信和 backward overlap，可以把部分梯度同步隐藏在计算之后。
+
+本节后续重点回答：
+
+- backward 与 AllReduce 如何重叠。
+- overlap 失败常见原因是什么。
+- 如何用 timeline 判断通信是否真的被隐藏。
+
+## Optimizer 与 Scheduler 系统成本
+
+Optimizer step 会更新参数并维护 optimizer state。Adam/AdamW、fused optimizer、学习率 scheduler 和 master weight 都会影响显存和 step time。
+
+本节后续重点回答：
+
+- Adam optimizer state 为什么显存很高。
+- fused optimizer 如何降低 kernel launch 和访存开销。
+- scheduler 和 optimizer step 如何影响长期训练稳定性。
+
+## Checkpoint、Resume 与容错
+
+长期训练必须考虑 checkpoint、resume、故障恢复和存储压力。checkpoint 不完整或太慢，都会影响训练可靠性。
+
+本节后续重点回答：
+
+- 完整 checkpoint 应包含哪些训练状态。
+- sharded checkpoint 如何服务 FSDP/ZeRO 和多节点训练。
+- elastic training 和故障恢复如何影响系统设计。
+
+## 训练性能指标与扩展效率
+
+训练系统需要用 step time、samples/s、tokens/s、MFU、GPU memory、communication time 和 scaling efficiency 评价。
+
+本节后续重点回答：
+
+- MFU 和 GPU utilization 有什么区别。
+- strong scaling 和 weak scaling 如何评估。
+- 扩展效率下降时如何定位原因。
+
+## 训练性能剖析与 Benchmark
+
+训练 Benchmark 不只是跑通脚本，而是固定模型、数据、batch、精度、并行策略和硬件，用 profiler 和 trace 解释 step time。
+
+本节后续重点回答：
+
+- 如何做 step time breakdown。
+- 如何用 profiler 区分计算、通信、数据和 checkpoint 瓶颈。
+- 如何把训练实验沉淀为容量模型。
+
+## DeepSpeed、Megatron-LM 与 PyTorch FSDP
+
+DeepSpeed、Megatron-LM 和 PyTorch FSDP 是理解大模型训练系统的重要案例。它们分别覆盖 ZeRO、模型并行、分布式 runtime 和主流框架集成。
+
+本节后续重点回答：
+
+- 这些框架分别解决哪些训练系统问题。
+- 它们的并行策略、显存策略和 checkpoint 策略有什么不同。
+- 如何基于 workload 和硬件做训练框架选型。
+
+---
+
+# Document: 训练任务生命周期
+
+Source: docs/04-training-systems/training-lifecycle.md
+URL: https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/
+domain: training-systems
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-08
+
+# 训练任务生命周期
+
+训练任务生命周期描述一次训练作业从读取数据到更新参数、记录指标、保存 checkpoint 的完整过程。它是理解训练系统优化的入口。
+
+一句话理解：
+
+> 训练系统优化不是只让一次 forward 更快，而是让数据、计算、反向传播、通信、显存、优化器和 checkpoint 这一整条链路高效稳定地循环起来。
+
+推理系统的核心是“服务请求并生成 token”。训练系统的核心是“反复执行 step，并让模型参数朝着损失更低的方向更新”。这两个系统都关心 GPU 利用率、显存、通信和吞吐，但训练比推理多了反向传播、梯度同步、优化器状态、checkpoint 和长时间稳定性。
+
+## 一个训练任务在做什么
+
+训练任务通常包含很多个 step。每个 step 处理一个 batch，计算 loss，再根据梯度更新模型参数。
+
+简化地说：
+
+1. 读取一批训练数据。
+2. 把数据送入模型做 forward。
+3. 计算模型预测和目标之间的 loss。
+4. 做 backward，计算每个参数的梯度。
+5. 在多 GPU / 多节点之间同步或规约梯度。
+6. optimizer 根据梯度更新参数。
+7. 记录 loss、吞吐、显存、学习率等指标。
+8. 定期保存 checkpoint。
+
+这个过程会重复成千上万甚至数百万次。训练系统的效率，取决于每个 step 的耗时、资源利用率、稳定性和恢复能力。
+
+## 总体流程
+
+一个典型训练 step 可以画成下面这样：
+
+```mermaid
+flowchart TB
+    A["Dataset / Data Loader"] --> B["Batch / Micro-batch"]
+    B --> C["Host to Device Copy"]
+    C --> D["Forward"]
+    D --> E["Loss"]
+    E --> F["Backward"]
+    F --> G["Gradient Sync / Reduce"]
+    G --> H["Optimizer Step"]
+    H --> I["Update Parameters"]
+    I --> J["Log Metrics"]
+    J --> K{"Checkpoint / Eval?"}
+    K -- "否" --> A
+    K -- "是" --> L["Save Checkpoint / Run Eval"]
+    L --> A
+```
+
+这张图有两个重点。
+
+第一，训练是一个循环。优化目标不是只优化某个单次算子，而是降低稳定运行时的 step time。
+
+第二，训练链路里有很多非模型计算：数据读取、CPU 预处理、通信、checkpoint、日志和评估都可能成为瓶颈。
+
+## 训练和推理的关键差异
+
+训练和推理都运行模型，但系统压力不同。
+
+| 维度 | 推理 | 训练 |
+| --- | --- | --- |
+| 主要目标 | 低延迟、高吞吐、服务稳定 | 低 step time、高扩展效率、长期稳定 |
+| 参数是否更新 | 不更新 | 每个 step 更新 |
+| 是否需要 backward | 通常不需要 | 必须需要 |
+| 主要缓存 | KV Cache | activation、gradient、optimizer state |
+| 显存压力 | 权重 + KV Cache | 权重 + activation + gradient + optimizer state |
+| 通信重点 | tensor parallel、KV 传输、请求路由 | gradient sync、parameter shard、optimizer state shard |
+| 稳定性重点 | 请求失败、超时、OOM | 长时间训练、checkpoint、恢复、数值稳定 |
+
+训练系统里，显存占用通常比推理复杂。一个参数不只占一份权重，还可能对应梯度、优化器状态和 master weight。大模型训练之所以难，很大一部分原因就是这些状态太多。
+
+## Data Pipeline：数据先要喂得上
+
+训练 step 的第一环是数据。
+
+数据 pipeline 通常包括：
+
+- 读取样本。
+- 解压或反序列化。
+- 文本 tokenization。
+- 图像解码和增强。
+- 样本过滤。
+- batch 拼接。
+- padding / packing。
+- host memory 到 GPU memory 拷贝。
+
+如果数据 pipeline 慢，GPU 会等数据。表现上可能是 GPU utilization 不高，但模型 forward/backward 本身并不慢。
+
+常见数据瓶颈包括：
+
+- 小文件太多，文件系统随机读取慢。
+- tokenizer 在 CPU 上成为瓶颈。
+- 数据增强太重。
+- DataLoader worker 数不足。
+- 网络存储带宽不够。
+- batch packing 效率低，padding 太多。
+- host-to-device copy 没有和计算重叠。
+
+所以训练优化第一步不是盯 GPU kernel，而是确认 GPU 是否真的持续有数据可算。
+
+## Batch、Micro-batch 和 Global Batch
+
+训练里经常会看到多个 batch 概念。
+
+| 概念 | 含义 |
+| --- | --- |
+| micro-batch | 单次 forward/backward 处理的小 batch |
+| per-device batch | 每张 GPU 一次处理的样本数 |
+| gradient accumulation steps | 累积多少个 micro-batch 后再更新参数 |
+| data parallel size | 数据并行副本数 |
+| global batch | 一次 optimizer step 等价处理的总样本数 |
+
+常见关系是：
+
+```text
+global batch =
+  micro-batch size
+* gradient accumulation steps
+* data parallel size
+```
+
+为什么要区分这些概念？
+
+因为显存、吞吐和训练动态都受它们影响。
+
+- micro-batch 越大，单步计算更饱满，但 activation 显存更高。
+- gradient accumulation 可以提高 global batch，但会增加多个 micro-step。
+- data parallel size 增加后，global batch 也会增加，除非调整 accumulation 或 per-device batch。
+- global batch 太大可能影响优化过程，需要调整学习率和 warmup。
+
+系统优化里，batch 设置不是单纯“越大越好”，而是要同时满足显存、吞吐、通信和训练稳定性。
+
+## Forward：计算预测和保存 Activation
+
+Forward 是模型读取输入并计算预测的过程。
+
+在 Transformer 训练中，forward 通常包括：
+
+- embedding。
+- attention。
+- MLP。
+- normalization。
+- residual connection。
+- loss 相关输出。
+
+和推理不同，训练的 forward 不能只算完就丢。为了 backward 计算梯度，系统需要保存一部分中间结果，也就是 activation。
+
+Activation 会占大量显存，尤其在以下场景：
+
+- batch size 大。
+- sequence length 长。
+- hidden size 大。
+- layer 数多。
+- micro-batch 多。
+
+这也是为什么训练长上下文模型非常吃显存。输入 token 数增加，不仅计算更多，activation 也更多。
+
+## Loss：把预测变成优化目标
+
+Loss 是训练信号。模型 forward 后会得到预测，loss 用来衡量预测和目标之间的差距。
+
+以语言模型为例，常见训练目标是预测下一个 token。模型对每个位置给出词表概率，loss 衡量正确 token 的概率是否足够高。
+
+从系统角度看，loss 本身通常不是最大开销，但它连接 forward 和 backward：
+
+- loss 标量是 backward 的起点。
+- loss 计算可能涉及 logits、label、mask。
+- 大词表 logits 会占显存和带宽。
+- sequence packing 和 loss mask 会影响有效 token 数。
+
+训练吞吐最好按有效 token 统计，而不是只看 batch 里填充后的 token。padding 太多会让系统看起来 tokens/s 不低，但真正有效训练 token 少。
+
+## Backward：计算梯度
+
+Backward 是训练和推理最大的区别之一。
+
+Forward 计算预测，backward 计算 loss 对每个参数的梯度。优化器再根据梯度更新参数。
+
+Backward 通常比 forward 更重，因为它要沿着计算图反向传播，并为大量参数计算梯度。
+
+它带来的系统压力包括：
+
+- 需要读取 forward 保存的 activation。
+- 需要生成 gradient。
+- 需要执行大量矩阵乘和 attention 反向计算。
+- 多 GPU 训练时需要同步梯度。
+- activation 和 gradient 会同时占用显存。
+
+Backward 的另一个特点是有天然的层次顺序：从最后一层往前计算梯度。这为通信重叠创造了机会。例如某些层的梯度算出来后，可以一边继续算前面层的 backward，一边启动梯度 AllReduce。
+
+## Gradient Accumulation：用时间换显存
+
+Gradient Accumulation 是训练里常见技巧。它的做法是：连续处理多个 micro-batch，把梯度累积起来，等累积到指定次数后再执行 optimizer step。
+
+它解决的问题是：显存放不下很大的 batch，但又希望 global batch 足够大。
+
+流程可以理解为：
+
+```text
+for each optimizer step:
+  zero gradients
+  for i in accumulation steps:
+    forward micro-batch i
+    backward micro-batch i
+    accumulate gradients
+  gradient sync
+  optimizer step
+```
+
+收益：
+
+- 可以在有限显存下实现更大的 global batch。
+- micro-batch 更小，activation 显存更低。
+
+代价：
+
+- 一个 optimizer step 需要多次 forward/backward。
+- step time 增加。
+- 如果通信只在 accumulation 最后同步，需要正确控制同步时机。
+
+所以 gradient accumulation 是显存和时间之间的权衡。
+
+## Gradient Sync：多 GPU 训练的同步点
+
+单 GPU 训练中，梯度只在本 GPU 上计算。多 GPU data parallel 训练中，每张 GPU 处理不同数据，但模型副本需要保持一致，因此梯度要同步。
+
+最常见做法是 AllReduce：
+
+1. 每张 GPU 计算本地 gradient。
+2. 所有 GPU 对 gradient 求和或平均。
+3. 每张 GPU 得到相同的全局 gradient。
+4. 每张 GPU 执行相同的 optimizer step。
+
+Gradient sync 是训练系统的重要瓶颈之一。模型越大，梯度越多；GPU 越多，通信拓扑越重要。
+
+常见优化方向包括：
+
+- gradient bucketing。
+- backward 与 AllReduce 重叠。
+- 使用更高带宽互联。
+- 减少同步频率。
+- gradient compression。
+- optimizer state sharding。
+
+同步失败或通信慢，会直接拉长 step time。多节点训练里，网络往往比单机更容易成为扩展效率瓶颈。
+
+## Optimizer Step：真正更新参数
+
+Optimizer step 用梯度更新参数。
+
+最简单的 SGD 更新可以理解为：
+
+```text
+new_weight = old_weight - learning_rate * gradient
+```
+
+实际大模型训练更常用 Adam 或 AdamW。它们不只保存参数和梯度，还保存一阶、二阶动量等 optimizer state。
+
+这带来显存问题：
+
+- 参数本身占一份。
+- 梯度占一份。
+- Adam 一阶动量占一份。
+- Adam 二阶动量占一份。
+- 混合精度训练还可能有 FP32 master weight。
+
+因此训练大模型时，optimizer state 可能比模型权重本身还占显存。ZeRO、FSDP 等技术很大程度上就是为了解决这些状态在数据并行副本之间重复存储的问题。
+
+## Mixed Precision：降低计算和显存成本
+
+Mixed Precision 是训练系统常用优化。它用较低精度做大部分计算，例如 FP16、BF16、FP8，同时在必要位置保留更高精度以维持数值稳定。
+
+收益包括：
+
+- 降低显存占用。
+- 提高矩阵计算吞吐。
+- 降低内存带宽压力。
+
+风险包括：
+
+- 梯度 underflow / overflow。
+- loss 变成 NaN。
+- 某些算子对低精度敏感。
+- 不同硬件支持不同精度。
+
+FP16 通常需要 loss scaling 来避免梯度过小。BF16 动态范围更接近 FP32，使用上常更稳定。FP8 可以进一步降低成本，但更依赖硬件和框架支持。
+
+混合精度不是只看速度，还要看 loss 曲线、收敛稳定性和最终模型质量。
+
+## Checkpoint：训练系统的保险
+
+大模型训练可能运行数天、数周甚至更久。任何节点故障、网络问题、存储问题、NaN 或作业抢占，都可能中断训练。
+
+Checkpoint 的作用是保存训练状态，便于恢复。
+
+一个完整 checkpoint 通常包括：
+
+- model parameters。
+- optimizer state。
+- learning rate scheduler state。
+- random seed / RNG state。
+- dataloader state。
+- step number。
+- mixed precision scaler state。
+- parallelism / sharding metadata。
+
+Checkpoint 的挑战在于它很大，而且保存会占用 I/O 和存储带宽。
+
+常见问题包括：
+
+- checkpoint 太慢，周期性拖慢训练。
+- 存储带宽不足。
+- 多节点同时写造成拥塞。
+- 只保存模型权重，恢复后 optimizer 状态丢失。
+- 数据顺序无法恢复，影响复现。
+- sharded checkpoint 和并行配置绑定，迁移困难。
+
+训练系统必须在恢复能力和 I/O 开销之间取舍。
+
+## Evaluation 与 Logging
+
+训练过程中通常会定期评估模型并记录指标。
+
+常见指标包括：
+
+- training loss。
+- validation loss。
+- learning rate。
+- gradient norm。
+- tokens/s。
+- samples/s。
+- step time。
+- GPU memory。
+- MFU。
+- communication time。
+- data loading time。
+
+Evaluation 也会消耗资源。如果评估太频繁，训练会被打断；如果评估太少，问题发现太晚。
+
+Logging 也不是免费。过于频繁的日志、过大的指标、同步写入远端服务，都可能拖慢训练。系统上要区分高频轻量指标和低频详细日志。
+
+## Step Time Breakdown
+
+训练系统优化最重要的指标之一是 step time。
+
+可以把 step time 拆成：
+
+| 阶段 | 说明 |
+| --- | --- |
+| data time | 等待数据和 CPU 预处理 |
+| H2D copy | host 到 GPU 的数据拷贝 |
+| forward time | 前向计算 |
+| loss time | loss 和 mask 计算 |
+| backward time | 反向传播 |
+| communication time | 梯度同步或参数通信 |
+| optimizer time | 参数更新和 optimizer state 更新 |
+| checkpoint / eval time | 周期性保存和评估 |
+
+优化时要先知道哪一段占比最高。
+
+如果 data time 高，应该优化数据管线。如果 communication time 高，应该看并行策略、bucket、overlap 和网络。如果 optimizer time 高，应该看 optimizer state、sharding 或 fused optimizer。
+
+不要在没有 breakdown 的情况下调参数。
+
+## 显存组成
+
+训练显存通常由几部分组成：
+
+| 显存项 | 说明 |
+| --- | --- |
+| parameters | 模型权重 |
+| gradients | 每个参数对应的梯度 |
+| optimizer states | Adam/AdamW 等优化器状态 |
+| activations | forward 保存给 backward 用的中间结果 |
+| temporary buffers | 算子临时 workspace、通信 buffer |
+| fragmentation | 分配器碎片和未完全利用空间 |
+
+大模型训练里，显存优化通常从这些方向入手：
+
+- mixed precision。
+- activation checkpointing。
+- gradient accumulation。
+- ZeRO / FSDP。
+- tensor parallel / pipeline parallel。
+- fused optimizer。
+- memory-efficient attention。
+
+每种方法减少的显存项不同。比如 activation checkpointing 主要减少 activation；ZeRO/FSDP 主要减少参数、梯度和 optimizer state 的重复存储。
+
+## 并行策略在生命周期中的位置
+
+不同并行策略作用在训练生命周期的不同位置。
+
+| 并行策略 | 主要作用 |
+| --- | --- |
+| Data Parallel | 多张 GPU 处理不同数据，梯度同步 |
+| Tensor Parallel | 把单层矩阵计算切到多张 GPU |
+| Pipeline Parallel | 把不同层放到不同 GPU，micro-batch 流水执行 |
+| Expert Parallel | MoE 中把不同专家放到不同 GPU |
+| ZeRO / FSDP | 切分参数、梯度和 optimizer state |
+
+这些策略不是互斥的。大模型训练常常组合使用多种并行方式。
+
+组合并行带来的问题是复杂度上升：
+
+- 通信模式更多。
+- checkpoint 更复杂。
+- 调试更困难。
+- 负载均衡更难。
+- profiler 证据更难解释。
+
+因此新手学习时应先理解单个训练 step，再学习每种并行策略改了哪一部分。
+
+## 常见瓶颈
+
+训练系统常见瓶颈可以按类别归纳。
+
+### 1. 数据瓶颈
+
+表现：
+
+- GPU 利用率低。
+- step time 抖动。
+- data loader waiting time 高。
+
+可能原因：
+
+- 数据读取慢。
+- tokenizer 慢。
+- CPU worker 不足。
+- 网络存储带宽不足。
+
+### 2. 计算瓶颈
+
+表现：
+
+- forward/backward 占 step time 大头。
+- GPU kernel timeline 很满。
+- MFU 不高但 GPU 很忙。
+
+可能原因：
+
+- 算子不够优化。
+- batch 太小。
+- shape 不友好。
+- 编译或 fused kernel 不充分。
+
+### 3. 显存瓶颈
+
+表现：
+
+- OOM。
+- batch 无法增大。
+- 长上下文无法训练。
+- activation 占用高。
+
+可能原因：
+
+- activation 太大。
+- optimizer state 太多。
+- gradient 和参数重复存储。
+- 临时 buffer 或碎片过大。
+
+### 4. 通信瓶颈
+
+表现：
+
+- GPU 等待通信。
+- 多机扩展效率差。
+- AllReduce / ReduceScatter 占比高。
+- step time 随 GPU 数增加不降反升。
+
+可能原因：
+
+- 网络带宽不足。
+- 通信不能与计算重叠。
+- bucket 设置不合理。
+- tensor parallel 跨节点。
+- MoE 负载不均。
+
+### 5. 稳定性瓶颈
+
+表现：
+
+- NaN / Inf。
+- 训练中断。
+- checkpoint 恢复失败。
+- 不同 run 结果差异异常。
+
+可能原因：
+
+- 混合精度数值不稳定。
+- learning rate 过大。
+- 数据损坏。
+- checkpoint 不完整。
+- 随机种子和数据顺序不可复现。
+
+## 应该观察哪些指标
+
+训练系统建议至少观察这些指标：
+
+| 指标 | 说明 |
+| --- | --- |
+| step time | 每个训练 step 的耗时 |
+| samples/s | 每秒处理样本数 |
+| tokens/s | 每秒处理 token 数 |
+| MFU | 模型 FLOPs 利用率 |
+| GPU utilization | GPU 是否持续有计算 |
+| GPU memory | 显存占用和峰值 |
+| data loading time | 数据管线是否拖慢训练 |
+| forward/backward time | 计算阶段耗时 |
+| communication time | 梯度同步和并行通信耗时 |
+| optimizer time | 参数更新耗时 |
+| checkpoint time | 保存 checkpoint 的开销 |
+| loss / grad norm | 训练是否稳定 |
+| NaN / overflow count | 混合精度和数值风险 |
+| scaling efficiency | 多 GPU 扩展效率 |
+
+其中 MFU、step time 和 scaling efficiency 对大模型训练特别重要。它们比单纯 GPU utilization 更能说明系统是否真的高效。
+
+## 一个最小理解例子
+
+假设用 8 张 GPU 训练一个 Transformer 模型。
+
+每张 GPU 处理一个 micro-batch。它们各自做 forward，计算 loss，再做 backward。Backward 过程中，每张 GPU 得到自己那份数据产生的梯度。为了让 8 张 GPU 上的模型保持一致，它们需要通过 AllReduce 把梯度平均。然后每张 GPU 使用相同梯度执行 optimizer step，得到相同的新参数。
+
+如果 batch 太大，activation 占满显存，会 OOM。
+
+如果 batch 太小，GPU 计算不饱满，吞吐低。
+
+如果网络慢，gradient sync 会拖慢 step time。
+
+如果数据读取慢，GPU 会等数据。
+
+如果 checkpoint 太慢，训练会周期性卡住。
+
+这就是训练系统优化的本质：每个 step 是一条流水线，瓶颈可能出现在任何环节。
+
+## 学习路径建议
+
+刚开始学习训练系统，可以按这个顺序：
+
+1. 先理解一个训练 step 的完整生命周期。
+2. 再理解显存由 parameters、gradients、optimizer states、activations 组成。
+3. 学习 data parallel 和 gradient synchronization。
+4. 学习 gradient accumulation 和 activation checkpointing。
+5. 学习 ZeRO / FSDP 如何切分训练状态。
+6. 学习 tensor parallel、pipeline parallel 和 expert parallel。
+7. 最后学习 step time breakdown、MFU、scaling efficiency 和故障恢复。
+
+这样能避免一开始就陷入框架参数，而是先知道每种优化在生命周期中解决哪个问题。
+
+## 小结
+
+训练任务生命周期是训练系统优化的基础。一个训练 step 包含数据读取、forward、loss、backward、gradient sync、optimizer step、logging、checkpoint 等多个环节。
+
+它的关键系统问题包括：
+
+- 数据是否能持续喂给 GPU。
+- activation、gradient、optimizer state 如何占用显存。
+- backward 和通信是否能高效执行。
+- optimizer step 是否成为瓶颈。
+- checkpoint 是否能在不拖垮训练的情况下支持恢复。
+- 多 GPU 扩展时 step time 是否下降，scaling efficiency 是否合理。
+
+对关注高效计算的人来说，训练系统的核心不是“把模型训得更聪明”，而是理解每个 step 的时间、显存、通信和稳定性成本，并用系统方法持续降低这些成本。
+
+## 参考资料
+
+- [PyTorch DistributedDataParallel documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html)
+- [PyTorch FullyShardedDataParallel documentation](https://docs.pytorch.org/docs/stable/fsdp.html)
+- [ZeRO: Memory Optimizations Toward Training Trillion Parameter Models](https://arxiv.org/abs/1910.02054)
+- [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053)
 
 ---
 
