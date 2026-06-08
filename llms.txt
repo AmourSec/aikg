@@ -41,12 +41,13 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [量化推理](https://amoursec.github.io/aikg/03-inference-systems/quantization/): 量化推理用低精度权重、激活或 KV Cache 降低显存、带宽和推理成本。
 - [Speculative Decoding](https://amoursec.github.io/aikg/03-inference-systems/speculative-decoding/): Speculative Decoding 用 draft 和 verify 减少目标模型逐 token Decode 等待。
 - [Prefill/Decode 分离部署](https://amoursec.github.io/aikg/03-inference-systems/prefill-decode-disaggregation/): Prefill/Decode 分离部署用独立资源池和 KV 传输减少两阶段互相干扰。
+- [MoE 模型推理优化](https://amoursec.github.io/aikg/03-inference-systems/moe-inference-optimization/): MoE 推理优化关注专家路由、dispatch/combine、负载不均、通信和专家权重放置。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 推理负载的系统特征。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
-- [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 
 ## Optional Documents
 
+- [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
 - [TorchInductor 与 PyTorch 编译栈](https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/): TorchInductor 与 PyTorch 编译栈学习入口。
 - [AI 加速器与计算架构](https://amoursec.github.io/aikg/06-accelerators-architecture/): AI 加速器与计算架构主题入口。
@@ -87,6 +88,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/quantization.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/quantization.md)
 - [03-inference-systems/speculative-decoding.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/speculative-decoding.md)
 - [03-inference-systems/prefill-decode-disaggregation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/prefill-decode-disaggregation.md)
+- [03-inference-systems/moe-inference-optimization.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/moe-inference-optimization.md)
 - [03-inference-systems/rag-agent-workloads.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/rag-agent-workloads.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
