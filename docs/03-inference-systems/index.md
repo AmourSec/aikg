@@ -37,7 +37,7 @@ updated: 2026-06-08
 | 12 | [MoE 模型推理优化](moe-inference-optimization.md) | 处理专家路由、负载均衡、通信和显存问题。 |
 | 13 | [单机推理服务架构](single-node-serving-architecture.md) | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
 | 14 | [多机分布式推理](distributed-inference.md) | 扩展到多 GPU、多节点和跨节点并行。 |
-| 15 | 缓存体系 | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
+| 15 | [缓存体系](cache-system.md) | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
 | 16 | Benchmark 方法 | 设计可复现实验，避免只看单个吞吐数字。 |
 | 17 | vLLM | 作为现代开源推理引擎的主线案例。 |
 | 18 | TensorRT-LLM | 作为 NVIDIA 高性能推理栈案例。 |
@@ -133,11 +133,7 @@ MoE 模型每个 token 只激活部分专家，但系统上会引入专家路由
 
 推理系统里的缓存不只有 KV Cache。实际服务还可能包含 query cache、embedding cache、retrieval cache、prefix cache、tool result cache、model artifact cache 和 response cache。
 
-本节后续重点回答：
-
-- 每类缓存缓存的是什么，命中后节省哪段开销。
-- 缓存命中率、过期策略、一致性和安全隔离如何设计。
-- RAG、Agent 和长上下文服务为什么更依赖缓存体系。
+详见：[缓存体系](cache-system.md)
 
 ## Benchmark 方法
 
