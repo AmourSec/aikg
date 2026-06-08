@@ -38,7 +38,7 @@ updated: 2026-06-08
 | 13 | [单机推理服务架构](single-node-serving-architecture.md) | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
 | 14 | [多机分布式推理](distributed-inference.md) | 扩展到多 GPU、多节点和跨节点并行。 |
 | 15 | [缓存体系](cache-system.md) | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
-| 16 | Benchmark 方法 | 设计可复现实验，避免只看单个吞吐数字。 |
+| 16 | [Benchmark 方法](benchmark-methodology.md) | 设计可复现实验，避免只看单个吞吐数字。 |
 | 17 | vLLM | 作为现代开源推理引擎的主线案例。 |
 | 18 | TensorRT-LLM | 作为 NVIDIA 高性能推理栈案例。 |
 | 19 | SGLang | 作为结构化生成和高性能 runtime 案例。 |
@@ -139,11 +139,7 @@ MoE 模型每个 token 只激活部分专家，但系统上会引入专家路由
 
 Benchmark 方法关注如何设计实验，让性能数字可解释、可复现、可比较。推理 Benchmark 需要明确模型、硬件、精度、input length、output length、并发、请求分布和 SLO。
 
-本节后续重点回答：
-
-- synthetic workload 和 production trace 各有什么问题。
-- 如何区分 prefill-heavy、decode-heavy、mixed workload。
-- 为什么必须同时报告 latency、throughput、显存和成本。
+详见：[Benchmark 方法](benchmark-methodology.md)
 
 ## vLLM
 
