@@ -31,7 +31,7 @@ updated: 2026-06-08
 | 6 | [PagedAttention](paged-attention.md) | 理解块式 KV Cache 管理如何降低显存浪费。 |
 | 7 | [Prefix Cache](prefix-cache.md) | 理解共享 prompt 前缀如何减少重复 Prefill。 |
 | 8 | [调度策略](scheduling.md) | 研究请求队列、优先级、准入控制、抢占和公平性。 |
-| 9 | 量化推理 | 用更低精度减少显存、带宽和计算开销。 |
+| 9 | [量化推理](quantization.md) | 用更低精度减少显存、带宽和计算开销。 |
 | 10 | Speculative Decoding | 用草稿模型或多 token 预测减少串行解码等待。 |
 | 11 | Prefill/Decode 分离部署 | 将两类阶段放到不同资源池，缓解互相干扰。 |
 | 12 | MoE 模型推理优化 | 处理专家路由、负载均衡、通信和显存问题。 |
@@ -97,11 +97,7 @@ Prefix Cache 复用不同请求之间相同的 prompt 前缀，例如 system pro
 
 量化推理用更低精度表示权重、激活或 KV Cache，目标是减少显存占用、内存带宽压力和计算开销。常见方向包括 FP8、INT8、INT4、AWQ、GPTQ 和 weight-only quantization。
 
-本节后续重点回答：
-
-- 权重量化、激活量化和 KV Cache 量化分别影响什么。
-- 量化为什么可能提升吞吐，也可能影响质量或稳定性。
-- 不同硬件和推理引擎对量化格式有什么限制。
+详见：[量化推理](quantization.md)
 
 ## Speculative Decoding
 
