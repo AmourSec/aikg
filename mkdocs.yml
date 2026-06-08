@@ -79,6 +79,7 @@ nav:
       - Speculative Decoding: 03-inference-systems/speculative-decoding.md
       - Prefill/Decode 分离部署: 03-inference-systems/prefill-decode-disaggregation.md
       - MoE 模型推理优化: 03-inference-systems/moe-inference-optimization.md
+      - 单机推理服务架构: 03-inference-systems/single-node-serving-architecture.md
       - RAG 与 Agent 推理负载: 03-inference-systems/rag-agent-workloads.md
   - 训练系统与优化:
       - 概览: 04-training-systems/index.md

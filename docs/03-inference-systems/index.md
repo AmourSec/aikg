@@ -35,7 +35,7 @@ updated: 2026-06-08
 | 10 | [Speculative Decoding](speculative-decoding.md) | 用草稿模型或多 token 预测减少串行解码等待。 |
 | 11 | [Prefill/Decode 分离部署](prefill-decode-disaggregation.md) | 将两类阶段放到不同资源池，缓解互相干扰。 |
 | 12 | [MoE 模型推理优化](moe-inference-optimization.md) | 处理专家路由、负载均衡、通信和显存问题。 |
-| 13 | 单机推理服务架构 | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
+| 13 | [单机推理服务架构](single-node-serving-architecture.md) | 梳理一台机器上的模型加载、执行、队列和 API 服务。 |
 | 14 | 多机分布式推理 | 扩展到多 GPU、多节点和跨节点并行。 |
 | 15 | 缓存体系 | 统一理解 query、embedding、prefix、KV、tool result 等缓存。 |
 | 16 | Benchmark 方法 | 设计可复现实验，避免只看单个吞吐数字。 |
@@ -121,11 +121,7 @@ MoE 模型每个 token 只激活部分专家，但系统上会引入专家路由
 
 单机推理服务关注一台服务器内的完整执行链路，包括模型加载、tokenizer、请求队列、scheduler、GPU executor、streaming server、metrics 和健康检查。
 
-本节后续重点回答：
-
-- 一个推理服务进程通常由哪些模块组成。
-- CPU scheduler 与 GPU executor 如何协作。
-- 单机服务如何处理并发、超时、取消请求和显存保护。
+详见：[单机推理服务架构](single-node-serving-architecture.md)
 
 ## 多机分布式推理
 
