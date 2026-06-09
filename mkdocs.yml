@@ -93,6 +93,7 @@ nav:
       - 训练任务生命周期: 04-training-systems/training-lifecycle.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
+      - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
       - Triton Kernel 编程: 05-kernels-compilers/triton.md
       - TorchInductor 与 PyTorch 编译栈: 05-kernels-compilers/torchinductor.md
   - AI 加速器与计算架构:

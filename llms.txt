@@ -57,6 +57,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
 - [训练任务生命周期](https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/): 训练任务生命周期从数据读取、forward、loss、backward、gradient sync、optimizer step 到 checkpoint 建立训练系统端到端视角。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
+- [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
 - [TorchInductor 与 PyTorch 编译栈](https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/): TorchInductor 与 PyTorch 编译栈学习入口。
 - [AI 加速器与计算架构](https://amoursec.github.io/aikg/06-accelerators-architecture/): AI 加速器与计算架构主题入口。
@@ -110,6 +111,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [04-training-systems/training-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/training-lifecycle.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
+- [05-kernels-compilers/attention-computation-patterns.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/attention-computation-patterns.md)
 - [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)
 - [05-kernels-compilers/torchinductor.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/torchinductor.md)
 - [06-accelerators-architecture/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/index.md)

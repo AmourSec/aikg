@@ -4,7 +4,7 @@ domain: kernels-compilers
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-09
 ---
 
 # Kernel、算子与编译优化
@@ -41,5 +41,6 @@ updated: 2026-05-30
 
 ## 专题入口
 
+- [Attention 机制与计算模式](attention-computation-patterns.md)：区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，理解 attention pattern、显存和 kernel 执行的关系。
 - [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel、tiling、block program、memory layout 和 auto-tuning。
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、graph capture、fusion、scheduler、Triton codegen 和性能调试。
