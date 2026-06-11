@@ -104,6 +104,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](https://amoursec.github.io/aikg/08-benchmark-capacity/training-capacity-scaling-efficiency/): 训练容量建模解释如何用 total tokens、global batch、micro batch、gradient accumulation、step time、tokens/s、tokens/s/GPU、MFU、strong/weak scaling efficiency、DP/TP/PP/EP/FSDP/ZeRO、checkpoint、eval、failure/restart、queue wait、成本和能效推导训练总时间与 GPU 需求。
 - [Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF](https://amoursec.github.io/aikg/08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/): Profiler 工具链与瓶颈定位解释如何用应用指标、PyTorch Profiler、Nsight Systems、Nsight Compute、DCGM、perf/eBPF、NVTX 标注、分布式 trace、kernel metrics、CPU/网络/存储信号和前后对比 benchmark 建立 AI 系统性能瓶颈证据链。
 - [Roofline 分析：算力、带宽与瓶颈上限](https://amoursec.github.io/aikg/08-benchmark-capacity/roofline-analysis-compute-bandwidth/): Roofline 分析解释如何用 FLOPs、bytes moved、arithmetic intensity、ridge point、peak compute、memory bandwidth、Nsight/profiler 指标、AI 算子形态、推理 prefill/decode、训练 forward/backward/optimizer、communication roofline 和端到端 benchmark 判断瓶颈上限与优化方向。
+- [排队模型与尾延迟：QPS、并发、利用率和 p99](https://amoursec.github.io/aikg/08-benchmark-capacity/queueing-model-tail-latency/): 排队模型与尾延迟解释如何用 Little's Law、QPS、concurrency、service time、utilization、queueing latency、Kingman/VUT 直觉、batching、head-of-line blocking、goodput at SLA、load shedding、deadline、retry budget、open-loop benchmark、请求长度分布和队列指标分析 AI 推理服务的 p95/p99 与容量边界。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
 - [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
 - [AI 系统论文与架构](https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/): AI 系统论文与架构案例索引。
@@ -199,6 +200,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [08-benchmark-capacity/training-capacity-scaling-efficiency.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/training-capacity-scaling-efficiency.md)
 - [08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md)
 - [08-benchmark-capacity/roofline-analysis-compute-bandwidth.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/roofline-analysis-compute-bandwidth.md)
+- [08-benchmark-capacity/queueing-model-tail-latency.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/queueing-model-tail-latency.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
 - [10-papers-cases/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/index.md)
 - [10-papers-cases/ai-system-architecture.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/ai-system-architecture.md)

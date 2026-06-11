@@ -37,3 +37,4 @@ updated: 2026-05-30
 - [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](training-capacity-scaling-efficiency.md)：解释如何用训练目标、global batch、step time、tokens/s、MFU、强/弱扩展效率、并行策略、checkpoint、eval、故障恢复、排队等待、成本和能效推导训练容量。
 - [Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF](profiler-toolchain-bottleneck-analysis.md)：解释如何把应用指标、PyTorch Profiler、Nsight Systems、Nsight Compute、DCGM、perf/eBPF、NVTX 标注和分布式 trace 组合成可复现的瓶颈定位证据链。
 - [Roofline 分析：算力、带宽与瓶颈上限](roofline-analysis-compute-bandwidth.md)：解释如何用 FLOPs、bytes moved、arithmetic intensity、ridge point、profiler 指标和端到端 benchmark 判断 AI workload 更接近算力上限、带宽上限还是系统开销瓶颈。
+- [排队模型与尾延迟：QPS、并发、利用率和 p99](queueing-model-tail-latency.md)：解释如何用 Little's Law、利用率、服务时间波动、batching、队列长度、load shedding、open-loop benchmark 和 goodput at SLA 分析 AI 推理服务的 p95/p99 与容量边界。
