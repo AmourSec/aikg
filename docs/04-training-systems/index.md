@@ -41,7 +41,7 @@ updated: 2026-06-11
 | 15 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 16 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
 | 17 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
-| 18 | 训练性能剖析与 Benchmark | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 18 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
 | 19 | DeepSpeed、Megatron-LM 与 PyTorch FSDP | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
@@ -152,11 +152,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 训练 Benchmark 不只是跑通脚本，而是固定模型、数据、batch、精度、并行策略和硬件，用 profiler 和 trace 解释 step time。
 
-本节后续重点回答：
-
-- 如何做 step time breakdown。
-- 如何用 profiler 区分计算、通信、数据和 checkpoint 瓶颈。
-- 如何把训练实验沉淀为容量模型。
+详见：[训练性能剖析与 Benchmark](training-benchmark-profiling.md)
 
 ## DeepSpeed、Megatron-LM 与 PyTorch FSDP
 
