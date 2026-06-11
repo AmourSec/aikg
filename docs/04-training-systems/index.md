@@ -40,7 +40,7 @@ updated: 2026-06-11
 | 14 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
 | 15 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 16 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
-| 17 | 训练性能指标与扩展效率 | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 17 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
 | 18 | 训练性能剖析与 Benchmark | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
 | 19 | DeepSpeed、Megatron-LM 与 PyTorch FSDP | 作为主流训练系统和框架案例。 |
 
@@ -146,11 +146,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 训练系统需要用 step time、samples/s、tokens/s、MFU、GPU memory、communication time 和 scaling efficiency 评价。
 
-本节后续重点回答：
-
-- MFU 和 GPU utilization 有什么区别。
-- strong scaling 和 weak scaling 如何评估。
-- 扩展效率下降时如何定位原因。
+详见：[训练性能指标与扩展效率](training-performance-metrics-scaling.md)
 
 ## 训练性能剖析与 Benchmark
 
