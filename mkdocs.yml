@@ -127,6 +127,7 @@ nav:
       - Workload Mapping：算子、Compiler、Runtime 与硬件执行: 06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md
   - 集群、网络、存储与调度:
       - 概览: 07-cluster-infra/index.md
+      - AI 集群架构总览：节点、网络、存储与调度: 07-cluster-infra/ai-cluster-architecture-overview.md
   - 性能分析、Benchmark 与容量建模:
       - 概览: 08-benchmark-capacity/index.md
   - 可靠性、可观测性与故障复盘:

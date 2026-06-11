@@ -89,6 +89,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](https://amoursec.github.io/aikg/06-accelerators-architecture/accelerator-architecture-tradeoffs/): 架构取舍解释 GPU、NPU、TPU、ASIC、FPGA 的通用性与专用性、执行模型、存储层次、精度支持、软件栈、动态性、扩展方式、算子覆盖和 workload 匹配。
 - [Workload Mapping：算子、Compiler、Runtime 与硬件执行](https://amoursec.github.io/aikg/06-accelerators-architecture/workload-mapping-compiler-runtime-interface/): Workload Mapping 解释模型、IR、算子、kernel、layout、tiling、fusion、compiler、runtime、dynamic shape、fallback、parallel mapping 和硬件有效吞吐之间的关系。
 - [集群、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/): 集群、网络、存储与调度主题入口。
+- [AI 集群架构总览：节点、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/ai-cluster-architecture-overview/): AI 集群架构总览解释控制面、计算节点、GPU 拓扑、网络平面、存储层次、调度系统、gang scheduling、资源碎片、多租户、环境可复现、可观测性和集群指标。
 - [性能分析、Benchmark 与容量建模](https://amoursec.github.io/aikg/08-benchmark-capacity/): 性能分析、Benchmark 与容量建模主题入口。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
 - [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
@@ -170,6 +171,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [06-accelerators-architecture/accelerator-architecture-tradeoffs.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/accelerator-architecture-tradeoffs.md)
 - [06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md)
 - [07-cluster-infra/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/index.md)
+- [07-cluster-infra/ai-cluster-architecture-overview.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/ai-cluster-architecture-overview.md)
 - [08-benchmark-capacity/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/index.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
 - [10-papers-cases/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/index.md)
