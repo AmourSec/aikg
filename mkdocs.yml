@@ -97,6 +97,7 @@ nav:
       - 显存组成与优化总览: 04-training-systems/memory-composition-optimization.md
       - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
       - ZeRO 与 FSDP: 04-training-systems/zero-fsdp.md
+      - Tensor Parallel: 04-training-systems/tensor-parallel.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
