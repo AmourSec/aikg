@@ -99,6 +99,7 @@ nav:
       - 显存组成与优化总览: 04-training-systems/memory-composition-optimization.md
       - Backward、Autograd Graph 与梯度生命周期: 04-training-systems/backward-autograd-gradient-lifecycle.md
       - 分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL: 04-training-systems/distributed-training-runtime.md
+      - Collective 通信原语与通信量模型: 04-training-systems/collective-communication-primitives.md
       - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
       - ZeRO 与 FSDP: 04-training-systems/zero-fsdp.md
       - Tensor Parallel: 04-training-systems/tensor-parallel.md
