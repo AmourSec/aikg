@@ -34,3 +34,4 @@ updated: 2026-05-30
 
 - [性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位](performance-analysis-benchmark-methodology.md)：解释 benchmark、profiling、monitoring 的区别，如何从问题出发定义指标、设计 workload、控制变量、处理 warmup、做统计、A/B、ablation、profiler 证据和容量建模输入。
 - [推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数](inference-capacity-modeling.md)：解释如何用请求分布、SLA、单副本 goodput 曲线、KV Cache 容量、prefill/decode 约束、headroom、冷启动、路由和生产反馈推导推理副本数。
+- [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](training-capacity-scaling-efficiency.md)：解释如何用训练目标、global batch、step time、tokens/s、MFU、强/弱扩展效率、并行策略、checkpoint、eval、故障恢复、排队等待、成本和能效推导训练容量。
