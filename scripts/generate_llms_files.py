@@ -139,7 +139,7 @@ DESCRIPTIONS = {
     "04-training-systems/deepspeed-megatron-fsdp.md": "DeepSpeed、Megatron-LM 与 PyTorch FSDP 对比 ZeRO、FSDP、TP、PP、EP、runtime、checkpoint、offload、PyTorch 原生集成和框架选型 benchmark。",
     "05-kernels-compilers/index.md": "Kernel、算子与编译优化主题入口。",
     "05-kernels-compilers/attention-computation-patterns.md": "Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。",
-    "05-kernels-compilers/triton.md": "Triton Kernel 编程学习入口。",
+    "05-kernels-compilers/triton.md": "Triton Kernel 编程解释 blocked program 执行模型、program_id、block tensor、pointer arithmetic、mask、constexpr、tiling、fused softmax、matmul、autotune、debugging、benchmark 和 profiler 方法。",
     "05-kernels-compilers/torchinductor.md": "TorchInductor 与 PyTorch 编译栈学习入口。",
     "06-accelerators-architecture/index.md": "AI 加速器与计算架构主题入口。",
     "07-cluster-infra/index.md": "集群、网络、存储与调度主题入口。",

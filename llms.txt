@@ -77,7 +77,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [DeepSpeed、Megatron-LM 与 PyTorch FSDP](https://amoursec.github.io/aikg/04-training-systems/deepspeed-megatron-fsdp/): DeepSpeed、Megatron-LM 与 PyTorch FSDP 对比 ZeRO、FSDP、TP、PP、EP、runtime、checkpoint、offload、PyTorch 原生集成和框架选型 benchmark。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
-- [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
+- [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程解释 blocked program 执行模型、program_id、block tensor、pointer arithmetic、mask、constexpr、tiling、fused softmax、matmul、autotune、debugging、benchmark 和 profiler 方法。
 - [TorchInductor 与 PyTorch 编译栈](https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/): TorchInductor 与 PyTorch 编译栈学习入口。
 - [AI 加速器与计算架构](https://amoursec.github.io/aikg/06-accelerators-architecture/): AI 加速器与计算架构主题入口。
 - [集群、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/): 集群、网络、存储与调度主题入口。
