@@ -130,6 +130,7 @@ nav:
       - AI 集群架构总览：节点、网络、存储与调度: 07-cluster-infra/ai-cluster-architecture-overview.md
       - 调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue: 07-cluster-infra/scheduling-queues-resource-management.md
       - GPU 拓扑、NUMA、MIG/MPS 与资源隔离: 07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md
+      - RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制: 07-cluster-infra/rdma-network-nccl-topology-congestion.md
   - 性能分析、Benchmark 与容量建模:
       - 概览: 08-benchmark-capacity/index.md
   - 可靠性、可观测性与故障复盘:
