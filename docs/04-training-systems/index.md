@@ -37,7 +37,7 @@ updated: 2026-06-11
 | 11 | [混合精度训练](mixed-precision-training.md) | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
 | 12 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
 | 13 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
-| 14 | Optimizer 与 Scheduler 系统成本 | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
+| 14 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
 | 15 | Muon 优化器 | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 16 | Checkpoint、Resume 与容错 | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
 | 17 | 训练性能指标与扩展效率 | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
@@ -126,11 +126,7 @@ FLUX 是一种把通信和计算切成更细粒度，再融合到更大 GPU kern
 
 Optimizer step 会更新参数并维护 optimizer state。Adam/AdamW、fused optimizer、学习率 scheduler 和 master weight 都会影响显存和 step time。
 
-本节后续重点回答：
-
-- Adam optimizer state 为什么显存很高。
-- fused optimizer 如何降低 kernel launch 和访存开销。
-- scheduler 和 optimizer step 如何影响长期训练稳定性。
+详见：[Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md)
 
 ## Muon 优化器
 
