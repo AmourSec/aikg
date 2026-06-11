@@ -105,6 +105,7 @@ nav:
       - 并行策略组合：3D/4D/5D Parallelism: 04-training-systems/hybrid-parallelism-composition.md
       - Activation Checkpointing: 04-training-systems/activation-checkpointing.md
       - 混合精度训练: 04-training-systems/mixed-precision-training.md
+      - 训练稳定性与数值异常：NaN、Inf、Loss Spike 与梯度健康: 04-training-systems/training-stability-numerical-debugging.md
       - 通信与计算重叠: 04-training-systems/communication-computation-overlap.md
       - FLUX 通信重叠与 Kernel Fusion: 04-training-systems/flux-kernel-fusion.md
       - Optimizer 与 Scheduler 系统成本: 04-training-systems/optimizer-scheduler-cost.md
