@@ -33,7 +33,7 @@ updated: 2026-05-30
 ## 专题入口
 
 - [AI 集群架构总览：节点、网络、存储与调度](ai-cluster-architecture-overview.md)：建立 AI 集群 workload、作业生命周期、resource flavor、容量池、故障域、网络存储、准入/放置/编排、拓扑感知、环境治理、manifest、可观测性和容量规划的整体框架。
-- [调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue](scheduling-queues-resource-management.md)：解释 AI workload 从提交、准入、排队、公平共享、资源匹配、拓扑匹配、gang allocation 到运行、抢占、重试和可解释性的调度生命周期。
+- [调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue](scheduling-queues-resource-management.md)：解释 AI workload 从 job spec、准入、排队、公平共享、resource flavor、capacity pool、拓扑匹配、gang allocation 到抢占恢复、pending reason、策略迭代和可解释性的调度生命周期。
 - [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](gpu-topology-numa-mig-mps-isolation.md)：解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、MIG、MPS、time slicing、rank mapping 和多租户 GPU 隔离策略。
 - [RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制](rdma-network-nccl-topology-congestion.md)：解释 RDMA、GPU Direct RDMA、InfiniBand、RoCE、NCCL/RCCL collective、multi-rail、网络拓扑、PFC/ECN/QoS、拥塞排查和网络 benchmark。
 - [存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储](storage-data-cache-checkpoint.md)：解释对象存储、并行文件系统、本地 NVMe、数据集 shard、DataLoader、模型权重分发、容器镜像、GPUDirect Storage、checkpoint 原子性、异步保存和恢复。
