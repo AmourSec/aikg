@@ -4,7 +4,7 @@ domain: cluster-infra
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 ---
 
 # 混合集群与多租户隔离：训练、推理、Notebook 与批处理共存
@@ -83,6 +83,68 @@ flowchart TB
 - 数据预处理把共享文件系统打满，训练 GPU 等数据。
 - 多个大训练任务同时 checkpoint，存储瞬间拥塞。
 - Benchmark 被后台任务干扰，结论不可用。
+
+## Workload Contract：混部的最小声明
+
+混合集群里最容易出问题的任务，往往不是“资源申请很大”的任务，而是“没有说清楚自己是什么”的任务。
+
+所以入口层应该要求每个任务声明 workload contract。它不需要很复杂，但至少要把调度器、准入策略和运维人员需要判断的内容写清楚。
+
+示例：
+
+```yaml
+workload:
+  name: sft-run-2026-06-12
+  type: training
+  tenant: research-a
+  priority: normal
+  queue: train-h100
+  interruptible: true
+  checkpoint:
+    enabled: true
+    interval_minutes: 20
+    path: s3://bucket/checkpoints/sft-run-2026-06-12/
+
+resources:
+  gpu:
+    type: h100
+    count: 64
+    topology: same-rack-preferred
+  cpu_per_gpu: 16
+  memory_per_gpu: 128Gi
+  local_nvme: 2Ti
+
+isolation:
+  data_class: internal
+  network_profile: training-rdma
+  storage_profile: shared-fs-high-throughput
+  environment_family: train-h100-cu122
+
+slo:
+  max_queue_wait: 12h
+  expected_duration: 36h
+  preemption_grace: 15m
+```
+
+这个 contract 的价值在于：
+
+- 调度系统知道任务需要什么资源和拓扑。
+- 准入策略知道它能不能进入某个队列。
+- 抢占策略知道它是否可中断。
+- 存储和网络策略知道它会制造什么负载。
+- 事故复盘时能知道它为什么被允许运行。
+
+不同 workload 的 contract 重点不同：
+
+| Workload | contract 必须讲清楚 |
+| --- | --- |
+| 在线推理 | SLA、模型 artifact、扩缩容边界、是否可驱逐、流量入口 |
+| 大训练 | GPU 拓扑、gang 需求、checkpoint、最大运行时间、恢复策略 |
+| Notebook | idle timeout、最大运行时间、数据权限、是否允许临时装包 |
+| 数据预处理 | 存储路径、IOPS/吞吐预算、小文件数量、输出提交方式 |
+| Benchmark | 固定节点池、固定镜像、输入 trace、低干扰要求 |
+
+没有 contract 的任务应该进入低优先级默认队列，不能直接使用生产推理池、高优先级、privileged 权限或关键数据路径。
 
 ## 多租户要隔离什么
 
@@ -189,6 +251,49 @@ Kubernetes 官方多租户文档强调，隔离既包括控制面隔离，也包
 
 很多混合集群问题不是底层算力不够，而是控制面没有准入策略。
 
+## 租户模型：Namespace、Account、Project 与 Queue
+
+多租户治理首先要统一“租户”到底是什么。不同系统的抽象不同：
+
+- Kubernetes 常用 namespace 表达边界。
+- Slurm 常用 account、association、partition、QoS。
+- 云平台常用 project、folder、billing account。
+- 队列系统常用 LocalQueue、ClusterQueue、cohort、resource flavor。
+
+如果这些概念各自独立，就会出现权限、配额和成本归因对不上的问题。例如：
+
+```text
+Kubernetes namespace: team-a-dev
+Slurm account: research-a
+Object storage prefix: /datasets/group-alpha/
+Cost tag: project-123
+Queue: shared-gpu
+```
+
+这些名字如果没有映射关系，后续很难回答“这个任务属于谁、消耗谁的 quota、能访问哪些数据、成本算到哪里”。
+
+更好的做法是建立一张租户映射表：
+
+| 层 | 字段 | 示例 |
+| --- | --- | --- |
+| Identity | tenant_id | `research-a` |
+| Kubernetes | namespace / service account | `research-a-train`、`research-a-dev` |
+| Slurm | account / QoS | `research-a`、`normal` |
+| Queue | local queue / cluster queue | `team-a-train` -> `h100-training` |
+| Storage | bucket / prefix / quota | `s3://ai-data/research-a/` |
+| Registry | image namespace | `registry.example.com/research-a/*` |
+| Cost | billing tag | `tenant=research-a` |
+| Security | data class | public / internal / restricted |
+
+租户模型要同时服务四件事：
+
+- 授权：谁能提交什么任务，能访问哪些资源。
+- 配额：谁有多少 guaranteed quota，能借多少。
+- 审计：谁在什么时候运行了什么。
+- 归因：资源、成本、故障和 SLA 影响算到谁。
+
+Kubernetes ResourceQuota 可以限制 namespace 内资源和对象总量；Kueue 的 LocalQueue/ClusterQueue 可以把用户入口和集群级资源池解耦；Slurm 的 account/QoS/fairshare 可以把历史使用量纳入优先级。AI 平台通常需要把这些层统一起来，而不是只依赖其中一个。
+
 ## 节点池设计
 
 混合集群通常不会把所有节点放在一个池子里。更常见的是把节点按用途、硬件和隔离级别分组。
@@ -213,6 +318,29 @@ Kubernetes 官方多租户文档强调，隔离既包括控制面隔离，也包
 Notebook 和低优先级任务可抢占
 系统组件独立节点池
 ```
+
+## 单集群、多集群与虚拟集群
+
+混部不一定意味着所有东西必须在一个 Kubernetes 或 Slurm 集群里。常见形态有三种。
+
+| 形态 | 优点 | 风险 | 适用场景 |
+| --- | --- | --- | --- |
+| 单集群多节点池 | 资源池大，调度灵活，统一观测 | 控制面影响面大，策略复杂 | 中小规模统一平台 |
+| 多物理集群 | 故障隔离强，策略简单 | 资源碎片、跨集群调度和成本归因复杂 | 生产推理、核心训练、强安全边界 |
+| 虚拟集群 / 逻辑租户 | 用户体验接近独立集群，底层仍共享 | 需要额外控制面和策略治理 | 多团队共享研究平台 |
+
+选择时可以按三个问题判断：
+
+1. 这个 workload 的事故会不会影响生产服务？
+2. 它是否需要和其他 workload 共享同一批昂贵 GPU 才能提高利用率？
+3. 控制面、网络、存储和安全策略是否能承受混部复杂度？
+
+经验上：
+
+- 生产在线推理和关键 benchmark 更适合独立集群或强隔离节点池。
+- 研发训练、微调、离线推理适合共享集群加队列治理。
+- Notebook 可以共享底层资源，但要通过虚拟边界、idle 回收和权限限制降低风险。
+- 安全等级不同的数据任务不应只靠队列隔离，必要时要物理或网络隔离。
 
 ## Hard Isolation 与 Soft Sharing
 
@@ -275,6 +403,28 @@ shared cluster: 192 GPU
 - 抢占前是否有 grace period。
 - 在线服务是否允许被抢占。
 - 大训练被抢占后 checkpoint 是否足够快。
+
+## 隔离等级：不要只有“隔离/不隔离”
+
+现实中很少只有两种状态。更实用的是定义隔离等级，让不同 workload 按风险进入不同等级。
+
+| 等级 | 典型 workload | 隔离要求 | 调度策略 |
+| --- | --- | --- | --- |
+| Tier 0 | 控制面、核心在线推理、关键网关 | 独立节点池、强权限边界、不可抢占 | 最高优先级，保留容量 |
+| Tier 1 | 重要训练、生产评测、正式 benchmark | 固定环境、固定节点池或拓扑、低干扰 | 高优先级，谨慎抢占 |
+| Tier 2 | 常规训练、微调、离线推理 | 队列隔离、quota、可观测 | 正常优先级，可借用 |
+| Tier 3 | Notebook、小实验、数据探索 | dev pool、idle timeout、权限限制 | 低优先级，可抢占 |
+| Tier 4 | opportunistic batch、spot 任务 | best effort、可中断、自动重试 | 使用空闲资源，随时回收 |
+
+隔离等级要写进准入策略，而不是只写在文档里。例如：
+
+- Tier 0/1 任务必须使用镜像 digest 和受支持环境族。
+- Tier 0/1 任务不能和未知 Notebook 混部。
+- Tier 2 可以借用资源，但要接受排队和部分抢占。
+- Tier 3 必须有 idle timeout 和最大运行时间。
+- Tier 4 必须声明可中断和重试方式。
+
+这样平台不需要对每个任务单独争论，而是把风险和权利用等级表达出来。
 
 ## Queue、Quota、Priority、Preemption
 
@@ -366,6 +516,43 @@ Preemption 是提高利用率的强工具，也是制造事故的强工具。
 - retry policy。
 - artifact 原子提交。
 - 用户可见的 pending/preempted reason。
+
+### AI 任务的抢占生命周期
+
+AI 任务抢占不能只发送一个 kill 信号。一个更稳妥的生命周期是：
+
+```text
+preempt requested
+  -> mark draining
+  -> stop accepting new work
+  -> checkpoint / flush output
+  -> release lease
+  -> terminate
+  -> requeue / reschedule
+  -> restore
+  -> validate progress
+```
+
+不同任务对应的动作不同：
+
+| Workload | 抢占前动作 | 恢复动作 |
+| --- | --- | --- |
+| 训练 | 保存 checkpoint、记录 global step、停止写入非原子 artifact | 从 checkpoint 恢复，校验 step 和 optimizer state |
+| 离线推理 | flush 已完成分片、提交分片 manifest | 跳过已完成分片，继续剩余分片 |
+| 数据预处理 | 原子提交输出目录，避免半成品覆盖正式数据 | 从输入 manifest 重新切分或续跑 |
+| Notebook | 保存 session 状态，提示用户迁移 | 重新分配低优先级资源 |
+| 在线推理 | 从负载均衡摘除副本，等待请求 drain | 新副本预热后再接流量 |
+
+抢占策略至少要定义：
+
+- `termination_grace_period` 是否足够完成 checkpoint。
+- 超时后是否强杀。
+- 被抢占后是否自动 requeue。
+- 连续抢占次数是否有限制。
+- 抢占原因是否进入 run manifest。
+- 抢占造成的浪费如何计入成本。
+
+如果一个 workload 没有恢复策略，就不应该被标记为 preemptible。否则调度器看似提高了利用率，实际只是把计算浪费转移到用户身上。
 
 ## 在线推理与训练混部
 
@@ -500,6 +687,46 @@ Kubernetes 提供了很多通用隔离工具，但 AI 场景要组合使用。
 
 这些工具的共同问题是：它们只提供机制，不自动给出策略。AI Infra 的工作是把策略固化成默认模板、准入规则和队列约束。
 
+### Kubernetes 中的推荐落地边界
+
+在 Kubernetes 里做 AI 多租户时，不建议让用户直接提交任意 Pod。更稳的路径是：
+
+```text
+user intent
+  -> workload template
+  -> admission policy
+  -> queue object
+  -> generated pod/job
+```
+
+也就是说，用户提交“我要跑一个训练任务”，平台根据模板生成 Pod、Job、RayJob、PyTorchJob 或 Kueue Workload，而不是让用户手写所有底层字段。
+
+建议默认固化：
+
+- namespace、service account 和 tenant 的映射。
+- node selector、toleration 和 topology 选择。
+- resource requests/limits。
+- priority class。
+- image digest 和环境族。
+- network policy。
+- secret mount 白名单。
+- volume mount 白名单。
+- termination grace period。
+- sidecar、日志和指标采集。
+
+用户可以改业务参数，但不应该随意改：
+
+- `hostNetwork`
+- `hostPID`
+- `privileged`
+- 任意 `hostPath`
+- system node pool toleration
+- 高优先级 priority class
+- 未授权 secret
+- 绕过队列的 node selector
+
+这些字段一旦开放，namespace 就很难作为可靠边界。
+
 ## Slurm 隔离工具箱
 
 很多 AI 训练集群仍然以 Slurm 为主。Slurm 的优势是 HPC 批处理、拓扑、accounting、fairshare 和大型 gang job。
@@ -521,6 +748,35 @@ AI 场景下要关注：
 - Fairshare 要结合 GPU 类型和 GPU hour，而不只是 job 数。
 - Preemption 必须和 checkpoint 能力匹配。
 - Partition 不宜过碎，否则排队和碎片严重。
+
+### Slurm 与 Kubernetes 混用
+
+不少 AI 平台会同时有 Slurm 和 Kubernetes：
+
+- Slurm 承载大规模训练和 HPC 风格批处理。
+- Kubernetes 承载在线推理、Notebook、控制面和云原生服务。
+- Ray 可能横跨二者，用于数据处理、分布式推理或实验平台。
+
+混用时最大的风险不是“两个系统都能调度”，而是它们看不到彼此的真实资源状态。
+
+常见问题：
+
+- Kubernetes 认为某节点空闲，但 Slurm 已经保留或占用。
+- Slurm job 和 Kubernetes Pod 共享同一节点导致 GPU/CPU/网络争用。
+- 两边的 quota、account、priority、cost tag 不一致。
+- 日志、指标和故障归因被拆散。
+- 用户可以选择更宽松的一边绕过策略。
+
+更稳的做法是明确边界：
+
+| 模式 | 做法 |
+| --- | --- |
+| 物理隔离 | 一批节点归 Slurm，一批节点归 Kubernetes |
+| 时间隔离 | 维护窗口或批处理窗口内切换资源归属 |
+| 控制器协调 | 用统一平台在两边创建任务并维护资源状态 |
+| 单向承载 | Kubernetes 只跑服务，Slurm 只跑大训练，不共享节点 |
+
+如果必须共享节点，至少要有统一的 node ownership、资源锁、GPU 设备可见性控制和成本归因。不建议让两个调度器在同一批 GPU 上独立做最终决策。
 
 ## GPU 共享：MIG、MPS 与 Time Slicing
 
@@ -644,6 +900,56 @@ RoCE 集群尤其要小心。一个错误配置或突发流量可能造成 PFC p
 
 没有这些指标，混部策略无法调优。
 
+## Noisy Neighbor：干扰归因
+
+混合集群里的典型抱怨是：
+
+```text
+我的代码没变，但今天变慢了。
+```
+
+这时如果没有干扰归因，只能在代码、数据、环境、网络和邻居任务之间猜。更好的做法是把 noisy neighbor 当成一类正式故障处理。
+
+常见干扰源：
+
+| 干扰源 | 表现 | 证据 |
+| --- | --- | --- |
+| GPU 共享 | SM/HBM 抖动、推理 p99 上升 | 同卡进程、MIG/MPS/time slicing 配置 |
+| CPU 争用 | tokenizer/DataLoader 慢、服务线程排队 | CPU throttling、run queue、cgroup 指标 |
+| 网络拥塞 | NCCL timeout、all-reduce 变慢、推理入口抖动 | fabric metrics、ECN/PFC、NCCL log |
+| 存储拥塞 | checkpoint 慢、DataLoader wait 高 | IOPS、吞吐、metadata rate、对象存储请求 |
+| 控制面压力 | Pod 创建慢、调度延迟、watch 超时 | API server、scheduler、queue controller 指标 |
+| 镜像风暴 | 大量 Pod 同时拉镜像，节点启动慢 | registry、node image cache、pull duration |
+| 日志风暴 | 节点磁盘或日志系统压力 | log agent queue、磁盘使用率、drop count |
+
+排查时建议按时间窗口对齐：
+
+```text
+victim workload slowdown window
+  -> same node / same rack workloads
+  -> same storage path workloads
+  -> same network fabric workloads
+  -> same control plane events
+  -> recent scheduling / preemption / rollout events
+```
+
+对线上推理尤其要记录：
+
+- 同节点是否有低优先级 batch。
+- 同时段是否有大规模镜像拉取。
+- 模型加载路径是否被训练 checkpoint 挤占。
+- ingress、tokenizer、scheduler、GPU worker 哪一段变慢。
+- prefix cache 或 KV cache 是否被重建。
+
+对训练任务则要记录：
+
+- 是否和其他大 job 共用 rack uplink。
+- 是否有同时 checkpoint 的任务。
+- 是否发生过重调度、抢占或节点替换。
+- 是否跨了不同 GPU 拓扑或不同 node profile。
+
+Noisy neighbor 治理不是追求完全无干扰，而是让干扰可见、可归因、可用策略缓解。
+
 ## 常见策略模板
 
 ### 策略一：训练主导型集群
@@ -747,6 +1053,51 @@ AI 任务常见准入检查：
 
 准入控制的目标不是增加门槛，而是把事故挡在运行前。
 
+### 准入策略模板
+
+可以把准入策略分成三类。
+
+| 类型 | 作用 | 示例 |
+| --- | --- | --- |
+| 必填字段 | 保证任务可治理 | queue、tenant、workload type、resource request、image digest |
+| 禁止字段 | 防止越权和破坏隔离 | privileged、host network、未授权 host path、高优先级滥用 |
+| 条件规则 | 根据 workload type 调整要求 | training 必须有 checkpoint，inference 必须有 readiness，benchmark 必须固定节点池 |
+
+示例规则：
+
+```text
+if workload.type == "training" and gpu.count >= 8:
+  require checkpoint.enabled == true
+  require max_runtime is set
+  require queue in allowed_training_queues
+
+if workload.type == "online-inference":
+  require priority in ["prod", "critical"]
+  require readiness_probe
+  require model_artifact_digest
+  deny preemptible == true
+
+if workload.type == "notebook":
+  require idle_timeout <= 4h
+  deny production_secret_mount
+  require queue == "dev"
+
+if workload.tier in ["Tier 0", "Tier 1"]:
+  require image_digest
+  require supported_environment_family
+  deny best_effort_qos
+```
+
+准入系统还应该给出可理解的拒绝原因：
+
+```text
+rejected: notebook workload cannot mount production secret "prod-model-key"
+rejected: training job requesting 64 GPUs must define checkpoint policy
+rejected: benchmark workload must use benchmark node pool
+```
+
+可解释性很重要。否则用户只会看到“任务提交失败”，然后绕过平台规则。
+
 ## 资源碎片
 
 混合集群很容易出现碎片：
@@ -825,20 +1176,27 @@ Notebook 常常是长期 GPU 占用、环境漂移和数据权限问题的来源
 ## 设计检查清单
 
 - 是否明确区分训练、推理、Notebook、批处理、benchmark 和系统任务。
+- 是否要求任务声明 workload contract。
+- 是否有统一 tenant_id，并映射 namespace、account、queue、storage、registry 和 cost tag。
 - 是否有清晰的 node pool 策略。
+- 是否决定哪些 workload 放在单集群、多集群或虚拟集群。
+- 是否定义 Tier 0 到 Tier 4 等隔离等级。
 - 是否有 team/project queue。
 - 是否有 guaranteed quota、max quota 和 borrowing 策略。
 - 是否定义 priority class，并限制谁能使用高优先级。
 - 哪些任务可以被抢占，哪些不能。
-- 被抢占任务是否有 checkpoint 和 graceful termination。
+- 被抢占任务是否有 checkpoint、graceful termination、requeue 和恢复验证。
 - 在线推理是否与低优先级任务有明确隔离边界。
 - Notebook 是否有 idle timeout 和最大运行时间。
 - 系统任务是否有独立资源保障。
+- Kubernetes 用户是否只能通过模板和队列提交，而不是任意 Pod。
+- Slurm 和 Kubernetes 是否有清晰节点归属或统一资源锁。
 - GPU、CPU、memory、storage、network 是否都纳入治理。
 - 共享文件系统和对象存储是否有租户配额。
 - 是否有 NetworkPolicy 或等价网络隔离。
 - 是否限制 privileged、host path、host network。
 - 是否记录 pending reason、preemption、quota borrowing 和 SLA。
+- 是否能定位 noisy neighbor 干扰。
 - 是否有资源碎片指标。
 - 是否能按 team/project/workload 做成本归因。
 - 是否有准入控制阻止危险配置。
@@ -872,3 +1230,4 @@ workload classification
 - [Kueue LocalQueue](https://kueue.sigs.k8s.io/docs/concepts/local_queue/)
 - [Kueue ClusterQueue](https://kueue.sigs.k8s.io/docs/concepts/cluster_queue/)
 - [Slurm Multifactor Priority Plugin](https://slurm.schedmd.com/priority_multifactor.html)
+- [Slurm Fair Tree](https://slurm.schedmd.com/fair_tree.html)
