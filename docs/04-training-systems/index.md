@@ -51,7 +51,7 @@ updated: 2026-06-12
 | 25 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 26 | [Evaluation、Validation 与 Checkpoint Selection](evaluation-validation-checkpoint-selection.md) | 设计训练中的 validation、eval cadence、异步评估、评估资源池、生成式评估、eval report 和 best checkpoint 选择。 |
 | 27 | [训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md) | 理解 seed/RNG、data order、determinism、分布式并行、checkpoint/resume、eval/benchmark 和 run manifest 如何影响训练可复现性。 |
-| 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的完整状态保存、提交协议、sharded checkpoint、弹性恢复、分层存储和恢复演练。 |
 | 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
 | 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
 | 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
@@ -222,7 +222,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 ## Checkpoint、Resume 与容错
 
-长期训练必须考虑 checkpoint、resume、故障恢复和存储压力。checkpoint 不完整或太慢，都会影响训练可靠性。
+长期训练必须把 checkpoint 当作恢复协议，而不是单个权重文件。训练系统需要保存完整训练状态，设计 manifest、two-phase save、atomic latest、sharded checkpoint、resharding、RPO/RTO、异步保存 backpressure、分层存储、保留策略、损坏校验和 resume sanity check，才能在节点故障、抢占、存储异常或并行度变化后可靠恢复。
 
 详见：[Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md)
 
