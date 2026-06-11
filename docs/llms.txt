@@ -59,6 +59,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [训练任务生命周期](https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/): 训练任务生命周期从数据读取、forward、loss、backward、gradient sync、optimizer step 到 checkpoint 建立训练系统端到端视角。
 - [数据输入与 Data Pipeline](https://amoursec.github.io/aikg/04-training-systems/data-pipeline/): 数据输入与 Data Pipeline 解释训练数据从存储到 GPU 的链路、DataLoader、tokenization、packing、H2D copy、有效 token 和数据瓶颈定位。
 - [Batch、Micro-batch 与 Gradient Accumulation](https://amoursec.github.io/aikg/04-training-systems/batch-gradient-accumulation/): Batch、Micro-batch 与 Gradient Accumulation 解释 global batch 公式、显存与吞吐关系、梯度累积流程、DDP 同步、loss 归一化和 benchmark 可比性。
+- [显存组成与优化总览](https://amoursec.github.io/aikg/04-training-systems/memory-composition-optimization/): 显存组成与优化总览拆解 parameters、gradients、optimizer states、master weights、activations、temporary buffers、allocator overhead，并说明不同显存优化技术节省哪类对象。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
@@ -116,6 +117,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [04-training-systems/training-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/training-lifecycle.md)
 - [04-training-systems/data-pipeline.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/data-pipeline.md)
 - [04-training-systems/batch-gradient-accumulation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/batch-gradient-accumulation.md)
+- [04-training-systems/memory-composition-optimization.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/memory-composition-optimization.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
 - [05-kernels-compilers/attention-computation-patterns.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/attention-computation-patterns.md)
 - [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)

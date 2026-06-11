@@ -27,7 +27,7 @@ updated: 2026-06-11
 | 1 | [训练任务生命周期](training-lifecycle.md) | 建立一个训练 step 的端到端系统视角。 |
 | 2 | [数据输入与 Data Pipeline](data-pipeline.md) | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
 | 3 | [Batch、Micro-batch 与 Gradient Accumulation](batch-gradient-accumulation.md) | 理解 global batch、显存、吞吐和优化稳定性的关系。 |
-| 4 | 显存组成与优化总览 | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
+| 4 | [显存组成与优化总览](memory-composition-optimization.md) | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
 | 5 | Data Parallel 与梯度同步 | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
 | 6 | ZeRO 与 FSDP | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
 | 7 | Tensor Parallel | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
@@ -66,11 +66,7 @@ updated: 2026-06-11
 
 训练显存不只有模型权重，还包括 gradients、optimizer states、activations、temporary buffers 和 allocator fragmentation。不同优化方法减少的显存项不同。
 
-本节后续重点回答：
-
-- 训练显存为什么比推理复杂。
-- activation checkpointing、ZeRO/FSDP、mixed precision 分别节省哪类显存。
-- 如何做显存 breakdown 和优化决策。
+详见：[显存组成与优化总览](memory-composition-optimization.md)
 
 ## Data Parallel 与梯度同步
 
