@@ -36,7 +36,7 @@ updated: 2026-06-11
 - [计算单元：SIMT、Tensor Core 与矩阵引擎](compute-units-simt-tensorcore.md)：解释 SIMD/SIMT、warp、SM、occupancy、register/shared memory、Tensor Core tile、systolic array、vector/load-store 单元、稀疏、动态控制流、并行切分和 profiler 指标如何影响真实算力。
 - [存储层次：HBM、SRAM、Cache 与数据复用](memory-hierarchy-data-reuse.md)：解释 register spill、SRAM/shared memory、bank conflict、cache locality、HBM 容量/带宽预算、host/offload/UVM、KV Cache layout、fusion、IO-aware kernel、memory planning 和 profiler 证据如何共同决定数据搬运成本。
 - [精度格式：FP16、BF16、FP8 与量化计算](precision-formats-low-bit-compute.md)：解释 FP32、TF32、FP16、BF16、FP8 E4M3/E5M2、INT8、INT4/NF4/FP4、accumulator、master weight、scale/amax、outlier、量化方法、KV Cache 量化、低精度通信、checkpoint metadata、硬件路径验证和 benchmark。
-- [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、节点内 GPU fabric、PCIe、RDMA、CXL、collective、rank mapping、拓扑感知并行和通信 benchmark。
+- [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、chiplet interconnect、PCIe、NVLink/NVSwitch、CXL、GPU Direct RDMA、InfiniBand/RoCE、多 rail、collective 算法、NCCL/RCCL、rank mapping、拓扑感知并行、通信 benchmark、故障排查和互连可观测性。
 - [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](power-thermal-reliability.md)：解释 power limit、thermal limit、clock、throttling、ECC、RAS、稳态 benchmark、能效指标和 power-aware scheduling。
 - [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](accelerator-architecture-tradeoffs.md)：解释通用性与专用性、GPU/TPU/NPU/ASIC/FPGA 执行模型、软件栈、算子覆盖、动态性、扩展方式和 workload 匹配。
 - [Workload Mapping：算子、Compiler、Runtime 与硬件执行](workload-mapping-compiler-runtime-interface.md)：解释模型、IR、算子、kernel、layout、tiling、fusion、runtime、dynamic shape、fallback 和 parallel mapping 如何共同决定硬件有效吞吐。
