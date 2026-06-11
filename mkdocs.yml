@@ -109,6 +109,7 @@ nav:
       - Checkpoint、Resume 与容错: 04-training-systems/checkpoint-resume-fault-tolerance.md
       - 训练性能指标与扩展效率: 04-training-systems/training-performance-metrics-scaling.md
       - 训练性能剖析与 Benchmark: 04-training-systems/training-benchmark-profiling.md
+      - DeepSpeed、Megatron-LM 与 PyTorch FSDP: 04-training-systems/deepspeed-megatron-fsdp.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md

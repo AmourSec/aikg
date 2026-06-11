@@ -42,7 +42,7 @@ updated: 2026-06-11
 | 16 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
 | 17 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
 | 18 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
-| 19 | DeepSpeed、Megatron-LM 与 PyTorch FSDP | 作为主流训练系统和框架案例。 |
+| 19 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
 
@@ -158,8 +158,4 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 DeepSpeed、Megatron-LM 和 PyTorch FSDP 是理解大模型训练系统的重要案例。它们分别覆盖 ZeRO、模型并行、分布式 runtime 和主流框架集成。
 
-本节后续重点回答：
-
-- 这些框架分别解决哪些训练系统问题。
-- 它们的并行策略、显存策略和 checkpoint 策略有什么不同。
-- 如何基于 workload 和硬件做训练框架选型。
+详见：[DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md)
