@@ -138,6 +138,7 @@ nav:
       - 节点生命周期与集群运维：交付、验收、入池、维护与下线: 07-cluster-infra/node-lifecycle-health-maintenance.md
   - 性能分析、Benchmark 与容量建模:
       - 概览: 08-benchmark-capacity/index.md
+      - 性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位: 08-benchmark-capacity/performance-analysis-benchmark-methodology.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:

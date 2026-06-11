@@ -29,3 +29,7 @@ updated: 2026-05-30
 - 结果是否区分平均值、尾部、波动和异常值。
 - 性能瓶颈是否有 profiler 证据，而不是只看现象。
 - 容量模型能否解释现有结果并预测扩容后的表现。
+
+## 专题入口
+
+- [性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位](performance-analysis-benchmark-methodology.md)：解释 benchmark、profiling、monitoring 的区别，如何从问题出发定义指标、设计 workload、控制变量、处理 warmup、做统计、A/B、ablation、profiler 证据和容量建模输入。
