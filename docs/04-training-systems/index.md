@@ -53,7 +53,7 @@ updated: 2026-06-12
 | 27 | [训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md) | 理解 seed/RNG、data order、determinism、分布式并行、checkpoint/resume、eval/benchmark 和 run manifest 如何影响训练可复现性。 |
 | 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的完整状态保存、提交协议、sharded checkpoint、弹性恢复、分层存储和恢复演练。 |
 | 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 workload 固定协议、step time、tokens/s、goodput、MFU/HFU、scaling efficiency、尾部指标和成本效率评价训练系统。 |
-| 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 benchmark manifest、A/B、PyTorch Profiler、Nsight Systems/Compute、NVTX、多 rank trace 和回归流程定位训练瓶颈。 |
 | 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
@@ -234,7 +234,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 ## 训练性能剖析与 Benchmark
 
-训练 Benchmark 不只是跑通脚本，而是固定模型、数据、batch、精度、并行策略和硬件，用 profiler 和 trace 解释 step time。
+训练 Benchmark 不只是跑通脚本，而是固定模型、数据、batch、精度、并行策略和硬件，用 manifest、重复测量、A/B、profiler 和 trace 解释 step time。Profiling 要问题驱动：先用低开销 benchmark 发现差异，再用 PyTorch Profiler、Nsight Systems、Nsight Compute、NVTX、多 rank timeline 和 per-rank 指标定位计算、通信、数据、optimizer、checkpoint 或 straggler 瓶颈，最后用回归流程验证优化是否真实有效。
 
 详见：[训练性能剖析与 Benchmark](training-benchmark-profiling.md)
 
