@@ -141,6 +141,7 @@ nav:
       - 性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位: 08-benchmark-capacity/performance-analysis-benchmark-methodology.md
       - 推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数: 08-benchmark-capacity/inference-capacity-modeling.md
       - 训练容量建模：Tokens/s、Step Time、MFU 与扩展效率: 08-benchmark-capacity/training-capacity-scaling-efficiency.md
+      - Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF: 08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:
