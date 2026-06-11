@@ -42,3 +42,4 @@ updated: 2026-05-30
 - [Benchmark 负载设计与 Trace Replay：从玩具测试到真实 Workload](benchmark-workload-design-trace-replay.md)：解释如何设计 synthetic、sampled、trace replay workload，定义 input/output token 分布、arrival process、cache 状态、warmup、measurement window、load generator 校验和报告 caveats。
 - [A/B 对比、消融实验与性能回归检测](ab-testing-ablation-regression-detection.md)：解释如何用 A/A 噪声基线、A/B 对比、消融实验、主指标/保护指标/解释指标、paired runs、阈值、baseline、CI/nightly/release gate、canary 和 profiler 证据建立性能回归防线。
 - [成本模型与单位经济性：Cost per Token、GPU Hour 与有效产出](cost-model-unit-economics.md)：解释如何定义 GPU-only、node、service、workflow 成本边界，用 cost/token、cost/request、cost/successful run、cost to target、headroom、失败重试、缓存和共享成本归因评估 AI 系统单位经济性。
+- [Benchmark 数据治理与实验记录：Run Manifest、Raw Data 与可复现报告](benchmark-data-governance-run-records.md)：解释如何保存 run manifest、原始请求/step/system metrics、环境元数据、artifact、trace、profiler、lineage、report、dashboard、baseline 和 retention，让 benchmark 结论可复现、可审查、可被 AI 检索。
