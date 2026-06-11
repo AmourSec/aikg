@@ -19,7 +19,7 @@ updated: 2026-06-12
 2. 再学习数据输入、数据混合采样、batch、大词表 loss、autograd/backward、activation、gradient、optimizer state 这些基础成本。
 3. 然后理解分布式训练 runtime、collective 通信原语，再进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel，以及这些并行维度如何组合。
 4. 接着学习混合精度、数值稳定性、通信重叠、FLUX、activation checkpointing、checkpoint/restart 和容错。
-5. 再理解 optimizer state、参数高效微调、后训练工作负载、Muon 优化器、scheduler、optimizer step、evaluation 和 checkpoint selection 的系统成本。
+5. 再理解 optimizer state、参数高效微调、后训练工作负载、Muon 优化器、scheduler、optimizer step、evaluation、训练可复现性、Run Manifest 和 checkpoint selection 的系统成本。
 6. 最后用 step time breakdown、MFU、scaling efficiency 和 profiler 证据评估训练效率。
 
 | 顺序 | 主题 | 本章中的作用 |
@@ -50,10 +50,11 @@ updated: 2026-06-12
 | 24 | [后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角](post-training-workloads-sft-dpo-rlhf-grpo.md) | 理解后训练如何把监督微调、偏好优化、在线 rollout、reward/verifier 和 policy update 组合成不同系统负载。 |
 | 25 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 26 | [Evaluation、Validation 与 Checkpoint Selection](evaluation-validation-checkpoint-selection.md) | 设计训练中的 validation、eval cadence、异步评估、评估资源池、生成式评估、eval report 和 best checkpoint 选择。 |
-| 27 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
-| 28 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
-| 29 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
-| 30 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
+| 27 | [训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md) | 理解 seed/RNG、data order、determinism、分布式并行、checkpoint/resume、eval/benchmark 和 run manifest 如何影响训练可复现性。 |
+| 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
 
@@ -212,6 +213,12 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 训练系统需要定期判断模型是否真的变好，并从多个 checkpoint 里选择可继续训练、可完整评估或可进入后训练/部署流程的版本。Evaluation 不只是质量指标问题，也会影响 GPU 资源、checkpoint 存储、训练吞吐、任务调度和实验可复现性。
 
 详见：[Evaluation、Validation 与 Checkpoint Selection](evaluation-validation-checkpoint-selection.md)
+
+## 训练可复现性、随机性与 Run Manifest
+
+训练可复现性不是只设置一个 seed。一次训练是否能被重跑、比较、恢复和审计，取决于代码、配置、数据版本、数据顺序、RNG state、分布式拓扑、数值确定性、checkpoint、eval 和 benchmark 记录是否完整。Run Manifest 用结构化方式把这些信息串起来。
+
+详见：[训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md)
 
 ## Checkpoint、Resume 与容错
 
