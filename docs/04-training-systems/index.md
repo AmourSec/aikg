@@ -52,7 +52,7 @@ updated: 2026-06-12
 | 26 | [Evaluation、Validation 与 Checkpoint Selection](evaluation-validation-checkpoint-selection.md) | 设计训练中的 validation、eval cadence、异步评估、评估资源池、生成式评估、eval report 和 best checkpoint 选择。 |
 | 27 | [训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md) | 理解 seed/RNG、data order、determinism、分布式并行、checkpoint/resume、eval/benchmark 和 run manifest 如何影响训练可复现性。 |
 | 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的完整状态保存、提交协议、sharded checkpoint、弹性恢复、分层存储和恢复演练。 |
-| 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 workload 固定协议、step time、tokens/s、goodput、MFU/HFU、scaling efficiency、尾部指标和成本效率评价训练系统。 |
 | 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
 | 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
@@ -228,7 +228,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 ## 训练性能指标与扩展效率
 
-训练系统需要用 step time、samples/s、tokens/s、MFU、GPU memory、communication time 和 scaling efficiency 评价。
+训练系统性能评估不能只看 GPU utilization 或单次 tokens/s。需要先固定 workload，再区分 warmup、steady state 和 end-to-end 窗口，记录 step time、tokens/s、effective throughput、goodput、time to target quality、MFU/HFU、strong/weak scaling、显存 headroom、通信暴露时间、数据/optimizer/checkpoint overhead、straggler、p99 和成本效率，并用 baseline 与性能回归门槛保证指标长期可信。
 
 详见：[训练性能指标与扩展效率](training-performance-metrics-scaling.md)
 

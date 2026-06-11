@@ -11365,7 +11365,7 @@ updated: 2026-06-12
 | 26 | [Evaluation、Validation 与 Checkpoint Selection](evaluation-validation-checkpoint-selection.md) | 设计训练中的 validation、eval cadence、异步评估、评估资源池、生成式评估、eval report 和 best checkpoint 选择。 |
 | 27 | [训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md) | 理解 seed/RNG、data order、determinism、分布式并行、checkpoint/resume、eval/benchmark 和 run manifest 如何影响训练可复现性。 |
 | 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的完整状态保存、提交协议、sharded checkpoint、弹性恢复、分层存储和恢复演练。 |
-| 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 workload 固定协议、step time、tokens/s、goodput、MFU/HFU、scaling efficiency、尾部指标和成本效率评价训练系统。 |
 | 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
 | 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
@@ -11541,7 +11541,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 ## 训练性能指标与扩展效率
 
-训练系统需要用 step time、samples/s、tokens/s、MFU、GPU memory、communication time 和 scaling efficiency 评价。
+训练系统性能评估不能只看 GPU utilization 或单次 tokens/s。需要先固定 workload，再区分 warmup、steady state 和 end-to-end 窗口，记录 step time、tokens/s、effective throughput、goodput、time to target quality、MFU/HFU、strong/weak scaling、显存 headroom、通信暴露时间、数据/optimizer/checkpoint overhead、straggler、p99 和成本效率，并用 baseline 与性能回归门槛保证指标长期可信。
 
 详见：[训练性能指标与扩展效率](training-performance-metrics-scaling.md)
 
@@ -37958,7 +37958,7 @@ domain: training-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 
 # 训练性能指标与扩展效率
 
@@ -37969,6 +37969,45 @@ updated: 2026-06-11
 > 给定模型、数据、并行策略和硬件，我们到底用了多少有效算力，瓶颈在哪里，扩到更多 GPU 后效率为什么变化？
 
 这篇重点讲训练系统常用指标：step time、tokens/s、samples/s、MFU、HFU、scaling efficiency、显存效率、通信效率、数据效率和成本效率。
+
+## 先固定 Workload，再谈指标
+
+训练性能指标最常见的问题，不是公式算错，而是比较对象不一致。
+
+例如两个实验都说自己是“7B 模型训练”，但可能存在这些差异：
+
+- sequence length 不同。
+- global batch tokens 不同。
+- padding 比例不同。
+- activation checkpointing 粒度不同。
+- precision 不同。
+- 是否启用 FlashAttention 不同。
+- TP/PP/DP/FSDP 组合不同。
+- 数据 pipeline 是否真实读取不同。
+- checkpoint、eval、logging 是否计入 wall-clock 不同。
+
+这些差异都会改变 step time、tokens/s、MFU 和 scaling efficiency。
+
+所以性能报告必须先定义 workload：
+
+```yaml
+workload_identity:
+  model_arch: dense_decoder
+  params: 7B
+  non_embedding_params: 6.7B
+  sequence_length: 4096
+  global_batch_tokens: 4_194_304
+  loss_tokens_policy: exclude_padding
+  precision: bf16
+  activation_checkpointing: selective
+  attention_impl: flash_attention
+  optimizer: adamw
+  dataset_mode: synthetic_or_real
+```
+
+只有 workload 固定后，指标才有比较意义。
+
+如果 workload 没固定，性能数字只能说明“某个脚本在某次配置下跑出来的速度”，不能说明系统真的更强。
 
 ## 指标的分层
 
@@ -37995,6 +38034,42 @@ flowchart TD
 - data pipeline time。
 - checkpoint overhead。
 - 稳定性指标。
+
+## 测量窗口：Warmup、Steady State 与 End-to-end
+
+训练性能不能只取某一个 step。不同阶段的速度不同。
+
+常见测量窗口有三种：
+
+| 窗口 | 含义 | 适合回答 |
+| --- | --- | --- |
+| warmup | 编译、缓存、数据队列、通信连接尚未稳定的阶段 | 启动成本和首轮抖动 |
+| steady state | 跳过 warmup 后的一段稳定训练窗口 | 纯训练内核和并行策略效率 |
+| end-to-end | 从作业启动到达到目标或结束，包含 checkpoint/eval/故障 | 真实 wall-clock 成本 |
+
+报告性能时要明确：
+
+```text
+warmup_steps = 20
+measure_steps = 200
+include_checkpoint = false
+include_eval = false
+include_dataloader = true
+```
+
+否则可能出现两种误导：
+
+- 只取 steady state，忽略编译、checkpoint、eval 和故障，数字很好看。
+- 只取端到端，混入一次偶发存储抖动，却不知道训练热路径本身是否变慢。
+
+高质量报告通常同时给两类指标：
+
+```text
+steady_state_tokens_per_second
+effective_tokens_per_second_end_to_end
+```
+
+前者用于定位系统瓶颈，后者用于评估真实训练成本。
 
 ## Step Time
 
@@ -38098,6 +38173,40 @@ loss_tokens/s
 
 否则短序列、高 padding 的 workload 会虚高。
 
+## 吞吐口径：Instantaneous、Sustained、Effective 与 Goodput
+
+`tokens/s` 也不是单一口径。
+
+至少要区分四种吞吐：
+
+| 口径 | 计算方式 | 含义 |
+| --- | --- | --- |
+| instantaneous throughput | 某几个稳定 step 的 tokens/s | 热路径峰值 |
+| sustained throughput | 较长窗口内的平均 tokens/s | 稳态训练能力 |
+| effective throughput | 总训练 token / 总 wall-clock | 扣除 checkpoint、eval、故障后的真实效率 |
+| goodput | 有效推进质量目标的 token 或 step / wall-clock | 把坏 batch、回滚、无效重跑扣掉 |
+
+例如：
+
+```text
+instantaneous_tokens/s = 500K
+sustained_tokens/s     = 470K
+effective_tokens/s     = 410K
+goodput_tokens/s       = 385K
+```
+
+这四个数差距越大，说明训练系统的非热路径损耗越高。
+
+Goodput 很适合长期训练。它会把下面这些损失扣掉：
+
+- NaN 后回滚的 step。
+- 数据异常导致丢弃的 batch。
+- checkpoint 损坏后重跑的 token。
+- eval 或调度错误导致的无效训练窗口。
+- 配置错误启动后废弃的 run。
+
+所以一个平台不应该只追求“最高 tokens/s”，还要追求 sustained throughput 和 goodput 接近 instantaneous throughput。
+
 ## Steps/day 与 Tokens/day
 
 长期训练更常关心每天推进多少：
@@ -38140,6 +38249,31 @@ MLPerf Training 也采用“训练到指定质量目标的 wall-clock time”作
 
 Muon、batch size、learning rate schedule、data mixture、precision 等变化，都可能影响样本效率。系统优化不能把质量维度丢掉。
 
+### Quality-normalized Throughput
+
+如果两个系统配置会改变收敛速度，只比较 tokens/s 是不够的。
+
+可以把吞吐修正成质量口径：
+
+```text
+quality_normalized_throughput
+  = target_quality_progress / wall_clock_time
+```
+
+实际工程里可以用近似指标：
+
+- validation loss 降低速度。
+- 每天通过多少固定 eval benchmark。
+- 达到同一 validation loss 所需 GPU hours。
+- 达到同一 score 所需 tokens。
+- 达到同一 score 的成本。
+
+这类指标更难测，但能避免一种常见错误：
+
+> 系统把 tokens/s 提高了 20%，但达到同一质量需要多 40% token。
+
+这种情况下，单步系统变快了，训练目标反而变慢了。
+
 ## MFU：Model FLOPs Utilization
 
 MFU 是大模型训练里常用指标，全称 Model FLOPs Utilization。
@@ -38175,6 +38309,36 @@ training_FLOPs_per_token ~= 6 * num_parameters
 这是粗略估算，不包括所有细节。长上下文 attention、MoE、embedding、recompute、FlashAttention、FP8、sequence parallel、activation checkpointing 都会改变实际 FLOPs。
 
 MFU 的价值是：它把吞吐和模型计算规模联系起来。
+
+### MFU 的分子和分母纪律
+
+MFU 看起来是一个简单比例，实际很容易算乱。
+
+分子要说明：
+
+- FLOPs 公式。
+- 参数量口径。
+- 是否包含 embedding。
+- 是否包含 attention quadratic term。
+- 是否按 activated parameters 计算 MoE。
+- tokens/s 使用 raw tokens、non-padding tokens 还是 loss tokens。
+
+分母要说明：
+
+- 使用哪种 dtype 的硬件峰值。
+- 峰值来自厂商规格、实测 GEMM 还是集群标定。
+- 是否按 GPU 数直接相乘。
+- 是否考虑降频、功耗限制或 MIG/MPS 分区。
+- 是否使用 sparsity 或 FP8 tensor core 峰值。
+
+例如同一套训练，如果分母用 H100 BF16 峰值和 FP8 峰值，MFU 会完全不同。报告里必须写明：
+
+```text
+peak_flops_per_gpu = 989e12 BF16 dense tensor core FLOPs/s
+cluster_peak = num_gpus * peak_flops_per_gpu
+```
+
+MFU 不是论文里的装饰数字，它是工程决策依据。分子分母不透明，MFU 就没有审计价值。
 
 ## MFU 和 GPU Utilization 的区别
 
@@ -38255,6 +38419,32 @@ MFU = 16.8 / 63.3 = 26.5%
 - FLOPs 估算公式。
 - sequence length。
 - 是否使用 activation checkpointing。
+
+### FLOPs 估算要和模型结构匹配
+
+`6 * params` 是快速估算，不是通用真理。
+
+它在 dense decoder-only Transformer 上常用于粗略比较，但下面这些情况会让误差变大：
+
+- sequence length 很长，attention 的 `O(S^2)` 部分不可忽略。
+- vocab 很大，LM head 和 cross entropy 占比明显。
+- 使用 GQA/MQA，attention head 结构改变。
+- 使用 MoE，total params 远大于 activated params。
+- 使用 activation checkpointing，实际执行 FLOPs 增加。
+- 使用 sequence/context parallel，通信和重组成本增加。
+- 使用 fused loss 或 vocab parallel CE，中间 logits 物化方式变化。
+
+所以报告可以同时给两种口径：
+
+```text
+simple_mfu:
+  formula: 6 * non_embedding_params * tokens/s
+
+model_specific_mfu:
+  formula: layerwise FLOPs estimate including attention, MLP, LM head
+```
+
+前者便于横向粗比，后者更适合严肃 benchmark 和性能回归。
 
 ## MoE 模型的 MFU 更难
 
@@ -38361,6 +38551,37 @@ weak_scaling_efficiency = 10 / 11 = 90.9%
 
 Weak scaling 更容易保持高效率，但会改变 global batch。Global batch 改变会影响优化和收敛，不能只看系统吞吐。
 
+## Scaling 实验矩阵
+
+扩展效率最好不要只测一个点。
+
+建议至少构造一个实验矩阵：
+
+| 实验 | 固定项 | 变化项 | 回答的问题 |
+| --- | --- | --- | --- |
+| 单机 baseline | model、batch、seq、precision | GPU 数从 1 到单机满配 | 单机 NVLink/PCIe 内扩展效率 |
+| 跨节点 strong scaling | global batch tokens 固定 | GPU 数增加 | 同一 workload 能否更快完成 |
+| 跨节点 weak scaling | per-GPU tokens 固定 | GPU 数和 global batch 增加 | 集群能否线性扩大吞吐 |
+| topology A/B | GPU 数和 workload 固定 | rank mapping / network path | 拓扑映射是否影响通信 |
+| parallelism A/B | GPU 数和 workload 固定 | DP/TP/PP/FSDP 组合 | 哪种并行策略效率更高 |
+
+每个实验点都要记录：
+
+```text
+num_nodes
+num_gpus
+dp/tp/pp/ep/cp
+global_batch_tokens
+per_gpu_tokens
+step_time_p50/p90/p99
+tokens/s
+MFU
+exposed_comm_time
+memory_peak
+```
+
+只给“128 GPU 比 64 GPU 快”是不够的。要说明是 strong scaling 快，还是 weak scaling 吞吐高；是系统更高效，还是只是 global batch 变大。
+
 ## 并行策略对扩展效率的影响
 
 不同并行策略会影响 scaling efficiency。
@@ -38413,6 +38634,35 @@ useful_model_state_bytes / peak_memory_bytes
 
 显存优化的目标不是让显存占用越低越好，而是在不 OOM 的前提下提高 batch、sequence length 或并发 pipeline。
 
+### Memory Headroom
+
+训练系统不应该把显存永远打到 99%。
+
+需要保留 headroom：
+
+```text
+memory_headroom = total_memory - peak_reserved_memory
+```
+
+headroom 太小会带来：
+
+- 输入长度轻微波动就 OOM。
+- allocator fragmentation 后 OOM。
+- checkpoint/eval 临时 buffer 触发 OOM。
+- 新版本 kernel 临时 workspace 变大后 OOM。
+- straggler rank 因显存不同步失败。
+
+因此报告中可以同时写：
+
+```text
+peak_reserved_gb
+peak_allocated_gb
+memory_headroom_gb
+oom_margin_percent
+```
+
+追求吞吐时，显存越满越可能高效；追求长期稳定时，必须为波动留余量。
+
 ## Communication Efficiency
 
 通信指标要区分：
@@ -38451,6 +38701,38 @@ exposed comm on critical path
 
 通信优化的目标不是让通信总时长为 0，而是减少关键路径上的暴露通信。
 
+### 有效通信带宽
+
+通信时间要和通信量结合看。
+
+可以记录：
+
+```text
+effective_bandwidth = bytes_transferred / communication_time
+```
+
+但这里也要小心。AllReduce、ReduceScatter、AllGather、AllToAll 的通信量模型不同，不能把所有 collective 用同一个公式粗暴比较。
+
+更实用的做法是按 collective 类型报告：
+
+```yaml
+communication:
+  allreduce:
+    total_time_sec: 1.2
+    exposed_time_sec: 0.4
+    effective_bandwidth_gbps: 180
+  reducescatter:
+    total_time_sec: 0.8
+    exposed_time_sec: 0.2
+    effective_bandwidth_gbps: 210
+  alltoall:
+    total_time_sec: 1.5
+    exposed_time_sec: 1.1
+    p99_time_sec: 0.09
+```
+
+MoE 场景尤其要看 AllToAll 的尾部。平均 AllToAll 时间正常，不代表每个 expert 的 token dispatch 都均衡。
+
 ## Data Pipeline Efficiency
 
 GPU 训练快不快，数据输入经常是隐藏瓶颈。
@@ -38478,6 +38760,26 @@ GPU waits for batch
 ```
 
 数据效率也影响 tokens/s 的真实性。Padding 太多会让 raw tokens/s 好看，但 loss tokens/s 很低。
+
+### Synthetic Data 与 Real Data
+
+Benchmark 经常用 synthetic data 排除数据瓶颈，这有价值，但必须标明。
+
+| 数据模式 | 优点 | 风险 |
+| --- | --- | --- |
+| synthetic data | 能专注测模型计算和通信 | 掩盖真实 I/O、tokenization、packing、坏样本问题 |
+| cached token ids | 接近训练热路径，减少在线 tokenization | 掩盖存储和预处理成本 |
+| real streaming data | 最接近真实训练 | 抖动大，定位模型瓶颈更难 |
+
+建议报告同时保留两类结果：
+
+```text
+synthetic_data_tokens/s
+real_data_tokens/s
+data_pipeline_overhead = 1 - real/synthetic
+```
+
+如果 synthetic 很快、real 很慢，优化 kernel 没有意义，瓶颈在数据系统。
 
 ## Optimizer Efficiency
 
@@ -38547,6 +38849,49 @@ effective_tokens_per_second
 
 MegaScale 这类大规模训练系统论文也强调，长期训练中稳定维持高效率和可观测性非常重要；很多问题只有在大规模和长时间运行中才出现。
 
+## Straggler 与 Tail Metrics
+
+多 GPU 训练里，慢的是整个 step 的最后一个 rank。
+
+即使平均 rank 很快，只要少数 rank 经常慢，所有 rank 都要等。
+
+需要记录：
+
+- rank step time 分布。
+- slowest rank id。
+- 每个 collective 的 p50/p90/p99。
+- dataloader queue depth per rank。
+- GPU clock / power / temperature per rank。
+- network retransmit / congestion per node。
+- storage read latency per worker。
+
+可以定义：
+
+```text
+rank_skew_ratio = max_rank_step_time / median_rank_step_time
+```
+
+例如：
+
+```text
+median_rank_step_time = 10.0s
+max_rank_step_time = 12.5s
+rank_skew_ratio = 1.25
+```
+
+这说明慢 rank 让所有人多等了 25%。
+
+Straggler 常见来源：
+
+- 某节点 GPU 降频。
+- 某 rank 数据读取慢。
+- 某个 expert 接收 token 过多。
+- rank mapping 跨了慢链路。
+- 某台机器 NIC 或 PCIe 异常。
+- checkpoint 或日志写入集中在少数 rank。
+
+大规模训练越往上扩，平均值越不够，尾部指标越重要。
+
 ## Cost Efficiency
 
 工程上还要把性能换算成成本。
@@ -38581,6 +38926,47 @@ cost_per_billion_tokens
 - 失败重跑成本。
 
 单纯 tokens/s 高，但故障多、checkpoint 慢、资源碎片严重，成本可能不低。
+
+## 性能回归与准入门槛
+
+训练系统优化最终要能防止回归。
+
+每次改动后，可以设置性能准入门槛：
+
+```yaml
+performance_gate:
+  workload: 7B_dense_4k_bf16_64gpu
+  min_tokens_per_sec_ratio: 0.98
+  max_step_time_regression: 0.02
+  max_memory_regression_gb: 2
+  max_p99_step_time_regression: 0.05
+  max_exposed_comm_regression: 0.05
+```
+
+意思是：
+
+- tokens/s 不能低于 baseline 的 98%。
+- step time 不能变慢超过 2%。
+- 显存峰值不能多 2GB 以上。
+- p99 step time 不能明显恶化。
+- 暴露通信时间不能明显增加。
+
+性能门槛要和统计波动一起看。小规模 benchmark 抖动大，不应该因为 0.5% 差异就判定优化有效；但 5% 以上的稳定回归必须解释。
+
+建议保存历史 baseline：
+
+```text
+baseline id
+code commit
+container image
+driver/CUDA/NCCL version
+hardware pool
+run manifest
+raw metrics
+profiler trace link
+```
+
+没有 baseline 管理，性能优化会退化成“每次看起来都差不多”。
 
 ## 指标之间的常见冲突
 
@@ -38677,9 +39063,16 @@ breakdown:
   checkpoint_stall_sec: 0.0
   idle_sec: 0.7
 
+tail:
+  rank_skew_ratio: 1.06
+  step_time_p90_sec: 10.6
+  step_time_p99_sec: 11.4
+  slowest_rank: 37
+
 memory:
   peak_allocated_gb: 74
   peak_reserved_gb: 78
+  memory_headroom_gb: 2
   activation_gb: 24
   optimizer_state_gb: 18
 
@@ -38786,8 +39179,11 @@ optimization scaling problem:
 - 是否记录 optimizer time？
 - 是否记录 checkpoint overhead？
 - 是否记录 p50/p90/p99？
+- 是否记录 rank skew 和 slowest rank？
 - 是否记录 scaling efficiency？
 - 是否区分 strong scaling 和 weak scaling？
+- 是否说明 synthetic data 还是 real data？
+- 是否有 baseline 和性能回归门槛？
 - 是否记录故障、重启和 OOM？
 
 ## 小结
@@ -38798,10 +39194,13 @@ optimization scaling problem:
 
 - Step time 是入口，但必须拆解。
 - LLM 训练优先看 tokens/s、tokens/day 和 time to target quality。
+- 吞吐要区分 instantaneous、sustained、effective 和 goodput。
 - MFU 比 GPU utilization 更接近有效模型算力效率。
+- MFU 必须写清楚 FLOPs 公式、token 口径和硬件峰值分母。
 - Scaling efficiency 要区分 strong scaling 和 weak scaling。
 - 通信、数据、optimizer、checkpoint 和稳定性都会影响真实吞吐。
 - 大规模训练必须看尾延迟、straggler 和故障恢复。
+- 性能优化要有 baseline 和回归门槛，否则数字很难长期可信。
 
 一个成熟训练系统的性能报告，应该能回答：为什么快，为什么慢，扩展到更多 GPU 会发生什么，以及达到目标质量要花多少真实时间和成本。
 
