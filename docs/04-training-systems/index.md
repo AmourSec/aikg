@@ -54,7 +54,7 @@ updated: 2026-06-12
 | 28 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的完整状态保存、提交协议、sharded checkpoint、弹性恢复、分层存储和恢复演练。 |
 | 29 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 workload 固定协议、step time、tokens/s、goodput、MFU/HFU、scaling efficiency、尾部指标和成本效率评价训练系统。 |
 | 30 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 benchmark manifest、A/B、PyTorch Profiler、Nsight Systems/Compute、NVTX、多 rank trace 和回归流程定位训练瓶颈。 |
-| 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
+| 31 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 从 runtime、模型并行、状态切分、checkpoint、组合方式和 benchmark 角度比较主流训练栈。 |
 
 ## 训练任务生命周期
 
@@ -240,6 +240,6 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 ## DeepSpeed、Megatron-LM 与 PyTorch FSDP
 
-DeepSpeed、Megatron-LM 和 PyTorch FSDP 是理解大模型训练系统的重要案例。它们分别覆盖 ZeRO、模型并行、分布式 runtime 和主流框架集成。
+DeepSpeed、Megatron-LM / Megatron Core 和 PyTorch FSDP 是理解大模型训练系统的重要案例，但它们不是同一层抽象。DeepSpeed 更像 runtime + ZeRO/offload 生态，Megatron 更像 Transformer/MoE model-parallel training stack，FSDP 更像 PyTorch 原生 sharded data parallel primitive。选型要根据模型结构、显存瓶颈、TP/PP/EP/CP 需求、checkpoint/resume、框架组合边界、迁移成本和 benchmark 证据决定。
 
 详见：[DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md)
