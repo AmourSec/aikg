@@ -57,6 +57,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [Benchmark 方法与性能剖析](https://amoursec.github.io/aikg/03-inference-systems/benchmark-profiling/): Benchmark 方法与性能剖析连接 benchmark 现象、trace、profiling、队列分析、GPU timeline、KV Cache、网络瓶颈和容量模型。
 - [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口，覆盖训练生命周期、并行策略、通信重叠、FLUX、Muon 优化器、checkpoint 和训练 benchmark。
 - [训练任务生命周期](https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/): 训练任务生命周期从数据读取、forward、loss、backward、gradient sync、optimizer step 到 checkpoint 建立训练系统端到端视角。
+- [数据输入与 Data Pipeline](https://amoursec.github.io/aikg/04-training-systems/data-pipeline/): 数据输入与 Data Pipeline 解释训练数据从存储到 GPU 的链路、DataLoader、tokenization、packing、H2D copy、有效 token 和数据瓶颈定位。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
@@ -112,6 +113,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/benchmark-profiling.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/benchmark-profiling.md)
 - [04-training-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/index.md)
 - [04-training-systems/training-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/training-lifecycle.md)
+- [04-training-systems/data-pipeline.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/data-pipeline.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
 - [05-kernels-compilers/attention-computation-patterns.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/attention-computation-patterns.md)
 - [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)

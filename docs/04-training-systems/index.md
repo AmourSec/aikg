@@ -25,7 +25,7 @@ updated: 2026-06-11
 | 顺序 | 主题 | 本章中的作用 |
 | --- | --- | --- |
 | 1 | [训练任务生命周期](training-lifecycle.md) | 建立一个训练 step 的端到端系统视角。 |
-| 2 | 数据输入与 Data Pipeline | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
+| 2 | [数据输入与 Data Pipeline](data-pipeline.md) | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
 | 3 | Batch、Micro-batch 与 Gradient Accumulation | 理解 global batch、显存、吞吐和优化稳定性的关系。 |
 | 4 | 显存组成与优化总览 | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
 | 5 | Data Parallel 与梯度同步 | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
@@ -54,11 +54,7 @@ updated: 2026-06-11
 
 数据输入决定 GPU 是否能持续有活干。训练数据可能经历读取、解压、tokenization、增强、packing、batch 拼接和 host-to-device copy。数据慢会让 GPU 等待。
 
-本节后续重点回答：
-
-- DataLoader、数据存储和 tokenization 如何影响 step time。
-- packing、padding 和有效 token 比例如何影响训练吞吐。
-- 如何判断瓶颈在数据输入而不是模型计算。
+详见：[数据输入与 Data Pipeline](data-pipeline.md)
 
 ## Batch、Micro-batch 与 Gradient Accumulation
 
