@@ -147,6 +147,7 @@ nav:
       - 能效、功耗与热限制：Power、Energy per Token 与持续吞吐: 08-benchmark-capacity/energy-power-thermal-benchmark.md
       - Benchmark 负载设计与 Trace Replay：从玩具测试到真实 Workload: 08-benchmark-capacity/benchmark-workload-design-trace-replay.md
       - A/B 对比、消融实验与性能回归检测: 08-benchmark-capacity/ab-testing-ablation-regression-detection.md
+      - 成本模型与单位经济性：Cost per Token、GPU Hour 与有效产出: 08-benchmark-capacity/cost-model-unit-economics.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:

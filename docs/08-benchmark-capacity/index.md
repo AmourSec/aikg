@@ -41,3 +41,4 @@ updated: 2026-05-30
 - [能效、功耗与热限制：Power、Energy per Token 与持续吞吐](energy-power-thermal-benchmark.md)：解释如何定义 GPU/node/rack 测量边界，采集 power、energy、clocks、temperature、throttle reason，并用 steady-state benchmark、power cap sweep、joules/token 和 goodput at SLA 分析 AI 系统能效。
 - [Benchmark 负载设计与 Trace Replay：从玩具测试到真实 Workload](benchmark-workload-design-trace-replay.md)：解释如何设计 synthetic、sampled、trace replay workload，定义 input/output token 分布、arrival process、cache 状态、warmup、measurement window、load generator 校验和报告 caveats。
 - [A/B 对比、消融实验与性能回归检测](ab-testing-ablation-regression-detection.md)：解释如何用 A/A 噪声基线、A/B 对比、消融实验、主指标/保护指标/解释指标、paired runs、阈值、baseline、CI/nightly/release gate、canary 和 profiler 证据建立性能回归防线。
+- [成本模型与单位经济性：Cost per Token、GPU Hour 与有效产出](cost-model-unit-economics.md)：解释如何定义 GPU-only、node、service、workflow 成本边界，用 cost/token、cost/request、cost/successful run、cost to target、headroom、失败重试、缓存和共享成本归因评估 AI 系统单位经济性。
