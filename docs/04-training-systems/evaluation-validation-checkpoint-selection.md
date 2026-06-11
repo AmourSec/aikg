@@ -53,6 +53,51 @@ how to record results
 how to choose best checkpoint
 ```
 
+## 评估系统的控制面与数据面
+
+把评估当成系统来设计，可以分成控制面和数据面。
+
+控制面回答：
+
+- 哪些 checkpoint 需要评估。
+- 什么时候触发评估。
+- 评估任务排到哪个资源池。
+- 哪些结果算有效。
+- 哪个 checkpoint 被标记为 best / candidate / rejected。
+
+数据面回答：
+
+- eval dataset 怎么读取。
+- prompt / chat template 怎么渲染。
+- 模型怎么加载。
+- loss 或 generation 怎么运行。
+- scoring 怎么计算。
+- raw prediction 和 sample-level result 怎么保存。
+
+```mermaid
+flowchart TB
+    A["Training job"] --> B["Checkpoint manifest"]
+    B --> C["Eval scheduler<br/>控制面"]
+    C --> D["Eval worker pool<br/>数据面"]
+    D --> E["Dataset + prompt template"]
+    D --> F["Model checkpoint"]
+    D --> G["Scoring / judge"]
+    G --> H["Sample-level results"]
+    H --> I["Eval report"]
+    I --> J["Checkpoint selector"]
+    J --> K["Registry<br/>latest / best / candidate"]
+```
+
+这个拆分很重要。很多训练平台一开始把 eval 写在训练脚本里，后来会遇到：
+
+- eval 失败阻塞训练。
+- eval 结果无法重试。
+- eval 代码和训练代码耦合太深。
+- checkpoint 被删除后，eval report 无法追溯。
+- 多个实验的 eval 配置不可比较。
+
+更稳妥的方式是：训练只负责定期产出 checkpoint manifest；评估系统根据 manifest 独立调度 eval；checkpoint selector 根据 eval report 更新模型状态。
+
 ## Evaluation、Validation、Benchmark 的区别
 
 这几个词经常混用，但系统设计时最好分清。
@@ -133,6 +178,41 @@ Validation loss 的优点是：
 
 因此 validation loss 是必要信号，但不是全部。
 
+## Metric Taxonomy：指标要分层
+
+训练中的评估指标可以分成几类。它们回答的问题不同。
+
+| 指标类型 | 例子 | 回答的问题 |
+| --- | --- | --- |
+| Loss 指标 | validation loss、perplexity、NLL | 模型是否更好地预测 held-out token。 |
+| Task 指标 | accuracy、F1、EM、pass@k | 模型在具体任务上表现如何。 |
+| Generation 指标 | win rate、judge score、format success | 生成结果是否符合要求。 |
+| Safety / policy 指标 | unsafe rate、refusal accuracy、toxicity | 是否符合安全或合规边界。 |
+| System 指标 | eval time、GPU hours、throughput、OOM rate | 评估本身消耗多少资源。 |
+| Stability 指标 | score variance、retry variance、seed variance | 评估结果是否可靠。 |
+
+不要把所有指标压成一个总分。更好的做法是保留分层指标，然后由 checkpoint selection policy 明确如何取舍。
+
+例如：
+
+```yaml
+metrics:
+  validation:
+    loss: 1.72
+    perplexity: 5.58
+  task:
+    mmlu_acc: 0.72
+    gsm8k_pass1: 0.61
+  generation:
+    instruction_following: 0.83
+    format_success: 0.96
+  system:
+    eval_gpu_hours: 14.2
+    eval_wall_clock_minutes: 47
+```
+
+如果只保存一个 `score=0.78`，后续很难判断模型到底是 loss 变好、推理变强、格式更稳定，还是评估集换了。
+
 ## Eval Dataset 的版本治理
 
 评估数据必须像训练数据一样治理。
@@ -156,6 +236,56 @@ Validation loss 的优点是：
 如果 prompt template 变了，分数也可能变。
 
 如果 tokenizer 变了，loss / perplexity 也可能变。
+
+### Eval 数据污染与泄漏
+
+训练集和评估集重叠会让分数虚高。大模型训练里，污染检查很难做到绝对完整，但至少要有治理意识。
+
+常见污染来源：
+
+- 评估题目出现在预训练语料中。
+- SFT / DPO 数据包含 benchmark 答案。
+- 自动生成数据引用了 eval set。
+- 多轮实验中把失败样例修进训练集后，仍然用同一 eval set 汇报分数。
+- 人工调 prompt 时反复看 test set。
+
+系统上可以做几件事：
+
+- 对 eval prompt / answer 做 hash 和 n-gram 检索。
+- 区分 dev、validation、test、hidden test。
+- 记录某个 eval set 是否被用于调参。
+- 对关键 benchmark 保留 holdout 或 blind split。
+- 在报告中标注 contamination check 版本。
+
+评估污染不是单纯数据科学问题，也影响训练系统决策。一个被污染的 best checkpoint 可能会进入后训练或部署，带来错误的资源投入。
+
+### 样本级结果比总分更重要
+
+Eval report 不能只保存 aggregate metric。至少对重要评估保存 sample-level result：
+
+```json
+{
+  "sample_id": "gsm8k-000123",
+  "prompt_hash": "...",
+  "checkpoint_id": "step-120000",
+  "prediction": "...",
+  "score": 1,
+  "latency_ms": 842,
+  "tokens_in": 512,
+  "tokens_out": 128,
+  "error": null
+}
+```
+
+sample-level result 的价值是：
+
+- 可以复盘失败样例。
+- 可以比较两个 checkpoint 在同一批样本上的差异。
+- 可以发现某个数据域退化。
+- 可以重新计算新指标。
+- 可以给 AI 或人做错误聚类。
+
+长期看，样本级记录比单个排行榜分数更有知识库价值。
 
 ## Eval Cadence：多久评一次
 
@@ -203,6 +333,36 @@ validation 改善时保存 best checkpoint
 | high-frequency | 频繁 | 小 validation set、少量 loss、sanity samples。 |
 | medium-frequency | 中等 | 主要 validation set、领域分组指标。 |
 | low-frequency | 较低 | 完整 task eval、生成式评估、安全评估、人工评审。 |
+
+### 按 Token 而不是按 Step 触发
+
+大模型训练里，按 step 触发 eval 经常不可比。原因是 step 的含义会因为这些配置变化：
+
+- micro-batch size。
+- gradient accumulation。
+- sequence length。
+- data packing。
+- world size。
+- curriculum 或数据混合比例。
+
+两个实验都“每 1000 step eval”，但每个 step 消耗的 token 数可能不同。
+
+更稳妥的触发方式是：
+
+```text
+eval every N consumed train tokens
+```
+
+同时记录：
+
+```yaml
+eval_trigger:
+  type: "train_tokens"
+  interval: 10000000000
+  current_train_tokens: 120000000000
+```
+
+如果是小规模微调，按 epoch 或 sample count 触发也可以，但要记录清楚。
 
 ## 同步 Eval 与异步 Eval
 
@@ -263,6 +423,67 @@ training / dashboard consumes result
 
 长期训练更适合异步 eval，短小微调任务可能同步 eval 更简单。
 
+## 异步 Eval Scheduler
+
+异步 eval 的核心是 scheduler。它接收 checkpoint manifest，决定是否创建 eval job。
+
+一个简单规则：
+
+```text
+每个 latest checkpoint 跑 smoke eval
+每 N 个 token 的 checkpoint 跑 validation-lite
+每 M 个 token 的 checkpoint 跑 full eval
+validation 改善的 checkpoint 跑 downstream eval
+```
+
+Scheduler 需要处理：
+
+| 问题 | 处理方式 |
+| --- | --- |
+| checkpoint 还没写完 | 只读取 status=complete 的 manifest。 |
+| eval backlog 太长 | 跳过低优先级旧 checkpoint，只保留候选。 |
+| eval 失败 | 按错误类型重试，超过次数标记 failed。 |
+| 训练已经继续很多 step | eval report 仍绑定原 checkpoint，不覆盖当前状态。 |
+| 资源不足 | eval 分层排队，full eval 低频运行。 |
+
+异步 eval report 要带状态：
+
+```yaml
+eval_job:
+  checkpoint_id: "step-120000"
+  suite: "validation-lite"
+  status: "succeeded"  # queued / running / succeeded / failed / skipped
+  retry_count: 1
+  started_at: ""
+  finished_at: ""
+```
+
+这样 dashboard 和 checkpoint selector 才能区分“分数低”和“评估没跑完”。
+
+## Eval Backlog 和跳过策略
+
+长期训练中，eval 可能追不上训练。如果每个 checkpoint 都跑完整评估，队列会越来越长。
+
+需要明确跳过策略：
+
+- full eval 只跑 milestone checkpoint。
+- 如果新 checkpoint 已经显著更优，跳过旧 checkpoint 的重型 eval。
+- 如果 smoke eval 失败，暂不跑 full eval。
+- 如果 eval backlog 超过阈值，降低 full eval 频率。
+- 对 best candidate 重新排高优先级。
+
+这些策略要写进系统配置，而不是临时人工决定。
+
+```yaml
+eval_backlog_policy:
+  max_full_eval_queue: 4
+  skip_full_eval_if_newer_best_exists: true
+  always_eval_milestones: true
+  smoke_failure_blocks_full_eval: true
+```
+
+否则 eval 系统会在长期训练中变成隐藏的资源黑洞。
+
 ## Eval 资源池
 
 评估资源不要默认和训练资源混在一起。
@@ -285,6 +506,33 @@ training / dashboard consumes result
 - tool calls。
 
 这类 eval 不应简单当作训练 forward。
+
+### 评估资源池容量估算
+
+Eval pool 也需要容量模型。最简单的估算：
+
+```text
+eval_gpu_hours_per_day =
+  checkpoints_per_day
+  * eval_suites_per_checkpoint
+  * gpu_hours_per_suite
+```
+
+如果训练每天产出 12 个候选 checkpoint，每个跑 lite eval 需要 0.5 GPU hour：
+
+```text
+12 * 0.5 = 6 GPU hours/day
+```
+
+如果 full eval 每天跑 2 次，每次 16 GPU hours：
+
+```text
+2 * 16 = 32 GPU hours/day
+```
+
+总 eval 资源就是 38 GPU hours/day，还不算失败重试和人工评估。
+
+因此 eval cadence 不能只由研究需求决定，也要和资源池容量匹配。
 
 ## Eval Mode 与 Train Mode
 
@@ -401,6 +649,31 @@ Generation eval 让模型生成答案，再评分。
 
 两者都需要，但不要混淆。Loss 变好不一定代表生成质量变好；生成分数波动也不一定说明训练退化。
 
+## 常见 Eval 任务形态
+
+不同 eval 任务的系统负载差异很大。
+
+| 任务形态 | 例子 | 系统特点 |
+| --- | --- | --- |
+| Perplexity / loss | held-out corpus、领域验证集 | forward + loss，批量化好，成本可控。 |
+| Multiple choice | MMLU 类任务 | 可以用 logprob scoring，也可以生成答案；prompt 模板敏感。 |
+| Open QA | Natural Questions、领域 QA | 需要生成和文本匹配，评分规则复杂。 |
+| Math reasoning | GSM8K、数学推理 | response 较长，可能需要 exact answer extraction 或 verifier。 |
+| Code generation | HumanEval 类任务 | 需要运行测试，sandbox 和 timeout 成本高。 |
+| Chat / instruction | 指令遵循、多轮对话 | 常用 judge model 或人工评估，非确定性更强。 |
+| Agent / tool use | 工具调用、浏览器、代码执行 | 最像端到端系统测试，成本和失败模式复杂。 |
+
+这说明 eval suite 不是一个统一算子。它可能是：
+
+- 纯 forward loss。
+- 生成式推理。
+- 多次采样。
+- 外部程序执行。
+- judge model 推理。
+- 人工流程。
+
+因此 eval report 必须同时记录质量指标和系统指标。否则很难解释为什么某个 eval suite 从 30 分钟变成 3 小时。
+
 ## Scoring 方法
 
 常见 scoring 方法包括：
@@ -416,6 +689,70 @@ Generation eval 让模型生成答案，再评分。
 | human eval | 人工偏好或安全审核 | 成本高、速度慢、一致性要治理。 |
 
 系统设计里要记录 scoring 代码版本。指标计算函数变了，历史结果可能不可比较。
+
+## Judge Model 治理
+
+生成式评估常用 judge model。它可以是内部模型、外部 API 或专门训练的 reward/evaluator 模型。
+
+Judge model 是评估系统的一部分，不是透明真理源。必须记录：
+
+| 字段 | 说明 |
+| --- | --- |
+| judge model id/revision | judge 自身版本。 |
+| judge prompt/template | 打分指令会影响结果。 |
+| judge decoding config | temperature、max tokens、seed。 |
+| rubric | 打分标准。 |
+| calibration set | 用来检查 judge 是否稳定的小集合。 |
+| retry policy | judge 输出格式错误时怎么重试。 |
+| aggregation | 多 judge、多 sample 如何合并。 |
+
+常见风险：
+
+- judge 偏好某种表达风格。
+- judge 版本升级后历史分数不可比。
+- judge prompt 改动导致分数漂移。
+- judge 对长答案位置偏置。
+- judge 不能可靠评分某些领域。
+- 使用待评模型自己当 judge，产生自评偏差。
+
+实践上可以给 judge 做 smoke test：
+
+```text
+固定 100 条 calibration samples
+每次 judge 版本变化都重跑
+比较 score distribution 和 disagreement cases
+```
+
+如果 judge 本身不稳定，checkpoint selection 就不能依赖它作为唯一指标。
+
+## 多次采样与 pass@k
+
+代码、数学和推理任务经常使用多次采样：
+
+```text
+同一个 prompt -> 生成 k 个候选 -> 任意一个通过则 pass@k
+```
+
+这类指标对 decoding 配置和随机种子高度敏感。
+
+必须记录：
+
+- `k`。
+- temperature。
+- top_p。
+- max_new_tokens。
+- stop sequences。
+- 每个样本的随机种子。
+- 是否去重候选。
+- 失败和 timeout 如何计数。
+
+系统成本也会按 `k` 放大：
+
+```text
+eval_generation_tokens ~= prompts * k * avg_output_tokens
+```
+
+如果 `k=32`，一次 eval 的 decode 成本可能比 `pass@1` 高几十倍。不要把 pass@k 和普通 accuracy 放在同一个成本假设里。
 
 ## Decoding 参数必须固定
 
@@ -447,6 +784,31 @@ generation:
 ```
 
 如果 temperature 从 0 变成 0.7，评估分数变化可能来自采样，而不是模型能力变化。
+
+### Deterministic Eval 不等于完全可复现
+
+即使 temperature=0，评估也未必完全 bitwise 可复现。原因包括：
+
+- 分布式推理的浮点非确定性。
+- 不同 kernel 或不同 GPU 型号。
+- tokenizer / chat template 版本。
+- stop sequence 处理差异。
+- judge model 非确定性。
+- 外部工具或 sandbox 环境变化。
+
+因此 eval report 中除了 seed，还要记录：
+
+```text
+software version
+hardware type
+inference engine
+precision
+parallelism layout
+tokenizer revision
+chat template revision
+```
+
+对关键 checkpoint，可以重跑 eval 估计 variance，而不是把一次分数当绝对真值。
 
 ## Checkpoint Selection
 
@@ -492,6 +854,67 @@ Checkpoint selection 要决定：
 - best eval checkpoint。
 - eval report。
 
+## Checkpoint Selection Policy
+
+Checkpoint selection 应该是一段明确策略，而不是“看哪个分数顺眼”。
+
+一个简单 policy：
+
+```yaml
+selection_policy:
+  primary_metric: "validation.loss"
+  mode: "min"
+  require_smoke_pass: true
+  require_no_nan: true
+  tie_breakers:
+    - "lower_eval_gpu_hours"
+    - "newer_checkpoint"
+  keep_top_k: 3
+```
+
+更复杂的 policy 可以是多指标门控：
+
+```yaml
+candidate_rules:
+  - validation.loss must improve by 0.01
+  - mmlu_acc must not drop by more than 0.5%
+  - safety_unsafe_rate must be below threshold
+  - eval must finish without timeout rate > 1%
+```
+
+这样可以避免某个单一指标变好，但其他关键能力退化。
+
+### Pareto Frontier
+
+很多时候不存在单一最好 checkpoint。一个 checkpoint 可能质量最高但推理慢，另一个质量略低但更稳定。
+
+可以维护 Pareto frontier：
+
+| 维度 | 越大/越小越好 |
+| --- | --- |
+| validation loss | 越小越好 |
+| task score | 越大越好 |
+| unsafe rate | 越小越好 |
+| checkpoint size | 越小越好 |
+| eval cost | 越小越好 |
+| inference latency | 越小越好 |
+
+Pareto frontier 的意义是保留多个有价值候选，而不是过早删除。后训练、部署、压缩和安全评估可能会从不同候选出发。
+
+### 防止 Eval Overfitting
+
+如果反复根据同一个 eval suite 选 checkpoint，就可能对 eval 过拟合。
+
+治理方式：
+
+- 区分 tuning eval 和 final eval。
+- 对 final test 限制使用频率。
+- 对关键模型使用 hidden eval 或人工评审。
+- 记录每个 eval suite 被用于 selection 的次数。
+- 不把一次小幅波动当成真实提升。
+
+训练系统要把“谁用哪个指标做过选择”记录下来。这是模型治理的一部分。
+
 ## Early Stopping 与停止条件
 
 评估可以用于停止训练。
@@ -512,6 +935,29 @@ Checkpoint selection 要决定：
 - 后训练任务更常用 eval score 或人工偏好作为停止信号。
 
 停止条件最好写进 run config，而不是靠人临时判断。
+
+### Stop、Pause、Rollback
+
+评估结果触发的动作不只有 stop。
+
+| 动作 | 场景 |
+| --- | --- |
+| continue | 指标正常，继续训练。 |
+| pause | 指标异常，需要人工检查。 |
+| rollback | 最新 checkpoint 退化，回到 last good checkpoint。 |
+| branch | 从某个好 checkpoint 开多个后续实验。 |
+| promote | 标记为后训练或部署候选。 |
+| stop | 达到目标或确认无收益。 |
+
+这些动作最好由状态机表达：
+
+```text
+latest -> candidate -> best -> promoted
+latest -> failed_eval -> quarantine
+latest -> regression_detected -> rollback_candidate
+```
+
+这样训练平台不会把所有 checkpoint 都当成同一种文件。
 
 ## 分布式 Eval
 
@@ -543,6 +989,48 @@ rank 3 evaluates samples 3, 7, 11, ...
 ```
 
 最终汇总时不能只平均每个 rank 的分数。如果每个 rank 样本数不同，要按样本数加权。
+
+### 分布式 Generation Eval 的额外问题
+
+Loss eval 的分布式汇总相对简单，generation eval 更复杂。
+
+每个 rank 可能生成不同长度输出，出现不同耗时。长输出样本会形成 straggler。
+
+需要记录：
+
+- 每个 rank 处理了哪些 sample id。
+- 每个 sample 的 prompt token 和 output token。
+- 每个 sample 的 stop reason。
+- timeout 是否计入失败。
+- 生成结果写到哪个 shard 文件。
+- 汇总时是否去重。
+
+如果某个 rank 失败，不能简单重跑整个 eval 后把结果合并，否则可能重复计数。更好的方式是 sample-level idempotent 写入：
+
+```text
+result key = eval_run_id + checkpoint_id + sample_id + generation_index
+```
+
+这样重试时同一个 sample 的结果可以覆盖或跳过，而不会重复进入指标。
+
+### 分布式 Eval 的加权指标
+
+不同样本权重可能不同：
+
+- 有些指标按 sample 平均。
+- loss/perplexity 应按 token 数加权。
+- pass@k 按 prompt 聚合，而不是按 generation 数平均。
+- 多领域 eval 要先领域内聚合，再按策略合并。
+
+示例：
+
+```text
+validation loss = total_negative_log_likelihood / total_loss_tokens
+accuracy = correct_samples / total_samples
+domain score = weighted_mean(domain_scores, domain_weights)
+```
+
+如果 rank 0 只平均各 rank 的 loss，而每个 rank token 数不同，结果会偏。
 
 ## Eval 对训练吞吐的影响
 
@@ -583,6 +1071,59 @@ effective_tokens_per_day =
 - 缓存 reference logprob。
 - 只对候选 checkpoint 跑重型 eval。
 
+## Eval Cost Model
+
+评估成本可以用分层模型估算。
+
+Loss eval 成本大致是：
+
+```text
+loss_eval_cost ~= eval_tokens / forward_tokens_per_second
+```
+
+Generation eval 成本大致是：
+
+```text
+generation_eval_cost ~=
+  prefill_tokens / prefill_tokens_per_second
+  + output_tokens / decode_tokens_per_second
+```
+
+Judge eval 成本还要加：
+
+```text
+judge_cost =
+  judge_input_tokens / judge_prefill_rate
+  + judge_output_tokens / judge_decode_rate
+```
+
+如果有 pass@k：
+
+```text
+output_tokens ~= prompts * k * avg_output_tokens
+```
+
+因此降低 eval 成本可以从几处下手：
+
+- 减少 eval 样本数。
+- 分层 eval，只让少数 checkpoint 跑 full eval。
+- 降低 `k` 或 max_new_tokens。
+- 用更高吞吐的 serving engine。
+- 缓存 prompt rendering / tokenized dataset。
+- 只对模型差异明显的样本做 targeted eval。
+
+评估系统最好定期报告：
+
+```text
+eval_gpu_hours_by_suite
+eval_wall_clock_by_suite
+eval_cost_per_checkpoint
+eval_queue_wait_time
+eval_failure_retry_cost
+```
+
+这样才能知道评估成本是否已经吞掉训练收益。
+
 ## Eval 与 Checkpoint 存储
 
 异步 eval 通常依赖 checkpoint。
@@ -616,6 +1157,32 @@ eval:
 
 没有 manifest 的 eval 结果，很难长期信任。
 
+## Eval Artifact 分层
+
+建议把 eval 产物分成四层：
+
+| 层次 | 内容 | 用途 |
+| --- | --- | --- |
+| Manifest | checkpoint、dataset、config、代码版本 | 证明这次 eval 是什么。 |
+| Raw outputs | predictions、logprobs、judge outputs | 复盘和重新打分。 |
+| Sample metrics | 每个样本的 score、错误、耗时 | 错误分析、diff、聚类。 |
+| Summary report | aggregate metrics、图表、结论 | 人阅读和 checkpoint selection。 |
+
+目录可以类似：
+
+```text
+evals/
+  run-001/
+    step-120000/
+      manifest.yaml
+      predictions.jsonl
+      sample_metrics.jsonl
+      summary.json
+      report.md
+```
+
+不要只保存 Markdown report。Markdown 对人友好，但 AI 和系统更需要结构化 JSON/JSONL。
+
 ## Eval Report 应该记录什么
 
 一个 eval report 至少应包含：
@@ -643,6 +1210,56 @@ eval:
 - Markdown summary。
 
 Markdown 给人看，JSON/JSONL 给系统和 AI 查。
+
+### Eval Report 模板
+
+一个简化模板：
+
+```yaml
+eval_report:
+  run_id: ""
+  checkpoint:
+    id: ""
+    path: ""
+    global_step: null
+    train_tokens: null
+    hash: ""
+  eval_suite:
+    name: ""
+    version: ""
+    type: "loss"  # loss / generation / judge / agent
+  data:
+    dataset_id: ""
+    dataset_version: ""
+    sample_count: null
+    loss_tokens: null
+  model_runtime:
+    precision: "bf16"
+    inference_engine: ""
+    parallelism: {}
+  generation:
+    enabled: false
+    temperature: 0.0
+    top_p: 1.0
+    max_new_tokens: null
+  scoring:
+    method: ""
+    code_version: ""
+    judge_model: null
+  metrics:
+    aggregate: {}
+    by_domain: {}
+  system:
+    wall_clock_seconds: null
+    gpu_hours: null
+    peak_memory_gb: null
+    failures: {}
+  artifacts:
+    predictions: ""
+    sample_metrics: ""
+```
+
+这个模板不需要一次全部填满，但字段越完整，越容易长期比较。
 
 ## 常见故障
 
@@ -717,6 +1334,52 @@ Markdown 给人看，JSON/JSONL 给系统和 AI 查。
 - 记录 Pareto 维度。
 - 对候选 checkpoint 重跑关键 eval。
 
+### Eval 指标回归但训练 loss 正常
+
+可能原因：
+
+- validation loss 与任务能力不一致。
+- prompt template 或 chat template 变化。
+- 训练数据混合比例改变。
+- 后训练数据过拟合。
+- 生成式 eval decoding 改了。
+- judge model 漂移。
+
+排查：
+
+- 对同一 checkpoint 重跑旧 eval config。
+- 比较 sample-level diff。
+- 按领域拆分指标。
+- 固定 decoding，排除采样噪声。
+- 检查训练数据版本和模板版本。
+
+### Eval 结果延迟导致错误决策
+
+异步 eval 可能在训练继续很久后才返回。如果系统直接用迟到结果覆盖当前状态，可能误导 dashboard 或 selector。
+
+解决：
+
+- eval report 永远绑定 checkpoint id。
+- dashboard 显示 result age。
+- selector 只处理对应 checkpoint 的状态。
+- 对过旧 checkpoint 的 full eval 可以标记为 stale。
+
+### Judge 输出格式错误
+
+可能原因：
+
+- judge prompt 不稳定。
+- model judge 输出自然语言而不是结构化 JSON。
+- temperature 非零导致格式漂移。
+- response 太长，judge 截断。
+
+排查：
+
+- 给 judge 输出加 schema 校验。
+- 失败时有限重试。
+- 保存原始 judge response。
+- 统计 judge_format_error_rate。
+
 ## 常见优化方向
 
 ### 分层 Eval Suite
@@ -777,6 +1440,43 @@ dataset version + tokenizer version + prompt template + model checkpoint + gener
 
 这样后续才能解释分数变化。
 
+### Regression Detection
+
+评估系统应该能自动发现回归，而不是只展示分数。
+
+常见规则：
+
+```yaml
+regression_rules:
+  - metric: "validation.loss"
+    mode: "max_increase"
+    threshold: 0.02
+  - metric: "mmlu.acc"
+    mode: "max_drop"
+    threshold: 0.005
+  - metric: "format_success"
+    mode: "max_drop"
+    threshold: 0.02
+  - metric: "unsafe_rate"
+    mode: "max_increase"
+    threshold: 0.001
+```
+
+回归检测要考虑噪声：
+
+- 小样本 eval 需要更大阈值。
+- generation eval 最好看多次运行方差。
+- pass@k 需要固定 seed 或记录置信区间。
+- judge model 分数要监控 judge 自身稳定性。
+
+一旦触发回归，可以自动：
+
+- 标记 checkpoint 为 quarantine。
+- 保留相关 raw predictions。
+- 触发更完整 eval。
+- 通知训练 owner。
+- 暂停删除前一个 good checkpoint。
+
 ## 实践检查清单
 
 训练评估系统至少确认：
@@ -810,4 +1510,5 @@ dataset version + tokenizer version + prompt template + model checkpoint + gener
 
 - [EleutherAI LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness)
 - [Hugging Face Evaluate](https://huggingface.co/docs/evaluate/index)
+- [OpenAI Evals](https://github.com/openai/evals)
 - [HELM: Holistic Evaluation of Language Models](https://arxiv.org/abs/2211.09110)
