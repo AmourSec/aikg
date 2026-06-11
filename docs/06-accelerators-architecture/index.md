@@ -39,3 +39,4 @@ updated: 2026-06-11
 - [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、节点内 GPU fabric、PCIe、RDMA、CXL、collective、rank mapping、拓扑感知并行和通信 benchmark。
 - [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](power-thermal-reliability.md)：解释 power limit、thermal limit、clock、throttling、ECC、RAS、稳态 benchmark、能效指标和 power-aware scheduling。
 - [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](accelerator-architecture-tradeoffs.md)：解释通用性与专用性、GPU/TPU/NPU/ASIC/FPGA 执行模型、软件栈、算子覆盖、动态性、扩展方式和 workload 匹配。
+- [Workload Mapping：算子、Compiler、Runtime 与硬件执行](workload-mapping-compiler-runtime-interface.md)：解释模型、IR、算子、kernel、layout、tiling、fusion、runtime、dynamic shape、fallback 和 parallel mapping 如何共同决定硬件有效吞吐。

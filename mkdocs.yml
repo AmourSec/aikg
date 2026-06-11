@@ -124,6 +124,7 @@ nav:
       - 互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC: 06-accelerators-architecture/interconnect-communication-architecture.md
       - 功耗、散热、频率与可靠性：从峰值算力到持续吞吐: 06-accelerators-architecture/power-thermal-reliability.md
       - 架构取舍：GPU、NPU、TPU、ASIC 与 FPGA: 06-accelerators-architecture/accelerator-architecture-tradeoffs.md
+      - Workload Mapping：算子、Compiler、Runtime 与硬件执行: 06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md
   - 集群、网络、存储与调度:
       - 概览: 07-cluster-infra/index.md
   - 性能分析、Benchmark 与容量建模:
