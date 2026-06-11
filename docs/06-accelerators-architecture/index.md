@@ -35,3 +35,4 @@ updated: 2026-06-11
 - [AI 加速器性能模型：算力、带宽与 Roofline](performance-model-roofline.md)：用 arithmetic intensity、compute-bound、memory-bound、HBM、片上存储、矩阵单元和 Roofline 建立硬件性能分析入口。
 - [计算单元：SIMT、Tensor Core 与矩阵引擎](compute-units-simt-tensorcore.md)：解释 SIMD/SIMT、warp、SM、occupancy、Tensor Core、systolic array、稀疏和动态控制流如何影响真实算力。
 - [存储层次：HBM、SRAM、Cache 与数据复用](memory-hierarchy-data-reuse.md)：解释 register、SRAM/shared memory、cache、HBM、host memory、offload、KV Cache、fusion 和 IO-aware kernel 如何共同决定数据搬运成本。
+- [精度格式：FP16、BF16、FP8 与量化计算](precision-formats-low-bit-compute.md)：解释 FP32、TF32、FP16、BF16、FP8、INT8、INT4、accumulator、scale、outlier、KV Cache 量化和低精度硬件路径。

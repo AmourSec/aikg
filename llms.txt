@@ -83,6 +83,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [AI 加速器性能模型：算力、带宽与 Roofline](https://amoursec.github.io/aikg/06-accelerators-architecture/performance-model-roofline/): AI 加速器性能模型用 arithmetic intensity、Roofline、compute-bound、memory-bound、HBM、片上存储、矩阵单元、互连和 benchmark 分析硬件真实性能上限。
 - [计算单元：SIMT、Tensor Core 与矩阵引擎](https://amoursec.github.io/aikg/06-accelerators-architecture/compute-units-simt-tensorcore/): 计算单元：SIMT、Tensor Core 与矩阵引擎解释 SIMD/SIMT、warp、SM、occupancy、Tensor Core、Matrix Core、systolic array、稀疏、不规则访存、动态控制流和真实矩阵单元利用率。
 - [存储层次：HBM、SRAM、Cache 与数据复用](https://amoursec.github.io/aikg/06-accelerators-architecture/memory-hierarchy-data-reuse/): 存储层次：HBM、SRAM、Cache 与数据复用解释 register、SRAM/shared memory、L1/L2 cache、HBM、host memory、offload、KV Cache、fusion、IO-aware attention 和 memory-bound benchmark。
+- [精度格式：FP16、BF16、FP8 与量化计算](https://amoursec.github.io/aikg/06-accelerators-architecture/precision-formats-low-bit-compute/): 精度格式：FP16、BF16、FP8 与量化计算解释 FP32/TF32/FP16/BF16/FP8/INT8/INT4、accumulator、master weight、scale、amax、outlier、KV Cache 量化、低精度通信和硬件路径验证。
 - [集群、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/): 集群、网络、存储与调度主题入口。
 - [性能分析、Benchmark 与容量建模](https://amoursec.github.io/aikg/08-benchmark-capacity/): 性能分析、Benchmark 与容量建模主题入口。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
@@ -159,6 +160,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [06-accelerators-architecture/performance-model-roofline.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/performance-model-roofline.md)
 - [06-accelerators-architecture/compute-units-simt-tensorcore.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/compute-units-simt-tensorcore.md)
 - [06-accelerators-architecture/memory-hierarchy-data-reuse.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/memory-hierarchy-data-reuse.md)
+- [06-accelerators-architecture/precision-formats-low-bit-compute.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/precision-formats-low-bit-compute.md)
 - [07-cluster-infra/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/index.md)
 - [08-benchmark-capacity/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/index.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
