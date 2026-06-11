@@ -109,6 +109,7 @@ nav:
       - 通信与计算重叠: 04-training-systems/communication-computation-overlap.md
       - FLUX 通信重叠与 Kernel Fusion: 04-training-systems/flux-kernel-fusion.md
       - Optimizer 与 Scheduler 系统成本: 04-training-systems/optimizer-scheduler-cost.md
+      - 参数高效微调：LoRA、QLoRA 与 Adapter 系统优化: 04-training-systems/parameter-efficient-finetuning-lora-qlora.md
       - Muon 优化器: 04-training-systems/muon-optimizer.md
       - Checkpoint、Resume 与容错: 04-training-systems/checkpoint-resume-fault-tolerance.md
       - 训练性能指标与扩展效率: 04-training-systems/training-performance-metrics-scaling.md
