@@ -16,7 +16,7 @@ updated: 2026-06-12
 训练系统的学习顺序可以按“一次训练 step 如何被放大到多 GPU、多节点”展开：
 
 1. 先理解训练任务生命周期，知道一个 step 由哪些阶段组成。
-2. 再学习数据输入、数据混合采样、batch、activation、gradient、optimizer state 这些基础成本。
+2. 再学习数据输入、数据混合采样、batch、大词表 loss、activation、gradient、optimizer state 这些基础成本。
 3. 然后理解分布式训练 runtime，再进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel，以及这些并行维度如何组合。
 4. 接着学习混合精度、数值稳定性、通信重叠、FLUX、activation checkpointing、checkpoint/restart 和容错。
 5. 再理解 optimizer state、参数高效微调、后训练工作负载、Muon 优化器、scheduler 和 optimizer step 的系统成本。
@@ -28,28 +28,29 @@ updated: 2026-06-12
 | 2 | [数据输入与 Data Pipeline](data-pipeline.md) | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
 | 3 | [训练数据混合、采样与有效 Token](training-data-mixing-sampling-effective-tokens.md) | 理解多数据源比例、分布式采样、shuffle、packing、loss mask 和有效 token 吞吐。 |
 | 4 | [Batch、Micro-batch 与 Gradient Accumulation](batch-gradient-accumulation.md) | 理解 global batch、显存、吞吐和优化稳定性的关系。 |
-| 5 | [显存组成与优化总览](memory-composition-optimization.md) | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
-| 6 | [分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL](distributed-training-runtime.md) | 理解 launcher、rank、world size、local rank、rendezvous、process group、backend 和 NCCL 如何支撑分布式训练。 |
-| 7 | [Data Parallel 与梯度同步](data-parallel-gradient-sync.md) | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
-| 8 | [ZeRO 与 FSDP](zero-fsdp.md) | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
-| 9 | [Tensor Parallel](tensor-parallel.md) | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
-| 10 | [Sequence Parallel 与 Context Parallel](sequence-context-parallel.md) | 理解长序列训练中如何切分 token 序列或上下文，降低 activation 和 attention 压力。 |
-| 11 | [Pipeline Parallel](pipeline-parallel.md) | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
-| 12 | [Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md) | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
-| 13 | [并行策略组合：3D/4D/5D Parallelism](hybrid-parallelism-composition.md) | 把 DP/FSDP、TP、PP、EP、SP/CP 放到同一个 rank topology 中理解。 |
-| 14 | [Activation Checkpointing](activation-checkpointing.md) | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
-| 15 | [混合精度训练](mixed-precision-training.md) | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
-| 16 | [训练稳定性与数值异常：NaN、Inf、Loss Spike 与梯度健康](training-stability-numerical-debugging.md) | 把 NaN/Inf、loss spike、grad norm、loss scale、bad batch、checkpoint rollback 和 stability guardrail 纳入训练系统。 |
-| 17 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
-| 18 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
-| 19 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
-| 20 | [参数高效微调：LoRA、QLoRA 与 Adapter 系统优化](parameter-efficient-finetuning-lora-qlora.md) | 理解只训练少量 adapter 参数时，显存、optimizer state、checkpoint、分布式和推理服务如何变化。 |
-| 21 | [后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角](post-training-workloads-sft-dpo-rlhf-grpo.md) | 理解后训练如何把监督微调、偏好优化、在线 rollout、reward/verifier 和 policy update 组合成不同系统负载。 |
-| 22 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
-| 23 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
-| 24 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
-| 25 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
-| 26 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
+| 5 | [大词表输出层、Logits 与 Cross Entropy 系统优化](vocab-output-cross-entropy.md) | 理解 LM head、logits、loss mask、fused CE、chunked loss 和 vocab parallel CE。 |
+| 6 | [显存组成与优化总览](memory-composition-optimization.md) | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
+| 7 | [分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL](distributed-training-runtime.md) | 理解 launcher、rank、world size、local rank、rendezvous、process group、backend 和 NCCL 如何支撑分布式训练。 |
+| 8 | [Data Parallel 与梯度同步](data-parallel-gradient-sync.md) | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
+| 9 | [ZeRO 与 FSDP](zero-fsdp.md) | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
+| 10 | [Tensor Parallel](tensor-parallel.md) | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
+| 11 | [Sequence Parallel 与 Context Parallel](sequence-context-parallel.md) | 理解长序列训练中如何切分 token 序列或上下文，降低 activation 和 attention 压力。 |
+| 12 | [Pipeline Parallel](pipeline-parallel.md) | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
+| 13 | [Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md) | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
+| 14 | [并行策略组合：3D/4D/5D Parallelism](hybrid-parallelism-composition.md) | 把 DP/FSDP、TP、PP、EP、SP/CP 放到同一个 rank topology 中理解。 |
+| 15 | [Activation Checkpointing](activation-checkpointing.md) | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
+| 16 | [混合精度训练](mixed-precision-training.md) | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
+| 17 | [训练稳定性与数值异常：NaN、Inf、Loss Spike 与梯度健康](training-stability-numerical-debugging.md) | 把 NaN/Inf、loss spike、grad norm、loss scale、bad batch、checkpoint rollback 和 stability guardrail 纳入训练系统。 |
+| 18 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
+| 19 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
+| 20 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
+| 21 | [参数高效微调：LoRA、QLoRA 与 Adapter 系统优化](parameter-efficient-finetuning-lora-qlora.md) | 理解只训练少量 adapter 参数时，显存、optimizer state、checkpoint、分布式和推理服务如何变化。 |
+| 22 | [后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角](post-training-workloads-sft-dpo-rlhf-grpo.md) | 理解后训练如何把监督微调、偏好优化、在线 rollout、reward/verifier 和 policy update 组合成不同系统负载。 |
+| 23 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
+| 24 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 25 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 26 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 27 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
 
@@ -74,6 +75,12 @@ updated: 2026-06-12
 训练里的 batch 概念包括 micro-batch、per-device batch、global batch 和 gradient accumulation。它们共同影响显存、吞吐、通信和训练稳定性。
 
 详见：[Batch、Micro-batch 与 Gradient Accumulation](batch-gradient-accumulation.md)
+
+## 大词表输出层、Logits 与 Cross Entropy 系统优化
+
+训练 step 的 forward 不会在 Transformer block 结束后直接完成。hidden state 还要经过 LM head 变成词表 logits，再用 Cross Entropy 和 labels 计算 loss。大词表、大 batch、长序列会把 logits 放大成 `[tokens, vocab_size]`，使输出层和 loss 成为显存、带宽、通信和数值稳定性的关键环节。
+
+详见：[大词表输出层、Logits 与 Cross Entropy 系统优化](vocab-output-cross-entropy.md)
 
 ## 显存组成与优化总览
 

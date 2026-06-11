@@ -95,6 +95,7 @@ nav:
       - 数据输入与 Data Pipeline: 04-training-systems/data-pipeline.md
       - 训练数据混合、采样与有效 Token: 04-training-systems/training-data-mixing-sampling-effective-tokens.md
       - Batch、Micro-batch 与 Gradient Accumulation: 04-training-systems/batch-gradient-accumulation.md
+      - 大词表输出层、Logits 与 Cross Entropy 系统优化: 04-training-systems/vocab-output-cross-entropy.md
       - 显存组成与优化总览: 04-training-systems/memory-composition-optimization.md
       - 分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL: 04-training-systems/distributed-training-runtime.md
       - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
