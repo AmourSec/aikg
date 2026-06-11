@@ -4,7 +4,7 @@ domain: benchmark-capacity
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 ---
 
 # 性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位
@@ -113,6 +113,61 @@ step time 增加主要来自计算、通信、数据还是 checkpoint？
 - 约束条件。
 - 对比对象。
 - 决策目的。
+
+## Benchmark Contract
+
+为了避免 benchmark 变成“随手跑一次”，建议在执行前写一个 Benchmark Contract。它是这次实验的契约，说明为什么测、测什么、怎么判定。
+
+示例：
+
+```yaml
+benchmark_id: infer-vllm-h100-70b-2026-06-12
+question: vLLM version B 是否可以替代 version A 进入生产？
+decision: promote / rollback / investigate
+
+scope:
+  workload: online-inference
+  model: llama-like-70b
+  hardware: 8x H100-SXM
+  serving_engine: vLLM
+  traffic: sampled-prod-trace-2026-06
+
+primary_metric:
+  name: goodput_at_sla
+  target: qps at TTFT p99 < 2s and error_rate < 0.1%
+
+guardrail_metrics:
+  - output_tokens_per_second
+  - GPU memory peak
+  - error_rate
+  - cost_per_1m_tokens
+  - quality_smoke_score
+
+comparison:
+  baseline: version A
+  candidate: version B
+  fixed:
+    - model artifact
+    - input trace
+    - node profile
+    - image base
+
+run_plan:
+  warmup: 10m
+  measurement_window: 30m
+  repetitions: 5
+  isolation: benchmark node pool
+```
+
+Contract 的价值是让所有人提前同意判定规则：
+
+- 什么指标是主指标。
+- 哪些指标是保护指标。
+- 哪些变量必须固定。
+- 结果达到什么条件才能上线。
+- 结果不确定时要补什么实验。
+
+没有 contract 时，benchmark 很容易在结果出来后临时改口径：吞吐不好就看延迟，延迟不好就看平均值，平均值不好就说样本特殊。这样无法沉淀成可信知识。
 
 ## 指标分类
 
@@ -230,6 +285,49 @@ step time 增加主要来自计算、通信、数据还是 checkpoint？
 
 好的 benchmark 报告通常不是一个数字，而是一组互相约束的指标。
 
+## 测量边界
+
+指标必须说明测量边界。边界不同，数字不能直接比较。
+
+推理 latency 可以从多个点开始和结束：
+
+```text
+client send
+  -> gateway receive
+  -> scheduler enqueue
+  -> prefill start
+  -> first token
+  -> decode complete
+  -> response sent
+  -> client receive
+```
+
+训练 step time 也可以拆成：
+
+```text
+data ready
+  -> forward
+  -> backward
+  -> communication
+  -> optimizer
+  -> checkpoint/eval
+  -> next step ready
+```
+
+报告必须写清楚：
+
+| 指标 | 需要说明 |
+| --- | --- |
+| TTFT | 从 client、gateway 还是 engine queue 开始计时 |
+| TPOT | 是否排除首 token，是否按输出 token 加权 |
+| E2E latency | 是否包含网络、gateway、tokenizer、排队 |
+| tokens/sec | input、output 还是 total tokens |
+| step time | 是否包含 DataLoader、checkpoint、eval |
+| cost/token | 是否包含空闲 headroom、失败重试、CPU/存储 |
+| energy/token | 测 GPU、节点、机柜还是整机房边界 |
+
+边界不清的 benchmark 最常见后果是：两个团队都说自己更快，但其实测的是不同区间。
+
 ## Workload 设计
 
 Benchmark 的 workload 必须代表你关心的真实场景。
@@ -252,6 +350,46 @@ Benchmark 的 workload 必须代表你关心的真实场景。
 - 是否包含模型加载和 warmup。
 
 只用一个固定 prompt 跑推理 benchmark，通常无法代表真实服务。
+
+### Open-loop 与 Closed-loop
+
+推理 benchmark 要区分两类负载生成方式。
+
+| 方式 | 含义 | 适合回答 |
+| --- | --- | --- |
+| Closed-loop | 客户端保持固定并发，请求完成后再发下一个 | 单系统在固定并发下能跑多快 |
+| Open-loop | 按固定 QPS 或到达过程发送，不等前一个完成 | 给定到达率下是否满足 SLA |
+
+Closed-loop 常用于找峰值吞吐，但容易掩盖排队崩溃：系统变慢时，客户端自然发得更慢。
+
+Open-loop 更接近线上流量：请求按外部到达率进入系统，如果服务能力不足，队列会增长，尾延迟会恶化。因此容量建模更应该关注：
+
+```text
+goodput at SLA = 满足延迟和错误率约束的成功吞吐
+```
+
+例如：
+
+```text
+peak throughput: 160 QPS
+goodput at TTFT p99 < 2s: 110 QPS
+```
+
+用于生产容量时，应该使用 110 QPS，而不是 160 QPS。
+
+### 输入分布比平均长度更重要
+
+LLM 推理不能只写“平均输入 2k token”。要至少记录：
+
+- p50/p90/p99 input length。
+- p50/p90/p99 output length。
+- input/output 的相关性。
+- 长上下文占比。
+- 是否有多轮对话历史。
+- 是否有 shared prefix。
+- 是否触发工具调用、RAG 或 JSON 模式。
+
+两个 workload 平均长度一样，尾部分布可能完全不同。尾部请求常常决定 KV cache 压力、prefill 峰值、batching 效率和 p99。
 
 ### 训练 Workload
 
@@ -287,6 +425,46 @@ Benchmark 的 workload 必须代表你关心的真实场景。
 - failure/retry 行为。
 
 系统 benchmark 最容易犯的错误是只测试单任务峰值，而不测试多租户、排队、存储和故障恢复。
+
+## 实验矩阵与运行计划
+
+复杂实验要先设计实验矩阵，避免边跑边改。
+
+示例：
+
+| 维度 | 固定值 | 变量 |
+| --- | --- | --- |
+| Model | 70B checkpoint digest | 不变 |
+| Hardware | 8x H100 node profile | 不变 |
+| Engine | vLLM | version A / version B |
+| Input Trace | sampled-prod-trace-v3 | 不变 |
+| QPS | 60, 80, 100, 120, 140 | sweep |
+| Max Context | 32k | 不变 |
+| Quantization | FP16 | 不变 |
+| Prefix Cache | enabled | 不变 |
+
+运行计划要明确：
+
+- 每个点跑几次。
+- 每次 warmup 多久。
+- measurement window 多久。
+- 是否随机化运行顺序。
+- 是否清理缓存。
+- 是否固定节点。
+- 失败如何重试。
+- 是否采 profiler。
+
+随机化顺序很重要。例如先跑 A 再跑 B，如果 B 正好遇到节点温度升高或后台任务，结论就会偏。可以用：
+
+```text
+A1, B1, B2, A2, A3, B3
+```
+
+而不是固定：
+
+```text
+A1, A2, A3, B1, B2, B3
+```
 
 ## 控制变量
 
@@ -407,6 +585,51 @@ Benchmark 结果不能只跑一次。
 - data loading stall。
 - straggler。
 
+## 统计判定
+
+很多性能差异看起来明显，其实在噪声范围内。报告需要给出判定规则。
+
+一个实用流程：
+
+```text
+run repeated measurements
+  -> remove invalid runs with declared rules
+  -> compute distribution
+  -> compare against noise baseline
+  -> check guardrail metrics
+  -> decide pass / fail / inconclusive
+```
+
+建议区分三种结果：
+
+| 结果 | 含义 | 动作 |
+| --- | --- | --- |
+| pass | 主指标改善，保护指标未变差，差异超过噪声 | 可以推进下一阶段 |
+| fail | 主指标或保护指标明显变差 | 回滚或继续优化 |
+| inconclusive | 差异小于噪声，或实验有缺陷 | 增加样本、隔离环境或重设实验 |
+
+不要把 `inconclusive` 硬解释成 pass。对工程决策来说，“无法证明提升”本身就是一个结果。
+
+### A/A 噪声基线
+
+在做 A/B 前，最好先做 A/A：
+
+```text
+A version vs same A version
+same workload
+same environment class
+multiple repetitions
+```
+
+A/A 能告诉你自然波动有多大。例如：
+
+```text
+A/A p99 noise: +/- 4%
+A/B observed gain: +3%
+```
+
+这种情况下不应宣称 B 更好。A/A 基线也是回归阈值的依据。
+
 ## A/B 对比
 
 A/B benchmark 的核心是公平对比。
@@ -507,6 +730,28 @@ Benchmark 告诉你“发生了什么”，profiler 告诉你“为什么”。
 - image pull。
 
 NVIDIA Nsight Systems 适合看 CPU/GPU timeline、CUDA kernel、通信和系统级时间线；PyTorch Profiler 适合从框架和 operator 角度分析训练/推理执行；DCGM 更适合持续监控 GPU telemetry。
+
+### Profiler 开销与采样
+
+Profiler 本身会改变系统行为。PyTorch Profiler 支持按 CPU/CUDA 等 activity 收集 trace，也支持 schedule 控制 wait、warmup、active 阶段；Nsight Systems 也支持聚焦采集范围和 NVTX 标注。工程上应避免长时间全量 trace。
+
+建议：
+
+- 用 NVTX 或框架标注阶段：prefill、decode、forward、backward、optimizer、checkpoint。
+- 只采关键窗口，而不是整场 benchmark。
+- 把 profiler run 和 measurement run 区分开。
+- 对比 profiler 开启前后的性能差异。
+- 分布式训练中为每个 rank 使用唯一 trace 文件名。
+- 保存 profiler 配置，避免 trace 口径漂移。
+
+常见做法：
+
+```text
+benchmark run: collect stable metrics without heavy profiler
+profile run: reproduce one or two representative cases with trace
+```
+
+Profiler 证据用于解释瓶颈，不应该直接替代主 benchmark 结果。
 
 ## 瓶颈定位路径
 
@@ -628,6 +873,35 @@ NVIDIA Nsight Systems 适合看 CPU/GPU timeline、CUDA kernel、通信和系统
 
 风险：数据隐私、可重复性、噪声和成本。
 
+## 噪声控制
+
+AI benchmark 的噪声来源很多：
+
+- 其他任务共享节点、网络或存储。
+- GPU 温度和频率变化。
+- power cap 或 thermal throttle。
+- CPU 频率和 NUMA 放置。
+- page cache 状态。
+- 编译缓存命中与否。
+- 模型权重加载路径。
+- 后台日志、监控和安全 agent。
+- 网络拥塞和 RDMA 错误。
+- 云上实例邻居干扰。
+
+报告要说明隔离策略：
+
+| 噪声来源 | 控制方式 |
+| --- | --- |
+| 节点差异 | 固定 node list 或记录 node profile |
+| 温度/频率 | 记录 clocks、power、temperature、throttle reason |
+| 缓存 | 明确 cold/warm cache，必要时清理或预热 |
+| 网络 | 固定 fabric/rack，记录拥塞和错误计数 |
+| 存储 | 固定数据路径，记录 IOPS/latency/metadata |
+| 编译 | 记录 compile cache 状态和首次编译开销 |
+| 多租户 | 使用 benchmark pool 或记录邻居 workload |
+
+如果噪声无法消除，就要把它写进 caveats，而不是假装不存在。
+
 ## 报告模板
 
 一份 benchmark 报告至少包含：
@@ -647,6 +921,33 @@ NVIDIA Nsight Systems 适合看 CPU/GPU timeline、CUDA kernel、通信和系统
 ```
 
 结论要写在前面，但必须能被后面的证据支撑。
+
+### Raw Data 与 Lineage
+
+报告中的图表只是摘要。真正可复现的 benchmark 需要保存原始数据和 lineage。
+
+至少保存：
+
+- run manifest。
+- benchmark contract。
+- workload trace 或 prompt set digest。
+- 原始 latency/request/step 记录。
+- 系统指标时间序列。
+- profiler trace。
+- 环境快照。
+- 代码 commit 和 image digest。
+- 结果处理脚本。
+- 报告生成版本。
+
+这样后续才能重新计算：
+
+- 不同 percentile。
+- 不同输入长度 bucket。
+- cache hit vs miss。
+- cold start vs steady state。
+- 按节点、rank、租户、模型版本拆分的结果。
+
+如果只保存最终图表，benchmark 就很难成为长期知识库。
 
 ### 结果表不要只放平均值
 
@@ -690,6 +991,29 @@ B 的 step 更快，但 checkpoint 和失败率变差，端到端未必更好。
 - 记录变更元数据。
 
 不要用过于敏感的阈值制造噪声，也不要用过于宽松的阈值放过真实回退。
+
+## 发布门禁
+
+Benchmark 最终要进入决策流程。常见门禁包括：
+
+| 场景 | 门禁 |
+| --- | --- |
+| Serving engine 升级 | goodput at SLA 不下降，p99 不恶化，error rate 不升高 |
+| Driver/CUDA 升级 | 训练 step time、NCCL bandwidth、推理 p99 在阈值内 |
+| Kernel 优化 | microbenchmark 提升，end-to-end 不回退 |
+| 调度策略变更 | queue wait 改善，不牺牲高优先级 SLA |
+| 模型量化 | cost/token 改善，质量保护指标通过 |
+| 节点入池 | smoke、性能、稳定性对比通过 |
+
+门禁应该允许三种结论：
+
+```text
+promote
+rollback
+hold and investigate
+```
+
+如果结果冲突，例如吞吐提升但 p99 变差，就不能只按主观偏好选择。应回到 Benchmark Contract 里定义的主指标和保护指标。
 
 ## 容量建模入口
 
@@ -749,20 +1073,31 @@ AI 系统波动很大。单次结果只能当线索，不能当结论。
 ## 设计检查清单
 
 - Benchmark 是否有明确决策问题。
+- 是否有 Benchmark Contract。
 - 指标是否有清晰定义。
+- 是否说明测量边界。
 - 是否区分 latency、throughput、efficiency、cost、energy。
 - 是否同时报告平均值和尾部指标。
 - Workload 是否代表目标场景。
+- 推理负载是否区分 open-loop 和 closed-loop。
+- 是否记录 input/output token 分布，而不是只写平均值。
+- 是否有实验矩阵和运行计划。
 - 是否记录模型、数据、prompt、配置和输入分布。
 - 是否记录硬件、driver、CUDA、框架和镜像 digest。
 - 是否说明 warmup 策略。
 - 是否有足够重复次数和持续时间。
+- 是否有 A/A 噪声基线或等价噪声估计。
+- 是否有 pass/fail/inconclusive 判定规则。
 - 是否控制变量。
 - 是否有 A/B 的公平性说明。
 - 是否有 ablation 分析。
 - 是否有 profiler 证据。
+- profiler 是否控制采集窗口和开销。
+- 是否说明噪声来源和隔离策略。
 - 是否保留 raw data。
+- 是否保存 lineage 和结果处理脚本。
 - 是否说明 caveats。
+- 是否定义发布门禁。
 - 是否能被别人复现。
 - 结果是否能进入容量模型。
 
