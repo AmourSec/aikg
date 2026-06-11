@@ -24727,42 +24727,130 @@ domain: training-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 
 # 混合精度训练
 
-训练大模型时，很多计算并不一定都要用 FP32。现代 GPU 对 FP16、BF16、FP8 等低精度格式有更高吞吐和更低带宽压力。
+训练大模型时，并不是所有计算都必须用 FP32。
+
+现代 GPU 对 FP16、BF16、TF32、FP8 等格式提供了更高吞吐、更低显存占用和更低带宽压力。大模型训练里的矩阵乘、attention、MLP、通信 buffer、activation 保存，都可能从低精度受益。
+
+但混合精度不是：
+
+```text
+model.half()
+```
+
+也不是：
+
+```text
+把所有 tensor 都换成最低精度
+```
+
+真正的混合精度训练，是把训练系统里的不同对象分配到合适精度：
+
+- 适合低精度的 GEMM 用低精度跑快。
+- 容易数值不稳定的 softmax / norm / loss 保留更高精度。
+- optimizer state 通常保留 FP32 或更稳定格式。
+- FP16 训练需要 loss scaling 防止梯度 underflow。
+- FP8 训练需要 per-tensor 或 block scale、amax history 和 recipe。
+- 分布式通信要决定梯度、参数、activation 和 scale metadata 用什么 dtype 传。
 
 一句话理解：
 
-> 混合精度训练的核心目标，是让适合低精度的计算用低精度跑得更快、更省显存，同时让容易数值不稳定的部分保留更高精度。
+> 混合精度训练的核心目标，是让适合低精度的计算、存储和通信更快更省，同时让数值敏感路径保留足够精度，最终提高 tokens/s、MFU、显存容量和单位成本效率。
 
-它不是“把所有 tensor 都改成半精度”。真正的混合精度，是在速度、显存、带宽和数值稳定之间做分工。
+本篇关注训练系统视角：dtype 各自适合什么，AMP 怎么工作，FP16/BF16/FP8 的系统差异，哪些状态不能随便低精度，分布式并行里 dtype 如何影响通信和稳定性，以及如何 benchmark。
+
+## 先给结论
+
+混合精度训练要回答五个问题：
+
+| 问题 | 例子 |
+| --- | --- |
+| compute 用什么精度 | GEMM 用 FP16/BF16/FP8，accumulation 用 FP32 或更高精度。 |
+| storage 用什么精度 | parameters、activations、gradients、optimizer states、master weights。 |
+| communication 用什么精度 | gradient AllReduce、FSDP all-gather、TP activation、MoE dispatch。 |
+| stability 用什么保护 | loss scaling、overflow check、grad norm、amax、scale history、fallback。 |
+| benchmark 看什么 | tokens/s、MFU、step time、memory、NaN/Inf、eval score、cost per token。 |
+
+实用原则：
+
+```text
+优先 BF16 baseline
+再根据硬件和框架能力尝试 FP8
+FP16 需要认真处理 loss scaling
+敏感算子和长期累计状态不要盲目低精度
+```
+
+对大模型训练来说，常见路线是：
+
+```text
+FP32 debug baseline
+-> BF16 training baseline
+-> BF16 + fused kernels / sharding / checkpointing
+-> FP8 for selected Linear/Attention/MLP paths
+```
+
+不要一开始就追求最激进低精度。
+
+先建立稳定 baseline，再逐步降低精度，才能知道速度收益来自哪里，质量损失是否可接受。
 
 ## 为什么低精度能加速
 
 低精度训练有三个直接收益。
 
-第一，单个数更小：
+### 1. 单个数更小
 
-| dtype | 常见大小 |
-| --- | --- |
-| FP32 | 4 bytes |
-| FP16 | 2 bytes |
-| BF16 | 2 bytes |
-| FP8 | 1 byte |
+| dtype | 常见大小 | 直觉 |
+| --- | --- | --- |
+| FP32 | 4 bytes | 稳定但贵。 |
+| TF32 | 存储仍是 FP32，计算使用 Tensor Core 路径 | 更快的 FP32-like matmul。 |
+| FP16 | 2 bytes | 快、省，但范围小。 |
+| BF16 | 2 bytes | 范围接近 FP32，精度较低。 |
+| FP8 | 1 byte | 更省，但需要 scale recipe。 |
 
-这会降低参数、activation、gradient 和通信 buffer 的显存压力。
+低精度可以降低：
 
-第二，内存带宽压力更低。同样一条内存通道，低精度能搬更多元素。
+- activation memory。
+- gradient memory。
+- communication buffer。
+- temporary buffer。
+- 某些参数副本。
 
-第三，现代 GPU Tensor Core 对低精度矩阵乘有专门加速。大模型训练里的 Linear、Attention、MLP 都大量依赖 GEMM，因此低精度能显著提高吞吐。
+### 2. 带宽压力更低
+
+同样的 HBM 带宽，低精度能搬更多元素。
+
+很多训练瓶颈不是纯算力，而是：
+
+- 读写 activation。
+- 读写 optimizer state。
+- 写 gradient。
+- 通信前后 pack/unpack。
+- kernel fusion 前后的 global memory traffic。
+
+低精度能降低这些路径的 bytes。
+
+### 3. Tensor Core 吞吐更高
+
+Transformer 大量时间花在 GEMM：
+
+- QKV projection。
+- attention output projection。
+- MLP up/gate/down projection。
+- LM head。
+- MoE expert GEMM。
+
+现代 GPU 对 FP16/BF16/FP8 Tensor Core 有专门加速。
+
+如果 GEMM shape 合适，低精度能明显提高吞吐。
+
+但如果瓶颈在数据加载、pipeline bubble、通信、checkpoint 保存或小 shape kernel launch，低精度不一定带来同等端到端收益。
 
 ## 为什么不能全部低精度
 
-低精度的问题是表示能力更弱。
-
-浮点数可以简单理解为：
+浮点数可以粗略理解为：
 
 ```text
 value = sign * mantissa * 2^exponent
@@ -24770,129 +24858,318 @@ value = sign * mantissa * 2^exponent
 
 其中：
 
-- exponent 决定能表示多大、多小的数。
-- mantissa 决定有效数字精度。
+- exponent 决定动态范围。
+- mantissa 决定有效数字。
 
-低精度通常意味着 exponent 或 mantissa 更少，容易出现：
+低精度会减少 exponent 或 mantissa，带来：
 
-- overflow：数太大，表示不了，变成 inf。
-- underflow：数太小，表示不了，变成 0。
-- rounding error：有效数字不够，细小变化丢失。
-- accumulation error：很多数相加时误差累积。
+- overflow：数太大，变成 inf。
+- underflow：数太小，变成 0。
+- rounding error：有效数字不足。
+- accumulation error：大量求和误差累积。
+- saturation：量化后卡在最大/最小可表示值。
 
-训练比推理更敏感，因为训练不仅要算 forward，还要算 loss、backward、梯度、optimizer state 和参数更新。某些小梯度如果被冲成 0，参数就失去更新；某些大梯度如果溢出，loss 可能变成 NaN。
+训练比推理更敏感。
 
-## FP32、FP16、BF16、FP8 的直觉
+原因是训练还包括：
+
+- loss。
+- backward。
+- gradient accumulation。
+- optimizer state 长期累计。
+- learning rate schedule。
+- gradient clipping。
+- distributed reduction。
+- checkpoint/resume。
+
+某一步小误差可能在长训练中逐渐放大。
+
+所以混合精度必须是策略，而不是全局 cast。
+
+## Dtype 直觉
 
 ### FP32
 
-FP32 是传统训练默认格式。它范围大、精度高，数值稳定性好，但显存和带宽成本高，低精度 Tensor Core 性能也用不上。
+FP32 是传统训练默认格式。
+
+优点：
+
+- 动态范围大。
+- 有效数字多。
+- 数值稳定。
+- 适合作为 debug baseline。
+
+缺点：
+
+- 显存占用高。
+- 带宽压力高。
+- 在现代 GPU 上不能充分利用低精度 Tensor Core。
 
 常见用途：
 
 - optimizer state。
 - master weights。
-- 某些归一化、loss、softmax 等敏感操作。
-- debug baseline。
+- 某些 loss / norm / softmax / reduction。
+- metric / debug。
+- scale / amax metadata。
+
+### TF32
+
+TF32 是 NVIDIA Ampere 及之后 GPU 上常见的 matmul 加速路径。
+
+它不是一种新的 tensor storage dtype。tensor 仍然可以是 FP32，但矩阵乘内部使用 TF32-like precision，在速度和精度之间折中。
+
+直觉：
+
+```text
+storage: FP32
+matmul internal compute: TF32
+accumulation: 通常仍保留较高精度路径
+```
+
+TF32 适合：
+
+- 希望保持 FP32 代码路径。
+- 但想提高 matmul / conv 性能。
+- 对低位精度变化可接受。
+
+需要记录：
+
+- 是否开启 TF32。
+- matmul/cudnn precision policy。
+- 不同实验是否一致。
+
+否则两个看似 FP32 的训练可能数值和性能都不同。
 
 ### FP16
 
-FP16 占 2 bytes，精度和范围都比 FP32 小。它的优势是硬件加速成熟，显存和带宽都省。
+FP16 占 2 bytes，Tensor Core 加速成熟。
 
-问题是 FP16 数值范围有限，训练中容易出现：
+优点：
 
-- 小梯度 underflow。
-- 大 activation 或 gradient overflow。
-- loss scaling 配置不当导致 NaN/Inf。
+- 显存省。
+- 带宽省。
+- GEMM 快。
 
-FP16 训练通常需要 loss scaling，也经常保留 FP32 master weights。
+主要问题：
+
+- 动态范围小。
+- 小梯度容易 underflow。
+- 大 activation / gradient 容易 overflow。
+- 通常需要 loss scaling。
+
+FP16 更适合：
+
+- 模型和数据范围经过验证。
+- 有成熟 AMP / GradScaler。
+- 能监控 overflow / skipped step。
 
 ### BF16
 
-BF16 也是 2 bytes，但它保留了和 FP32 类似的 exponent 位数，牺牲的是 mantissa 精度。
+BF16 也是 2 bytes，但 exponent 位数接近 FP32。
 
-直觉上：
+直觉：
 
 ```text
-FP16: 有效数字相对多一点，但范围小
-BF16: 有效数字少一点，但范围接近 FP32
+FP16: 精度稍好，范围小
+BF16: 精度较低，范围大
 ```
 
-所以 BF16 对大模型训练通常更稳，很多 LLM 训练默认优先用 BF16。它通常不需要像 FP16 那样依赖 loss scaling。
+大模型训练中，BF16 通常比 FP16 更稳。
+
+原因是：
+
+- 大 activation 不容易 overflow。
+- 不太依赖 loss scaling。
+- 对 LLM 训练更常见。
+
+代价是：
+
+- mantissa 更少，低位精度更粗。
+- 某些对精细差异敏感的路径仍需要更高精度。
 
 ### FP8
 
-FP8 更激进，只有 1 byte。它能进一步降低显存、带宽和计算成本，但数值范围和精度都更紧，需要更复杂的 scaling 策略。
+FP8 占 1 byte，比 FP16/BF16 更激进。
 
-常见 FP8 格式包括：
+常见格式：
 
-- E4M3：更多 mantissa，精度更好，范围较小，常用于 forward 的 activations/weights。
-- E5M2：更多 exponent，范围更大，精度较低，常用于 backward gradients。
+| 格式 | 直觉 | 常见用途 |
+| --- | --- | --- |
+| E4M3 | mantissa 更多，精度较好，范围较小 | forward activations / weights。 |
+| E5M2 | exponent 更多，范围较大，精度较低 | backward gradients。 |
 
-FP8 不是简单把模型 `.to(fp8)`。它通常需要框架或库维护每个 tensor 的 scale、amax history、格式选择和 fallback 策略。
+FP8 的难点是动态范围太小，不能靠单个 global loss scale 解决。
 
-## 混合精度训练的基本流程
+它通常需要：
 
-以 FP16 AMP 为例，一个简化流程是：
+- tensor scale。
+- scale inverse。
+- amax 记录。
+- delayed scaling。
+- current scaling。
+- block scaling。
+- per-tensor 或 per-block recipe。
+- 高精度 fallback。
+
+FP8 不是普通 AMP 的简单延伸，而是更接近“训练时量化系统”。
+
+## 训练系统里的对象和 Dtype
+
+混合精度要区分不同对象：
+
+| 对象 | 常见 dtype | 说明 |
+| --- | --- | --- |
+| model parameters | BF16/FP16/FP8 compute copy + FP32 master 可选 | 取决于框架和 optimizer。 |
+| activations | BF16/FP16/FP8 或高精度局部保留 | 影响显存和 bandwidth。 |
+| gradients | BF16/FP16/FP32/FP8 相关路径 | 同步和 optimizer 前要谨慎。 |
+| optimizer states | FP32 常见 | Adam m/v 长期累计，低精度风险更高。 |
+| master weights | FP32 常见 | 防止小更新被舍入。 |
+| loss | FP32/BF16 常见 | 梯度源头，通常更敏感。 |
+| norm / softmax | FP32/BF16 常见 | 对 overflow/underflow 敏感。 |
+| communication buffer | BF16/FP16/FP32/FP8 | 影响通信量和数值误差。 |
+| scale / amax metadata | FP32 或专门格式 | FP8 recipe 关键状态。 |
+
+不要只说：
+
+```text
+我们用了 BF16
+```
+
+应该说清楚：
+
+```text
+compute dtype = BF16
+parameter storage = BF16
+optimizer state = FP32
+gradient communication = BF16
+norm/loss = FP32
+TF32 = disabled
+```
+
+## AMP 的基本数据流
+
+以 PyTorch AMP 的 FP16 路径为例：
 
 ```mermaid
 flowchart TB
-    A["FP32 model / master weights"] --> B["autocast forward<br/>部分算子用 FP16/BF16"]
-    B --> C["loss<br/>通常保持稳定精度"]
-    C --> D["loss scaling<br/>FP16 常用"]
-    D --> E["backward<br/>得到 scaled gradients"]
+    A["Model parameters<br/>default / master precision"] --> B["autocast forward<br/>op-specific FP16/BF16/FP32"]
+    B --> C["Loss<br/>stable precision"]
+    C --> D["GradScaler.scale(loss)"]
+    D --> E["backward<br/>scaled gradients"]
     E --> F["unscale gradients"]
-    F --> G["检查 overflow / NaN"]
-    G --> H["optimizer step<br/>更新 FP32 master weights"]
-    H --> I["下一步继续"]
+    F --> G{"Inf / NaN?"}
+    G -- "yes" --> H["skip optimizer step<br/>reduce scale"]
+    G -- "no" --> I["optimizer step"]
+    I --> J["GradScaler.update()"]
+    H --> J
+    J --> K["next iteration"]
 ```
 
-真正系统里，不同 tensor 的 dtype 会更复杂：
+关键点：
 
-- GEMM 输入可能是 FP16/BF16/FP8。
-- accumulation 可能是 FP32 或更高精度。
-- LayerNorm/Softmax 可能保留 FP32 或 BF16。
-- optimizer state 常常是 FP32。
-- 通信可能用低精度 gradient，也可能先 unscale 再同步。
+- autocast 通常包 forward 和 loss。
+- backward 不建议放在 autocast context 里。
+- backward op 的 dtype 通常跟 forward 选择有关。
+- GradScaler 负责 scale、unscale、overflow check、skip step 和 update scale。
+
+## PyTorch AMP 示例
+
+典型 FP16 AMP 训练循环：
+
+```python
+import torch
+
+model = model.cuda()
+optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
+scaler = torch.amp.GradScaler("cuda")
+
+for batch in loader:
+    optimizer.zero_grad(set_to_none=True)
+
+    with torch.amp.autocast("cuda", dtype=torch.float16):
+        outputs = model(batch["input_ids"])
+        loss = loss_fn(outputs, batch["labels"])
+
+    scaler.scale(loss).backward()
+
+    # If gradient clipping is needed, unscale first.
+    scaler.unscale_(optimizer)
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
+
+    scaler.step(optimizer)
+    scaler.update()
+```
+
+BF16 路径常常不需要 GradScaler：
+
+```python
+for batch in loader:
+    optimizer.zero_grad(set_to_none=True)
+
+    with torch.amp.autocast("cuda", dtype=torch.bfloat16):
+        outputs = model(batch["input_ids"])
+        loss = loss_fn(outputs, batch["labels"])
+
+    loss.backward()
+    optimizer.step()
+```
+
+是否需要 GradScaler 取决于 dtype、硬件、模型和框架策略。
+
+对 LLM 训练来说，BF16 baseline 通常是更稳妥的默认选择。
 
 ## Autocast 做了什么
 
-Autocast 的作用是自动选择某些算子用低精度，某些算子保留高精度。
+Autocast 会在指定区域内按 op 选择 dtype。
 
-例如：
-
-- `matmul`、`linear`、`conv` 这类算子适合低精度加速。
-- `softmax`、`layer_norm`、`cross_entropy`、`log`、`exp` 等可能更敏感，常常保留更高精度。
-
-这比手动把所有 tensor 转成 `half()` 更安全。
-
-需要注意：
-
-- autocast 通常只包 forward 和 loss。
-- backward 会根据 forward 对应算子的 dtype 运行。
-- 不应该随意对模型和输入手动 `.half()`，否则可能绕开 autocast 的安全策略。
-- 自定义算子需要自己处理 dtype 和 backward 精度。
-
-## Loss Scaling 为什么必要
-
-FP16 的一个主要问题是小梯度 underflow。
-
-假设某个真实梯度是：
+它的目标是：
 
 ```text
-0.00000001
+能安全低精度的 op 用低精度
+需要稳定性的 op 保留高精度
 ```
 
-它可能太小，FP16 表示不了，变成 0。这样参数就不会被这部分梯度更新。
+常见倾向：
 
-Loss scaling 的做法是：
+| Op | 常见策略 |
+| --- | --- |
+| Linear / matmul / conv | 低精度。 |
+| attention projection | 低精度。 |
+| MLP GEMM | 低精度。 |
+| softmax | 更高精度或专门稳定 kernel。 |
+| layernorm / RMSNorm | 更高精度或 mixed path。 |
+| cross entropy | 更高精度或 fused stable kernel。 |
+| reduction / norm / clipping | 更高精度。 |
 
-1. 把 loss 乘以一个 scale，例如 `65536`。
-2. backward 得到的梯度也随之放大。
-3. 在 optimizer step 前，把梯度除回同样的 scale。
-4. 如果发现 overflow，就跳过这次 step，并降低 scale。
+Autocast 比手动 `.half()` 更安全，因为它是 op-specific。
 
-简化表示：
+手动 `.half()` 的风险：
+
+- 敏感 op 被迫低精度。
+- input dtype 和 parameter dtype 不匹配。
+- 自定义 op 未正确处理。
+- optimizer / master weights 逻辑被绕开。
+- debug 困难。
+
+## GradScaler 与 Loss Scaling
+
+FP16 的主要问题是小梯度 underflow。
+
+如果梯度太小，FP16 表示不了，会变成 0：
+
+```text
+small gradient -> flush to zero -> parameter update lost
+```
+
+Loss scaling 的做法：
+
+1. 把 loss 乘以 scale。
+2. backward 得到 scaled gradients。
+3. optimizer step 前把 gradients 除回去。
+4. 如果发现 inf/NaN，跳过 step 并调整 scale。
+
+简化公式：
 
 ```text
 scaled_loss = loss * scale
@@ -24900,234 +25177,798 @@ scaled_grad = grad * scale
 unscaled_grad = scaled_grad / scale
 ```
 
-这样小梯度在 backward 过程中更不容易 underflow。关键是 optimizer 更新前必须 unscale，否则等价于把学习率放大了。
+系统上必须注意：
+
+- gradient clipping 要在 unscale 后做。
+- gradient norm 监控要看 unscaled gradient。
+- DDP/FSDP 同步前后要明确同步的是 scaled 还是 unscaled gradient。
+- 如果 overflow 导致 step skipped，scheduler 是否 step 要谨慎。
+- GradScaler state 需要 checkpoint/resume。
 
 ## Dynamic Loss Scaling
 
 固定 scale 不一定合适。
 
-- scale 太小，防不住 underflow。
-- scale 太大，容易 overflow。
+Dynamic loss scaling 会根据 overflow 情况调整：
 
-Dynamic loss scaling 会动态调整 scale：
+- 一段时间没有 overflow，scale 增大。
+- 检测到 overflow，scale 降低，并跳过当前 optimizer step。
 
-- 一段时间没有 overflow，就增大 scale。
-- 检测到 overflow，就降低 scale，并跳过当前 optimizer step。
+需要监控：
 
-这就是很多 AMP 实现里 `GradScaler` 的作用。
+| 现象 | 可能含义 |
+| --- | --- |
+| scale 偶尔下降 | 正常，可能遇到尖峰 batch。 |
+| scale 频繁下降 | 数值不稳定或 FP16 不适合。 |
+| scale 长期很低 | 模型范围超过 FP16 可承受范围。 |
+| scale 下降后 loss 仍 NaN | 可能有高风险 op、数据 bug 或 optimizer state 污染。 |
+| skipped step 太多 | 有效训练吞吐下降。 |
 
-对系统工程师来说，loss scale 的日志很有价值：
+PyTorch 文档提醒，GradScaler 不保证 scale 一定大于 1；如果模型不适合 FP16 范围，scale 可能降到 1 以下来尝试避免 overflow。
 
-- scale 频繁下降：可能数值不稳定或 FP16 不适合。
-- scale 长期很低：可能模型数值范围超过 FP16。
-- scale 正常增长但 loss NaN：问题可能在某个高风险算子或数据。
+## Master Weights
 
-## Master Weights 是什么
+FP16 参数更新的另一个问题是小更新被舍入。
 
-FP16 训练中，参数更新如果直接在 FP16 权重上做，小更新可能因为精度不够被舍入掉。
-
-所以经典做法是保留一份 FP32 master weights：
+例如：
 
 ```text
-FP16 weights:
-  用于 forward/backward 计算
-
-FP32 master weights:
-  optimizer 真正更新的参数副本
+weight = 1.0
+update = 1e-6
 ```
 
-每次 optimizer step：
+在低精度参数上直接更新，可能没有任何可见变化。
 
-1. 用 unscaled gradients 更新 FP32 master weights。
-2. 把更新后的 FP32 weights cast 成 FP16/BF16，供下一步 forward/backward 使用。
+经典混合精度训练会保留 FP32 master weights：
 
-这会增加一份参数显存，但能显著提高训练稳定性。
+```text
+compute weights: FP16/BF16
+master weights: FP32
+optimizer updates: FP32 master weights
+```
 
-BF16 因为范围更大，很多训练栈仍会在 optimizer state 或 master 参数上保留 FP32，但对 loss scaling 的依赖通常小很多。
+step 流程：
 
-## 哪些操作应该保留高精度
+1. 用低精度权重 forward/backward。
+2. 得到 gradient。
+3. unscale / clip / sync。
+4. optimizer 更新 FP32 master weights。
+5. cast 回低精度权重用于下一步计算。
 
-不是所有操作都适合低精度。
+这会增加一份参数显存，但提升训练稳定性。
 
-常见需要谨慎的部分：
+在 FSDP/ZeRO 中，master weights、optimizer state 和 parameter shard 的 dtype 还会和 sharding 策略耦合。
 
-| 操作 | 风险 |
+## 哪些部分应该保留高精度
+
+不是所有算子都适合低精度。
+
+常见需要谨慎的路径：
+
+| 路径 | 风险 |
 | --- | --- |
-| Softmax | exp 和归一化可能溢出或损失精度 |
-| LayerNorm / RMSNorm | 均值、方差、rsqrt 对误差敏感 |
-| Loss / Cross Entropy | 直接影响梯度源头 |
-| Gradient norm / clipping | 溢出检测和裁剪需要可靠 |
-| Optimizer state update | Adam 的动量和二阶矩需要长期累计 |
-| Router / gating | MoE 路由分数不稳会影响负载和训练 |
+| softmax | exp 和归一化可能 overflow/underflow。 |
+| attention score | mask、scale、large negative value 可能出问题。 |
+| layernorm / RMSNorm | 方差、rsqrt、统计量敏感。 |
+| loss / cross entropy | 梯度源头，影响整个 backward。 |
+| gradient norm / clipping | stability guardrail 必须可靠。 |
+| optimizer state update | Adam m/v 长期累计，误差会延续。 |
+| scheduler / lr math | 影响所有参数更新。 |
+| MoE router / gating | 路由不稳会改变 expert load。 |
+| FP8 scale / amax | 直接决定量化范围。 |
 
-成熟 AMP 系统会对不同 op 做白名单、黑名单或 op-specific dtype 策略。
+一些 fused kernel 会在内部做 mixed accumulation，例如输入低精度，accumulation 高精度，输出再 cast。
+
+因此文档里要记录的不只是外部 tensor dtype，还要记录关键 kernel 的 accumulation dtype。
 
 ## FP8 训练多了什么
 
-FP8 比 FP16/BF16 更复杂，因为单个 FP8 tensor 的动态范围很小。
+FP8 不能只靠 loss scaling。
 
-FP8 通常需要为 tensor 维护 scale：
+原因是 FP8 动态范围太小：
 
 ```text
-真实值 ≈ FP8_value * scale
+同一个 global scale 不能同时适配所有 activation、weight、gradient tensor。
 ```
 
-训练时还要记录 amax，也就是一段时间内 tensor 绝对值最大值，用来决定后续 scale。
+FP8 通常需要为每个 tensor 或每个 block 维护 scale：
+
+```text
+real_value ≈ fp8_value * scale
+```
+
+常见状态：
+
+- scale。
+- scale inverse。
+- amax。
+- amax history。
+- format recipe。
+- transpose / columnwise representation。
+- block scale metadata。
+
+这些状态是训练状态的一部分。
+
+它们会影响：
+
+- forward output。
+- backward gradient。
+- checkpoint/resume。
+- distributed synchronization。
+- reproducibility。
+
+## FP8 Scaling 策略
+
+常见 FP8 scaling 包括：
+
+| 策略 | 直觉 | 代价 |
+| --- | --- | --- |
+| just-in-time scaling | 当前 tensor 产出后马上统计 amax 再量化 | 需要额外 pass，性能代价高。 |
+| delayed scaling | 用前几步 amax history 决定当前 scale | 性能好，需要保存 history，可能滞后。 |
+| current scaling | 用当前信息决定 per-tensor scale | 具体代价取决于实现。 |
+| block scaling | 每个 block 一个 scale | 更细粒度，metadata 和 layout 更复杂。 |
+| MXFP8 | block 级 scale，常配合 E8M0 scale 表示 | 依赖硬件/库支持。 |
+
+FP8 recipe 不是小细节。
+
+两个实验都写“FP8”，但如果一个用 delayed scaling，另一个用 block scaling，结果不能直接比较。
+
+## FP8 与 Transpose Handling
+
+训练 Linear 层时，forward 和 backward 往往需要不同方向的数据：
+
+```text
+forward: X @ W
+backward input grad: dY @ W.T
+backward weight grad: X.T @ dY
+```
+
+FP8 tensor 量化后，如果直接转置一个已经量化的 tensor，可能会引入额外误差或不适合 GEMM layout。
+
+一些库会从高精度源数据生成 rowwise 和 columnwise 两种表示，或者维护转置副本。
+
+这会影响：
+
+- 显存。
+- bandwidth。
+- checkpoint。
+- FP8 state。
+- distributed all-gather。
+- kernel fusion。
+
+因此 FP8 训练不是只有 compute dtype，还包含数据 layout 和 metadata 管理。
+
+## BF16、FP16、FP8 怎么选
+
+可以按下面顺序判断：
+
+| 条件 | 建议 |
+| --- | --- |
+| 新模型、新数据、新训练栈 | 先用 BF16 建立稳定 baseline。 |
+| GPU 不支持 BF16 或 FP16 性能路径更成熟 | 使用 FP16 + GradScaler。 |
+| BF16 已稳定且瓶颈在 GEMM/activation/通信 | 尝试 FP8。 |
+| 训练频繁 NaN/Inf | 回退 BF16/FP32 路径定位。 |
+| 后训练小规模微调 | BF16 往往足够，FP8 需要看收益是否覆盖复杂度。 |
+| MoE 大规模训练 | FP8 可能收益大，但 router/expert/drop/token dispatch 要单独验证。 |
+
+对系统工程来说，选择 dtype 不是只看理论峰值。
+
+还要看：
+
+- shape 是否适合 Tensor Core。
+- kernel 是否成熟。
+- 数据分布是否稳定。
+- 框架是否支持 optimizer / checkpoint / distributed。
+- 是否能监控数值状态。
+- 是否有 fallback。
+
+## Distributed Dtype 策略
+
+分布式训练里，dtype 决策会影响通信。
+
+常见通信对象：
+
+- DDP gradient AllReduce。
+- FSDP/ZeRO ReduceScatter gradients。
+- FSDP/ZeRO AllGather parameters。
+- Tensor Parallel activation AllGather / ReduceScatter / AllReduce。
+- Pipeline Parallel activation send/recv。
+- Expert Parallel token AllToAll。
+- FP8 scale / amax metadata sync。
+
+每类通信都要回答：
+
+```text
+通信前是否 cast？
+通信中是什么 dtype？
+通信后是否 cast 回去？
+reduction accumulation 用什么 dtype？
+误差是否可接受？
+```
+
+低精度通信能降低带宽，但可能带来数值误差。
+
+典型取舍：
+
+| 通信 | 低精度收益 | 风险 |
+| --- | --- | --- |
+| gradient sync | 带宽下降 | 梯度规约误差、overflow/underflow。 |
+| parameter all-gather | 参数传输更小 | 参数精度损失。 |
+| TP activation | 高频通信变小 | 后续层输入误差。 |
+| MoE token dispatch | token buffer 更小 | router/expert 输出误差。 |
+| FP8 scale metadata | metadata 较小 | scale 不一致会破坏正确性。 |
+
+## FSDP / ZeRO 下的混合精度
+
+FSDP / ZeRO 会切分参数、梯度和 optimizer state。
+
+混合精度下需要区分：
+
+- parameter storage dtype。
+- parameter compute dtype。
+- gradient reduction dtype。
+- buffer dtype。
+- optimizer state dtype。
+- master parameter dtype。
+- checkpoint save dtype。
+
+常见配置可能是：
+
+```text
+parameters: BF16 shard
+compute: BF16
+gradient reduce: FP32 or BF16
+optimizer states: FP32 shard
+master weights: FP32 shard
+```
+
+如果使用 FP8，还要考虑：
+
+- all-gather 后是否量化。
+- FP8 scale 是否随 shard 保存。
+- scale/amax 是否跨 rank 同步。
+- checkpoint 是否能恢复 FP8 metadata。
+
+错误配置可能导致：
+
+- 显存没有按预期下降。
+- optimizer state 占比仍很高。
+- gradient sync 精度不足。
+- resume 后 scale 不连续。
+
+相关内容见：[ZeRO 与 FSDP](zero-fsdp.md)
+
+## Tensor Parallel 下的混合精度
+
+Tensor Parallel 会把层内 GEMM 切到多个 GPU。
+
+混合精度影响：
+
+- 每个 TP shard 的 GEMM dtype。
+- AllReduce / AllGather / ReduceScatter dtype。
+- vocab parallel cross entropy dtype。
+- sequence parallel activation dtype。
+- TP communication buffer。
+
+TP 场景有一个重要问题：
+
+```text
+通信和低精度 kernel 的收益可能互相影响。
+```
+
+例如：
+
+- GEMM 用 FP8 变快后，TP 通信占比可能变高。
+- 低精度通信减少带宽，但规约误差可能影响 loss。
+- FP8 scale metadata 在 TP shard 间要一致可解释。
+
+因此混合精度 benchmark 要和 TP size 一起做。
+
+不能只在 `TP=1` 上验证 FP8，然后直接推广到 `TP=8`。
+
+相关内容见：[Tensor Parallel](tensor-parallel.md)
+
+## Pipeline Parallel 下的混合精度
+
+Pipeline Parallel 中，每个 stage 可能有不同层、不同显存压力和不同 compute/communication 比例。
+
+混合精度会影响：
+
+- stage activation send/recv dtype。
+- stage 内 GEMM dtype。
+- loss stage 的 logits/loss dtype。
+- pipeline bubble。
+- stage balance。
+- activation checkpointing recompute dtype。
+
+如果某个 stage 包含 LM head 或 MoE layer，它可能比其他 stage 更数值敏感。
+
+需要确保：
+
+- 所有 stage 的 dtype policy 一致或显式配置。
+- PP send/recv dtype 和 receiver 期望一致。
+- loss stage 保留稳定精度。
+- pipeline stage benchmark 不只看全局 tokens/s。
+
+相关内容见：[Pipeline Parallel](pipeline-parallel.md)
+
+## MoE 下的混合精度
+
+MoE 训练有额外风险。
+
+需要关注：
+
+- router logits dtype。
+- top-k selection dtype。
+- load balance loss dtype。
+- expert GEMM dtype。
+- token dispatch dtype。
+- combine weights dtype。
+- dropped token / capacity 逻辑。
+- expert gradient sync dtype。
+
+Router 通常比 expert GEMM 更敏感。
+
+如果 router 低精度导致 top-k 改变，系统行为会改变：
+
+- expert load 分布变化。
+- AllToAll 通信量变化。
+- dropped token 变化。
+- load balance loss 变化。
+- loss 曲线变化。
+
+因此 MoE 里常见策略是：
+
+```text
+expert GEMM 低精度
+router / load balance / top-k 保留更高精度
+```
+
+具体要看模型、框架和硬件。
+
+相关内容见：[Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md)
+
+## Activation Checkpointing 与 FP8
+
+Activation checkpointing 会在 backward 中重算 forward。
+
+如果 forward 中有 FP8 量化和 amax 更新，需要特别小心：
+
+- recompute 是否再次更新 amax？
+- recompute 是否污染 scale history？
+- recompute 是否使用和原 forward 相同 recipe？
+- dropout RNG 是否一致？
+- autocast / FP8 context 是否一致？
+
+合理实现应该区分：
+
+```text
+真正 forward 的 FP8 metadata update
+backward recompute 的临时计算
+```
+
+否则 checkpointing 可能改变 FP8 scale 状态，导致训练不可复现。
+
+相关内容见：[Activation Checkpointing](activation-checkpointing.md)
+
+## 大词表 Loss 与混合精度
+
+LM head 和 cross entropy 是混合精度训练中的敏感路径。
+
+原因：
+
+- logits 维度巨大。
+- softmax / logsumexp 对数值稳定敏感。
+- loss mask 和 ignore_index 影响归一化。
+- vocab parallel CE 需要跨 rank 规约。
+- 后训练 DPO/RLHF 需要稳定 logprob。
 
 常见策略：
 
-- per-tensor scaling：一个 tensor 一个 scale。
-- delayed scaling：用前几个 iteration 的 amax history 估计下一步 scale。
-- block scaling：一个 tensor 分成多个 block，每个 block 有自己的 scale。
+- LM head GEMM 可低精度。
+- logits 不一定长期保存。
+- softmax / logsumexp / CE 用 fused stable kernel。
+- loss reduction 用更高精度。
+- DPO/reference logprob 需要固定 dtype policy。
 
-FP8 的系统成本包括：
+相关内容见：[大词表输出层、Logits 与 Cross Entropy 系统优化](vocab-output-cross-entropy.md)
 
-- amax 统计。
-- scale 更新。
-- FP8 cast / dequant。
-- shape 对齐限制。
-- 某些层或算子 fallback 到 BF16/FP16/FP32。
+## Checkpoint / Resume 要保存什么
 
-所以 FP8 训练应该看端到端收益，而不是只看某个 GEMM 理论吞吐。
+混合精度训练的 checkpoint 不只是模型权重。
 
-## 和分布式训练的关系
+需要保存：
 
-混合精度会影响通信和并行策略。
+- model weights。
+- master weights。
+- optimizer states。
+- GradScaler state。
+- FP8 scale。
+- FP8 amax history。
+- FP8 recipe。
+- dtype policy。
+- TF32 setting。
+- gradient clipping state，如果有。
+- framework/kernel版本。
 
-### Data Parallel
+如果 GradScaler state 丢失：
 
-梯度同步前，要明确同步的是 scaled gradients 还是 unscaled gradients。通常需要在 optimizer step 前 unscale，并处理 overflow 检测。
+- resume 后 loss scale 重新开始。
+- 短期可能 overflow 或 underflow。
+- skipped step 行为改变。
 
-如果使用 gradient clipping，也应该在 unscale 后做，否则裁剪阈值不对应真实梯度。
+如果 FP8 scale/amax 丢失：
 
-### FSDP / ZeRO
+- resume 后 FP8 量化范围不连续。
+- loss 可能跳变。
+- eval 对比不可解释。
 
-FSDP/ZeRO 会切 parameters、gradients、optimizer states。混合精度下要分别定义：
+相关内容见：[Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md)
 
-- 参数计算 dtype。
-- 参数保存 dtype。
-- 梯度 reduce dtype。
-- optimizer state dtype。
-- master weight dtype。
+## 数值异常怎么排查
 
-这些配置会影响显存、通信和数值稳定性。
+混合精度训练常见异常：
 
-### Tensor Parallel
+- loss NaN。
+- loss spike。
+- grad norm 突增。
+- GradScaler scale 频繁下降。
+- FP8 amax 饱和。
+- FP8 scale 异常跳变。
+- 某些 rank 出现 inf/NaN。
+- eval score 突然下降。
 
-TP 中的 AllReduce / ReduceScatter / AllGather 可能使用低精度通信，也可能需要 FP32 accumulation。低精度通信能省带宽，但可能影响数值。
+排查顺序：
 
-### Pipeline Parallel
+1. 回退 BF16 或 FP32 小规模复现。
+2. 检查 bad batch、loss mask、labels。
+3. 检查 grad norm、activation statistics、parameter norm。
+4. 检查 AMP loss scale 或 FP8 amax/scale。
+5. 检查 softmax/norm/loss/router 是否低精度。
+6. 检查 distributed reduction dtype。
+7. 检查 optimizer state 是否被 NaN 污染。
+8. 回滚到 latest good checkpoint。
 
-不同 stage 必须保持 dtype 约定一致。stage 间传 activation 时，如果 dtype 不一致，会产生额外 cast 或错误。
+不要只看到 NaN 就调小学习率。
 
-## Benchmark 时看什么
+低精度路径、mask bug、bad data、router saturation、FP8 scale drift 都可能是根因。
 
-评估混合精度不能只看是否 OOM。至少看：
+相关内容见：[训练稳定性与数值异常](training-stability-numerical-debugging.md)
 
-| 指标 | 作用 |
+## Benchmark 应该怎么做
+
+混合精度 benchmark 至少比较：
+
+| 配置 | 目的 |
 | --- | --- |
-| Step time | 低精度是否真的加速 |
-| Tokens/s | 端到端吞吐 |
-| MFU | Tensor Core 是否被有效利用 |
-| Peak memory | 是否降低显存 |
-| Loss curve | 是否和高精度 baseline 对齐 |
-| NaN/Inf 次数 | 是否数值不稳定 |
-| Loss scale 曲线 | FP16 下是否频繁 overflow |
-| Grad norm | 梯度是否异常 |
-| Kernel dtype 分布 | 关键 GEMM 是否跑到低精度 |
-| Communication dtype | 通信是否省带宽且不影响收敛 |
+| FP32 / TF32 | debug 或性能参考。 |
+| BF16 | 大模型训练稳定 baseline。 |
+| FP16 + GradScaler | 对比 FP16 路径收益和稳定性。 |
+| FP8 selected layers | 看核心 GEMM 是否受益。 |
+| FP8 wider coverage | 看更激进策略的质量/稳定风险。 |
+| BF16 + same kernels | 排除 kernel fusion 不是 dtype 本身带来的收益。 |
 
-实验要固定：
+指标：
 
-- 模型结构。
-- batch 和 sequence。
-- 学习率和 warmup。
-- optimizer。
-- gradient clipping。
-- activation checkpointing。
-- 并行策略。
-- 随机种子。
+- step time。
+- tokens/s。
+- tokens/s/GPU。
+- MFU。
+- HBM bandwidth。
+- communication time。
+- peak memory。
+- activation memory。
+- optimizer memory。
+- skipped steps。
+- loss scale。
+- FP8 amax/scale distribution。
+- NaN/Inf count。
+- eval score。
+- time to target quality。
+- cost per token。
 
-混合精度的风险是：短期 loss 看起来正常，长训练后才出现质量偏差。因此重要配置最好和 FP32/BF16 baseline 做对照。
+必须记录：
+
+- dtype policy。
+- TF32 setting。
+- AMP / FP8 recipe。
+- loss scaling config。
+- accumulation dtype。
+- communication dtype。
+- kernel/library version。
+- hardware generation。
+- rank mapping。
+
+## Profiler 里怎么看
+
+混合精度 profiler 重点看：
+
+- GEMM 是否走 Tensor Core。
+- dtype conversion 是否过多。
+- cast kernel 是否碎片化。
+- FP8 quantize/dequantize 开销。
+- amax reduce 是否暴露。
+- communication buffer 是否变小。
+- fused kernel 是否真正生效。
+- memory bandwidth 是否下降。
+- occupancy 是否受 dtype/layout 影响。
+- small GEMM 是否没有吃到低精度收益。
+
+常见现象：
+
+| 现象 | 可能原因 |
+| --- | --- |
+| 理论 TFLOPs 高，tokens/s 没变 | 其他瓶颈主导。 |
+| FP8 microbenchmark 快，训练不快 | quantize/scale/communication/optimizer 抵消收益。 |
+| BF16 比 FP16 稳很多 | FP16 动态范围不够。 |
+| FP8 后通信占比上升 | GEMM 变快后暴露通信。 |
+| cast kernel 很多 | dtype policy 不统一或模块边界频繁转换。 |
 
 ## 常见优化方向
 
-### 优先 BF16 作为大模型默认选择
+### 1. 先建立 BF16 Baseline
 
-如果硬件支持 BF16，LLM 训练通常优先考虑 BF16。它比 FP16 更稳，通常不需要复杂 loss scaling。
+BF16 是大模型训练最常见的稳定起点。
 
-### 用 AMP 而不是手动全模型 half
+先确认：
 
-AMP 会按算子选择 dtype。手动 `.half()` 容易让 sensitive ops 也落到 FP16，增加 NaN 风险。
+- loss 曲线稳定。
+- eval 正常。
+- step time 可解释。
+- profiler 没有明显 dtype/cast 异常。
 
-### 记录 loss scale 和 NaN 位置
+再尝试 FP8 或更激进策略。
 
-不要只在 loss NaN 后重启。应记录 loss scale、grad norm、overflow step、触发层和输入 batch，定位是数据、模型、学习率还是 dtype 问题。
+### 2. 控制 Cast 边界
 
-### 对敏感模块使用高精度
+频繁 cast 会吞掉收益。
 
-LayerNorm、Softmax、loss、router、部分 reduction 可以保留 BF16/FP32。混合精度不是越低越好。
+要避免：
 
-### FP8 从成熟模块开始
+- block 内 dtype 来回切换。
+- 自定义 op 强制 FP32 导致周围频繁转换。
+- communication 前后重复 cast。
+- FP8 quantize/dequantize 过碎。
 
-FP8 优先在 Transformer Engine 等成熟库支持的 Linear/Attention/MLP 模块中使用。自定义算子要谨慎，因为 scaling、amax 和 backward 精度都需要处理。
+dtype policy 应按模块边界设计。
+
+### 3. 保护敏感路径
+
+优先保护：
+
+- loss。
+- norm。
+- softmax。
+- router。
+- gradient clipping。
+- optimizer update。
+- FP8 scale/amax。
+
+这些路径的计算占比不一定最高，但出错成本最高。
+
+### 4. 把 Dtype 写入 Manifest
+
+Run Manifest 应记录：
+
+```yaml
+precision:
+  compute_dtype: bf16
+  autocast: true
+  grad_scaler: false
+  tf32:
+    matmul: false
+    cudnn: false
+  optimizer_state_dtype: fp32
+  master_weight_dtype: fp32
+  gradient_reduce_dtype: bf16
+  fp8:
+    enabled: false
+    recipe: null
+```
+
+FP8 时还要记录：
+
+```yaml
+fp8:
+  enabled: true
+  format: hybrid
+  scaling: delayed
+  amax_history_len: 16
+  block_scaling: false
+  fp8_layers:
+    - attention_projection
+    - mlp
+```
+
+相关内容见：[训练可复现性、随机性与 Run Manifest](training-reproducibility-randomness-run-manifest.md)
+
+### 5. 把 Precision 和 Parallelism 联合调
+
+低精度会改变瓶颈。
+
+例如：
+
+- GEMM 变快后，TP 通信更显眼。
+- activation 变小后，micro-batch 可以增大。
+- FP8 后，scale metadata 和 all-gather 变重要。
+- MoE expert GEMM 变快后，dispatch/combine 成瓶颈。
+
+因此不要孤立 benchmark dtype。
+
+要和：
+
+- TP size。
+- EP size。
+- FSDP/ZeRO stage。
+- micro-batch。
+- sequence length。
+- activation checkpointing。
+
+一起看。
 
 ## 常见误区
 
-### 误区一：混合精度等于全 FP16
+### 误区一：BF16 一定比 FP16 慢
 
-不对。混合精度强调不同算子、状态和通信使用不同 dtype。全 FP16 往往更不稳定。
+不一定。
 
-### 误区二：BF16 一定比 FP16 更精确
+取决于 GPU、kernel、shape 和框架。
 
-不准确。BF16 范围大，但 mantissa 少；FP16 mantissa 多一些，但范围小。训练中 BF16 常更稳，不代表每个数都更精确。
+BF16 更稳，减少 loss scaling 和 overflow 处理，端到端训练可能更划算。
 
-### 误区三：loss scaling 能解决所有 FP16 问题
+### 误区二：FP8 就是把权重存成 8 bit
 
-loss scaling 主要解决小梯度 underflow。它不能解决所有 overflow、敏感算子误差或模型本身不适合 FP16 的问题。
+不对。
 
-### 误区四：FP8 只是更小的 FP16
+FP8 训练涉及：
 
-FP8 需要 scale、amax、格式选择和 fallback 策略。它更接近“低精度量化训练系统”，不是简单 dtype 替换。
+- compute tensor。
+- scale。
+- amax。
+- recipe。
+- transpose handling。
+- distributed metadata。
+- checkpoint/resume。
 
-### 误区五：只要 step time 变快就是成功
+它是训练时低精度系统，不只是权重量化。
 
-如果 loss curve、eval 指标或长期稳定性变差，低精度收益可能不成立。训练系统必须同时看性能和收敛。
+### 误区三：Autocast 会自动解决所有数值问题
 
-## 设计检查表
+不会。
 
-使用混合精度训练前，可以检查：
+Autocast 只按 op 做 dtype 选择。
 
-- 硬件是否支持 BF16、FP16、FP8 Tensor Core？
-- 默认训练 dtype 是 BF16 还是 FP16？
-- FP16 是否启用 dynamic loss scaling？
-- master weights 和 optimizer states 用什么 dtype？
-- LayerNorm、Softmax、loss、router 是否保留高精度？
-- gradient clipping 是否在 unscale 后执行？
-- FSDP/ZeRO 的 param、reduce、buffer dtype 是否一致？
-- TP/PP stage 间 activation dtype 是否一致？
-- 是否记录 NaN/Inf、grad norm、loss scale、kernel dtype？
-- 是否有高精度 baseline 对照？
+它不能修复：
+
+- bad data。
+- loss mask bug。
+- optimizer state 污染。
+- router saturation。
+- FP8 scale 配置错误。
+- distributed reduction dtype 不合理。
+
+### 误区四：只看显存下降
+
+显存下降不等于训练更快。
+
+要看：
+
+- tokens/s。
+- MFU。
+- step time。
+- skipped step。
+- eval score。
+- stability。
+
+### 误区五：FP8 覆盖越多越好
+
+不一定。
+
+最后几层、router、loss、norm、某些 attention 路径可能更敏感。
+
+更好的策略是：
+
+```text
+从 Linear/MLP/attention projection 开始
+逐步扩大覆盖
+每一步都做 quality 和 stability check
+```
+
+### 误区六：不同 Precision 实验可直接比较
+
+只有在记录完整条件时才可比较。
+
+必须固定：
+
+- dtype policy。
+- TF32。
+- AMP/FP8 recipe。
+- scale state。
+- kernel version。
+- parallelism。
+- eval pipeline。
+
+## 落地检查表
+
+配置前：
+
+- [ ] 当前硬件支持哪些 dtype？
+- [ ] BF16 baseline 是否稳定？
+- [ ] 是否需要 FP16 GradScaler？
+- [ ] 是否开启 TF32？
+- [ ] 主要瓶颈是 compute、memory 还是 communication？
+- [ ] 哪些 op 是数值敏感路径？
+
+配置时：
+
+- [ ] autocast scope 是否只包 forward/loss？
+- [ ] backward 是否避免放在 autocast context 中？
+- [ ] gradient clipping 是否在 unscale 后？
+- [ ] optimizer state 是否保留高精度？
+- [ ] master weights 是否需要 FP32？
+- [ ] communication dtype 是否明确？
+- [ ] FP8 recipe、scale、amax history 是否明确？
+- [ ] activation checkpointing recompute 是否会污染 FP8 state？
+- [ ] checkpoint 是否保存 GradScaler / FP8 state？
+
+验证时：
+
+- [ ] loss 曲线和 baseline 对齐。
+- [ ] eval score 无异常退化。
+- [ ] NaN/Inf count 可控。
+- [ ] GradScaler skipped step 不异常。
+- [ ] FP8 amax/scale 分布合理。
+- [ ] grad norm / update norm 正常。
+- [ ] profiler 显示 Tensor Core path 生效。
+- [ ] cast / quantize / dequantize overhead 可接受。
+- [ ] communication time 没有成为新瓶颈。
+
+Benchmark 报告：
+
+- [ ] dtype policy。
+- [ ] hardware / driver / CUDA / framework 版本。
+- [ ] model shape / batch / sequence。
+- [ ] parallelism 配置。
+- [ ] step time / tokens/s / MFU。
+- [ ] peak memory。
+- [ ] stability metrics。
+- [ ] eval metrics。
+- [ ] run manifest。
 
 ## 小结
 
-混合精度训练是大模型训练的基础能力。它让适合低精度的矩阵计算使用 FP16、BF16 或 FP8，以降低显存和带宽压力、提高 Tensor Core 吞吐；同时让敏感操作和长期状态保留更高精度，维持训练稳定。
+混合精度训练的核心不是“降低位宽”，而是“按训练系统对象分配合适精度”。
 
-核心判断是：
+要抓住几件事：
 
-- FP16 快但范围小，常需要 loss scaling 和 FP32 master weights。
-- BF16 范围接近 FP32，通常更适合 LLM 默认训练。
-- FP8 潜力更大，但需要 scaling、amax history 和成熟库支持。
-- 性能收益必须和 loss curve、NaN/Inf、grad norm、长期质量一起评估。
+- FP16 快但范围小，通常需要 loss scaling。
+- BF16 范围大，是 LLM 训练常用稳定 baseline。
+- TF32 是 FP32 storage 下的 matmul 加速路径，必须记录是否开启。
+- FP8 需要 scale、amax、recipe 和 metadata，是更复杂的训练时量化系统。
+- optimizer state、loss、norm、softmax、router、gradient clipping 通常更敏感。
+- 分布式训练里，communication dtype 和 accumulation dtype 会影响性能和数值。
+- checkpoint/resume 必须保存 GradScaler 和 FP8 state。
+- benchmark 要同时看速度、显存、稳定性和质量。
 
-真正的混合精度不是把 dtype 改小，而是让每类计算和状态用合适的精度。
+一个保守而有效的工程路径是：
+
+```text
+FP32/TF32 debug
+-> BF16 stable baseline
+-> FP16 only when needed and with GradScaler
+-> FP8 selected layers
+-> FP8 broader coverage after quality/stability proof
+```
 
 ## 参考资料
 
-- [Mixed Precision Training](https://arxiv.org/abs/1710.03740)
-- [PyTorch: Automatic Mixed Precision package](https://docs.pytorch.org/docs/2.12/amp.html)
-- [NVIDIA Transformer Engine documentation](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/index.html)
+- [PyTorch: Automatic Mixed Precision package - torch.amp](https://docs.pytorch.org/docs/2.12/amp.html)
+- [PyTorch: Automatic Mixed Precision examples](https://docs.pytorch.org/docs/2.12/notes/amp_examples.html)
+- [PyTorch: CUDA semantics - TF32 and reduced precision reductions](https://docs.pytorch.org/docs/2.12/notes/cuda.html)
 - [NVIDIA Transformer Engine: Using FP8 and FP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)
+- [NVIDIA Transformer Engine: Low precision training](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training.html)
+- [训练稳定性与数值异常](training-stability-numerical-debugging.md)
+- [显存组成与优化总览](memory-composition-optimization.md)
 
 ---
 
