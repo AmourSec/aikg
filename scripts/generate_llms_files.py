@@ -140,7 +140,7 @@ DESCRIPTIONS = {
     "05-kernels-compilers/index.md": "Kernel、算子与编译优化主题入口。",
     "05-kernels-compilers/attention-computation-patterns.md": "Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。",
     "05-kernels-compilers/triton.md": "Triton Kernel 编程解释 blocked program 执行模型、program_id、block tensor、pointer arithmetic、mask、constexpr、tiling、fused softmax、matmul、autotune、debugging、benchmark 和 profiler 方法。",
-    "05-kernels-compilers/torchinductor.md": "TorchInductor 与 PyTorch 编译栈学习入口。",
+    "05-kernels-compilers/torchinductor.md": "TorchInductor 与 PyTorch 编译栈解释 torch.compile、TorchDynamo、FX Graph、AOTAutograd、TorchInductor lowering/fusion/codegen、graph break、guard、recompile、dynamic shape、tlparse、TORCH_LOGS 和 profiler 排查方法。",
     "06-accelerators-architecture/index.md": "AI 加速器与计算架构主题入口。",
     "07-cluster-infra/index.md": "集群、网络、存储与调度主题入口。",
     "08-benchmark-capacity/index.md": "性能分析、Benchmark 与容量建模主题入口。",
