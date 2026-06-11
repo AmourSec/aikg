@@ -146,6 +146,7 @@ nav:
       - 排队模型与尾延迟：QPS、并发、利用率和 p99: 08-benchmark-capacity/queueing-model-tail-latency.md
       - 能效、功耗与热限制：Power、Energy per Token 与持续吞吐: 08-benchmark-capacity/energy-power-thermal-benchmark.md
       - Benchmark 负载设计与 Trace Replay：从玩具测试到真实 Workload: 08-benchmark-capacity/benchmark-workload-design-trace-replay.md
+      - A/B 对比、消融实验与性能回归检测: 08-benchmark-capacity/ab-testing-ablation-regression-detection.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:
