@@ -37,3 +37,4 @@ updated: 2026-05-30
 - [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](gpu-topology-numa-mig-mps-isolation.md)：解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、MIG、MPS、time slicing、rank mapping 和多租户 GPU 隔离策略。
 - [RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制](rdma-network-nccl-topology-congestion.md)：解释 RDMA、GPU Direct RDMA、InfiniBand、RoCE、NCCL/RCCL collective、multi-rail、网络拓扑、PFC/ECN/QoS、拥塞排查和网络 benchmark。
 - [存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储](storage-data-cache-checkpoint.md)：解释对象存储、并行文件系统、本地 NVMe、数据集 shard、DataLoader、模型权重分发、容器镜像、GPUDirect Storage、checkpoint 原子性、异步保存和恢复。
+- [环境可复现：镜像、驱动、CUDA 与依赖锁定](environment-reproducibility-containers.md)：解释 AI 任务环境的硬件、host driver、CUDA、容器镜像、Python/Conda lock、数据模型 artifact、run manifest、随机性控制和升级验证。

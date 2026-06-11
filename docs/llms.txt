@@ -94,6 +94,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](https://amoursec.github.io/aikg/07-cluster-infra/gpu-topology-numa-mig-mps-isolation/): GPU 拓扑、NUMA、MIG/MPS 与资源隔离解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、nvidia-smi topo、MIG、MPS、time slicing、Kubernetes device plugin、Slurm GRES、rank mapping 和多租户隔离。
 - [RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制](https://amoursec.github.io/aikg/07-cluster-infra/rdma-network-nccl-topology-congestion/): RDMA 网络与 NCCL 拓扑解释 InfiniBand、RoCE、GPU Direct RDMA、NCCL/RCCL collective、multi-rail、bisection bandwidth、PFC、ECN、QoS、拥塞控制、拓扑感知调度、网络可观测性和 benchmark。
 - [存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储](https://amoursec.github.io/aikg/07-cluster-infra/storage-data-cache-checkpoint/): 存储、数据缓存与 Checkpoint 解释对象存储、并行文件系统、本地 NVMe、DataLoader、dataset shard、cache key、模型权重分发、容器镜像、GPUDirect Storage、Kubernetes PV/PVC、checkpoint manifest、异步保存和恢复。
+- [环境可复现：镜像、驱动、CUDA 与依赖锁定](https://amoursec.github.io/aikg/07-cluster-infra/environment-reproducibility-containers/): 环境可复现解释 AI 任务的硬件、host OS、driver、CUDA、NCCL、容器镜像、image digest、Python/Conda lock、数据模型 artifact、run manifest、随机性控制、编译缓存、环境升级和回滚策略。
 - [性能分析、Benchmark 与容量建模](https://amoursec.github.io/aikg/08-benchmark-capacity/): 性能分析、Benchmark 与容量建模主题入口。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
 - [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
@@ -180,6 +181,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md)
 - [07-cluster-infra/rdma-network-nccl-topology-congestion.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/rdma-network-nccl-topology-congestion.md)
 - [07-cluster-infra/storage-data-cache-checkpoint.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/storage-data-cache-checkpoint.md)
+- [07-cluster-infra/environment-reproducibility-containers.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/environment-reproducibility-containers.md)
 - [08-benchmark-capacity/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/index.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
 - [10-papers-cases/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/index.md)
