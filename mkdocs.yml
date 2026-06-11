@@ -95,6 +95,7 @@ nav:
       - 数据输入与 Data Pipeline: 04-training-systems/data-pipeline.md
       - Batch、Micro-batch 与 Gradient Accumulation: 04-training-systems/batch-gradient-accumulation.md
       - 显存组成与优化总览: 04-training-systems/memory-composition-optimization.md
+      - 分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL: 04-training-systems/distributed-training-runtime.md
       - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
       - ZeRO 与 FSDP: 04-training-systems/zero-fsdp.md
       - Tensor Parallel: 04-training-systems/tensor-parallel.md
