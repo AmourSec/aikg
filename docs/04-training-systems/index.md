@@ -28,7 +28,7 @@ updated: 2026-06-11
 | 2 | [数据输入与 Data Pipeline](data-pipeline.md) | 解释数据读取、tokenization、packing 和 H2D copy 如何影响 GPU 利用率。 |
 | 3 | [Batch、Micro-batch 与 Gradient Accumulation](batch-gradient-accumulation.md) | 理解 global batch、显存、吞吐和优化稳定性的关系。 |
 | 4 | [显存组成与优化总览](memory-composition-optimization.md) | 拆解 parameters、gradients、optimizer states、activations 和 temporary buffers。 |
-| 5 | Data Parallel 与梯度同步 | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
+| 5 | [Data Parallel 与梯度同步](data-parallel-gradient-sync.md) | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
 | 6 | ZeRO 与 FSDP | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
 | 7 | Tensor Parallel | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
 | 8 | Pipeline Parallel | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
@@ -72,11 +72,7 @@ updated: 2026-06-11
 
 Data Parallel 让多张 GPU 处理不同数据，再同步梯度保持参数一致。它简单有效，但会引入 AllReduce、bucket 和同步等待。
 
-本节后续重点回答：
-
-- DDP 如何同步梯度。
-- gradient bucketing 和 overlap 如何降低通信等待。
-- 多机数据并行为什么容易受网络影响。
+详见：[Data Parallel 与梯度同步](data-parallel-gradient-sync.md)
 
 ## ZeRO 与 FSDP
 

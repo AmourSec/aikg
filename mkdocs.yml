@@ -95,6 +95,7 @@ nav:
       - 数据输入与 Data Pipeline: 04-training-systems/data-pipeline.md
       - Batch、Micro-batch 与 Gradient Accumulation: 04-training-systems/batch-gradient-accumulation.md
       - 显存组成与优化总览: 04-training-systems/memory-composition-optimization.md
+      - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
