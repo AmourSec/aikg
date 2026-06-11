@@ -32,7 +32,7 @@ updated: 2026-06-11
 | 6 | [ZeRO 与 FSDP](zero-fsdp.md) | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
 | 7 | [Tensor Parallel](tensor-parallel.md) | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
 | 8 | [Pipeline Parallel](pipeline-parallel.md) | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
-| 9 | Expert Parallel 与 MoE 训练 | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
+| 9 | [Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md) | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
 | 10 | Activation Checkpointing | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
 | 11 | 混合精度训练 | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
 | 12 | 通信与计算重叠 | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
@@ -96,11 +96,7 @@ Pipeline Parallel 把模型不同层放到不同 GPU，并用 micro-batch 形成
 
 MoE 训练中，每个 token 会被路由到部分专家。Expert Parallel 需要处理 token dispatch/combine、专家负载均衡和跨卡通信。
 
-本节后续重点回答：
-
-- MoE 训练为什么比 dense model 更依赖通信和负载均衡。
-- expert placement 和 routing 如何影响 step time。
-- capacity factor、token dropping 和 load balance loss 如何影响系统行为。
+详见：[Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md)
 
 ## Activation Checkpointing
 

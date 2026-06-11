@@ -99,6 +99,7 @@ nav:
       - ZeRO 与 FSDP: 04-training-systems/zero-fsdp.md
       - Tensor Parallel: 04-training-systems/tensor-parallel.md
       - Pipeline Parallel: 04-training-systems/pipeline-parallel.md
+      - Expert Parallel 与 MoE 训练: 04-training-systems/expert-parallel-moe-training.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
