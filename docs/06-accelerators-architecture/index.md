@@ -38,3 +38,4 @@ updated: 2026-06-11
 - [精度格式：FP16、BF16、FP8 与量化计算](precision-formats-low-bit-compute.md)：解释 FP32、TF32、FP16、BF16、FP8、INT8、INT4、accumulator、scale、outlier、KV Cache 量化和低精度硬件路径。
 - [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、节点内 GPU fabric、PCIe、RDMA、CXL、collective、rank mapping、拓扑感知并行和通信 benchmark。
 - [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](power-thermal-reliability.md)：解释 power limit、thermal limit、clock、throttling、ECC、RAS、稳态 benchmark、能效指标和 power-aware scheduling。
+- [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](accelerator-architecture-tradeoffs.md)：解释通用性与专用性、GPU/TPU/NPU/ASIC/FPGA 执行模型、软件栈、算子覆盖、动态性、扩展方式和 workload 匹配。

@@ -86,6 +86,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [精度格式：FP16、BF16、FP8 与量化计算](https://amoursec.github.io/aikg/06-accelerators-architecture/precision-formats-low-bit-compute/): 精度格式：FP16、BF16、FP8 与量化计算解释 FP32/TF32/FP16/BF16/FP8/INT8/INT4、accumulator、master weight、scale、amax、outlier、KV Cache 量化、低精度通信和硬件路径验证。
 - [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](https://amoursec.github.io/aikg/06-accelerators-architecture/interconnect-communication-architecture/): 互连与通信架构解释 PCIe、NVLink/NVSwitch、RDMA/InfiniBand/RoCE、CXL、NoC、chiplet interconnect、collective、rank mapping、拓扑感知并行、通信重叠和网络 benchmark。
 - [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](https://amoursec.github.io/aikg/06-accelerators-architecture/power-thermal-reliability/): 功耗、散热、频率与可靠性解释 power limit、thermal limit、clock、throttling、ECC、RAS、稳态 benchmark、tokens/s/W、joules/token、power-aware scheduling 和持续吞吐。
+- [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](https://amoursec.github.io/aikg/06-accelerators-architecture/accelerator-architecture-tradeoffs/): 架构取舍解释 GPU、NPU、TPU、ASIC、FPGA 的通用性与专用性、执行模型、存储层次、精度支持、软件栈、动态性、扩展方式、算子覆盖和 workload 匹配。
 - [集群、网络、存储与调度](https://amoursec.github.io/aikg/07-cluster-infra/): 集群、网络、存储与调度主题入口。
 - [性能分析、Benchmark 与容量建模](https://amoursec.github.io/aikg/08-benchmark-capacity/): 性能分析、Benchmark 与容量建模主题入口。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
@@ -165,6 +166,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [06-accelerators-architecture/precision-formats-low-bit-compute.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/precision-formats-low-bit-compute.md)
 - [06-accelerators-architecture/interconnect-communication-architecture.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/interconnect-communication-architecture.md)
 - [06-accelerators-architecture/power-thermal-reliability.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/power-thermal-reliability.md)
+- [06-accelerators-architecture/accelerator-architecture-tradeoffs.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/accelerator-architecture-tradeoffs.md)
 - [07-cluster-infra/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/07-cluster-infra/index.md)
 - [08-benchmark-capacity/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/index.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
