@@ -203,7 +203,7 @@ DESCRIPTIONS = {
     "06-accelerators-architecture/accelerator-architecture-tradeoffs.md": "架构取舍解释 GPU、TPU、NPU、AI ASIC、FPGA 的通用性/专用性、执行模型、存储层次、精度支持、软件栈成熟度、算子覆盖、编译器/runtime、动态性、扩展方式、迁移成本、锁定风险、训练/推理分开评估、TCO、自研 ASIC 判断、混合架构、benchmark 报告和 workload 匹配。",
     "06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md": "Workload Mapping 解释模型、IR、算子、kernel、layout、tiling、fusion、compiler lowering、autotuning、guard/recompile、memory planning、runtime interface、training/inference mapping、dynamic shape、fallback、parallel mapping、profiler 证据、mapping manifest、correctness gate 和硬件有效吞吐之间的关系。",
     "07-cluster-infra/index.md": "集群、网络、存储与调度主题入口。",
-    "07-cluster-infra/ai-cluster-architecture-overview.md": "AI 集群架构总览解释控制面、计算节点、GPU 拓扑、网络平面、存储层次、调度系统、gang scheduling、资源碎片、多租户、环境可复现、可观测性和集群指标。",
+    "07-cluster-infra/ai-cluster-architecture-overview.md": "AI 集群架构总览解释 workload、AI Job 生命周期、resource flavor、容量池、故障域、网络平面、存储层次、admission/placement/orchestration、gang scheduling、拓扑感知、资源碎片、多租户、manifest、可观测性和容量规划闭环。",
     "07-cluster-infra/scheduling-queues-resource-management.md": "调度系统与资源队列解释 Slurm、Kubernetes、Ray、Volcano、Kueue 在 AI workload 提交、准入、queue、priority、quota、fairshare、backfill、preemption、gang scheduling、topology-aware scheduling、fragmentation 和 pending reason 中的作用。",
     "07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md": "GPU 拓扑、NUMA、MIG/MPS 与资源隔离解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、nvidia-smi topo、MIG、MPS、time slicing、Kubernetes device plugin、Slurm GRES、rank mapping 和多租户隔离。",
     "07-cluster-infra/rdma-network-nccl-topology-congestion.md": "RDMA 网络与 NCCL 拓扑解释 InfiniBand、RoCE、GPU Direct RDMA、NCCL/RCCL collective、multi-rail、bisection bandwidth、PFC、ECN、QoS、拥塞控制、拓扑感知调度、网络可观测性和 benchmark。",
