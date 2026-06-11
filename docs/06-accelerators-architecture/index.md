@@ -33,3 +33,4 @@ updated: 2026-06-11
 ## 专题入口
 
 - [AI 加速器性能模型：算力、带宽与 Roofline](performance-model-roofline.md)：用 arithmetic intensity、compute-bound、memory-bound、HBM、片上存储、矩阵单元和 Roofline 建立硬件性能分析入口。
+- [计算单元：SIMT、Tensor Core 与矩阵引擎](compute-units-simt-tensorcore.md)：解释 SIMD/SIMT、warp、SM、occupancy、Tensor Core、systolic array、稀疏和动态控制流如何影响真实算力。

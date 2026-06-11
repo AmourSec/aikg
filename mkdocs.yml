@@ -118,6 +118,7 @@ nav:
   - AI 加速器与计算架构:
       - 概览: 06-accelerators-architecture/index.md
       - AI 加速器性能模型：算力、带宽与 Roofline: 06-accelerators-architecture/performance-model-roofline.md
+      - 计算单元：SIMT、Tensor Core 与矩阵引擎: 06-accelerators-architecture/compute-units-simt-tensorcore.md
   - 集群、网络、存储与调度:
       - 概览: 07-cluster-infra/index.md
   - 性能分析、Benchmark 与容量建模:
