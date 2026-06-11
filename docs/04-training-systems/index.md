@@ -19,7 +19,7 @@ updated: 2026-06-12
 2. 再学习数据输入、batch、activation、gradient、optimizer state 这些基础成本。
 3. 然后理解分布式训练 runtime，再进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel，以及这些并行维度如何组合。
 4. 接着学习混合精度、数值稳定性、通信重叠、FLUX、activation checkpointing、checkpoint/restart 和容错。
-5. 再理解 optimizer state、参数高效微调、Muon 优化器、scheduler 和 optimizer step 的系统成本。
+5. 再理解 optimizer state、参数高效微调、后训练工作负载、Muon 优化器、scheduler 和 optimizer step 的系统成本。
 6. 最后用 step time breakdown、MFU、scaling efficiency 和 profiler 证据评估训练效率。
 
 | 顺序 | 主题 | 本章中的作用 |
@@ -43,11 +43,12 @@ updated: 2026-06-12
 | 17 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
 | 18 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
 | 19 | [参数高效微调：LoRA、QLoRA 与 Adapter 系统优化](parameter-efficient-finetuning-lora-qlora.md) | 理解只训练少量 adapter 参数时，显存、optimizer state、checkpoint、分布式和推理服务如何变化。 |
-| 20 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
-| 21 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
-| 22 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
-| 23 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
-| 24 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
+| 20 | [后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角](post-training-workloads-sft-dpo-rlhf-grpo.md) | 理解后训练如何把监督微调、偏好优化、在线 rollout、reward/verifier 和 policy update 组合成不同系统负载。 |
+| 21 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
+| 22 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 23 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 24 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 25 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
 
@@ -162,6 +163,12 @@ Optimizer step 会更新参数并维护 optimizer state。Adam/AdamW、fused opt
 参数高效微调通过冻结基础模型、只训练少量 adapter 参数，降低 gradients、optimizer states 和 checkpoint 成本。LoRA、QLoRA 和 adapter 管理不仅是算法技巧，也会影响训练显存、分布式策略、微调平台、artifact registry 和推理服务 cache key。
 
 详见：[参数高效微调：LoRA、QLoRA 与 Adapter 系统优化](parameter-efficient-finetuning-lora-qlora.md)
+
+## 后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角
+
+后训练工作负载覆盖 SFT、reward model、DPO、RLHF/PPO、GRPO 等训练形态。它们不只是“再训练几轮”，而会引入 chosen/rejected 成对数据、reference logprob、在线 rollout、reward/verifier scoring、policy update、rollout 队列和样本版本管理。
+
+详见：[后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角](post-training-workloads-sft-dpo-rlhf-grpo.md)
 
 ## Muon 优化器
 
