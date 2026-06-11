@@ -38,3 +38,4 @@ updated: 2026-05-30
 - [RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制](rdma-network-nccl-topology-congestion.md)：解释 RDMA、GPU Direct RDMA、InfiniBand、RoCE、NCCL/RCCL collective、multi-rail、网络拓扑、PFC/ECN/QoS、拥塞排查和网络 benchmark。
 - [存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储](storage-data-cache-checkpoint.md)：解释对象存储、并行文件系统、本地 NVMe、数据集 shard、DataLoader、模型权重分发、容器镜像、GPUDirect Storage、checkpoint 原子性、异步保存和恢复。
 - [环境可复现：镜像、驱动、CUDA 与依赖锁定](environment-reproducibility-containers.md)：解释 AI 任务环境的硬件、host driver、CUDA、容器镜像、Python/Conda lock、数据模型 artifact、run manifest、随机性控制和升级验证。
+- [混合集群与多租户隔离：训练、推理、Notebook 与批处理共存](mixed-workload-multitenancy-isolation.md)：解释训练、在线推理、Notebook、数据预处理、benchmark 和系统任务共存时的队列、配额、优先级、抢占、节点池、GPU 共享、存储网络隔离和成本归因。
