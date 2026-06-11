@@ -64909,7 +64909,7 @@ updated: 2026-05-30
 ## 专题入口
 
 - [性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位](performance-analysis-benchmark-methodology.md)：解释 benchmark、profiling、monitoring 的区别，如何从问题出发定义 Benchmark Contract、测量边界、指标、workload、open-loop/closed-loop 负载、实验矩阵、控制变量、warmup、统计判定、A/A 噪声基线、A/B、ablation、profiler 证据、噪声控制、raw data lineage、发布门禁和容量建模输入。
-- [推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数](inference-capacity-modeling.md)：解释如何用请求分布、SLA、单副本 goodput 曲线、KV Cache 容量、prefill/decode 约束、headroom、冷启动、路由和生产反馈推导推理副本数。
+- [推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数](inference-capacity-modeling.md)：解释如何用 Capacity Contract、请求分布、SLA、offered load/throughput/goodput、单副本 goodput 曲线、请求分桶、KV Cache 预算、prefill/decode 约束、headroom、故障域、rolling update、autoscaling 滞后、路由效率、多模型、过载保护、成本和生产反馈推导推理副本数。
 - [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](training-capacity-scaling-efficiency.md)：解释如何用训练目标、global batch、step time、tokens/s、MFU、强/弱扩展效率、并行策略、checkpoint、eval、故障恢复、排队等待、成本和能效推导训练容量。
 - [Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF](profiler-toolchain-bottleneck-analysis.md)：解释如何把应用指标、PyTorch Profiler、Nsight Systems、Nsight Compute、DCGM、perf/eBPF、NVTX 标注和分布式 trace 组合成可复现的瓶颈定位证据链。
 - [Roofline 分析：算力、带宽与瓶颈上限](roofline-analysis-compute-bandwidth.md)：解释如何用 FLOPs、bytes moved、arithmetic intensity、ridge point、profiler 指标和端到端 benchmark 判断 AI workload 更接近算力上限、带宽上限还是系统开销瓶颈。
@@ -66073,7 +66073,7 @@ domain: benchmark-capacity
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 
 # 推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数
 
@@ -66164,6 +66164,71 @@ availability: tolerate 1 node failure
 ```
 
 如果只有“目标 QPS 120”，容量模型无法成立。
+
+## Capacity Contract
+
+容量建模开始前，建议写一个 Capacity Contract。它和 benchmark contract 类似，但目标更偏部署和容量决策。
+
+示例：
+
+```yaml
+capacity_plan: chat-70b-prod-2026-06
+
+service:
+  model: llama-like-70b
+  engine: vLLM
+  parallelism:
+    tensor_parallel: 4
+    replicas_per_node: 2
+  node_profile: h100-sxm-infer
+
+traffic:
+  target_qps_steady: 80
+  target_qps_peak: 160
+  burst:
+    qps: 240
+    duration: 5m
+  arrival_process: production_trace_replay
+  input_tokens:
+    p50: 1024
+    p95: 8192
+    p99: 16384
+  output_tokens:
+    p50: 256
+    p95: 1024
+    p99: 2048
+
+slo:
+  ttft_p95: 800ms
+  tpot_p95: 50ms
+  e2e_p95: 8s
+  error_rate: 0.1%
+
+capacity_policy:
+  headroom: 30%
+  tolerate_node_failure: 1
+  rolling_update_unavailable: 20%
+  min_warm_replicas: 4
+```
+
+这个 contract 让容量讨论从“要多少卡”变成一组可验证问题：
+
+- 单副本在这个 workload 下的 goodput 是多少。
+- 需要保留多少 headroom。
+- 失去一个节点后是否仍满足 SLA。
+- 滚动升级时允许多少副本不可用。
+- autoscaling 是否来得及应对 burst。
+
+容量模型的输出也应该回写 contract：
+
+```text
+required_replicas
+required_nodes
+expected_cost
+expected_headroom
+known_risks
+validation_result
+```
 
 ## 核心指标
 
@@ -66279,6 +66344,28 @@ goodput = 120 QPS
 
 容量规划应该使用 goodput，而不是总吞吐。
 
+### Load、Throughput 与 Goodput
+
+容量建模要区分三个量：
+
+| 名称 | 含义 |
+| --- | --- |
+| Offered load | 外部打进来的请求量，例如目标 QPS |
+| Throughput | 系统实际处理的总请求或 token |
+| Goodput | 成功且满足 SLA 的有效请求或 token |
+
+当 offered load 超过系统能力时，throughput 可能还在增长，但 goodput 会下降：
+
+```text
+load rises
+  -> queue grows
+  -> p95/p99 latency breaks SLA
+  -> timeout/retry increases
+  -> goodput stops increasing or drops
+```
+
+因此找容量边界时，不要只看曲线最高点，而要找满足 SLA 的最后一个稳定点。
+
 ## 单副本能力不是一个数
 
 单副本能力通常是一条曲线，而不是一个标量。
@@ -66305,6 +66392,26 @@ replicas = ceil(target_qps / per_replica_goodput_at_sla)
 ```text
 replicas = ceil(target_peak_tokens_per_sec / peak_tokens_per_sec)
 ```
+
+### Goodput 曲线与拐点
+
+单副本压测通常会得到类似曲线：
+
+| Offered QPS | Throughput | Goodput | TTFT p95 | TPOT p95 | KV Occupancy | 结论 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 20 | 20 | 20 | 300 ms | 30 ms | 35% | 低负载 |
+| 40 | 40 | 40 | 500 ms | 38 ms | 55% | 健康 |
+| 60 | 59 | 52 | 900 ms | 55 ms | 75% | 接近边界 |
+| 80 | 66 | 20 | 2400 ms | 90 ms | 95% | 过载 |
+
+容量规划应选择 `40` 或在 `40-60` 之间进一步细测，而不是选择 throughput 最高的 `66`。
+
+要关注两个拐点：
+
+- latency knee：QPS 增加一点，TTFT/TPOT 突然变差。
+- error knee：timeout、OOM、拒绝请求或重试开始明显增加。
+
+生产容量应该远离拐点，而不是贴着拐点运行。贴着拐点运行时，输入长度、cache 命中率或邻居负载稍微变化，就会把系统推入过载区。
 
 ## 推理容量的三个约束
 
@@ -66383,6 +66490,22 @@ sum(input_tokens + generated_tokens for active_requests)
 
 因此服务容量常常不是硬件满载点，而是 SLA 刚好可接受前的点。
 
+### 约束优先级会随 workload 改变
+
+同一个模型在不同请求分布下，瓶颈可能不同：
+
+| Workload | 常见主瓶颈 |
+| --- | --- |
+| 短输入、短输出、高 QPS | scheduler、batching、CPU/tokenizer、decode |
+| 长输入、短输出 | prefill compute、TTFT、prompt cache |
+| 短输入、长输出 | decode、KV cache 带宽、TPOT |
+| 长输入、长输出 | KV capacity、prefill+decode 双瓶颈 |
+| 多轮对话 | KV/cache 生命周期、路由粘性、prefix cache |
+| RAG 请求 | 输入长度尾部、检索延迟、上下文拼接 |
+| Agent 请求 | 多次模型调用、工具延迟、burst fan-out |
+
+所以容量模型不能只写“70B 模型每卡多少 QPS”。必须绑定具体 workload bucket。
+
 ## Workload 模型
 
 推理容量模型必须从真实 workload 出发。
@@ -66443,6 +66566,45 @@ sum(input_tokens + generated_tokens for active_requests)
 - KV cache reuse。
 
 cache 命中会显著改变 TTFT 和显存压力。不能用高 cache 命中 benchmark 去承诺低 cache 命中业务。
+
+## 请求分桶建模
+
+真实流量通常不能用一个平均请求代表。建议把请求分成 bucket。
+
+示例：
+
+| Bucket | 占比 | 输入 | 输出 | 特征 |
+| --- | --- | --- | --- | --- |
+| short chat | 50% | <= 1k | <= 256 | 常规对话 |
+| medium chat | 30% | 1k-8k | 256-1k | 多轮上下文 |
+| long context | 10% | 8k-32k | <= 1k | RAG/长文档 |
+| long generation | 8% | <= 4k | 1k-4k | 写作/代码生成 |
+| agent burst | 2% | variable | variable | 多次工具调用 |
+
+然后分别测或估算每个 bucket 的：
+
+```text
+TTFT
+TPOT
+E2E
+KV token occupancy
+goodput
+error rate
+```
+
+整体容量不能只按占比平均，因为长尾请求会制造非线性影响：
+
+- 长输入会阻塞 prefill。
+- 长输出会长期占用 decode slot。
+- 长上下文会占用大量 KV cache。
+- Agent fan-out 会把一个用户请求放大成多个模型请求。
+
+容量模型至少要回答：
+
+```text
+如果 long context 占比从 10% 变成 20%，副本数需要增加多少？
+如果 output p95 从 1024 变成 2048，TPOT 和 KV occupancy 是否还能满足 SLA？
+```
 
 ## 容量建模步骤
 
@@ -66519,6 +66681,49 @@ replicas = ceil(base_replicas * (1 + headroom_ratio))
 ```text
 replicas = base_replicas + replicas_lost_in_one_failure_domain
 ```
+
+### 更完整的副本数公式
+
+生产副本数通常要同时考虑多项约束：
+
+```text
+base = ceil(target_peak_qps / per_replica_goodput_at_sla)
+
+with_headroom = ceil(base / (1 - headroom_ratio))
+
+with_rolling_update = ceil(with_headroom / (1 - max_unavailable_ratio))
+
+with_failure_domain = with_rolling_update + replicas_lost_in_one_failure_domain
+
+required_replicas = max(
+  with_failure_domain,
+  min_warm_replicas,
+  replicas_required_by_kv_capacity,
+  replicas_required_by_burst_absorption
+)
+```
+
+这里有两个容易写错的地方：
+
+- `headroom_ratio` 如果表示保留 30% 空余，更合理的写法是除以 `1 - 0.3`，而不是乘以 `1.3`。
+- rolling update 会让一部分副本暂时不可用，必须和故障域分开考虑。
+
+示例：
+
+```text
+target_peak_qps = 160
+per_replica_goodput_at_sla = 20
+headroom = 30%
+max_unavailable_during_rollout = 20%
+one_node_failure_loses = 2 replicas
+
+base = ceil(160 / 20) = 8
+with_headroom = ceil(8 / 0.7) = 12
+with_rolling_update = ceil(12 / 0.8) = 15
+with_failure_domain = 15 + 2 = 17
+```
+
+这个结果比简单 `160 / 20 = 8` 大很多，但它更接近生产部署现实。
 
 ### 6. 验证集群级容量
 
@@ -66688,6 +66893,39 @@ max_concurrency ~= 40K / 2K = 20 requests
 
 所以容量模型必须看 token occupancy，而不是只看请求数。
 
+### KV Cache 预算表
+
+建议为每个副本做 KV cache 预算：
+
+| 项目 | 示例 |
+| --- | --- |
+| total GPU memory | 80 GiB |
+| model weights | 45 GiB |
+| runtime workspace / graphs | 5 GiB |
+| safety reserve | 4 GiB |
+| available for KV | 26 GiB |
+| kv bytes per token | 0.8 MiB |
+| theoretical cached tokens | ~33K |
+| usable cached tokens | ~26K after fragmentation/reserve |
+
+usable cached tokens 要留余量，因为实际系统还有：
+
+- block fragmentation。
+- allocator reserve。
+- speculative decoding 额外状态。
+- LoRA/adapter 或多模型显存。
+- runtime 临时 buffer。
+
+容量模型中最好设置一个 KV occupancy 上限，例如：
+
+```text
+do not exceed 80% sustained KV occupancy
+scale out above 70% p95 KV occupancy
+reject or route long-context requests before OOM
+```
+
+KV cache 接近满时，系统不一定马上报错，但 tail latency、调度失败和 eviction 行为会变得不可预测。
+
 ## Autoscaling
 
 推理 autoscaling 常用信号：
@@ -66750,6 +66988,39 @@ traffic_ramp_rate
 
 高价值在线服务通常需要预留 warm replicas，而不是完全依赖冷启动。
 
+### 扩缩容滞后与滞回
+
+Autoscaling 要建模滞后：
+
+```text
+scale_out_latency
+  = scheduling_time
+  + image_pull_time
+  + model_load_time
+  + engine_init_time
+  + warmup_time
+  + route_registration_time
+```
+
+如果 `scale_out_latency = 6 min`，而流量 spike 在 1 分钟内到达，自动扩容无法保护 p99。此时需要：
+
+- warm pool。
+- predictive scaling。
+- scheduled scaling。
+- 更高 steady-state headroom。
+- 更快模型分发和本地缓存。
+
+缩容也需要 hysteresis：
+
+```text
+scale out fast
+scale in slow
+keep warm replicas for cooldown window
+do not terminate replicas with high KV/cache value immediately
+```
+
+否则系统会在流量波动时反复扩缩容，造成模型加载风暴和 cache miss。
+
 ## 路由与负载均衡
 
 容量不是副本数相加那么简单。路由会影响实际利用率。
@@ -66770,6 +67041,39 @@ cache locality
 ```
 
 如果为了 prefix cache 命中把请求都打到同一副本，可能牺牲 tail latency。
+
+### 路由效率折扣
+
+容量模型可以引入 routing efficiency：
+
+```text
+effective_cluster_goodput
+  = replicas * per_replica_goodput_at_sla * routing_efficiency
+```
+
+`routing_efficiency` 反映负载不均、sticky session、cache locality、长请求倾斜和 failure domain 带来的损失。
+
+例如：
+
+```text
+replicas = 20
+per_replica_goodput = 20 QPS
+routing_efficiency = 0.85
+effective_goodput = 340 QPS
+```
+
+如果按 400 QPS 规划，会高估容量。
+
+需要监控：
+
+- 每副本 in-flight requests。
+- 每副本 KV occupancy。
+- 每副本 TTFT/TPOT。
+- 每副本输入/输出长度分布。
+- 每副本 cache hit rate。
+- 长请求是否集中。
+
+容量问题有时不是副本少，而是路由没有把负载均衡到可用容量上。
 
 ## 多模型容量
 
@@ -66793,6 +67097,32 @@ cache locality
 - 批处理模型离线服务。
 
 容量模型要避免一个低频大模型占住大量显存，导致高频模型扩不起来。
+
+## 降级与过载保护
+
+容量模型还要定义过载时怎么保护服务。
+
+常见策略：
+
+- admission control：超过队列或 KV 阈值时拒绝新请求。
+- max context limit：限制极长输入。
+- max output limit：高峰时降低输出上限。
+- priority queue：高优先级请求优先。
+- load shedding：主动丢弃无法满足 SLA 的低价值请求。
+- fallback model：降级到更小模型。
+- cache-only / retrieval-only fallback：部分场景返回已有结果。
+
+如果没有过载保护，系统会进入恶性循环：
+
+```text
+load exceeds capacity
+  -> queue grows
+  -> latency timeout
+  -> client retry
+  -> load grows further
+```
+
+容量规划不是保证永远不过载，而是定义过载时系统如何稳定退化。
 
 ## 成本模型
 
@@ -66841,6 +67171,37 @@ cost_per_output_token = replica_cost_per_second / output_tokens_per_second_at_sl
 
 用这张曲线找到“满足 SLA 的最大 goodput”。
 
+### 容量报告模板
+
+推理容量报告建议包含：
+
+```text
+1. Capacity Contract
+2. Traffic Distribution
+3. SLA
+4. Single Replica Benchmark Curve
+5. KV Cache Budget
+6. Replica Formula
+7. Failure Domain / Rolling Update Assumptions
+8. Autoscaling and Cold Start
+9. Routing Efficiency
+10. Cost Estimate
+11. Risks and Caveats
+12. Production Calibration Plan
+```
+
+报告结论不要只写“需要 17 个副本”，而要写：
+
+```text
+17 replicas can serve 160 peak QPS under trace v3,
+with 30% headroom, one-node failure tolerance,
+and 20% rolling-update max unavailable.
+This assumes long-context bucket <= 10% and prefix cache hit >= 35%.
+If long-context bucket reaches 20%, required replicas increase to 23.
+```
+
+容量结论必须带假设。假设一变，副本数就要重新算。
+
 ## 生产校准
 
 上线后要持续比较：
@@ -66865,6 +67226,23 @@ predicted_replicas vs actual_replicas
 - benchmark 没有覆盖真实 burst。
 
 容量模型必须随生产数据更新。
+
+### 校准频率
+
+建议在这些事件后重新校准：
+
+- 模型版本变化。
+- tokenizer/chat template 变化。
+- serving engine 升级。
+- driver/CUDA/TensorRT 变更。
+- 输入/输出长度分布变化。
+- 新增 RAG、Agent、多模态功能。
+- traffic pattern 明显变化。
+- prefix cache 命中率变化。
+- 节点池硬件变化。
+- p95/p99 或 error rate 持续偏离预测。
+
+容量模型不是写完就结束。它应该像 SLO 和成本模型一样，随生产事实更新。
 
 ## 常见误区
 
@@ -66894,20 +67272,30 @@ cache hit 和 cache miss 的容量完全不同，需要分开测。
 
 ## 设计检查清单
 
+- 是否有 Capacity Contract。
 - 是否定义目标模型、engine、GPU 类型和并行方式。
 - 是否记录输入长度和输出长度分布。
+- 是否按请求 bucket 建模，而不是只用平均长度。
 - 是否定义 QPS、burst、并发和 arrival pattern。
 - 是否明确 TTFT、TPOT、E2E、error rate SLA。
+- 是否区分 offered load、throughput 和 goodput。
 - 是否用 goodput at SLA 计算容量。
+- 是否找到 goodput 曲线和 latency/error 拐点。
 - 是否扫 QPS/并发曲线，而不是只测单点。
 - 是否单独建模 prefill 和 decode。
 - 是否估算 KV Cache token occupancy。
+- 是否有 KV Cache 预算表和 occupancy 上限。
 - 是否考虑 prefix cache 命中率。
 - 是否考虑冷启动、模型加载和 warmup。
+- 是否建模 autoscaling 滞后和 hysteresis。
 - 是否加入 headroom 和 failure domain。
+- 是否考虑 rolling update max unavailable。
 - 是否验证路由和负载均衡。
+- 是否估算 routing efficiency。
 - 是否考虑多模型共享。
+- 是否定义过载保护和降级策略。
 - 是否把成本按 request/token 归因。
+- 是否有容量报告模板和假设说明。
 - 是否上线后用生产数据校准模型。
 
 ## 小结
