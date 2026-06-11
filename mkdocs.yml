@@ -106,6 +106,7 @@ nav:
       - FLUX 通信重叠与 Kernel Fusion: 04-training-systems/flux-kernel-fusion.md
       - Optimizer 与 Scheduler 系统成本: 04-training-systems/optimizer-scheduler-cost.md
       - Muon 优化器: 04-training-systems/muon-optimizer.md
+      - Checkpoint、Resume 与容错: 04-training-systems/checkpoint-resume-fault-tolerance.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md

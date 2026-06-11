@@ -71,6 +71,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [FLUX 通信重叠与 Kernel Fusion](https://amoursec.github.io/aikg/04-training-systems/flux-kernel-fusion/): FLUX 通信重叠与 Kernel Fusion 解释为什么 stream-level overlap 难以隐藏依赖通信，以及过分解、chunk-level overlap、kernel fusion、TP/MoE 场景、硬件依赖和 benchmark 方法。
 - [Optimizer 与 Scheduler 系统成本](https://amoursec.github.io/aikg/04-training-systems/optimizer-scheduler-cost/): Optimizer 与 Scheduler 系统成本解释 Adam/AdamW 状态、master weights、fused/foreach optimizer、gradient clipping、scheduler step 语义、分布式 optimizer、offload、checkpoint 和恢复。
 - [Muon 优化器](https://amoursec.github.io/aikg/04-training-systems/muon-optimizer/): Muon 优化器解释矩阵动量正交化、Newton-Schulz 迭代、参数分组、更新尺度、混合 Muon/AdamW、ZeRO/FSDP/TP/MoE 集成、checkpoint 和 benchmark 方法。
+- [Checkpoint、Resume 与容错](https://amoursec.github.io/aikg/04-training-systems/checkpoint-resume-fault-tolerance/): Checkpoint、Resume 与容错解释完整训练状态、sharded checkpoint、resharding、异步保存、atomic latest、elastic restart、rank 不稳定、存储设计和恢复验证。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
 - [Triton Kernel 编程](https://amoursec.github.io/aikg/05-kernels-compilers/triton/): Triton Kernel 编程学习入口。
@@ -140,6 +141,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [04-training-systems/flux-kernel-fusion.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/flux-kernel-fusion.md)
 - [04-training-systems/optimizer-scheduler-cost.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/optimizer-scheduler-cost.md)
 - [04-training-systems/muon-optimizer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/muon-optimizer.md)
+- [04-training-systems/checkpoint-resume-fault-tolerance.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/04-training-systems/checkpoint-resume-fault-tolerance.md)
 - [05-kernels-compilers/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/index.md)
 - [05-kernels-compilers/attention-computation-patterns.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/attention-computation-patterns.md)
 - [05-kernels-compilers/triton.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/triton.md)
