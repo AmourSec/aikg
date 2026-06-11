@@ -43,4 +43,4 @@ updated: 2026-06-12
 
 - [Attention 机制与计算模式](attention-computation-patterns.md)：区分 attention pattern、exact/approx、kernel 实现和 KV Cache 管理，理解 Dense/Sparse/Flash/PagedAttention、MHA/MQA/GQA、Prefill/Decode、长上下文、显存 IO 和 benchmark 方法。
 - [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel，覆盖 block program、JIT specialization、launch grid、tiling、资源模型、数值、autotune、PyTorch/Inductor 集成和端到端 benchmark。
-- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、graph capture、fusion、scheduler、Triton codegen 和性能调试。
+- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
