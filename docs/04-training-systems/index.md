@@ -4,7 +4,7 @@ domain: training-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 ---
 
 # 训练系统与优化
@@ -17,7 +17,7 @@ updated: 2026-06-11
 
 1. 先理解训练任务生命周期，知道一个 step 由哪些阶段组成。
 2. 再学习数据输入、batch、activation、gradient、optimizer state 这些基础成本。
-3. 然后进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel 等并行策略。
+3. 然后进入 data parallel、FSDP / ZeRO、tensor parallel、pipeline parallel、expert parallel，以及这些并行维度如何组合。
 4. 接着学习通信重叠、FLUX、混合精度、activation checkpointing、checkpoint/restart 和容错。
 5. 再理解 optimizer state、Muon 优化器、scheduler 和 optimizer step 的系统成本。
 6. 最后用 step time breakdown、MFU、scaling efficiency 和 profiler 证据评估训练效率。
@@ -33,16 +33,17 @@ updated: 2026-06-11
 | 7 | [Tensor Parallel](tensor-parallel.md) | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
 | 8 | [Pipeline Parallel](pipeline-parallel.md) | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
 | 9 | [Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md) | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
-| 10 | [Activation Checkpointing](activation-checkpointing.md) | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
-| 11 | [混合精度训练](mixed-precision-training.md) | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
-| 12 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
-| 13 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
-| 14 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
-| 15 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
-| 16 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
-| 17 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
-| 18 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
-| 19 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
+| 10 | [并行策略组合：3D/4D/5D Parallelism](hybrid-parallelism-composition.md) | 把 DP/FSDP、TP、PP、EP、SP/CP 放到同一个 rank topology 中理解。 |
+| 11 | [Activation Checkpointing](activation-checkpointing.md) | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
+| 12 | [混合精度训练](mixed-precision-training.md) | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
+| 13 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
+| 14 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
+| 15 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
+| 16 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
+| 17 | [Checkpoint、Resume 与容错](checkpoint-resume-fault-tolerance.md) | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
+| 18 | [训练性能指标与扩展效率](training-performance-metrics-scaling.md) | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
+| 19 | [训练性能剖析与 Benchmark](training-benchmark-profiling.md) | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
+| 20 | [DeepSpeed、Megatron-LM 与 PyTorch FSDP](deepspeed-megatron-fsdp.md) | 作为主流训练系统和框架案例。 |
 
 ## 训练任务生命周期
 
@@ -97,6 +98,12 @@ Pipeline Parallel 把模型不同层放到不同 GPU，并用 micro-batch 形成
 MoE 训练中，每个 token 会被路由到部分专家。Expert Parallel 需要处理 token dispatch/combine、专家负载均衡和跨卡通信。
 
 详见：[Expert Parallel 与 MoE 训练](expert-parallel-moe-training.md)
+
+## 并行策略组合：3D/4D/5D Parallelism
+
+真实大模型训练通常不是只用一种并行策略，而是把 DP/FSDP、TP、PP、EP、SP/CP 等维度组合起来。组合时最关键的是每个维度切分什么、通信发生在哪里，以及 rank mapping 是否匹配硬件拓扑。
+
+详见：[并行策略组合：3D/4D/5D Parallelism](hybrid-parallelism-composition.md)
 
 ## Activation Checkpointing
 
