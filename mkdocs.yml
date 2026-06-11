@@ -144,6 +144,7 @@ nav:
       - Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF: 08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md
       - Roofline 分析：算力、带宽与瓶颈上限: 08-benchmark-capacity/roofline-analysis-compute-bandwidth.md
       - 排队模型与尾延迟：QPS、并发、利用率和 p99: 08-benchmark-capacity/queueing-model-tail-latency.md
+      - 能效、功耗与热限制：Power、Energy per Token 与持续吞吐: 08-benchmark-capacity/energy-power-thermal-benchmark.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
   - 论文复现与系统案例:
