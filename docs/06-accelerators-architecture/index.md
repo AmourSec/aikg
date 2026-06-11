@@ -37,3 +37,4 @@ updated: 2026-06-11
 - [存储层次：HBM、SRAM、Cache 与数据复用](memory-hierarchy-data-reuse.md)：解释 register、SRAM/shared memory、cache、HBM、host memory、offload、KV Cache、fusion 和 IO-aware kernel 如何共同决定数据搬运成本。
 - [精度格式：FP16、BF16、FP8 与量化计算](precision-formats-low-bit-compute.md)：解释 FP32、TF32、FP16、BF16、FP8、INT8、INT4、accumulator、scale、outlier、KV Cache 量化和低精度硬件路径。
 - [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、节点内 GPU fabric、PCIe、RDMA、CXL、collective、rank mapping、拓扑感知并行和通信 benchmark。
+- [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](power-thermal-reliability.md)：解释 power limit、thermal limit、clock、throttling、ECC、RAS、稳态 benchmark、能效指标和 power-aware scheduling。
