@@ -35177,6 +35177,73 @@ PyTorch 官方文档也提醒，完全可复现并不保证跨 PyTorch 版本、
 
 越是不能逐 bit 复现，越需要把影响因素记录清楚。
 
+## 复现目标协议
+
+每次训练开始前，最好先声明这次 run 追求哪种复现目标。不同目标需要的成本不同。
+
+| 目标 | 适用场景 | 必须记录 |
+| --- | --- | --- |
+| debug-exact | 排查 NaN、loss spike、resume 跳变 | RNG state、data cursor、rank mapping、deterministic mode、异常 batch。 |
+| experiment-comparable | 比较两个训练配置 | 数据版本、tokenizer、global batch tokens、eval/benchmark manifest。 |
+| audit-ready | 长期训练、重要 baseline、上线候选 | 完整 Run Manifest、checkpoint lineage、eval report、环境和 artifact。 |
+| statistical | 多 seed 质量比较 | seed 列表、均值/方差、置信区间、固定 eval 流程。 |
+
+一个 run 可以这样记录：
+
+```yaml
+reproducibility:
+  target: "audit-ready"
+  expected_level: "L3"
+  bitwise_required: false
+  comparable_to:
+    - run_id: "baseline-7b-bf16-001"
+      comparison_goal: "optimizer_ablation"
+```
+
+这个字段的意义是提前约束期望。大规模预训练不一定追求逐 bit 一致，但至少应该 audit-ready；bug 复现任务则应临时提高到 debug-exact。
+
+## 实验比较协议
+
+很多“优化有效”的结论其实来自不可比实验。比较两个 run 前，要明确哪些变量必须固定，哪些变量允许变化。
+
+例如比较 AdamW 和 Muon：
+
+```yaml
+comparison:
+  changed:
+    - optimizer
+  fixed:
+    - model_architecture
+    - tokenizer
+    - data_manifest
+    - train_token_budget
+    - global_batch_tokens
+    - precision_policy
+    - eval_manifest
+    - hardware_pool
+```
+
+如果比较 FP8 和 BF16，precision 是允许变化项，但其他项要尽量固定。如果比较 FSDP 和 ZeRO，parallelism/runtime 是允许变化项，但数据、模型、token budget、eval 应保持一致。
+
+推荐给每个对比实验生成 comparison manifest：
+
+```yaml
+comparison_manifest:
+  baseline_run: ""
+  candidate_run: ""
+  hypothesis: "Muon reaches target validation loss with lower wall-clock cost"
+  controlled_variables: []
+  changed_variables: []
+  primary_metrics:
+    - "wall_clock_to_target_loss"
+    - "tokens_to_target_loss"
+  secondary_metrics:
+    - "peak_memory"
+    - "optimizer_step_time"
+```
+
+这能避免事后只看一张 loss 曲线就下结论。
+
 ## Run Manifest 是什么
 
 Run Manifest 是一次训练运行的身份证。
@@ -35223,6 +35290,59 @@ Markdown 文档可以解释原则，真正落地时应有结构化字段。
 | artifacts | logs、metrics、trace、checkpoint、config、manifest 路径。 |
 
 关键原则是：只记录“人看得懂的摘要”不够，必须保留可以重跑的结构化配置。
+
+## Manifest 生命周期
+
+Run Manifest 不应该只在训练结束后生成。它应当伴随 run 生命周期不断更新。
+
+| 阶段 | Manifest 内容 |
+| --- | --- |
+| create | run id、owner、目标、初始 config。 |
+| resolved | 展开后的 config、代码 commit、数据 manifest、环境。 |
+| launched | rank mapping、资源分配、seed policy、启动时间。 |
+| running | checkpoint 事件、eval 事件、resume 事件、failure 事件。 |
+| finalized | final checkpoint、best checkpoint、完整 eval report、结束状态。 |
+
+可以把 manifest 看成两部分：
+
+```text
+run_manifest.yaml       # 当前状态快照
+run_events.jsonl        # 追加式事件日志
+```
+
+`run_manifest.yaml` 方便人和 AI 快速查看当前 run 状态；`run_events.jsonl` 方便追踪历史变化。
+
+事件示例：
+
+```json
+{"type":"checkpoint_saved","step":120000,"train_tokens":245760000000,"path":"s3://...","status":"complete"}
+{"type":"eval_completed","checkpoint":"step-120000","suite":"validation-lite","report":"s3://..."}
+{"type":"resume","from_checkpoint":"step-120000","restored_rng":true,"restored_data_state":true}
+```
+
+这比在日志里搜索字符串可靠得多。
+
+## Manifest Schema Version
+
+Manifest 自身也要有版本。
+
+```yaml
+manifest:
+  schema_version: "training-run-manifest/v1"
+  created_by: "train-platform"
+  created_by_version: "2026.06.12"
+```
+
+原因很简单：训练平台会演进。今天没有 FP8 字段，明天可能有；今天没有 Muon 参数分组，后天可能需要。
+
+有 schema version 后，系统可以：
+
+- 知道旧 run 缺少哪些字段。
+- 做 manifest migration。
+- 在 dashboard 中区分字段语义。
+- 避免把不同版本 manifest 混在一起比较。
+
+重要 baseline 的 manifest schema 不应随意修改；如果修改，应保留迁移规则。
 
 ## Run Manifest 示例
 
@@ -35473,6 +35593,55 @@ consumed_loss_tokens
 
 其中 `consumed_loss_tokens` 对语言模型尤其重要，因为不是所有 input token 都参与 loss。
 
+## Streaming Dataset 与 Data Cursor
+
+很多大模型训练使用 streaming dataset。数据并不是一个固定本地文件列表，而是从对象存储、远端数据服务或 shard 流中读取。
+
+这时要记录的不只是 `dataset_version`，还要记录 cursor。
+
+常见字段：
+
+```yaml
+data_state:
+  dataset_manifest: "pretrain_mix_v12.yaml"
+  shard_epoch: 3
+  current_shard: "s3://bucket/shard-00123.jsonl.zst"
+  offset_in_shard: 91827364
+  shuffle_buffer_seed: 1234
+  shuffle_buffer_position: 5521
+  consumed_samples: 987654321
+  consumed_input_tokens: 123456789012
+  consumed_loss_tokens: 120000000000
+```
+
+如果使用 sequence packing，还要记录 packing buffer 状态：
+
+```yaml
+packing_state:
+  algorithm: "sequence_packing_v2"
+  buffer_size: 4096
+  pending_sample_ids: []
+  pending_token_count: 0
+```
+
+否则 resume 后即使从同一个 shard 开始，也可能因为 packing buffer 不同，batch 组成发生变化。
+
+## 数据 Manifest 的 Hash 语义
+
+数据 hash 也要说明 hash 的对象是什么。
+
+| Hash | 含义 |
+| --- | --- |
+| raw shard hash | 原始数据文件内容。 |
+| normalized text hash | 清洗和规范化后的文本。 |
+| tokenized shard hash | tokenization 后的 token 序列。 |
+| packed sample hash | packing 后的训练样本序列。 |
+| manifest hash | shard 列表、比例和规则的整体配置。 |
+
+如果只写 `data_hash`，后面可能不知道它指的是 raw text 还是 tokenized data。
+
+对训练可复现最有用的是 tokenized/packed 层级的 hash，因为模型真正看到的是 token 序列和 loss mask。
+
 ## DataLoader Worker Seed
 
 训练数据读取经常用多 worker。
@@ -35599,6 +35768,57 @@ checkpoint:
 
 如果没有保存，也要如实记录。
 
+## RNG State Inventory
+
+建议把随机状态列成 inventory，而不是只写 `rng_saved: true`。
+
+```yaml
+rng_state:
+  python_random: true
+  numpy_global: true
+  numpy_generators: []
+  torch_cpu: true
+  torch_cuda_all_devices: true
+  model_parallel_rng_tracker: true
+  dataloader_workers: true
+  sampler: true
+  augmentation: false
+```
+
+如果某些状态没有保存，要写明原因：
+
+```yaml
+rng_state_warnings:
+  - "augmentation RNG is owned by external data service and not checkpointed"
+```
+
+这样 resume 后如果出现轻微差异，至少知道差异可能来自哪里。
+
+## 随机流命名
+
+大型训练系统最好不要只有一个全局随机流。可以给不同用途命名：
+
+| 随机流 | 用途 |
+| --- | --- |
+| `init_rng` | 参数初始化。 |
+| `data_rng` | shuffle、sampling、packing。 |
+| `model_rng` | dropout、stochastic depth。 |
+| `mp_rng` | tensor/model parallel 相关随机性。 |
+| `eval_rng` | generation eval sampling。 |
+| `aug_rng` | 多模态增强。 |
+
+Run Manifest 可以记录：
+
+```yaml
+random_streams:
+  init_rng: "base_seed"
+  data_rng: "base_seed + 100000"
+  model_rng: "base_seed + rank"
+  eval_rng: "fixed_eval_seed"
+```
+
+这样比“所有地方 seed=1234”更清晰，也更容易发现 seed 冲突。
+
 ## Deterministic Algorithms
 
 许多深度学习框架提供确定性算法开关。
@@ -35634,6 +35854,30 @@ randomness:
 ```
 
 具体开关应以所用框架和版本文档为准。
+
+## Determinism Budget
+
+确定性会消耗性能预算。可以把它当成一个可配置的 budget：
+
+| 模式 | 用途 | 代价 |
+| --- | --- | --- |
+| performance | 默认大规模训练 | 速度优先，记录完整上下文。 |
+| audit | 重要 baseline | 尽量固定环境、数据和 eval，允许非 bitwise。 |
+| debug | 排查问题 | 尽量启用确定性，减少变量。 |
+| strict | 小规模精确复现 | 禁用非确定性路径，接受性能下降。 |
+
+示例：
+
+```yaml
+determinism:
+  mode: "audit"
+  deterministic_algorithms: false
+  cudnn_benchmark: false
+  fixed_rank_mapping: true
+  fixed_eval_seeds: true
+```
+
+这比单个布尔值更贴近工程现实。
 
 ## Floating Point 非结合性
 
@@ -35702,6 +35946,38 @@ TF32 是一个典型例子。
 如果一个实验开启 TF32，另一个关闭 TF32，性能和数值都可能不同。
 
 这不一定是错误，但必须记录。
+
+## 环境锁定
+
+环境可复现不仅是 Python 包版本。训练系统至少要记录：
+
+| 层次 | 字段 |
+| --- | --- |
+| OS / image | container image digest、base OS、glibc。 |
+| Python | Python 版本、pip/conda lock、关键包版本。 |
+| Framework | PyTorch、Triton、DeepSpeed/Megatron/FSDP 版本。 |
+| CUDA stack | CUDA runtime、driver、cuDNN、NCCL、cutlass/flash-attn。 |
+| Hardware | GPU 型号、HBM 容量、CPU、内存、NVMe。 |
+| Network | IB/RoCE、NIC、NCCL topo、交换机/拓扑信息。 |
+| Kernel/runtime flags | TF32、deterministic、allocator、NCCL env。 |
+
+示例：
+
+```yaml
+environment:
+  container_digest: "sha256:..."
+  pytorch: "2.12.0"
+  cuda_runtime: "12.x"
+  driver: "..."
+  nccl: "..."
+  flash_attention: "..."
+  gpu_type: "H100-SXM"
+  nccl_env:
+    NCCL_ALGO: ""
+    NCCL_PROTO: ""
+```
+
+如果只记录 `image: latest`，这个 run 的长期可复现性很弱。
 
 ## Activation Checkpointing 与 RNG
 
@@ -35805,6 +36081,42 @@ parallelism:
 ```
 
 如果不记录 rank mapping，就很难解释某次训练为什么比另一次慢，或者为什么某个通信 hang 只在某种部署方式下出现。
+
+## 通信与拓扑 Manifest
+
+对于大规模训练，rank mapping 还不够。通信环境也要记录。
+
+建议记录：
+
+```yaml
+communication:
+  backend: "nccl"
+  process_groups:
+    dp: []
+    tp: []
+    pp: []
+    ep: []
+  nccl:
+    version: ""
+    algo: ""
+    proto: ""
+    env: {}
+  topology:
+    mapping_file: "artifacts/rank_mapping.json"
+    nccl_topo_file: ""
+    intra_node_link: "nvlink"
+    inter_node_link: "infiniband"
+```
+
+这些字段对性能复现尤其重要。两个 run loss 曲线相近，但 step time 差很多时，往往要查：
+
+- rank mapping 是否变了。
+- NCCL 算法是否变了。
+- 网络拓扑是否变了。
+- TP/EP 是否跨节点。
+- 同节点是否有其他作业干扰。
+
+训练系统里“质量可复现”和“性能可复现”是两件事，后者更依赖拓扑和运行时环境。
 
 ## Checkpoint Resume 的语义
 
@@ -35976,6 +36288,36 @@ flowchart TB
 1. **启动前**：记录 code/config/data/environment/seed policy。
 2. **运行中**：追加 checkpoint、eval、failure、resume 事件。
 3. **结束后**：记录 final status、best checkpoint、report、artifact。
+
+## Manifest Quality Gate
+
+训练平台可以给 manifest 加质量门禁。不是所有缺失字段都要阻止训练，但重要 run 应该有最低要求。
+
+示例：
+
+| 字段 | 普通实验 | 重要 baseline |
+| --- | --- | --- |
+| git commit | 必填 | 必填 |
+| dirty diff | 允许但标记 | 禁止或保存 patch |
+| data manifest | 必填 | 必填且有 hash |
+| tokenizer hash | 必填 | 必填 |
+| seed policy | 必填 | 必填 |
+| RNG checkpoint | 可选 | 必填 |
+| rank mapping | 推荐 | 必填 |
+| eval manifest | 推荐 | 必填 |
+| environment digest | 推荐 | 必填 |
+
+可以在启动前输出：
+
+```yaml
+manifest_quality:
+  level: "L3"
+  blocking_errors: []
+  warnings:
+    - "dirty diff saved as artifacts/dirty.patch"
+```
+
+这样系统可以允许探索性实验快速运行，同时保证关键 baseline 不会缺少复现信息。
 
 ## 启动前检查
 
@@ -36172,6 +36514,45 @@ Resume 后需要验证训练状态是否连续。
 不是所有训练都要达到 L4。
 
 但重要 baseline、长期训练、性能 benchmark 和论文/报告使用的结果至少应该达到 L2 或 L3。
+
+### 自动评级
+
+可复现性等级最好由系统自动计算，而不是靠人主观填写。
+
+示例规则：
+
+```yaml
+reproducibility_level_rules:
+  L1:
+    requires:
+      - code.commit
+      - config.resolved_file
+  L2:
+    requires:
+      - data.manifest
+      - tokenizer.hash
+      - environment.container_digest
+      - randomness.base_seed
+  L3:
+    requires:
+      - checkpoint.includes_optimizer_state
+      - checkpoint.includes_rng_state
+      - checkpoint.includes_data_state
+      - parallelism.rank_mapping
+  L4:
+    requires:
+      - deterministic.mode
+      - eval.raw_predictions
+      - benchmark.trace
+      - communication.topology
+```
+
+自动评级的好处是 dashboard 可以筛选：
+
+- 哪些 run 可以作为 baseline。
+- 哪些 run 只适合临时探索。
+- 哪些 benchmark 可以用于正式报告。
+- 哪些 checkpoint 可以安全 resume。
 
 ## 推荐 Checklist
 
