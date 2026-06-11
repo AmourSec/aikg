@@ -33,3 +33,4 @@ updated: 2026-05-30
 ## 专题入口
 
 - [AI 集群架构总览：节点、网络、存储与调度](ai-cluster-architecture-overview.md)：建立 AI 集群控制面、计算节点、网络平面、存储层次、调度系统、多租户、环境治理和可观测性的整体框架。
+- [调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue](scheduling-queues-resource-management.md)：解释 AI workload 从提交、准入、排队、公平共享、资源匹配、拓扑匹配、gang allocation 到运行、抢占、重试和可解释性的调度生命周期。
