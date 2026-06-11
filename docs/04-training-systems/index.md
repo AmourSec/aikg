@@ -38,7 +38,7 @@ updated: 2026-06-11
 | 12 | [通信与计算重叠](communication-computation-overlap.md) | 分析 backward、AllReduce/ReduceScatter、bucket 和 overlap 失败原因。 |
 | 13 | [FLUX 通信重叠与 Kernel Fusion](flux-kernel-fusion.md) | 以 FLUX 为案例，理解如何把通信和计算细粒度融合来隐藏分布式通信。 |
 | 14 | [Optimizer 与 Scheduler 系统成本](optimizer-scheduler-cost.md) | 研究 Adam/AdamW、fused optimizer、学习率调度和 optimizer state 成本。 |
-| 15 | Muon 优化器 | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
+| 15 | [Muon 优化器](muon-optimizer.md) | 理解矩阵动量正交化优化器的基本思想、适用参数和系统实现成本。 |
 | 16 | Checkpoint、Resume 与容错 | 设计长期训练的恢复、存储、sharded checkpoint 和 elastic training。 |
 | 17 | 训练性能指标与扩展效率 | 用 step time、tokens/s、MFU、scaling efficiency 和 network utilization 评价训练系统。 |
 | 18 | 训练性能剖析与 Benchmark | 用 trace、profiler、通信 timeline 和 ablation 定位训练瓶颈。 |
@@ -134,18 +134,7 @@ Muon 是一种面向矩阵参数的优化器思路。直觉上，它不是直接
 
 从系统角度看，Muon 值得单独列出，不是因为它一定替代 AdamW，而是因为它把 optimizer 从“逐元素状态更新”推进到“矩阵级更新”。这会带来额外矩阵乘、参数分组、fused 实现、分布式切分和数值稳定性问题。常见实践也不会把所有参数都交给 Muon，例如 embedding、bias、normalization 参数和输出头通常需要单独处理。
 
-本节后续重点回答：
-
-- Muon 和 AdamW、SGD Momentum 的核心差异是什么。
-- Newton-Schulz 正交化在 optimizer step 中增加了哪些计算和显存压力。
-- 哪些参数适合用 Muon，哪些参数通常仍使用 AdamW 或其他优化器。
-- 分布式训练中 Muon 如何影响 sharding、fused optimizer 和 checkpoint。
-- 评估 Muon 时应同时看收敛速度、wall-clock time、额外 kernel 成本和稳定性。
-
-参考资料：
-
-- [Convergence of Muon with Newton-Schulz](https://arxiv.org/abs/2601.19156)
-- [The Newton-Muon Optimizer](https://arxiv.org/abs/2604.01472)
+详见：[Muon 优化器](muon-optimizer.md)
 
 ## Checkpoint、Resume 与容错
 
