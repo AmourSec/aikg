@@ -98,6 +98,7 @@ nav:
       - Data Parallel 与梯度同步: 04-training-systems/data-parallel-gradient-sync.md
       - ZeRO 与 FSDP: 04-training-systems/zero-fsdp.md
       - Tensor Parallel: 04-training-systems/tensor-parallel.md
+      - Sequence Parallel 与 Context Parallel: 04-training-systems/sequence-context-parallel.md
       - Pipeline Parallel: 04-training-systems/pipeline-parallel.md
       - Expert Parallel 与 MoE 训练: 04-training-systems/expert-parallel-moe-training.md
       - 并行策略组合：3D/4D/5D Parallelism: 04-training-systems/hybrid-parallelism-composition.md
