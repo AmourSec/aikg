@@ -205,7 +205,7 @@ DESCRIPTIONS = {
     "07-cluster-infra/index.md": "集群、网络、存储与调度主题入口。",
     "07-cluster-infra/ai-cluster-architecture-overview.md": "AI 集群架构总览解释 workload、AI Job 生命周期、resource flavor、容量池、故障域、网络平面、存储层次、admission/placement/orchestration、gang scheduling、拓扑感知、资源碎片、多租户、manifest、可观测性和容量规划闭环。",
     "07-cluster-infra/scheduling-queues-resource-management.md": "调度系统与资源队列解释 Slurm、Kubernetes、Ray、Volcano、Kueue 在 AI workload 的 job spec、admission、queue、priority、quota、fairshare、resource flavor、capacity pool、backfill、preemption、gang scheduling、topology-aware scheduling、fragmentation、pending reason、抢占恢复协议和策略迭代中的作用。",
-    "07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md": "GPU 拓扑、NUMA、MIG/MPS 与资源隔离解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、nvidia-smi topo、MIG、MPS、time slicing、Kubernetes device plugin、Slurm GRES、rank mapping 和多租户隔离。",
+    "07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md": "GPU 拓扑、NUMA、MIG/MPS 与资源隔离解释 GPU-to-GPU、GPU-to-NIC、CPU NUMA、本地 NVMe、nvidia-smi topo、topology manifest、MIG 生命周期和碎片、MPS、time slicing、共享 GPU 治理、Kubernetes device plugin/GPU Operator/Topology Manager、Slurm GRES、rank mapping、可观测性和故障归因。",
     "07-cluster-infra/rdma-network-nccl-topology-congestion.md": "RDMA 网络与 NCCL 拓扑解释 InfiniBand、RoCE、GPU Direct RDMA、NCCL/RCCL collective、multi-rail、bisection bandwidth、PFC、ECN、QoS、拥塞控制、拓扑感知调度、网络可观测性和 benchmark。",
     "07-cluster-infra/storage-data-cache-checkpoint.md": "存储、数据缓存与 Checkpoint 解释对象存储、并行文件系统、本地 NVMe、DataLoader、dataset shard、cache key、模型权重分发、容器镜像、GPUDirect Storage、Kubernetes PV/PVC、checkpoint manifest、异步保存和恢复。",
     "07-cluster-infra/environment-reproducibility-containers.md": "环境可复现解释 AI 任务的硬件、host OS、driver、CUDA、NCCL、容器镜像、image digest、Python/Conda lock、数据模型 artifact、run manifest、随机性控制、编译缓存、环境升级和回滚策略。",
