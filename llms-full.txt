@@ -54821,7 +54821,7 @@ updated: 2026-05-30
 - [存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储](storage-data-cache-checkpoint.md)：解释对象存储、并行文件系统、本地 NVMe、数据对象生命周期、存储策略契约、数据集 shard、DataLoader、缓存治理、checkpoint 状态机、模型权重分发防雪崩、容器镜像、GPUDirect Storage、Kubernetes 存储抽象、存储调度契约、故障归因和 benchmark manifest。
 - [环境可复现：镜像、驱动、CUDA 与依赖锁定](environment-reproducibility-containers.md)：解释 AI 任务环境的 node profile、image family、run manifest、Driver/CUDA 支持矩阵、镜像供应链与 SBOM、artifact manifest、随机性控制、benchmark 可复现、升级回滚和环境漂移归因。
 - [混合集群与多租户隔离：训练、推理、Notebook 与批处理共存](mixed-workload-multitenancy-isolation.md)：解释训练、在线推理、Notebook、数据预处理、benchmark 和系统任务共存时的 workload contract、tenant 映射、隔离等级、队列、配额、优先级、抢占生命周期、节点池、GPU 共享、存储网络隔离、noisy neighbor 归因、准入控制和成本归因。
-- [资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐](resource-utilization-fragmentation-capacity.md)：解释 GPU 分配率、活跃率、有效吞吐、排队、pending reason、碎片、公平性、SLA、成本、能效、dashboard、告警和容量规划。
+- [资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐](resource-utilization-fragmentation-capacity.md)：解释 GPU 分配率、活跃率、有效吞吐、四本资源账、GPU hour 浪费分类、pending reason、队列健康度、碎片治理、request right-sizing、公平性、SLA、成本、能效、指标数据质量、dashboard、告警、治理闭环和容量规划。
 - [节点生命周期与集群运维：交付、验收、入池、维护与下线](node-lifecycle-health-maintenance.md)：解释 AI 计算节点从资产登记、物理验收、软件基线、burn-in、入池、健康检查、cordon/drain、升级、配置漂移、缓存清理到退役下线的运维流程。
 
 ---
@@ -62463,7 +62463,7 @@ domain: cluster-infra
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 
 # 资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐
 
@@ -62558,6 +62558,34 @@ training step efficiency: 20%
 - Notebook 占着 GPU 但很少计算。
 
 所以“GPU 分配率高”不是好消息，也不是坏消息。它只是第一个信号。
+
+## 四本账：容量、需求、使用和产出
+
+资源治理不能只看监控曲线，还要建立“账本”。账本的目标是让平台能回答：资源有多少、谁要用、实际怎么用了、产出了什么。
+
+| 账本 | 记录什么 | 典型问题 |
+| --- | --- | --- |
+| Capacity Ledger | 集群真实可提供的资源 | 哪些 GPU 健康、哪些节点 drain、哪些 flavor 可调度 |
+| Demand Ledger | 用户和服务提出的资源需求 | 哪些队列长期排队、需要什么 GPU、gang size 多大 |
+| Usage Ledger | 资源实际被谁占用和消耗 | 谁用了多少 GPU hour、是否 idle、是否被抢占 |
+| Output Ledger | 资源产生了什么结果 | 训练了多少 token、推理服务了多少请求、成功实验多少 |
+
+四本账要能通过统一字段关联：
+
+```text
+tenant / project / queue / workload_type / node_pool / gpu_flavor / image / model / dataset
+```
+
+例如一次训练任务同时出现在四本账里：
+
+- Capacity Ledger：它使用了 `h100-training` node pool 的 64 张 H100。
+- Demand Ledger：它请求 64 GPU、预计 36 小时、允许抢占。
+- Usage Ledger：它实际运行 41 小时，中间失败重启 1 次。
+- Output Ledger：它完成 2.3T token，产出 checkpoint 和 eval 结果。
+
+如果只有 Usage Ledger，就会把失败重试也算作“使用”；如果只有 Output Ledger，就不知道它占用了多少资源；如果只有 Capacity Ledger，就无法判断资源是否给了高价值任务。
+
+AI 集群的治理成熟度，往往取决于这四本账能否对齐。
 
 ## 从分配到有效吞吐
 
@@ -62747,6 +62775,43 @@ useful_output_efficiency = useful_output / allocated_gpu_hours
 
 这套分解的价值是：不要把所有问题都归结成“GPU 利用率低”。
 
+## GPU Hour Ledger 与浪费分类
+
+GPU hour 是成本和容量规划中最常用的单位，但它必须拆开看。否则失败、空转、等待和有效计算会混在一起。
+
+一个实用拆分是：
+
+```text
+allocated_gpu_hours
+  = productive_gpu_hours
+  + idle_gpu_hours
+  + waiting_gpu_hours
+  + failed_gpu_hours
+  + overhead_gpu_hours
+  + system_reserved_gpu_hours
+```
+
+各类含义：
+
+| 类型 | 含义 | 常见原因 |
+| --- | --- | --- |
+| productive | 推动训练、推理、数据处理等目标产出 | forward/backward、decode、embedding、index build |
+| idle | GPU 被占用但几乎不计算 | Notebook idle、任务 hang、等待人工操作 |
+| waiting | 任务已启动但在等外部资源 | DataLoader、存储、网络、慢 rank、模型加载 |
+| failed | 最终失败或被废弃的计算 | OOM、环境错误、节点故障、训练不稳定 |
+| overhead | 必要但不直接产出的开销 | checkpoint、编译、warmup、启动、恢复 |
+| reserved | 为 SLA 或系统稳定保留 | 推理 headroom、benchmark 池、维护窗口 |
+
+治理动作应该针对不同浪费类型：
+
+- idle 高：做 Notebook idle 回收和 hang 检测。
+- waiting 高：查 CPU、存储、网络、rank skew。
+- failed 高：查环境、节点健康、OOM、数值稳定性。
+- overhead 高：优化镜像、缓存、checkpoint、编译和模型加载。
+- reserved 高：评估 headroom 是否过大，或是否服务于明确 SLA。
+
+“浪费”不是绝对坏事。headroom 和 checkpoint 都可能是必要成本。关键是把它们从 productive 中分出来，避免用一个总利用率掩盖真实问题。
+
 ## 资源碎片
 
 碎片是 AI 集群最常见的隐性损耗。
@@ -62859,6 +62924,36 @@ fragmentation_ratio = 1 - schedulable_for_pending / total_free
 
 它不一定适合所有场景，但能提醒你：空闲资源不等于可用资源。
 
+## 碎片治理 Playbook
+
+碎片不是一个单一问题，不能只靠“提高利用率”解决。需要先判断碎片类型，再选择动作。
+
+| 碎片类型 | 现象 | 治理动作 |
+| --- | --- | --- |
+| 节点内碎片 | 8 卡节点剩 1-2 张卡，大 job 进不来 | 小任务优先放 dev/batch 池，完整节点优先给大任务 |
+| CPU/GPU 碎片 | GPU 空闲但 CPU/memory 不足 | 资源模板 right-sizing，限制 CPU 超配，补齐内存节点 |
+| 拓扑碎片 | 总 GPU 够，但不在同一 rack/fabric | topology-aware scheduling，保留 fabric island，限制随意放置 |
+| Flavor 碎片 | 某型号排队，其他型号空闲 | 扩大兼容 flavor，建立替代规则，避免过度指定型号 |
+| MIG 碎片 | MIG instance 形态不匹配 | 统一 MIG profile，周期性重切，避免任意切分 |
+| 配额碎片 | 某 team 空闲，另一个 team 排队 | borrowing、cohort、fairshare、可解释抢占 |
+| 时间碎片 | 大 job 一直等，短任务不断插入 | backfill with deadline，reservation，gang-aware admission |
+
+治理要注意两点：
+
+1. 不要为了短期分配率牺牲长期可调度性。例如把 8 卡节点塞满零散小任务，可能让下一个 64 卡训练等很久。
+2. 不要把所有大节点都保留给大任务。否则短任务体验会恶化，空闲窗口也不能被利用。
+
+更好的做法是给调度器明确偏好：
+
+```text
+large gang job: prefer full nodes / same topology domain
+small job: prefer fragmented nodes / dev pool / smaller GPU flavor
+notebook: prefer preemptible fragmented capacity
+benchmark: require clean dedicated node pool
+```
+
+这样碎片治理就从人工搬任务，变成可配置的放置策略。
+
 ## 排队指标
 
 排队是资源不足、策略不合理和碎片的综合结果。
@@ -62877,6 +62972,40 @@ fragmentation_ratio = 1 - schedulable_for_pending / total_free
 - starvation task 数量。
 
 平均等待时间很容易误导。一个队列可能平均等待 10 分钟，但 512 GPU 训练任务等待 3 天。AI 集群应该按 job size 和 workload type 拆分排队指标。
+
+## 队列健康度
+
+队列治理不应该只看 queue length。一个健康队列应该同时满足：
+
+- 可解释：用户知道为什么 pending。
+- 可预测：等待时间有合理估计。
+- 可恢复：被抢占或失败后能重新进入队列。
+- 不饥饿：低优先级任务也不会无限期等待。
+- 不阻塞：大 job 不会因为零散小任务永远无法启动。
+
+建议增加这些队列指标：
+
+| 指标 | 说明 |
+| --- | --- |
+| admission latency | 从提交到被队列接受的时间 |
+| scheduling latency | 从 admitted 到开始运行的时间 |
+| pending reason age | 同一个 pending reason 持续多久 |
+| starvation age | 最老 pending job 等了多久 |
+| deadline miss rate | 有 deadline 的任务超时比例 |
+| requeue count | 被抢占、失败或重试后重新排队次数 |
+| backfill useful time | backfill 任务实际利用了多少空隙 |
+| reservation waste | reservation 留出的资源有多少没被用上 |
+
+一个实用规则是：
+
+```text
+queue length tells pressure
+pending reason tells bottleneck
+wait time distribution tells user pain
+starvation age tells fairness failure
+```
+
+当 pending reason 长期集中在 `insufficient GPU`，可能是真容量不足；如果集中在 `quota`，可能是配额策略问题；如果集中在 `topology`，则是碎片和放置问题。
 
 ## 公平性指标
 
@@ -62903,6 +63032,44 @@ fragmentation_ratio = 1 - schedulable_for_pending / total_free
 ```
 
 短时间内不公平可能是合理的，因为大训练需要一次性拿到很多 GPU；长期不公平才需要调整策略。
+
+## Request Right-Sizing
+
+资源请求不准，会直接制造碎片和低效。
+
+常见问题：
+
+- CPU request 过低，DataLoader 或 tokenizer 拖慢 GPU。
+- CPU request 过高，让节点 CPU 先满，GPU 调不出去。
+- memory request 过低，任务 OOM 或频繁 page cache 抖动。
+- memory request 过高，造成虚假碎片。
+- shared memory 没设够，训练或推理数据管道异常。
+- GPU request 过大，小任务占完整节点。
+- 本地 NVMe 未声明，运行后把节点缓存打满。
+
+right-sizing 不是让用户手工猜，而是基于历史运行给出建议：
+
+| 信号 | 建议动作 |
+| --- | --- |
+| GPU active 低、CPU 满 | 提高 CPU/GPU 比例或优化数据管道 |
+| GPU memory 长期低于 30% | 建议更小 GPU/MIG/更小 batch 规格 |
+| CPU request 高但实际低 | 下调默认 CPU request，释放可调度容量 |
+| OOM/restart 多 | 提高 memory request 或检查 batch/loader |
+| checkpoint 挤爆本地盘 | 显式声明 ephemeral storage/NVMe |
+| 大量小任务占大节点 | 引导到小 GPU、MIG 或 dev pool |
+
+Kubernetes 的 request/limit 决定调度和资源隔离的基础；Slurm 的 job request 同样决定排队、优先级和资源占用。AI 平台应该提供标准规格，而不是让每个用户从零填写。
+
+示例规格：
+
+```text
+notebook-small: 1 GPU, 8 CPU, 64Gi memory, preemptible
+finetune-8g: 8 GPU, 128 CPU, 1Ti memory, checkpoint required
+train-64g: 64 GPU, topology aware, same fabric island preferred
+infer-prod: GPU + CPU reserved, no best-effort, fixed node pool
+```
+
+规格越统一，调度器越容易做 bin packing、排队预测和容量规划。
 
 ## SLA 指标
 
@@ -63025,6 +63192,43 @@ network-heavy
 
 如果只看总 GPU 数，很容易把不可替代的 H100 需求用普通 GPU 空闲量掩盖。
 
+### 可用容量状态机
+
+容量不是只有“可用/不可用”。建议把 GPU 或节点容量分成状态：
+
+```text
+physical
+  -> healthy
+  -> schedulable
+  -> allocatable
+  -> usable_for_workload
+  -> productive
+```
+
+对应解释：
+
+| 状态 | 含义 |
+| --- | --- |
+| physical | 资产上存在 |
+| healthy | 通过健康检查，driver/GPU/NIC 正常 |
+| schedulable | 没有 drain/taint/维护限制，调度器可见 |
+| allocatable | CPU、memory、storage、GPU flavor 组合可分配 |
+| usable_for_workload | 满足某个 workload 的拓扑、环境、权限和队列要求 |
+| productive | 运行后产生有效产出 |
+
+容量报表应该同时展示这些状态。例如：
+
+```text
+H100 physical: 2048
+healthy: 2016
+schedulable: 1968
+allocatable now: 812
+usable for 256-GPU training: 512
+largest contiguous allocation: 128
+```
+
+这比“还有 812 张空闲 GPU”更接近真实容量。
+
 ## 成本指标
 
 成本治理要从“花了多少钱”走向“每单位有效产出多少钱”。
@@ -63055,6 +63259,36 @@ network-heavy
 - priority class。
 
 成本报表不能只按 namespace 或账号聚合。AI 系统更需要看到“哪个模型、哪个实验、哪个服务、哪个数据流程”在消耗资源。
+
+## Showback 与 Chargeback
+
+资源成本展示可以分两种：
+
+- Showback：把成本展示给团队，让大家知道资源消耗。
+- Chargeback：把成本真正计入预算或账单。
+
+研究平台早期通常先做 showback，避免一开始就让成本规则阻碍探索；生产平台或大规模共享集群则需要逐步进入 chargeback。
+
+建议至少展示：
+
+| 维度 | 指标 |
+| --- | --- |
+| Team / Project | GPU hour、成本、等待时间、失败成本 |
+| Workload Type | train、infer、notebook、batch、benchmark |
+| Model / Dataset | 哪些模型和数据流程最耗资源 |
+| Queue / Priority | 高优先级资源是否被滥用 |
+| Waste Class | idle、failed、waiting、overhead、reserved |
+| Output | token、request、checkpoint、eval、index |
+
+Chargeback 要谨慎处理几个问题：
+
+- 失败重试成本算谁。
+- 平台故障导致的浪费是否计入用户。
+- headroom 和系统保留成本如何分摊。
+- 共享模型缓存、镜像缓存、数据缓存如何归因。
+- 抢占造成的重算如何归因。
+
+如果成本规则不透明，用户会为了省账面成本做出错误行为，例如低估 request、绕过 checkpoint、隐藏任务类型。成本治理必须和准入、模板、观测一起设计。
 
 ## 能效指标
 
@@ -63144,6 +63378,48 @@ Slurm 常用：
 - `sstat` 看运行中 job 指标。
 
 Slurm accounting 对长期资源归因很重要，但 GPU active utilization、HBM、功耗等仍需要 DCGM 或其他 GPU telemetry 补齐。
+
+## 指标数据质量
+
+资源治理依赖指标，但指标本身也会出问题。常见数据质量问题包括：
+
+- GPU 指标缺卡、缺节点或标签不一致。
+- scheduler 记录的 allocation 和实际进程驻留时间不一致。
+- job 名字、team、project、queue 标签缺失。
+- Notebook 长期运行但没有 workload type。
+- 推理服务指标没有 model/version 标签。
+- 训练任务没有 run_id，无法和 checkpoint、日志、成本关联。
+- 节点时钟不同步，导致时间窗口错位。
+- 采样间隔太粗，漏掉短任务和尖峰。
+- failed job 没有记录失败原因。
+
+建议给所有 workload 统一注入标签：
+
+```text
+tenant
+project
+queue
+workload_type
+run_id
+image_digest
+model_id
+dataset_id
+node_pool
+gpu_flavor
+priority_class
+```
+
+同时要建立指标对账：
+
+| 对账项 | 目的 |
+| --- | --- |
+| scheduler allocation vs DCGM process/GPU active | 找出占用但不计算、或监控缺失 |
+| queue admitted time vs pod/job start time | 找出调度和启动延迟 |
+| job runtime vs application step/token logs | 找出启动、等待、失败和恢复开销 |
+| cost ledger vs usage ledger | 避免成本漏算或重复计算 |
+| node inventory vs telemetry targets | 发现监控采集缺口 |
+
+没有数据质量治理，dashboard 会给人一种“看起来很全”的错觉，但真正排障时却缺少关键字段。
 
 ## Dashboard 设计
 
@@ -63298,6 +63574,58 @@ expand node pool
 - H100 和 A100 分层。
 - NVMe-heavy 节点给数据任务。
 
+## 治理闭环：从指标到动作
+
+资源治理最终要形成闭环，而不是停在报表。
+
+一个实用流程：
+
+```text
+detect
+  -> classify
+  -> attribute
+  -> decide
+  -> act
+  -> verify
+```
+
+示例：
+
+| 信号 | 分类 | 归因 | 动作 | 验证 |
+| --- | --- | --- | --- | --- |
+| 8 卡训练长期 pending | 碎片 | 小任务占满大节点 | 调整小任务 node affinity，启用 backfill 限制 | largest contiguous allocation 上升 |
+| GPU 分配高但 SM 低 | idle/waiting | Notebook idle、DataLoader 慢 | idle 回收、提高 CPU/GPU、优化数据路径 | active_util 上升 |
+| 推理 p99 上升 | SLA | 与 batch 混部和模型加载冲突 | 暂停低优先级 backfill，增加推理 headroom | p99 回落 |
+| checkpoint duration 暴涨 | 存储瓶颈 | 多 job 同时写共享 FS | checkpoint 错峰、异步保存、本地 staging | checkpoint p95 下降 |
+| 某 team 长期等待 | 公平性 | quota 过小或 borrowing 不足 | 调整 guaranteed/borrow limit | wait time p95 下降 |
+
+每个治理动作都要有回看指标，否则无法判断它是优化还是只是移动问题。
+
+## 自动化策略
+
+随着集群变大，纯人工治理会失效。可以逐步引入自动化，但要避免直接让自动化改动高风险策略。
+
+适合自动化的动作：
+
+- Notebook idle 提醒和回收。
+- 长期 pending reason 聚合。
+- 资源 request 推荐。
+- failed job 原因分类。
+- image pull / startup 慢任务标记。
+- GPU idle 但显存占用的任务告警。
+- 低优先级 backfill 开关建议。
+
+需要人工审批或灰度的动作：
+
+- 调整队列 quota。
+- 改 priority 和 preemption 策略。
+- 改 node pool 归属。
+- 驱逐运行中的大训练。
+- 改 production inference headroom。
+- 调整采购或扩容计划。
+
+自动化的第一目标不是“自动做决定”，而是把事实整理清楚，让平台团队更快做正确决定。
+
 ## 容量规划方法
 
 容量规划可以按三步做。
@@ -63341,6 +63669,34 @@ data pipeline: storage-heavy, often CPU-bound
 
 容量规划不是一次性表格，而是持续更新的模型。
 
+## 采购与扩容决策
+
+容量规划最终会进入采购、租用或扩容决策。这里最容易犯的错误是：看到 GPU 排队，就直接买同一种 GPU。
+
+更稳妥的决策问题是：
+
+| 问题 | 可能结论 |
+| --- | --- |
+| 排队是否由某个 flavor 造成 | 买对应 flavor，或放宽兼容规则 |
+| 排队是否由 gang/topology 造成 | 增加同构 rack/fabric island，而不是零散加卡 |
+| GPU 空闲但作业慢 | 先补 CPU、内存、存储、网络或优化数据管道 |
+| 推理 p99 不稳 | 增加 headroom、模型缓存、路由能力，而不只是 GPU |
+| Notebook idle 高 | 先做治理和回收，不急着扩容 dev 池 |
+| checkpoint 挤占训练 | 扩存储带宽或调整 checkpoint 策略 |
+| H100 排队、A100 空闲 | 判断 workload 是否真的需要 H100 |
+
+扩容方案也要按用途拆分：
+
+```text
+training scale-out: topology-consistent GPU islands
+inference scale-out: low-jitter nodes + local model cache
+dev capacity: preemptible / smaller GPU / MIG
+storage-heavy jobs: CPU + memory + NVMe + network
+benchmark: small but stable dedicated pool
+```
+
+买更多 GPU 只是容量治理的一种动作，不是默认答案。
+
 ## 常见误区
 
 ### 误区一：GPU 分配率越高越好
@@ -63370,22 +63726,31 @@ AI 集群能效的关键是单位能耗的有效产出，而不是单纯让 GPU 
 ## 设计检查清单
 
 - 是否区分 GPU 分配率、活跃率、有效吞吐和价值产出。
+- 是否建立 capacity、demand、usage、output 四本账。
+- 是否能把 GPU hour 拆成 productive、idle、waiting、failed、overhead、reserved。
 - 是否采集 DCGM/NVML 级 GPU 指标。
 - 是否采集训练、推理和数据任务的应用层产出指标。
 - 是否能看到 pending reason。
+- 是否能计算 starvation age、admission latency 和 scheduling latency。
 - 是否能按 queue、team、project、GPU type 拆分等待时间。
 - 是否能度量资源碎片，而不只是空闲 GPU。
 - 是否能计算 largest contiguous allocation。
+- 是否有碎片治理 playbook。
+- 是否基于历史运行做 request right-sizing。
 - 是否区分 guaranteed quota、borrowed quota 和实际使用。
 - 是否能看到 Notebook idle GPU。
 - 是否能看到 checkpoint duration 和 DataLoader wait。
 - 是否能把成本归因到 team/project/workload/model。
+- 是否区分 showback 和 chargeback。
 - 是否有推理 p99 与混部任务的关联分析。
 - 是否有 headroom 策略。
+- 是否能展示 physical、healthy、schedulable、allocatable、usable_for_workload 等容量状态。
 - 是否按 GPU flavor 做容量规划。
 - 是否能识别 GPU 分配高但功耗/SM 利用低的任务。
 - 是否能识别高功耗低吞吐任务。
+- 是否检查指标标签、run_id、tenant、model、dataset 等数据质量。
 - 是否有 queue rebalancing 和 defragmentation 流程。
+- 是否有从指标到动作再到验证的治理闭环。
 - 是否有面向管理、运维、用户和单任务的不同 dashboard。
 
 ## 小结
@@ -63414,6 +63779,7 @@ capacity
 - [Kueue Prometheus Metrics](https://kueue.sigs.k8s.io/docs/reference/metrics/)
 - [Slurm sacct](https://slurm.schedmd.com/sacct.html)
 - [Slurm squeue](https://slurm.schedmd.com/squeue.html)
+- [Kubernetes Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
 
 ---
 
