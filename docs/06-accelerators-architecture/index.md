@@ -39,4 +39,4 @@ updated: 2026-06-11
 - [互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC](interconnect-communication-architecture.md)：解释片内 NoC、chiplet interconnect、PCIe、NVLink/NVSwitch、CXL、GPU Direct RDMA、InfiniBand/RoCE、多 rail、collective 算法、NCCL/RCCL、rank mapping、拓扑感知并行、通信 benchmark、故障排查和互连可观测性。
 - [功耗、散热、频率与可靠性：从峰值算力到持续吞吐](power-thermal-reliability.md)：解释从单卡到整柜的功耗/散热约束链、power limit、power capping、clock、throttling、遥测指标、热稳态实验、训练/推理能效、ECC、RAS、SDC、稳态 benchmark、故障诊断和 power-aware scheduling。
 - [架构取舍：GPU、NPU、TPU、ASIC 与 FPGA](accelerator-architecture-tradeoffs.md)：解释 GPU、TPU、NPU、AI ASIC、FPGA 的通用性/专用性、执行模型、存储层次、精度支持、软件栈成熟度、算子覆盖、动态性、扩展方式、迁移成本、锁定风险、训练/推理分开评估、TCO、混合架构和 workload 匹配。
-- [Workload Mapping：算子、Compiler、Runtime 与硬件执行](workload-mapping-compiler-runtime-interface.md)：解释模型、IR、算子、kernel、layout、tiling、fusion、runtime、dynamic shape、fallback 和 parallel mapping 如何共同决定硬件有效吞吐。
+- [Workload Mapping：算子、Compiler、Runtime 与硬件执行](workload-mapping-compiler-runtime-interface.md)：解释模型、IR、算子、kernel、layout、tiling、fusion、memory planning、runtime、training/inference mapping、dynamic shape、guard/recompile、fallback、parallel mapping、profiler 证据、mapping manifest 和 correctness gate 如何共同决定硬件有效吞吐。

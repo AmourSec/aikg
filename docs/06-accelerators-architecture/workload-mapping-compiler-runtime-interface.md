@@ -4,7 +4,7 @@ domain: accelerators-architecture
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-11
+updated: 2026-06-12
 ---
 
 # Workload Mapping：算子、Compiler、Runtime 与硬件执行
@@ -67,6 +67,35 @@ Workload mapping 可以理解为一组选择：
 
 所以 workload mapping 不是单个编译器优化，也不是单个 kernel 调参。它横跨模型、图编译、算子库、kernel、运行时、显存管理和分布式通信。
 
+## Mapping 决策流程
+
+做 workload mapping 时，可以按一条固定路径分析：
+
+```text
+1. 定义 workload
+   -> 训练 / 推理 / Prefill / Decode / MoE / 多模态 / RAG
+
+2. 统计 shape inventory
+   -> batch、sequence length、hidden、head_dim、expert tokens、image size
+
+3. 拆出热路径
+   -> 哪些 op、哪些 kernel、哪些 communication 占主要时间或 p99
+
+4. 选择数据表示
+   -> dtype、layout、sharding、KV Cache 格式、scale metadata
+
+5. 选择执行路径
+   -> library call、generated kernel、custom kernel、collective、fallback
+
+6. 规划内存和调度
+   -> buffer lifetime、workspace、stream、overlap、cache、allocator
+
+7. 验证端到端
+   -> 性能、质量、数值正确性、稳定性、能效、可复现性
+```
+
+这个流程的关键是不要从“我要优化某个 kernel”开始，而要从真实 workload 的形状、热路径和关键路径开始。否则很容易优化了一个漂亮的 microbenchmark，却没有改善端到端训练 step 或推理 p99。
+
 ## 为什么 Mapping 会决定真实性能
 
 以一个 Transformer layer 为例，表面上它只是：
@@ -117,6 +146,62 @@ Attention + MLP + Norm + Residual
 - TP group 跨节点，层内 collective 被网络拖慢。
 
 这些问题不是“硬件不够快”，而是 mapping 没有把 workload 放到合适的执行路径上。
+
+## 端到端例子：一个 Decode Step
+
+LLM Decode 看起来只是“生成下一个 token”，但一个请求在硬件上会变成一串 mapping 决策：
+
+```text
+active requests
+  -> scheduler 组成 batch
+  -> 读取每个请求的 KV Cache block table
+  -> Q projection / K/V update
+  -> attention 读取历史 KV
+  -> MLP GEMM
+  -> logits projection
+  -> sampling / top-k / top-p
+  -> 写回新 token 和 KV Cache
+```
+
+每一步都有不同瓶颈：
+
+| 阶段 | 关键 mapping |
+| --- | --- |
+| batch 调度 | 请求合并、SLO、长短请求混排、padding |
+| KV Cache | page/block layout、cache locality、量化、碎片 |
+| attention | MHA/MQA/GQA、PagedAttention、Flash/Paged kernel |
+| GEMM | batch size、dtype、tile、Tensor Core 对齐 |
+| logits/sampling | vocab shard、top-k/top-p、CPU/GPU fallback |
+| runtime | stream、memory pool、CUDA Graph、recompile、cache eviction |
+
+这解释了为什么 Decode 的优化不能只看 GEMM。很多时候 TPOT 和 p99 受 KV Cache layout、batch scheduler、sampling fallback 或 runtime allocator 影响。
+
+## 端到端例子：一个训练 Step
+
+训练 step 的 mapping 又是另一种形态：
+
+```text
+data batch
+  -> forward
+  -> activation save / checkpoint
+  -> loss
+  -> backward
+  -> gradient communication
+  -> optimizer step
+  -> checkpoint / logging / eval hooks
+```
+
+关键 mapping 包括：
+
+- activation 是否保存、重算或 offload。
+- forward/backward 是否被 compiler capture。
+- backward bucket 何时发起通信。
+- FSDP/ZeRO 参数 all-gather 是否能 prefetch。
+- optimizer state 是 FP32、低精度还是 sharded。
+- gradient communication 是否低精度、是否 overlap。
+- checkpoint 是否阻塞训练关键路径。
+
+训练 mapping 的目标不是单个 kernel 最快，而是稳定降低 step time，并且不破坏收敛、数值稳定和可恢复性。
 
 ## 从模型到硬件的层次
 
@@ -173,6 +258,16 @@ Graph / IR 的作用是让编译器能看见计算结构，并做优化：
 - lowering。
 
 OpenXLA/XLA、StableHLO 和 MLIR 这类项目的核心价值就在于为 tensor computation 提供可分析、可变换、可 lowering 的中间表示。没有 IR，优化就只能停留在单个 op 或手写 kernel 层面。
+
+IR 不是只有一种层次。常见做法是多层 IR：
+
+| 层次 | 关注点 | 例子 |
+| --- | --- | --- |
+| 高层 graph | 模型语义、op 依赖、shape、dtype | FX、ONNX、StableHLO/HLO |
+| 中层 tensor IR | fusion、layout、buffer、loop/tile | MLIR dialect、compiler internal IR |
+| 低层 kernel IR | thread/block、vector、memory、指令选择 | Triton IR、LLVM IR、PTX/ISA 之前的 IR |
+
+多层 IR 的好处是：高层可以看见全图结构，低层可以表达硬件细节。一个成熟编译栈通常要在这些层之间传递 shape、layout、dtype、alias、lifetime 和 target hardware 信息。
 
 ### 算子层
 
@@ -383,6 +478,29 @@ Lowering 的选择会直接影响性能。
 
 编译器要根据 shape、dtype、layout、target hardware 和 runtime 信息选择。
 
+### Lowering 示例
+
+以 `linear -> bias -> activation` 为例，可能有多种 lowering：
+
+| lowering | 执行方式 | 适合情况 |
+| --- | --- | --- |
+| library GEMM + separate bias + separate activation | 调库后多个小 kernel | 简单、保守、容易跑通 |
+| GEMM epilogue fusion | bias/activation 放进 GEMM epilogue | 减少 HBM 写回和 kernel launch |
+| generated fused kernel | 编译器生成完整 fused op | shape 固定、fusion 收益大 |
+| custom kernel | 手写 CUDA/Triton/vendor kernel | 热路径明确、需要极致优化 |
+| fallback decomposition | 分解成基础 op 或 CPU 路径 | 兼容但可能很慢 |
+
+Lowering 的核心不是“哪个方式最高级”，而是当前 shape、dtype、layout、硬件和 runtime 下哪个端到端成本最低。
+
+Attention 也是类似：
+
+- 短序列、小 batch 可能被 launch overhead 主导。
+- 长序列 Prefill 更适合 IO-aware attention kernel。
+- Decode 更关心 KV Cache layout、page table 和小 batch GEMM。
+- Sparse/Sliding Window attention 要看 pattern 是否适合 block-level kernel。
+
+同一个数学 op，在不同 workload 阶段可能需要完全不同的 lowering。
+
 ### Autotuning
 
 很多 kernel 参数没有一个永远最优的值。
@@ -408,6 +526,37 @@ Autotuning 的问题是：
 - 缓存和版本管理复杂。
 
 所以生产系统经常要做 shape bucketing、预编译、warmup 和 autotune cache。
+
+### Guard、Specialization 与 Recompile
+
+很多编译系统会根据 shape、dtype、stride、device、requires_grad、control flow 等条件生成专门版本。
+
+这些条件可以理解为 guard：
+
+```text
+如果输入满足这些条件
+  使用已编译版本
+否则
+  graph break / recompile / fallback
+```
+
+Specialization 可以让常见 shape 很快，但会带来风险：
+
+- 线上 shape 太散，编译缓存膨胀。
+- 首次请求遇到冷编译，尾延迟升高。
+- guard 频繁失败，优化路径不稳定。
+- 不同版本 driver 或 compiler 生成的 kernel 不一致。
+
+生产系统需要记录：
+
+- compiled graph 数量。
+- recompile 次数。
+- guard failure 原因。
+- compile latency。
+- cache hit rate。
+- 每个 compiled artifact 对应的 shape bucket。
+
+否则“编译器优化”可能在用户侧表现为不可解释的延迟尖刺。
 
 ## Runtime Interface：编译器和硬件之间的合约
 
@@ -450,6 +599,67 @@ hardware 说：
 - collective 和 compute 没有并行。
 - dynamic shape 导致频繁重新编译。
 - error 无法定位到具体 kernel 或 op。
+
+## Memory Planning 与 Buffer Lifetime
+
+Memory planning 是 workload mapping 中很容易被低估的一层。
+
+编译器和 runtime 要决定：
+
+- 哪些 tensor 需要真实分配。
+- 哪些 tensor 只是 view 或 metadata change。
+- 中间 buffer 何时创建、何时释放、能否复用。
+- workspace 大小如何选择。
+- activation 保存还是重算。
+- KV Cache block 如何分配、回收和压缩。
+- communication buffer 和 compute buffer 是否能重叠。
+- CUDA Graph 或 graph executor 是否要求稳定地址。
+
+一个简单例子：
+
+```text
+op A output -> op B input -> op C input
+```
+
+如果 `op A` 的输出只被 `op B` 使用一次，且 `op B` 可以融合进 `op A` 或复用同一 buffer，那么就可能省掉一次 HBM 写回和一次 allocation。反过来，如果某个 tensor 被多个下游 op 使用，或者 alias 关系复杂，编译器就不能随便覆盖它。
+
+Memory planning 常见问题：
+
+- allocator fragmentation 导致明明总显存够却 OOM。
+- temporary buffer 峰值超过预期。
+- dynamic batch 让 KV Cache 空洞增多。
+- graph break 让编译器看不见 tensor lifetime。
+- custom op 隐藏内部 allocation。
+- communication workspace 和 model activation 同时达到峰值。
+
+所以 profiler 里除了看 kernel time，还要看 allocation timeline、peak memory、temporary buffer、copy kernel 和 fragmentation。
+
+## Correctness Gate
+
+Mapping 优化必须先保证正确性。
+
+每次改变 layout、dtype、fusion、tiling、parallel mapping 或 lowering，都可能引入错误：
+
+- stride/index 算错。
+- mask 边界处理错误。
+- reduction 顺序改变导致数值差异。
+- FP8/INT8 scale 管理错误。
+- parallel shard 拼接错位。
+- dropout/RNG 状态不一致。
+- dynamic shape 分支漏测。
+- fused kernel 没处理特殊值。
+
+建议设置 correctness gate：
+
+| 层次 | 检查 |
+| --- | --- |
+| Kernel | 与 reference kernel 对比，覆盖边界 shape 和 dtype |
+| Operator | forward/backward 数值误差、NaN/Inf、极值输入 |
+| Graph | compiled vs eager、fusion on/off、dynamic shape |
+| Distributed | 单卡 vs 多卡、不同 rank mapping、checkpoint/resume |
+| End-to-end | loss curve、eval、生成质量、p99 和异常请求 |
+
+性能优化如果没有 correctness gate，很容易把“跑得快”建立在隐蔽错误上。
 
 ## 数据 Layout 是第一等问题
 
@@ -623,6 +833,88 @@ Parallel mapping 要匹配互连拓扑。
 
 多卡性能差，常常不是单卡 kernel 差，而是 parallel mapping 把高频通信放到了错误拓扑上。
 
+## Training Mapping
+
+训练 mapping 和推理 mapping 不同，因为训练有 backward、optimizer 和长期状态。
+
+训练 mapping 要处理：
+
+| 对象 | Mapping 问题 |
+| --- | --- |
+| forward activation | 保存、重算、offload、shard、dtype |
+| backward graph | autograd capture、fusion、通信启动时机 |
+| gradients | bucket、reduce-scatter/all-reduce、dtype、overlap |
+| parameters | FSDP/ZeRO shard、all-gather、prefetch、layout |
+| optimizer state | FP32/低精度、shard、CPU/NVMe offload |
+| RNG/dropout | checkpointing 和 recomputation 的一致性 |
+| checkpoint | shard format、异步保存、resume 正确性 |
+
+训练 mapping 的几个典型目标：
+
+- 降低 peak activation memory。
+- 让 backward communication 尽量 overlap。
+- 避免 optimizer step 成为 memory-bound 长尾。
+- 让 FSDP/ZeRO all-gather 不阻塞 forward。
+- 保持 loss curve 和 baseline 一致。
+- 让 checkpoint/resume 后状态完整。
+
+因此训练优化要看 step timeline，而不只看 forward kernel。
+
+## Inference Mapping
+
+推理 mapping 更关注请求调度、KV Cache 和尾延迟。
+
+推理 mapping 要处理：
+
+| 对象 | Mapping 问题 |
+| --- | --- |
+| request batch | continuous batching、admission control、SLO |
+| prefill | 长 prompt GEMM/attention、chunked prefill、P/D 分离 |
+| decode | 小 batch GEMM、KV Cache bandwidth、TPOT |
+| KV Cache | block size、page table、layout、量化、eviction |
+| prefix cache | cache key、共享前缀、命中率、内存压力 |
+| logits/sampling | vocab shard、top-k/top-p、CPU fallback |
+| multi-tenant | 模型共存、显存池、QoS、隔离 |
+
+推理 mapping 的几个典型目标：
+
+- 降低 TTFT。
+- 降低 TPOT。
+- 提高 batch throughput。
+- 控制 p95/p99 latency。
+- 提高 KV Cache 利用率。
+- 减少 fallback 和冷编译。
+
+推理系统里，runtime mapping 往往和 kernel mapping 一样重要。一个 attention kernel 很快，但 scheduler、cache eviction 或 allocator 抖动，仍然会让线上 p99 变差。
+
+## Target Backend 差异
+
+同一个 graph 在不同硬件后端上，最佳 mapping 往往不同。
+
+| 后端差异 | 影响 |
+| --- | --- |
+| 矩阵指令 tile | GEMM/attention tile、alignment、padding |
+| SRAM/shared memory 大小 | fusion、tiling、FlashAttention block size |
+| register file | occupancy、spill、fusion 边界 |
+| HBM 带宽 | memory-bound op、KV Cache、layout |
+| cache 行为 | blocking、program ordering、reuse |
+| 低精度格式 | FP8/INT8/INT4 路径、accumulator、scale |
+| interconnect | TP/EP/DP group、collective algorithm |
+| compiler backend | lowering、fusion、dynamic shape、fallback |
+
+因此跨硬件迁移时，不能只改 device name。需要重新验证：
+
+- shape inventory。
+- layout。
+- kernel selection。
+- autotune cache。
+- parallel group。
+- precision policy。
+- fallback log。
+- profiler evidence。
+
+硬件越专用，mapping 对 compiler/runtime 的依赖通常越强。
+
 ## Dynamic Shape 与线上推理
 
 训练 benchmark 常常用固定 batch 和 sequence length。线上推理不是这样。
@@ -763,6 +1055,83 @@ Workload mapping 的 benchmark 要能定位映射问题。
 - 哪个通信暴露在 critical path。
 - 哪个 runtime decision 导致尾延迟。
 
+## Profiler 证据矩阵
+
+Workload mapping 的判断必须靠证据。
+
+常见现象和证据如下：
+
+| 现象 | 需要看的证据 | 可能方向 |
+| --- | --- | --- |
+| Tensor Core 利用率低 | kernel metrics、instruction mix、shape、dtype | tile/alignment/dtype 不匹配 |
+| HBM traffic 高 | memory throughput、bytes moved、copy/transpose kernel | layout、fusion、temporary buffer |
+| 小 kernel 很多 | profiler timeline、kernel duration、launch count | fusion、CUDA Graph、runtime batching |
+| recompile 多 | compiler log、guard failure、compiled graph cache | shape bucketing、dynamic shape、预编译 |
+| CPU activity 高 | CPU timeline、H2D/D2H copy、fallback log | unsupported op、synchronization、sampling |
+| communication 暴露 | NCCL/RCCL timeline、stream overlap、rank trace | bucket、rank mapping、topology、overlap |
+| p99 抖动 | request trace、allocator、KV cache、compile event | runtime scheduling、cache、冷编译 |
+| OOM 或碎片 | allocation timeline、reserved/active memory、KV blocks | memory planning、pool、block size |
+
+如果没有 profiler 证据，很多优化只是猜测。Mapping 优化的基本流程应该是：
+
+```text
+假设瓶颈
+  -> 找 profiler 证据
+  -> 改 mapping
+  -> 做 A/B benchmark
+  -> 检查正确性和端到端指标
+```
+
+## Mapping Manifest
+
+为了让 benchmark 可复现，建议为每次实验保存 mapping manifest。
+
+至少包括：
+
+```yaml
+model:
+  name: ...
+  commit: ...
+  dtype: ...
+  shapes: ...
+
+compiler:
+  framework: ...
+  compiler: ...
+  mode: ...
+  dynamic_shape: ...
+  graph_breaks: ...
+  compiled_graphs: ...
+
+runtime:
+  batcher: ...
+  kv_cache_layout: ...
+  memory_pool: ...
+  cuda_graph: ...
+  streams: ...
+
+kernels:
+  attention: ...
+  gemm_backend: ...
+  custom_kernels: ...
+  autotune_cache: ...
+
+parallelism:
+  dp: ...
+  tp: ...
+  pp: ...
+  ep: ...
+  rank_mapping: ...
+
+hardware:
+  accelerator: ...
+  driver: ...
+  interconnect: ...
+  power_policy: ...
+```
+
+没有 manifest，就很难解释为什么同一模型在不同日期、不同节点、不同 driver 上性能不同。
+
 ## 常见优化方向
 
 ### 建立 Shape Inventory
@@ -884,14 +1253,18 @@ Fusion 可以减少 HBM IO，但也可能增加 register pressure、降低 occup
 - dtype 是否走到硬件低精度路径。
 - accumulator 和 scale 是否正确。
 - layout 是否导致额外 transpose。
+- memory planning 是否能复用 buffer、控制峰值和碎片。
 - fusion 是否减少 HBM IO。
 - tile 是否匹配矩阵单元。
 - register/shared memory 压力是否合理。
 - dynamic shape 是否频繁 recompile。
+- guard failure、compiled graph 数量和 compile latency 是否可控。
 - runtime 是否有多余同步。
 - memory allocator 是否有碎片。
 - communication 是否能 overlap。
 - parallel group 是否匹配拓扑。
+- correctness gate 是否覆盖 kernel、operator、graph、distributed 和 end-to-end。
+- mapping manifest 是否记录 shape、compiler、runtime、kernel、parallelism 和 hardware。
 - benchmark 是否覆盖真实 shape 分布。
 
 ## 小结
@@ -914,6 +1287,8 @@ benchmark 告诉我们 mapping 是否真的有效
 - 为什么 dynamic shape 会造成延迟尖刺。
 - 为什么 unsupported op 会毁掉整条链路。
 - 为什么优化 kernel 之外还要优化 runtime 和 layout。
+- 为什么训练和推理需要不同的 mapping 策略。
+- 为什么 benchmark 必须同时保存 profiler 证据和 mapping manifest。
 
 从硬件研发和 AI Infra 的角度看，真正有竞争力的系统不是只有快芯片，而是能把真实 workload 稳定映射到硬件上的完整栈。
 
