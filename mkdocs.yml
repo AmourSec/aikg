@@ -116,6 +116,7 @@ nav:
       - 参数高效微调：LoRA、QLoRA 与 Adapter 系统优化: 04-training-systems/parameter-efficient-finetuning-lora-qlora.md
       - 后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角: 04-training-systems/post-training-workloads-sft-dpo-rlhf-grpo.md
       - Muon 优化器: 04-training-systems/muon-optimizer.md
+      - Evaluation、Validation 与 Checkpoint Selection: 04-training-systems/evaluation-validation-checkpoint-selection.md
       - Checkpoint、Resume 与容错: 04-training-systems/checkpoint-resume-fault-tolerance.md
       - 训练性能指标与扩展效率: 04-training-systems/training-performance-metrics-scaling.md
       - 训练性能剖析与 Benchmark: 04-training-systems/training-benchmark-profiling.md
