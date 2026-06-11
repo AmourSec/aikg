@@ -31,7 +31,7 @@ updated: 2026-06-11
 | 5 | [Data Parallel 与梯度同步](data-parallel-gradient-sync.md) | 理解数据并行、AllReduce、gradient bucketing 和同步开销。 |
 | 6 | [ZeRO 与 FSDP](zero-fsdp.md) | 学习参数、梯度和 optimizer state sharding 如何降低重复显存。 |
 | 7 | [Tensor Parallel](tensor-parallel.md) | 学习把单层矩阵和 attention 计算切到多 GPU 的方法。 |
-| 8 | Pipeline Parallel | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
+| 8 | [Pipeline Parallel](pipeline-parallel.md) | 学习层间切分、micro-batch 流水和 pipeline bubble。 |
 | 9 | Expert Parallel 与 MoE 训练 | 处理专家路由、token dispatch、负载均衡和跨卡通信。 |
 | 10 | Activation Checkpointing | 用重计算换显存，降低长上下文和大 batch 的 activation 压力。 |
 | 11 | 混合精度训练 | 理解 FP16、BF16、FP8、loss scaling 和数值稳定性。 |
@@ -90,11 +90,7 @@ Tensor Parallel 把单层里的大矩阵计算拆到多张 GPU，常用于单卡
 
 Pipeline Parallel 把模型不同层放到不同 GPU，并用 micro-batch 形成流水线。它能降低单卡权重压力，但会引入 pipeline bubble。
 
-本节后续重点回答：
-
-- pipeline stage 如何划分。
-- micro-batch 数量如何影响 bubble。
-- 1F1B 等调度如何改善流水线利用率。
+详见：[Pipeline Parallel](pipeline-parallel.md)
 
 ## Expert Parallel 与 MoE 训练
 
