@@ -4,7 +4,7 @@ domain: inference-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-08
+updated: 2026-06-10
 ---
 
 # MoE 模型推理优化
@@ -125,6 +125,10 @@ Expert Parallel 的好处是：
 - 跨节点 expert parallel 对网络要求很高。
 
 Expert Parallel 解决的是专家权重放置和容量问题，但会引入通信和负载均衡问题。
+
+EP size 会进一步决定专家并行组有多大。大 EP / 小 EP 会改变每卡专家数、all-to-all 范围、DP 副本数和 Prefill/Decode 延迟取舍。
+
+延伸阅读：[EP Size 与大 EP / 小 EP](ep-size-large-small-ep.md)
 
 ## Tensor Parallel 与 Expert Parallel
 

@@ -79,6 +79,7 @@ nav:
       - Speculative Decoding: 03-inference-systems/speculative-decoding.md
       - Prefill/Decode 分离部署: 03-inference-systems/prefill-decode-disaggregation.md
       - MoE 模型推理优化: 03-inference-systems/moe-inference-optimization.md
+      - EP Size 与大 EP / 小 EP: 03-inference-systems/ep-size-large-small-ep.md
       - 单机推理服务架构: 03-inference-systems/single-node-serving-architecture.md
       - 多机分布式推理: 03-inference-systems/distributed-inference.md
       - 缓存体系: 03-inference-systems/cache-system.md

@@ -42,11 +42,12 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [Speculative Decoding](https://amoursec.github.io/aikg/03-inference-systems/speculative-decoding/): Speculative Decoding 用 draft 和 verify 减少目标模型逐 token Decode 等待。
 - [Prefill/Decode 分离部署](https://amoursec.github.io/aikg/03-inference-systems/prefill-decode-disaggregation/): Prefill/Decode 分离部署用独立资源池和 KV 传输减少两阶段互相干扰。
 - [MoE 模型推理优化](https://amoursec.github.io/aikg/03-inference-systems/moe-inference-optimization/): MoE 推理优化关注专家路由、dispatch/combine、负载不均、通信和专家权重放置。
+- [EP Size 与大 EP / 小 EP](https://amoursec.github.io/aikg/03-inference-systems/ep-size-large-small-ep/): EP Size 与大 EP / 小 EP 说明 MoE 专家并行大小如何影响每卡专家显存、all-to-all 通信范围、DP 副本、Prefill/Decode 和尾延迟。
 - [单机推理服务架构](https://amoursec.github.io/aikg/03-inference-systems/single-node-serving-architecture/): 单机推理服务架构梳理 API、tokenizer、scheduler、GPU executor、KV Cache、streaming 和可观测性。
-- [多机分布式推理](https://amoursec.github.io/aikg/03-inference-systems/distributed-inference/): 多机分布式推理关注 data/tensor/pipeline/expert parallel、通信、路由、KV Cache 状态和故障恢复。
 
 ## Optional Documents
 
+- [多机分布式推理](https://amoursec.github.io/aikg/03-inference-systems/distributed-inference/): 多机分布式推理关注 data/tensor/pipeline/expert parallel、通信、路由、KV Cache 状态和故障恢复。
 - [缓存体系](https://amoursec.github.io/aikg/03-inference-systems/cache-system/): 缓存体系统一梳理 query、embedding、retrieval、prefix、KV、tool result、response 和 model artifact cache。
 - [Benchmark 方法](https://amoursec.github.io/aikg/03-inference-systems/benchmark-methodology/): Benchmark 方法说明如何设计可复现的推理压测 workload、指标、SLO 和实验记录。
 - [vLLM](https://amoursec.github.io/aikg/03-inference-systems/vllm/): vLLM 作为现代 LLM serving 引擎案例，串联 PagedAttention、continuous batching、KV Cache、OpenAI-compatible serving 和性能调优。
@@ -54,7 +55,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [SGLang](https://amoursec.github.io/aikg/03-inference-systems/sglang/): SGLang 作为结构化生成和高性能 runtime 案例，串联 RadixAttention、prefix reuse、structured outputs、RAG/Agent 和多模态 serving。
 - [RAG 与 Agent 推理负载](https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/): RAG 与 Agent 作为复合推理 workload，拆解检索、rerank、context packing、工具调用、多轮 LLM 调用、缓存、容量、可靠性和端到端 benchmark。
 - [Benchmark 方法与性能剖析](https://amoursec.github.io/aikg/03-inference-systems/benchmark-profiling/): Benchmark 方法与性能剖析连接 benchmark 现象、trace、profiling、队列分析、GPU timeline、KV Cache、网络瓶颈和容量模型。
-- [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口。
+- [训练系统与优化](https://amoursec.github.io/aikg/04-training-systems/): 训练系统与优化主题入口，覆盖训练生命周期、并行策略、通信重叠、FLUX、Muon 优化器、checkpoint 和训练 benchmark。
 - [训练任务生命周期](https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/): 训练任务生命周期从数据读取、forward、loss、backward、gradient sync、optimizer step 到 checkpoint 建立训练系统端到端视角。
 - [Kernel、算子与编译优化](https://amoursec.github.io/aikg/05-kernels-compilers/): Kernel、算子与编译优化主题入口。
 - [Attention 机制与计算模式](https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/): Attention 机制与计算模式区分 Dense Attention、Sparse Attention、FlashAttention 和 PagedAttention，解释 attention pattern、长上下文成本、显存 IO 和 kernel 执行效率。
@@ -99,6 +100,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [03-inference-systems/speculative-decoding.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/speculative-decoding.md)
 - [03-inference-systems/prefill-decode-disaggregation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/prefill-decode-disaggregation.md)
 - [03-inference-systems/moe-inference-optimization.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/moe-inference-optimization.md)
+- [03-inference-systems/ep-size-large-small-ep.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/ep-size-large-small-ep.md)
 - [03-inference-systems/single-node-serving-architecture.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/single-node-serving-architecture.md)
 - [03-inference-systems/distributed-inference.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/distributed-inference.md)
 - [03-inference-systems/cache-system.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/cache-system.md)
