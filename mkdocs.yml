@@ -101,6 +101,7 @@ nav:
       - Pipeline Parallel: 04-training-systems/pipeline-parallel.md
       - Expert Parallel 与 MoE 训练: 04-training-systems/expert-parallel-moe-training.md
       - Activation Checkpointing: 04-training-systems/activation-checkpointing.md
+      - 混合精度训练: 04-training-systems/mixed-precision-training.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
