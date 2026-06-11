@@ -135,6 +135,7 @@ nav:
       - 环境可复现：镜像、驱动、CUDA 与依赖锁定: 07-cluster-infra/environment-reproducibility-containers.md
       - 混合集群与多租户隔离：训练、推理、Notebook 与批处理共存: 07-cluster-infra/mixed-workload-multitenancy-isolation.md
       - 资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐: 07-cluster-infra/resource-utilization-fragmentation-capacity.md
+      - 节点生命周期与集群运维：交付、验收、入池、维护与下线: 07-cluster-infra/node-lifecycle-health-maintenance.md
   - 性能分析、Benchmark 与容量建模:
       - 概览: 08-benchmark-capacity/index.md
   - 可靠性、可观测性与故障复盘:

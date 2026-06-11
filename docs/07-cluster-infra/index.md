@@ -40,3 +40,4 @@ updated: 2026-05-30
 - [环境可复现：镜像、驱动、CUDA 与依赖锁定](environment-reproducibility-containers.md)：解释 AI 任务环境的硬件、host driver、CUDA、容器镜像、Python/Conda lock、数据模型 artifact、run manifest、随机性控制和升级验证。
 - [混合集群与多租户隔离：训练、推理、Notebook 与批处理共存](mixed-workload-multitenancy-isolation.md)：解释训练、在线推理、Notebook、数据预处理、benchmark 和系统任务共存时的队列、配额、优先级、抢占、节点池、GPU 共享、存储网络隔离和成本归因。
 - [资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐](resource-utilization-fragmentation-capacity.md)：解释 GPU 分配率、活跃率、有效吞吐、排队、pending reason、碎片、公平性、SLA、成本、能效、dashboard、告警和容量规划。
+- [节点生命周期与集群运维：交付、验收、入池、维护与下线](node-lifecycle-health-maintenance.md)：解释 AI 计算节点从资产登记、物理验收、软件基线、burn-in、入池、健康检查、cordon/drain、升级、配置漂移、缓存清理到退役下线的运维流程。
