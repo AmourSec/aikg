@@ -102,6 +102,7 @@ nav:
       - Expert Parallel 与 MoE 训练: 04-training-systems/expert-parallel-moe-training.md
       - Activation Checkpointing: 04-training-systems/activation-checkpointing.md
       - 混合精度训练: 04-training-systems/mixed-precision-training.md
+      - 通信与计算重叠: 04-training-systems/communication-computation-overlap.md
   - Kernel、算子与编译优化:
       - 概览: 05-kernels-compilers/index.md
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
