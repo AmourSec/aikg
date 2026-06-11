@@ -131,6 +131,7 @@ nav:
       - 调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue: 07-cluster-infra/scheduling-queues-resource-management.md
       - GPU 拓扑、NUMA、MIG/MPS 与资源隔离: 07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md
       - RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制: 07-cluster-infra/rdma-network-nccl-topology-congestion.md
+      - 存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储: 07-cluster-infra/storage-data-cache-checkpoint.md
   - 性能分析、Benchmark 与容量建模:
       - 概览: 08-benchmark-capacity/index.md
   - 可靠性、可观测性与故障复盘:
