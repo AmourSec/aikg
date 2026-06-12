@@ -34,7 +34,7 @@ updated: 2026-06-12
         <li class="kg-node-child"><a href="../02-ai-workloads/training-primer/">2.3 训练过程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/inference-primer/">2.4 推理过程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/multimodal-primer/">2.5 多模态原理</a></li>
-        <li class="kg-node-note"><span>关键词：模型 / 数据 / token / embedding / tensor / 参数 / logits / loss / 梯度 / Attention / QKV / causal mask / MLP / 逐 token 生成 / 多模态理解与生成</span></li>
+        <li class="kg-node-note"><span>关键词：模型 / 数据 / token / embedding / tensor / 参数 / logits / loss / forward / backward / 梯度 / optimizer / Attention / QKV / causal mask / MLP / 逐 token 生成 / 多模态理解与生成</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -104,7 +104,7 @@ updated: 2026-06-12
 | 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
-| 工作负载 | 只做入门科普：先讲清模型、token、参数、loss，再讲 Transformer 如何读上下文，训练如何调参数，推理如何逐 token 生成，多模态如何理解输入和生成内容。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[多模态原理](02-ai-workloads/multimodal-primer.md) |
+| 工作负载 | 只做入门科普：先讲清模型、token、参数、loss，再讲 Transformer 如何读上下文，训练如何从 next-token labels、forward、loss、backward、optimizer step 中调参数，推理如何逐 token 生成，多模态如何理解输入和生成内容。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[多模态原理](02-ai-workloads/multimodal-primer.md) |
 | 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [4 训练系统与优化](04-training-systems/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
