@@ -37,6 +37,81 @@ AI 系统优化经常会出现这样的结论：
 
 > 如何设计 AI 系统里的 A/B 性能对比、消融实验和性能回归检测，让“更快、更省、更稳”的结论可复现、可解释、可进入工程流程？
 
+先给出一个判断原则：
+
+```text
+性能对比不是看 B 的数字是否更好，
+而是证明这个差异来自目标改动，
+并且足够大、足够稳定、没有破坏保护指标。
+```
+
+很多性能“提升”并不是假数据，而是证据不完整：workload 变了、节点变了、cache 状态变了、随机输出长度变了，或者只看了最有利的一次 run。A/B 方法论的目标是把这些干扰显式控制住。
+
+## Experiment Contract
+
+每次 A/B、消融或回归实验前，先写一个 Experiment Contract。
+
+```yaml
+question:
+  decision: ship | reject | canary | rollback | investigate
+  scope: kernel | model | serving | training | cluster
+
+change:
+  A: baseline description
+  B: candidate description
+  diff: exact variable changed
+
+hypothesis:
+  expected_primary_effect: ...
+  mechanism: ...
+  expected_affected_workloads: ...
+  expected_unaffected_workloads: ...
+
+metrics:
+  primary: ...
+  guardrails: ...
+  explanatory: ...
+
+workload:
+  source: synthetic | sampled | trace_replay | production_canary
+  distribution: ...
+  arrival_process: ...
+  cache_state: ...
+
+run_plan:
+  aa_runs: ...
+  ab_runs: ...
+  paired_order: ...
+  repetitions: ...
+  warmup: ...
+  measurement_window: ...
+  random_seed: ...
+
+decision_rule:
+  ship_if: ...
+  block_if: ...
+  rerun_if: ...
+
+artifacts:
+  raw_metrics: ...
+  system_metrics: ...
+  profiler_trace: ...
+  run_manifest: ...
+```
+
+这个 contract 的作用是让实验在运行前就定义清楚“什么算赢、什么算输、什么算证据不足”。不要等看到结果后再改主指标、挑 workload 或调整阈值。
+
+一个可靠的实验至少要能回答：
+
+- B 只改了什么。
+- 预期为什么会变好。
+- 哪个指标是主目标。
+- 哪些指标不能变坏。
+- workload 是否代表目标场景。
+- A/A 噪声有多大。
+- 如果结果矛盾，如何处理。
+- 如果通过，回归检测怎么守住。
+
 ## 一张总图
 
 ```mermaid
@@ -103,6 +178,18 @@ A/B 对比必须保证：
 
 否则差异可能来自别的变量。
 
+一个好的 A/B 对比不是“两个命令各跑一次”，而是：
+
+```text
+same workload
+same measurement boundary
+same run protocol
+same artifact collection
+predefined decision rule
+```
+
+如果 B 需要新的 workload 才能体现收益，也可以做，但要把结论限定为该 workload。不要把“在 long context trace 上有效”外推成“整体服务更快”。
+
 ### A/A 测试
 
 A/A 测试是把同一个方案当作 A 和 A 再测一遍。
@@ -131,6 +218,18 @@ AI benchmark 常见噪声来源：
 
 没有 A/A，就很难知道 A/B 的提升是否显著。
 
+A/A 的结果应该进入实验报告：
+
+```text
+A/A goodput variance: +/- 1.5%
+A/A p99 TTFT variance: +/- 6%
+A/A energy/token variance: +/- 2%
+```
+
+之后所有 A/B 判断都要和这个 noise floor 对比。
+
+如果 A/A 波动很大，优先修 benchmark，而不是继续做 A/B。因为这说明实验系统还不能稳定区分真实改动和噪声。
+
 ### 消融实验
 
 消融实验回答：
@@ -152,6 +251,22 @@ AI benchmark 常见噪声来源：
 
 消融实验不是为了找到最快配置，而是为了理解因果贡献。
 
+消融实验常见有两种：
+
+```text
+additive ablation:
+  baseline
+  baseline + feature_1
+  baseline + feature_1 + feature_2
+
+subtractive ablation:
+  full_system
+  full_system - feature_1
+  full_system - feature_2
+```
+
+前者适合理解增量收益，后者适合解释一个复杂系统里某个功能是否真正有贡献。
+
 ### 回归检测
 
 回归检测回答：
@@ -169,6 +284,15 @@ AI benchmark 常见噪声来源：
 - production dashboard。
 
 回归检测的价值是持续防线，而不是一次性报告。
+
+回归检测要特别关注“慢性退化”：
+
+- 每次提交只慢 1%，单次不明显，但几周后慢很多。
+- p99 没有超过绝对阈值，但趋势持续变差。
+- 显存余量逐渐变小，直到某个 workload OOM。
+- 编译 fallback 偶发出现，后来变成常态。
+
+因此回归检测不仅要有阈值，还要保留历史趋势和 baseline 更新记录。
 
 ## 指标分层
 
@@ -198,6 +322,18 @@ Primary metric 是本次实验真正要优化的目标。
 
 Primary metric 只能少数几个。太多主指标会让决策混乱。
 
+Primary metric 要和决策直接相关。
+
+例如：
+
+| 决策 | 更合适的主指标 | 不够直接的指标 |
+| --- | --- | --- |
+| 线上推理是否上线 | goodput at SLA、p99 TTFT/TPOT | 平均 tokens/s |
+| 是否减少副本 | 单副本 goodput 曲线 | 单请求 latency |
+| 训练是否更快 | time to target、tokens/s/GPU | 前 10 step time |
+| 是否采用量化 | cost/token under quality guardrail | peak throughput |
+| 是否合入 kernel | 端到端 operator/model 改善 | 单 kernel 最佳值 |
+
 ### Guardrail Metrics
 
 Guardrail metrics 是不能变坏的保护指标。
@@ -224,6 +360,21 @@ Guardrail metrics 是不能变坏的保护指标。
 
 例如一个优化让 throughput 提升 20%，但 p99 翻倍，在线推理可能不能接受。
 
+Guardrail 不是“顺便看看”，而是硬约束。报告里应该写清：
+
+```text
+primary improves but guardrail fails
+  => do not ship
+
+primary neutral and guardrail improves
+  => consider if risk/cost is low
+
+primary improves and guardrails neutral
+  => candidate for canary or release
+```
+
+如果 guardrail 没有提前定义，实验后很容易选择性忽略坏消息。
+
 ### Explanatory Metrics
 
 Explanatory metrics 用来解释原因。
@@ -245,6 +396,18 @@ Explanatory metrics 用来解释原因。
 这些指标不是最终目标，但能帮助定位为什么 A/B 有差异。
 
 Google SRE 的监控实践强调 latency、traffic、errors、saturation 这类核心信号。AI 系统可以把它扩展成：latency、tokens throughput、errors/timeout、resource saturation、quality 和 cost/energy。
+
+Explanatory metrics 还可以帮助识别“假提升”。
+
+例如：
+
+| 现象 | 可能解释 |
+| --- | --- |
+| tokens/s 上升但 output length 变短 | workload 不一致 |
+| p99 下降但 reject 增加 | 系统通过丢请求降低延迟 |
+| GPU 利用率下降且 latency 下降 | 可能是请求量不足 |
+| kernel time 下降但端到端不变 | 瓶颈在 CPU、调度或网络 |
+| throughput 上升但质量下降 | 量化或采样改变了输出 |
 
 ## 实验假设要写清楚
 
@@ -348,6 +511,49 @@ ABBA BAAB ABAB
 
 如果 B 总是在 A 后面跑，B 可能享受更热的 cache，也可能遭遇更高温度。顺序本身会成为变量。
 
+### Paired Difference
+
+Paired runs 的分析重点不是分别看 A 和 B 的平均值，而是看每一对的差值。
+
+例如：
+
+```text
+pair_1: B - A = +4.8%
+pair_2: B - A = +5.2%
+pair_3: B - A = +4.5%
+pair_4: B - A = +5.0%
+```
+
+这比：
+
+```text
+mean(B) - mean(A)
+```
+
+更能抵抗时间漂移、节点状态和环境温度变化。
+
+如果 paired difference 的方向不稳定：
+
+```text
++5%, -3%, +8%, -2%
+```
+
+说明实验还不够稳定，不能只报告平均提升。
+
+### 分桶配对
+
+推理服务中，还要按请求类型分桶配对：
+
+- short chat。
+- long context。
+- code generation。
+- RAG。
+- agent。
+- cache hit。
+- cache miss。
+
+如果 B 只改善 long context，但恶化 short chat，总体平均值取决于流量配比。报告必须说明收益来自哪个 bucket。
+
 ## 样本量、方差和实际意义
 
 性能实验不是只看“B 比 A 快了 3%”。
@@ -379,6 +585,20 @@ energy/token: -6%
 
 如果某个优化提升 1%，但引入复杂依赖、维护成本和稳定风险，未必值得。
 
+Effect size 要同时写绝对值和相对值。
+
+例如：
+
+```text
+p99 TTFT:
+  A = 820 ms
+  B = 760 ms
+  delta = -60 ms
+  relative = -7.3%
+```
+
+只写相对值可能夸大很小的绝对差异；只写绝对值也可能忽略不同 workload 的规模。
+
 ### Noise Floor
 
 Noise floor 来自 A/A。
@@ -395,6 +615,18 @@ A/A p99 latency variance: +/- 5%
 - tokens/s 提升 5% 可能可信。
 - p99 改善 2% 可能只是噪声。
 
+Noise floor 不同指标不同。
+
+通常：
+
+- 平均吞吐比较稳定。
+- p99 延迟更容易波动。
+- 多机训练 step time 受 slowest rank 影响，波动可能更大。
+- 能耗受温度、功耗策略和采样边界影响。
+- 质量指标可能受随机种子和评测集影响。
+
+不要用 tokens/s 的噪声阈值去判断 p99，也不要用单机噪声阈值去判断多机训练。
+
 ### Practical Threshold
 
 工程门禁通常需要 practical threshold。
@@ -410,6 +642,34 @@ ship if:
 ```
 
 阈值应该来自历史噪声、SLA 和业务价值，而不是随手定。
+
+可以把判断写成三层：
+
+```text
+statistical confidence:
+  差异是否明显超过实验噪声
+
+practical significance:
+  差异是否足以带来工程价值
+
+risk acceptance:
+  复杂度、稳定性、质量和维护成本是否可接受
+```
+
+性能系统里，第三层经常被忽略。一个小收益但高复杂度的优化，可能不值得进入长期维护路径。
+
+### 结果分类
+
+建议把 A/B 结果分为四类：
+
+| 结果 | 处理 |
+| --- | --- |
+| 明确胜出 | 进入 canary 或 release gate |
+| 明确失败 | reject，记录原因 |
+| 指标冲突 | 扩展实验或按业务优先级决策 |
+| 证据不足 | 增加样本、修 benchmark 或缩小问题 |
+
+不要把“证据不足”误写成“无差异”。证据不足说明当前实验无法证明结论，不代表两个方案真的等价。
 
 ## 消融实验怎么做
 
@@ -459,6 +719,34 @@ full system - speculative decoding
 
 单项贡献不能简单相加。
 
+### 消融矩阵
+
+如果优化之间有强交互，可以用小型矩阵而不是线性链。
+
+例如：
+
+| Prefix Cache | CUDA Graph | Quantization | Goodput | p99 | 备注 |
+| --- | --- | --- | --- | --- | --- |
+| off | off | off | ... | ... | baseline |
+| on | off | off | ... | ... | cache 单项 |
+| off | on | off | ... | ... | graph 单项 |
+| on | on | off | ... | ... | cache + graph 交互 |
+| on | on | on | ... | ... | full |
+
+矩阵不一定要覆盖所有组合。组合太多时，可以先用 profiler 和业务优先级筛选最有可能有交互的项。
+
+### 消融要看负贡献
+
+有些优化在某些 workload 下是负贡献：
+
+- Prefix cache 在低复用流量下可能增加管理开销。
+- Speculative decoding 在接受率低时可能浪费计算。
+- Quantization 在 fallback 或 dequant 未融合时可能更慢。
+- Activation checkpointing 省显存但增加训练 step time。
+- Aggressive batching 提升吞吐但破坏 TTFT。
+
+消融实验的价值就是发现这些边界条件。不要只挑它有效的 workload 报告。
+
 ## AI 系统常见 A/B 场景
 
 ### Kernel / Compiler
@@ -485,6 +773,19 @@ full system - speculative decoding
 - compile time 和 warmup 要分开。
 - fallback 路径要检测。
 - 单 kernel 提升要换算成端到端收益。
+
+Kernel/Compiler 实验特别容易出现“局部快、整体没变”的情况。
+
+报告中建议同时写：
+
+```text
+kernel_speedup
+operator_speedup
+model_end_to_end_speedup
+percentage_of_time_covered_by_kernel
+```
+
+如果一个 kernel 只占端到端时间的 3%，即使它快 2 倍，整体收益也有限。这个判断可以和 Roofline 与 profiler 章节衔接。
 
 ### Serving Engine
 
@@ -514,6 +815,18 @@ full system - speculative decoding
 - 不只看 peak throughput。
 - p99 和 errors 是 guardrail。
 
+Serving Engine A/B 最常见的错误是只测最高吞吐点。
+
+更好的做法是比较整条 goodput 曲线：
+
+```text
+QPS 20 / 40 / 60 / 80 / 100
+  A: goodput, p99, timeout, memory
+  B: goodput, p99, timeout, memory
+```
+
+如果 B 的峰值吞吐更高，但低负载 p99 更差，或者过载时 reject 更多，要根据实际 SLA 决策。
+
 ### Quantization
 
 对比：
@@ -537,6 +850,20 @@ full system - speculative decoding
 - 质量是 guardrail。
 - dequant 开销要用 profiler 验证。
 - 不同请求长度可能收益不同。
+
+量化实验要特别防止“系统指标好、模型结果坏”。
+
+建议把质量 guardrail 写成：
+
+```text
+quality_guardrail:
+  eval benchmark does not regress beyond threshold
+  task-specific acceptance test passes
+  output format error does not increase
+  safety/refusal behavior not degraded, if relevant
+```
+
+如果量化导致输出更短、拒答更多或格式错误更多，tokens/s 可能看起来更好，但用户价值下降。
 
 ### Training Parallelism
 
@@ -565,6 +892,51 @@ full system - speculative decoding
 - 多轮运行要看 slowest rank。
 - loss 和稳定性是 guardrail。
 
+训练并行 A/B 还要记录：
+
+```text
+parallel_config:
+  DP / TP / PP / CP / EP / FSDP / ZeRO
+
+global_batch:
+  unchanged or changed
+
+effective_tokens:
+  same token budget and same data mix
+
+quality:
+  loss curve and eval metric
+```
+
+如果 global batch、学习率、数据顺序或 token budget 也变了，就不是纯系统并行策略对比，而是训练 recipe bundle 对比。
+
+### RAG / Agent Workflow
+
+RAG 和 agent 的 A/B 不应只测模型服务。
+
+对比对象可能是：
+
+- retrieval 参数。
+- reranker。
+- prompt assembly。
+- context compression。
+- tool routing。
+- retry policy。
+- cache policy。
+- model serving engine。
+
+指标要分层：
+
+| 层级 | 指标 |
+| --- | --- |
+| Model-only | TTFT、TPOT、tokens/s、KV Cache |
+| Retrieval/rerank | retrieval latency、recall、rerank time |
+| Workflow | E2E latency、success rate、tool error |
+| Quality | answer correctness、grounding、format |
+| Cost | tokens/request、tool calls/request、GPU/CPU time |
+
+如果只看 LLM tokens/s，可能错过端到端 workflow 里的真正瓶颈。
+
 ## 性能回归检测分层
 
 不是所有 benchmark 都适合放进 PR CI。
@@ -590,6 +962,20 @@ full system - speculative decoding
 - memory 是否爆炸。
 - kernel fallback 是否出现。
 
+PR smoke benchmark 的阈值不要太追求精细。
+
+它的目标是发现明显问题，例如：
+
+```text
+crash
+OOM
+latency regression > 20%
+tokens/s regression > 15%
+unexpected fallback
+```
+
+如果 PR benchmark 过慢或过敏，团队会倾向于绕过它。短、稳、能抓大问题更重要。
+
 ### Nightly Benchmark
 
 目标：发现中等回退。
@@ -609,6 +995,23 @@ full system - speculative decoding
 - memory peak。
 - energy。
 - compiler/runtime 回退。
+
+Nightly benchmark 要保存历史序列，而不是只保存当天结果。
+
+建议记录：
+
+```text
+commit
+date
+hardware pool
+driver/runtime
+container digest
+workload version
+metric distribution
+baseline used
+```
+
+这样才能区分代码回归、环境变化和硬件池变化。
 
 ### Release Gate
 
@@ -632,6 +1035,19 @@ full system - speculative decoding
 - power/thermal。
 - stability。
 
+Release gate 的问题不是“能不能跑”，而是“是否可以承担上线风险”。
+
+因此 release gate 应该包含：
+
+- 生产代表性 trace replay。
+- 关键模型和关键请求类型。
+- 故障或过载场景。
+- 长时间稳态窗口。
+- 资源、功耗、热状态。
+- 回滚条件。
+
+如果 release gate 失败，不一定代表代码不能合并，但通常不应该进入生产发布。
+
 ### Production Canary
 
 目标：真实流量下小范围验证。
@@ -651,6 +1067,19 @@ full system - speculative decoding
 - 用户可见问题。
 
 离线 benchmark 通过，不代表 canary 可以省略。
+
+Canary 要设置明确的停止条件：
+
+```text
+rollback if:
+  p99 latency breaches SLA for N minutes
+  error rate increases above threshold
+  timeout or cancel rate increases
+  quality guardrail fails
+  saturation exceeds headroom
+```
+
+没有自动或半自动停止条件的 canary，容易变成“出了问题才人工发现”。
 
 ## 回归阈值怎么设
 
@@ -707,6 +1136,28 @@ and must stay below 500 ms
 
 不要让所有性能波动都变成同一种告警。
 
+### Rerun Policy
+
+性能回归检测要有重跑策略。
+
+可以区分：
+
+```text
+hard failure:
+  crash / OOM / correctness failure / error spike
+  -> immediate block
+
+soft performance regression:
+  metric exceeds threshold slightly
+  -> automatic rerun once or twice
+
+trend regression:
+  small degradation over multiple days
+  -> warning and owner review
+```
+
+重跑不是为了“刷绿”，而是为了区分噪声和真实回归。重跑次数、触发条件和最终取值方式要固定。
+
 ## Baseline 管理
 
 回归检测需要 baseline。
@@ -728,6 +1179,44 @@ baseline 管理要注意：
 - 不同 workload 要分开。
 
 如果 baseline 混乱，回归检测会失去可信度。
+
+### Baseline 生命周期
+
+Baseline 应该像代码一样有生命周期。
+
+```text
+create:
+  新硬件、新 workload、新 release 时建立
+
+validate:
+  A/A 和重复运行确认稳定性
+
+use:
+  CI/nightly/release gate 对比
+
+update:
+  明确审核后接受新 baseline
+
+retire:
+  workload、硬件或软件栈不再使用
+```
+
+不要用失败 run 自动覆盖 baseline。否则系统会把回归“学成正常”。
+
+### Baseline 分组
+
+Baseline 至少要按以下维度分组：
+
+- GPU 型号。
+- 节点配置。
+- driver / CUDA / ROCm。
+- inference engine / framework。
+- workload version。
+- model version。
+- power/clock policy。
+- measurement boundary。
+
+不同分组之间不能直接比较。比如同一个模型在不同 GPU 上的 p99 绝对值不同，不能混用一条阈值。
 
 ## 从回归到定位
 
@@ -757,6 +1246,22 @@ baseline 管理要注意：
 7. 修复后加入回归 guard。
 
 如果回归只在某个 workload 出现，要把该 workload 加入 benchmark 集合。
+
+### 自动归因线索
+
+回归系统可以自动给出初步归因线索：
+
+| 现象 | 优先检查 |
+| --- | --- |
+| tokens/s 降低，GPU 利用率降低 | client、CPU、data path、调度 |
+| TTFT 变差，TPOT 不变 | prefill、queue、prefix cache |
+| TPOT 变差，TTFT 不变 | decode、KV Cache、memory bandwidth |
+| memory peak 上升 | batch、KV Cache、activation、fragmentation |
+| p99 变差但均值不变 | tail、slow node、queue、throttle |
+| error 增加 | OOM、timeout、server crash、routing |
+| energy/token 变差 | power cap、frequency、thermal、batching |
+
+自动归因不替代 profiler，但能减少第一次排查的搜索空间。
 
 ## Canary 与 Shadow
 
@@ -852,6 +1357,69 @@ Regression Guard:
   owner
 ```
 
+### Decision Record
+
+如果实验影响上线、采购、默认配置或长期维护，建议写一份简短 decision record。
+
+```text
+Decision:
+  accepted / rejected / canary / needs more evidence
+
+Reason:
+  primary metric result
+  guardrail result
+  noise floor
+  risk assessment
+
+Scope:
+  workloads where decision applies
+  workloads where it does not apply
+
+Follow-up:
+  regression guard
+  canary plan
+  owner
+  review date
+```
+
+这可以防止几个月后只剩下一句“当时测过更快”，却找不到 workload、阈值、证据和适用范围。
+
+### 回归规则模板
+
+回归检测规则可以像这样描述：
+
+```yaml
+benchmark: llm_serving_trace_replay
+owner: inference-platform
+baseline: main_branch_median_last_10_passes
+workload: prod_trace_2026_06_short_long_mix
+hardware_pool: h100_8gpu_pool_a
+
+metrics:
+  primary:
+    goodput_at_sla:
+      block_if_regression_gt: 5%
+  guardrails:
+    p99_ttft_ms:
+      block_if_gt: 800
+      warn_if_regression_gt: 5%
+    timeout_rate:
+      block_if_gt: 0.5%
+    gpu_memory_peak:
+      block_if_gt: 95%
+
+rerun_policy:
+  soft_regression_reruns: 2
+  hard_failure_reruns: 0
+
+artifacts:
+  keep_raw_metrics: true
+  keep_system_metrics: true
+  keep_profiler_on_failure: true
+```
+
+这个模板的重点是让规则可审查：谁负责、对比哪个 baseline、在哪类硬件和 workload 下判断、失败后保存什么证据。
+
 ## 常见误区
 
 ### 误区一：B 比 A 快一点就该上线
@@ -916,11 +1484,13 @@ AI 系统的性能不是单维度。至少要同时看：
 
 设计 A/B 前：
 
+- 是否写了 Experiment Contract？
 - 是否写清假设？
 - 是否明确主指标和保护指标？
 - 是否有 A/A 噪声基线？
 - 是否只改变一个变量？
 - 是否 workload 代表目标场景？
+- 是否定义了证据不足时的处理方式？
 
 运行实验时：
 
@@ -929,6 +1499,7 @@ AI 系统的性能不是单维度。至少要同时看：
 - 是否重复足够次数？
 - 是否保存原始结果？
 - 是否记录失败、超时和取消？
+- 是否保存 run manifest、镜像 digest、节点 ID 和 workload 版本？
 
 分析结果时：
 
@@ -937,6 +1508,8 @@ AI 系统的性能不是单维度。至少要同时看：
 - 是否解释机制？
 - 是否检查质量、显存、能耗和错误率？
 - 是否说明适用范围？
+- 是否按 request bucket、cache hit/miss、rank/node 分组看结果？
+- 是否把 primary 与 guardrail 冲突写清楚？
 
 接入回归检测时：
 
@@ -945,6 +1518,9 @@ AI 系统的性能不是单维度。至少要同时看：
 - 是否区分 warning/block/page？
 - 是否保存足够定位证据？
 - 是否有 owner 处理回归？
+- 是否定义 baseline 更新流程？
+- 是否定义 rerun policy？
+- 是否把通过的实验转成长期 regression guard？
 
 ## 小结
 
