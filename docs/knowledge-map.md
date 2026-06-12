@@ -90,7 +90,7 @@ updated: 2026-06-12
       <ul>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
-        <li class="kg-node-note"><span>关键词：metadata / tags / sources / AI-readable skills</span></li>
+        <li class="kg-node-note"><span>关键词：metadata / provenance / FAIR / llms.txt / vector index / knowledge graph / AI-readable skills</span></li>
       </ul>
     </section>
   </div>
@@ -134,4 +134,4 @@ updated: 2026-06-12
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、metrics/logs/traces/profiles/events、GPU/NCCL/网络/存储故障模式、事故响应、runbook、复盘和改进项 |
 | 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、代码走读、系统案例、ADR、决策证据链、failure case、evidence pack 和案例库 |
-| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 元数据、标签、引用溯源、向量索引和 AI skills |
+| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱、AI Agent 使用协议和 AI skills |
