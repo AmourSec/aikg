@@ -33,3 +33,4 @@ updated: 2026-05-30
 ## 专题入口
 
 - [AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events](observability-overview-signals.md)：解释 AI 推理、训练和集群系统如何使用 metrics、logs、traces、profiles、events 五类观测信号，建立 latency/traffic/errors/saturation 黄金信号、分层观测、black-box/white-box、关联字段、cardinality 治理、告警、dashboard、sampling、retention、benchmark 联动和最小可观测性闭环。
+- [SLO、SLI、错误预算与告警策略：从用户体验到行动门槛](slo-sli-error-budget-alerting.md)：解释如何为 AI 推理、训练和集群平台定义 SLI、SLO、SLA、error budget、burn rate 与 alert policy，覆盖 SLO contract、用户旅程、推理 TTFT/TPOT/goodput、训练 job progress/checkpoint/recovery、集群 GPU readiness/scheduling/storage、事件口径、time slice、multi-window burn-rate alerting、发布治理、容量规划和 benchmark 联动。

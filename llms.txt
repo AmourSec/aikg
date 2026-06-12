@@ -124,6 +124,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [Benchmark 数据治理与实验记录：Run Manifest、Raw Data 与可复现报告](https://amoursec.github.io/aikg/08-benchmark-capacity/benchmark-data-governance-run-records/): Benchmark 数据治理与实验记录解释如何用 benchmark data contract、数据模型、run manifest、run id、raw per-request/per-step/system metrics、summary schema、schema versioning、environment metadata、artifact digest、lineage/provenance、timestamp alignment、privacy redaction、retention、baseline registry、data quality gates、dashboard/report separation、CI regression records 和 AI-readable run card 让 AI benchmark 结论可复现、可审查、可比较、可回归检测和可检索。
 - [可靠性、可观测性与故障复盘](https://amoursec.github.io/aikg/09-reliability-observability/): 可靠性、可观测性与故障复盘主题入口。
 - [AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events](https://amoursec.github.io/aikg/09-reliability-observability/observability-overview-signals/): AI 系统可观测性总览解释 metrics、logs、traces、profiles、events 五类 telemetry signals 在 AI 推理、训练和集群系统中的分工，覆盖 monitoring/observability/debugging 区别、latency/traffic/errors/saturation 黄金信号、分层观测、black-box/white-box、关联字段、cardinality、指标命名、SLO/burn-rate alerting、dashboard 组织、sampling/retention、benchmark 联动和最小可观测性闭环。
+- [SLO、SLI、错误预算与告警策略：从用户体验到行动门槛](https://amoursec.github.io/aikg/09-reliability-observability/slo-sli-error-budget-alerting/): SLO、SLI、错误预算与告警策略解释如何为 AI 推理、训练和集群平台定义 SLI、SLO、SLA、error budget、burn rate 与 alert policy，覆盖 SLO contract、用户旅程、推理 availability/TTFT/TPOT/goodput/degraded mode、训练 job start/progress/checkpoint freshness/recovery、集群 GPU readiness/scheduling/storage、good/bad/total events、occurrence/time-slice 预算、多窗口 burn-rate 告警、告警分级、发布治理、容量规划、benchmark 联动和常见误区。
 - [论文复现与系统案例](https://amoursec.github.io/aikg/10-papers-cases/): 论文复现与系统案例主题入口。
 - [AI 系统论文与架构](https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/): AI 系统论文与架构案例索引。
 - [技术决策记录](https://amoursec.github.io/aikg/10-papers-cases/adr/): 技术决策记录入口。
@@ -238,6 +239,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [08-benchmark-capacity/benchmark-data-governance-run-records.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/08-benchmark-capacity/benchmark-data-governance-run-records.md)
 - [09-reliability-observability/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/index.md)
 - [09-reliability-observability/observability-overview-signals.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/observability-overview-signals.md)
+- [09-reliability-observability/slo-sli-error-budget-alerting.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/09-reliability-observability/slo-sli-error-budget-alerting.md)
 - [10-papers-cases/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/index.md)
 - [10-papers-cases/ai-system-architecture.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/ai-system-architecture.md)
 - [10-papers-cases/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/10-papers-cases/adr.md)
