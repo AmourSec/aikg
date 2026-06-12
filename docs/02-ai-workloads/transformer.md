@@ -34,14 +34,14 @@ Transformer 是当前大语言模型最常见的核心结构。
 
 ```text
 文字
-  -> token
-  -> token id
-  -> embedding 向量
-  -> 加上位置信息
-  -> 多层 Transformer Block
-  -> 每个位置得到新的向量
-  -> 映射成 logits
-  -> 选择下一个 token
+  -> tokenizer 按规则切成 token
+  -> tokenizer 查词表得到 token id
+  -> 模型查 embedding table 得到 token 向量
+  -> 模型加入位置数字信号
+  -> 多层相同结构反复更新这些向量
+  -> 最后得到每个位置的最终向量
+  -> 模型把最终向量映射成 logits
+  -> 推理系统选择下一个 token
 ```
 
 这条链路有一个核心目标：
@@ -64,19 +64,29 @@ Transformer 不是凭空知道答案。
 
 下面这张图只画大语言模型常见的 decoder-only 流程。
 
+图里的专有名词先不要急着记。
+
+可以先把它看成一条数据流：
+
+- 左边是输入文本；
+- 中间是模型内部的数字表示；
+- 右边是对下一个 token 的打分；
+- `Transformer Block` 只是“反复更新 token 向量的一层处理单元”，后文会拆开讲；
+- `Final Hidden States` 只是“经过很多层以后得到的最终向量”，不是额外的新输入。
+
 ```mermaid
 flowchart TD
-    A["输入文本"] --> B["Tokenizer<br/>切成 token"]
-    B --> C["Token ID<br/>离散编号"]
-    C --> D["Token Embedding<br/>编号变向量"]
-    D --> E["Position Information<br/>加入顺序信息"]
-    E --> F["Transformer Block 1<br/>Self-Attention + MLP"]
-    F --> G["Transformer Block 2<br/>继续更新 token 表示"]
-    G --> H["..."]
-    H --> I["Final Hidden States<br/>每个位置的最终向量"]
-    I --> J["LM Head<br/>映射到词表大小"]
-    J --> K["Logits<br/>每个候选 token 的分数"]
-    K --> L["Sampling / Decoding<br/>选出下一个 token"]
+    A["输入文本<br/>人能读懂的字符串"] --> B["Tokenizer<br/>按模型自带词表和规则切分"]
+    B --> C["Token IDs<br/>每个 token 在词表里的编号"]
+    C --> D["Token Embeddings<br/>模型参数表里查到的向量"]
+    D --> E["Position Signal<br/>把第几个位置也变成数字信号"]
+    E --> F["第 1 层处理<br/>先读上下文，再加工向量"]
+    F --> G["第 2 层处理<br/>继续更新每个 token 的向量"]
+    G --> H["更多层<br/>重复同类处理"]
+    H --> I["最终向量<br/>每个位置一个 hidden vector"]
+    I --> J["LM Head<br/>模型参数矩阵，把向量映射到词表"]
+    J --> K["Logits<br/>每个候选 token 一个分数"]
+    K --> L["Sampling / Decoding<br/>按策略选出下一个 token"]
     L --> M["接回上下文<br/>继续生成"]
 ```
 
@@ -89,6 +99,18 @@ flowchart TD
 - 生成越长，推理循环次数越多。
 
 所以 Transformer 不只是模型结构，也是 AI 系统成本的来源。
+
+## 接下来这一组步骤在讲什么
+
+下面从“输入文本”开始，按一次 forward 的数据流往后讲。
+
+这里先不讲训练怎么更新参数，也不讲推理服务怎么调度请求。
+
+只回答一个问题：
+
+> 一段文字进入 Transformer 后，模型内部到底把它一步步变成了什么数字对象？
+
+先讲输入如何变成 token id，再讲 token id 如何查到向量，然后讲为什么还要加位置信息，最后再进入 self-attention、MLP 和 logits。
 
 ## 为什么需要 Transformer
 
@@ -133,6 +155,18 @@ Transformer 的关键能力就是让模型也能做一件类似的事：
 
 所以第一步是 tokenization。
 
+tokenization 不是模型临时随机切，也不是根据这句话现场“算出一套编号”。
+
+每个模型通常都会配套一个 tokenizer。这个 tokenizer 是模型发布物的一部分，里面包含：
+
+- 词表：有哪些 token，每个 token 对应哪个 id；
+- 切分规则：遇到一段字符串时，怎样拆成 token；
+- 特殊 token：例如开始、结束、填充、对话分隔等标记。
+
+也就是说，token id 来自 tokenizer 的词表查找和切分规则。
+
+同一句话，换一个模型或换一个 tokenizer，切出来的 token 和 id 都可能不同。
+
 ```text
 原文：我喜欢 AI
 token：我 / 喜欢 / AI
@@ -143,6 +177,18 @@ token id 是离散编号。
 
 它只告诉模型“这是词表里的第几个 token”，还没有表达含义。
 
+这里要区分三个东西：
+
+| 对象 | 来源 | 作用 |
+| --- | --- | --- |
+| 原始文本 | 用户输入或训练数据 | 人能读懂的字符串。 |
+| token | tokenizer 按规则切出来的片段 | 模型处理文本的基本单位。 |
+| token id | tokenizer 词表里的编号 | 让程序能用整数表示 token。 |
+
+例如 `9021` 这个 id 本身没有语义。
+
+它只是告诉模型：去查“第 9021 号 token 对应的参数向量”。
+
 这一点很重要：
 
 > Transformer 的输入不是自然语言本身，而是 token id 序列。
@@ -152,6 +198,26 @@ token id 是离散编号。
 token id 只是编号，不能直接表达语义关系。
 
 所以模型会查一张 embedding table，把每个 token id 变成向量。
+
+embedding table 是模型权重的一部分。
+
+它不是 tokenizer 里的词表，也不是根据 token 字符串现场算出来的。
+
+可以把它理解成一张很大的参数表：
+
+```text
+第 0 号 token -> 一个向量
+第 1 号 token -> 一个向量
+第 2 号 token -> 一个向量
+...
+第 9021 号 token -> 一个向量
+```
+
+这张表在训练中被不断更新。
+
+训练结束后，它随模型权重一起保存。
+
+推理时，模型根据 token id 去这张表里取对应行。
 
 ```text
 9021 -> [0.12, -0.07, 0.33, ...]
@@ -172,6 +238,13 @@ token id 只是编号，不能直接表达语义关系。
 它只是模型计算的起点。
 
 后面每经过一层 Transformer block，这个 token 的向量都会被更新。
+
+所以到这一步为止，数据来源是：
+
+```text
+token id：来自 tokenizer 词表
+embedding 向量：来自模型权重里的 embedding table
+```
 
 ## 第三步：加入位置信息
 
@@ -202,6 +275,35 @@ AI 喜欢 我
 入门时不需要掌握这些细节，只要记住：
 
 > token embedding 只表示“是什么”，position information 让模型知道“在哪里”。
+
+位置信息本质上也必须变成数字，才能进入模型计算。
+
+常见方式有几类。
+
+| 方式 | 大概怎么表示位置 | 直觉 |
+| --- | --- | --- |
+| 绝对位置向量 | 第 0 位、第 1 位、第 2 位各有一个位置向量，和 token embedding 相加。 | 给每个 token 额外加上“我在第几位”的向量信号。 |
+| Sinusoidal positional encoding | 用正弦、余弦函数根据位置生成一组固定数字。 | 不查表也能为不同位置生成不同模式。 |
+| RoPE | 不直接相加位置向量，而是按位置旋转 Q/K 向量。 | 让 attention 比较时感知相对距离和顺序。 |
+| ALiBi | 在 attention 分数上加和距离有关的偏置。 | 距离越远，attention 分数受到不同偏置影响。 |
+
+不同模型会选择不同位置机制。
+
+但它们想解决的是同一个问题：
+
+> 让模型在向量计算里知道 token 的顺序和相对位置。
+
+如果用最容易理解的绝对位置向量来想，流程是：
+
+```text
+token embedding:    “我”这个 token 的向量
+position embedding: “第 0 位”这个位置的向量
+合并后的输入:       token embedding + position embedding
+```
+
+现代模型常用的 RoPE 不是简单相加，但入门阶段可以先抓住共同点：
+
+> position information 不是自然语言说明，而是一组会影响后续 attention 计算的数字信号。
 
 ## 第四步：Self-Attention 读取上下文
 
@@ -265,6 +367,21 @@ Self-attention 是 Transformer 最核心的步骤。
 | V | Value | 如果某个位置被关注，真正读走的内容 |
 
 每个 token 的向量会通过三组不同的线性变换，得到 Q、K、V。
+
+这三组线性变换来自模型权重里的参数矩阵。
+
+也就是说：
+
+```text
+当前 token 向量
+  -> 乘以 Wq 参数矩阵 -> Query
+  -> 乘以 Wk 参数矩阵 -> Key
+  -> 乘以 Wv 参数矩阵 -> Value
+```
+
+`Wq`、`Wk`、`Wv` 不是人工写死的语言规则。
+
+它们是在训练中学出来、随模型权重保存下来的参数。
 
 同一个 token 会同时产生三种角色：
 
@@ -419,6 +536,12 @@ Transformer 会堆很多层。
 
 ## 一个 Transformer Block 做什么
 
+前面总图里出现过 `Transformer Block`。
+
+现在可以把它拆开看。
+
+Block 不是一种新的输入数据，而是一组会反复堆叠的模型层。
+
 一个常见的 decoder-only Transformer block 可以理解成：
 
 ```text
@@ -475,6 +598,10 @@ Transformer 会堆很多层。
 ```
 
 LM Head 可以理解成一个把 hidden vector 映射到词表大小的线性层。
+
+它同样来自模型权重。
+
+更具体地说，LM Head 里有一个参数矩阵，用来把最终向量转换成“对每个词表 token 的分数”。
 
 如果词表有 100,000 个 token，logits 就有 100,000 个分数。
 
