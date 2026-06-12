@@ -163,6 +163,7 @@ nav:
       - Benchmark 数据治理与实验记录：Run Manifest、Raw Data 与可复现报告: 08-benchmark-capacity/benchmark-data-governance-run-records.md
   - 可靠性、可观测性与故障复盘:
       - 概览: 09-reliability-observability/index.md
+      - AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events: 09-reliability-observability/observability-overview-signals.md
   - 论文复现与系统案例:
       - 概览: 10-papers-cases/index.md
       - AI 系统论文与架构: 10-papers-cases/ai-system-architecture.md

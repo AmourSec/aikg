@@ -29,3 +29,7 @@ updated: 2026-05-30
 - 故障复盘是否给出可验证的改进项。
 - 可靠性改动是否影响延迟、吞吐或资源利用率。
 - 线上故障经验是否能转化为 Benchmark、测试用例和知识库条目。
+
+## 专题入口
+
+- [AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events](observability-overview-signals.md)：解释 AI 推理、训练和集群系统如何使用 metrics、logs、traces、profiles、events 五类观测信号，建立 latency/traffic/errors/saturation 黄金信号、分层观测、black-box/white-box、关联字段、cardinality 治理、告警、dashboard、sampling、retention、benchmark 联动和最小可观测性闭环。
