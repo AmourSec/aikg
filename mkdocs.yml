@@ -171,7 +171,7 @@ nav:
       - 概览: 10-papers-cases/index.md
       - AI 系统论文与架构：从论文贡献到可复现实验: 10-papers-cases/ai-system-architecture.md
       - 技术决策记录：从 Benchmark 证据到可追溯选择: 10-papers-cases/adr.md
-      - 故障复盘: 10-papers-cases/failure-cases.md
+      - 故障案例库：从失败复现到系统改进: 10-papers-cases/failure-cases.md
   - 知识组织、模板与 AI 可读索引:
       - 概览: 11-knowledge-index/index.md
   - 模板:

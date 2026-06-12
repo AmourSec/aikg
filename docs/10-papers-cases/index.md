@@ -15,7 +15,7 @@ updated: 2026-06-12
 
 - [AI 系统论文与架构：从论文贡献到可复现实验](ai-system-architecture.md)：建立统一的论文阅读框架，学习如何把一篇系统论文拆成 workload、瓶颈、机制、成本模型、实验、边界、复现协议和 ADR 输入。
 - [技术决策记录：从 Benchmark 证据到可追溯选择](adr.md)：学习如何用 ADR 记录 AI Infra 关键技术选择，覆盖 decision question、scope、drivers、候选方案、证据等级、benchmark、rollback、confirmation、revisit condition 和 AI-readable decision card。
-- [故障复盘](failure-cases.md)：把失败案例、线上故障和复现实验失败转成可检索的系统知识。
+- [故障案例库：从失败复现到系统改进](failure-cases.md)：学习如何把线上事故、压测失败、论文复现失败、性能回归和训练异常沉淀为 failure case card、evidence pack、复现实验、benchmark case、regression test、runbook、ADR evidence 和 AI-readable case registry。
 
 ## 建议主题
 

@@ -236,7 +236,7 @@ DESCRIPTIONS = {
     "10-papers-cases/index.md": "论文复现与系统案例主题入口。",
     "10-papers-cases/ai-system-architecture.md": "AI 系统论文与架构解释如何把一篇 AI Systems / AI Infra 论文拆成 workload、系统瓶颈、核心机制、data plane、control plane、状态对象、成本模型、正确性边界、evaluation 证据、复现等级、reproduction contract、baseline、公平 benchmark、sanity check、sweep、ablation、raw data、paper card、mechanism card、experiment card、ADR 输入和 AI-readable 知识资产。",
     "10-papers-cases/adr.md": "技术决策记录解释 AI Infra 中如何用 ADR 保存关键技术选择的工程判断，覆盖 decision question、scope、workload contract、decision drivers、guardrail metrics、候选方案、证据等级、benchmark/profiler/trace/incident evidence、decision status、rollout、rollback、confirmation、revisit condition、evidence pack、decision readiness/done、ADR review、与 benchmark/论文复现/SLO/error budget/成本模型的关系、AI-readable ADR card、文件组织、常见误区和检查清单。",
-    "10-papers-cases/failure-cases.md": "故障复盘入口。",
+    "10-papers-cases/failure-cases.md": "故障案例库解释如何把 AI Infra 的线上事故、压测失败、论文复现失败、性能回归、训练异常、NCCL hang、checkpoint 恢复失败、kernel/compiler 回归和成本异常沉淀为 failure case，覆盖 case/postmortem/incident 区分、案例分类法、failure case card、workload contract、symptom/evidence 分离、分层定位、contributing factors、复现等级、evidence pack、从案例到 benchmark/test/runbook/ADR/可观测性、AI-readable case card、case registry、案例评审、脱敏、常见误区和检查清单。",
     "11-knowledge-index/index.md": "知识组织、模板、元数据和 AI 可读索引说明。",
     "99-templates/knowledge-note.md": "知识点模板。",
     "99-templates/adr.md": "技术决策模板。",
