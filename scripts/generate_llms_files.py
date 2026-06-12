@@ -234,7 +234,7 @@ DESCRIPTIONS = {
     "09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage.md": "AI 系统故障模式解释如何从 symptom、scope、timeline、signals、layer、evidence pack 和 action 定位 AI 推理、训练与集群故障，覆盖 GPU Xid/ECC/HBM/OOM/thermal/power throttling、DCGM diagnostics、NCCL timeout/hang/debug logs/topology、RDMA/RoCE/NIC/switch 网络问题、checkpoint/dataset/model load 存储问题、runtime scheduler/cache/tokenizer/DataLoader 状态机、placement 和环境漂移，并沉淀 runbook、自动隔离、SLO 关联和 benchmark 健康检查。",
     "09-reliability-observability/incident-response-runbook-postmortem.md": "Incident Response、Runbook 与故障复盘解释 AI 系统事故如何从 detect、declare、stabilize、diagnose、mitigate、recover、postmortem 到 improve 形成闭环，覆盖 severity、incident commander、ops/comms/scribe 角色、live incident state document、AI 推理/训练/集群事故类型、stop-the-bleeding mitigation、runbook 设计、handoff、postmortem 模板、contributing factors、blameless accountability、action item verification、事故到 benchmark/alert/runbook/架构改进、incident knowledge card 和事故数据库。",
     "10-papers-cases/index.md": "论文复现与系统案例主题入口。",
-    "10-papers-cases/ai-system-architecture.md": "AI 系统论文与架构案例索引。",
+    "10-papers-cases/ai-system-architecture.md": "AI 系统论文与架构解释如何把一篇 AI Systems / AI Infra 论文拆成 workload、系统瓶颈、核心机制、data plane、control plane、状态对象、成本模型、正确性边界、evaluation 证据、复现等级、reproduction contract、baseline、公平 benchmark、sanity check、sweep、ablation、raw data、paper card、mechanism card、experiment card、ADR 输入和 AI-readable 知识资产。",
     "10-papers-cases/adr.md": "技术决策记录入口。",
     "10-papers-cases/failure-cases.md": "故障复盘入口。",
     "11-knowledge-index/index.md": "知识组织、模板、元数据和 AI 可读索引说明。",

@@ -169,7 +169,7 @@ nav:
       - Incident Response、Runbook 与故障复盘：从止血到可复现改进: 09-reliability-observability/incident-response-runbook-postmortem.md
   - 论文复现与系统案例:
       - 概览: 10-papers-cases/index.md
-      - AI 系统论文与架构: 10-papers-cases/ai-system-architecture.md
+      - AI 系统论文与架构：从论文贡献到可复现实验: 10-papers-cases/ai-system-architecture.md
       - 技术决策记录: 10-papers-cases/adr.md
       - 故障复盘: 10-papers-cases/failure-cases.md
   - 知识组织、模板与 AI 可读索引:

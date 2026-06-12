@@ -4,12 +4,18 @@ domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-06-12
 ---
 
 # 论文复现与系统案例
 
 本目录用于沉淀 AI 系统论文、开源系统、架构案例、复现实验和技术决策。重点不是记录“读过什么”，而是把论文方法转化为可验证的系统知识。
+
+## 阅读顺序
+
+- [AI 系统论文与架构：从论文贡献到可复现实验](ai-system-architecture.md)：建立统一的论文阅读框架，学习如何把一篇系统论文拆成 workload、瓶颈、机制、成本模型、实验、边界、复现协议和 ADR 输入。
+- [技术决策记录](adr.md)：把论文、benchmark 和工程约束转成可追溯的技术决策。
+- [故障复盘](failure-cases.md)：把失败案例、线上故障和复现实验失败转成可检索的系统知识。
 
 ## 建议主题
 
