@@ -89,8 +89,8 @@ updated: 2026-06-12
       <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
       <ul>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
-        <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
-        <li class="kg-node-note"><span>关键词：metadata / provenance / FAIR / llms.txt / vector index / knowledge graph / AI-readable skills</span></li>
+        <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 知识点模板与资源</a></li>
+        <li class="kg-node-note"><span>关键词：metadata / provenance / FAIR / llms.txt / vector index / knowledge graph / knowledge card / AI-readable skills</span></li>
       </ul>
     </section>
   </div>
