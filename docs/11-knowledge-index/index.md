@@ -1074,7 +1074,7 @@ AI-readable 文档中应尽量保留 Markdown 源路径，方便 AI 精确引用
 
 - [知识点模板：从概念解释到 AI 可读卡片](../99-templates/knowledge-note.md)
 - [技术决策模板：从问题、证据到可追溯决策](../99-templates/adr.md)
-- [基准实验报告模板](../99-templates/benchmark-report.md)
+- [基准实验报告模板：从问题设计到可复现实验](../99-templates/benchmark-report.md)
 
 建议后续增加：
 

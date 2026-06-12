@@ -93,7 +93,7 @@ updated: 2026-06-12
         <li class="kg-node-child"><a href="../99-templates/knowledge-note/">知识点模板</a></li>
         <li class="kg-node-child"><a href="../99-templates/adr/">技术决策模板</a></li>
         <li class="kg-node-child"><a href="../99-templates/benchmark-report/">基准实验报告模板</a></li>
-        <li class="kg-node-note"><span>关键词：metadata / provenance / FAIR / llms.txt / vector index / knowledge graph / knowledge card / ADR card / AI-readable skills</span></li>
+        <li class="kg-node-note"><span>关键词：metadata / provenance / FAIR / llms.txt / vector index / knowledge graph / knowledge card / ADR card / benchmark card / AI-readable skills</span></li>
       </ul>
     </section>
   </div>
