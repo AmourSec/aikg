@@ -80,7 +80,8 @@ updated: 2026-06-12
         <li class="kg-node-child"><a href="../09-reliability-observability/incident-response-runbook-postmortem/">9.4 事故响应与复盘</a></li>
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
         <li class="kg-node-child"><a href="../10-papers-cases/ai-system-architecture/">10.1 系统论文与架构分析</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / signals / SLO / failure modes / runbook / postmortem / paper card / reproduction</span></li>
+        <li class="kg-node-child"><a href="../10-papers-cases/adr/">10.2 技术决策记录</a></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / signals / SLO / failure modes / runbook / postmortem / paper card / reproduction / ADR</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -131,5 +132,5 @@ updated: 2026-06-12
 | 7 集群、网络、存储与调度 | 3、4、6 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、metrics/logs/traces/profiles/events、GPU/NCCL/网络/存储故障模式、事故响应、runbook、复盘和改进项 |
-| 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、代码走读、系统案例、ADR 和技术决策 |
+| 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、代码走读、系统案例、ADR、决策证据链和技术决策 |
 | 11 知识组织、模板与 AI 可读索引 | 全部模块 | 元数据、标签、引用溯源、向量索引和 AI skills |
