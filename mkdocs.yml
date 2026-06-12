@@ -165,6 +165,7 @@ nav:
       - 概览: 09-reliability-observability/index.md
       - AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events: 09-reliability-observability/observability-overview-signals.md
       - SLO、SLI、错误预算与告警策略：从用户体验到行动门槛: 09-reliability-observability/slo-sli-error-budget-alerting.md
+      - AI 系统故障模式：GPU、NCCL、网络、存储与 Runtime: 09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage.md
   - 论文复现与系统案例:
       - 概览: 10-papers-cases/index.md
       - AI 系统论文与架构: 10-papers-cases/ai-system-architecture.md

@@ -76,8 +76,9 @@ updated: 2026-06-04
         <li class="kg-node-main"><a href="../09-reliability-observability/">9 可靠性、可观测性与故障复盘</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/observability-overview-signals/">9.1 可观测性信号总览</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/slo-sli-error-budget-alerting/">9.2 SLO 与告警策略</a></li>
+        <li class="kg-node-child"><a href="../09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage/">9.3 AI 系统故障模式</a></li>
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / signals / SLO / incidents</span></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / signals / SLO / failure modes / incidents</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -127,6 +128,6 @@ updated: 2026-06-04
 | 6 AI 加速器与计算架构 | 2、5、8 | 计算、存储、互连、能效和体系结构分析 |
 | 7 集群、网络、存储与调度 | 3、4、6 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
-| 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、metrics/logs/traces/profiles/events、故障模式、复盘和改进项 |
+| 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、metrics/logs/traces/profiles/events、GPU/NCCL/网络/存储故障模式、复盘和改进项 |
 | 10 论文复现与系统案例 | 全部模块 | 论文笔记、代码走读、复现报告、系统案例和技术决策 |
 | 11 知识组织、模板与 AI 可读索引 | 全部模块 | 元数据、标签、引用溯源、向量索引和 AI skills |
