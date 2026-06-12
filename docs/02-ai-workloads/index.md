@@ -24,7 +24,7 @@ updated: 2026-06-04
 | 顺序 | 页面 | 读完应该懂什么 |
 | --- | --- | --- |
 | 1 | [AI 基础概念](ai-fundamentals.md) | 模型、数据、参数、token、embedding、tensor、logits、loss、梯度、batch 和上下文是什么。 |
-| 2 | [Transformer 流程与原理](transformer.md) | 一段文字如何经过 token、embedding、attention、MLP，最后变成下一个 token 的概率。 |
+| 2 | [Transformer 流程与原理](transformer.md) | 一段文字如何经过 token、embedding、位置、self-attention、Q/K/V、causal mask、MLP 和 logits，最后变成下一个 token 的概率。 |
 | 3 | [训练过程与原理](training-primer.md) | 模型如何先猜答案、计算错误、根据错误调整参数，并不断重复。 |
 | 4 | [推理过程与原理](inference-primer.md) | 模型参数固定后，如何读取 prompt，并一个 token 一个 token 生成输出。 |
 | 5 | [多模态原理](multimodal-primer.md) | 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。 |

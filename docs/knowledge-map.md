@@ -34,7 +34,7 @@ updated: 2026-06-12
         <li class="kg-node-child"><a href="../02-ai-workloads/training-primer/">2.3 训练过程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/inference-primer/">2.4 推理过程与原理</a></li>
         <li class="kg-node-child"><a href="../02-ai-workloads/multimodal-primer/">2.5 多模态原理</a></li>
-        <li class="kg-node-note"><span>关键词：模型 / 数据 / token / embedding / tensor / 参数 / logits / loss / 梯度 / Attention / 逐 token 生成 / 多模态理解与生成</span></li>
+        <li class="kg-node-note"><span>关键词：模型 / 数据 / token / embedding / tensor / 参数 / logits / loss / 梯度 / Attention / QKV / causal mask / MLP / 逐 token 生成 / 多模态理解与生成</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">

@@ -134,7 +134,7 @@ DESCRIPTIONS = {
     "01-getting-started/index.md": "新读者入口，说明如何使用知识库。",
     "02-ai-workloads/index.md": "AI 计算工作负载基础目录。",
     "02-ai-workloads/ai-fundamentals.md": "AI 基础概念面向刚入门读者解释 AI、机器学习、深度学习、模型、参数、数据、样本、特征、标签、token、tokenizer、embedding、tensor、logits、概率、loss、梯度、训练、推理、评估、prompt、上下文、batch、并发、吞吐、模型知识边界、模型能力与系统能力的区别，以及这些概念如何连接到 Transformer、训练系统、推理系统、Benchmark 和 AI Infra 成本。",
-    "02-ai-workloads/transformer.md": "Transformer 如何读取上下文、更新 token 表示并预测下一个 token。",
+    "02-ai-workloads/transformer.md": "Transformer 流程与原理面向新手解释 decoder-only 大语言模型的数据流，覆盖文本到 token、token id、embedding、位置信息、self-attention、Q/K/V、attention weights、scaled dot-product attention 直觉、causal mask、multi-head attention、MLP、残差连接、归一化、Transformer block、hidden states、LM Head、logits、训练时的 next-token prediction、推理时的自回归生成、KV Cache 直觉、encoder-only/decoder-only/encoder-decoder 区别、Transformer 的并行性和系统成本来源。",
     "02-ai-workloads/training-primer.md": "训练如何先预测、计算错误、反向传播并更新参数。",
     "02-ai-workloads/inference-primer.md": "推理如何读取 prompt，并逐 token 生成回答。",
     "02-ai-workloads/multimodal-primer.md": "多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。",
