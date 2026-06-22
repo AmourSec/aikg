@@ -3,7 +3,7 @@ title: AI 知识地图
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-12
+updated: 2026-06-22
 ---
 
 # AI 知识地图
@@ -49,9 +49,13 @@ updated: 2026-06-12
       <a class="kg-branch-title" href="../05-kernels-compilers/">Kernel 与编译</a>
       <ul>
         <li class="kg-node-main"><a href="../05-kernels-compilers/">5 Kernel、算子与编译优化</a></li>
-        <li class="kg-node-child"><a href="../05-kernels-compilers/triton/">5.1 Triton Kernel 编程</a></li>
-        <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">5.2 TorchInductor 与 PyTorch 编译栈</a></li>
-        <li class="kg-node-note"><span>关键词：tiling / fusion / codegen / auto-tuning</span></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/attention-computation-patterns/">5.1 Attention 机制与计算模式</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/triton/">5.2 Triton Kernel 编程</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">5.3 TorchInductor 与 PyTorch 编译栈</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/mlir-ai-compiler-ir/">5.4 MLIR 与 AI 编译 IR</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">5.5 TileLang：面向 AI Kernel 的 Tile 编程模型</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">5.6 MegaKernel、Persistent Kernel 与自动生成</a></li>
+        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / TorchInductor / MLIR / TileLang / tiling / fusion / codegen / auto-tuning / persistent kernel / MegaKernel</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -105,7 +109,7 @@ updated: 2026-06-12
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载 | 只做入门科普：先讲清模型、token、参数、loss，再讲 Transformer 如何读上下文，训练如何从 next-token labels、forward、loss、backward、optimizer step 中调参数，推理如何逐 token 生成，多模态如何理解输入和生成内容。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[多模态原理](02-ai-workloads/multimodal-primer.md) |
-| 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 单机执行 | 研究推理服务、Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)、[MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [4 训练系统与优化](04-training-systems/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 
@@ -118,7 +122,7 @@ updated: 2026-06-12
 | 想先搞懂训练和推理怎么回事 | [训练过程与原理](02-ai-workloads/training-primer.md) -> [推理过程与原理](02-ai-workloads/inference-primer.md) -> [3 推理系统与优化](03-inference-systems/index.md) -> [4 训练系统与优化](04-training-systems/index.md) |
 | 想提高吞吐和 GPU 利用率 | [3 推理系统与优化](03-inference-systems/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
 | 想做分布式训练系统 | [4 训练系统与优化](04-training-systems/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) |
-| 想做 Triton Kernel 或编译优化 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 想做 Triton Kernel 或编译优化 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 想做 AI 加速器或硬件架构 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
 | 想建设稳定集群或实验平台 | [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md) -> [11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 | 想复现系统论文 | [10 论文复现与系统案例](10-papers-cases/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) -> [技术决策模板](99-templates/adr.md) |
@@ -131,7 +135,7 @@ updated: 2026-06-12
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理的浅层科普 |
 | 3 推理系统与优化 | 2、5、6、8 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
 | 4 训练系统与优化 | 2、6、7、8 | 并行策略、通信模型、训练稳定性和扩展效率 |
-| 5 Kernel、算子与编译优化 | 2、6、8 | Triton Kernel、TorchInductor、算子实现、图优化、编译和自动调优 |
+| 5 Kernel、算子与编译优化 | 2、6、8 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化、编译和自动调优 |
 | 6 AI 加速器与计算架构 | 2、5、8 | 计算、存储、互连、能效和体系结构分析 |
 | 7 集群、网络、存储与调度 | 3、4、6 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |

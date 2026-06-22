@@ -76,6 +76,9 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 05-kernels-compilers/attention-computation-patterns.md - Attention 机制与计算模式
 - 05-kernels-compilers/triton.md - Triton Kernel 编程
 - 05-kernels-compilers/torchinductor.md - TorchInductor 与 PyTorch 编译栈
+- 05-kernels-compilers/mlir-ai-compiler-ir.md - MLIR 与 AI 编译 IR
+- 05-kernels-compilers/tilelang.md - TileLang：面向 AI Kernel 的 Tile 编程模型
+- 05-kernels-compilers/megakernel-persistent-automatic-generation.md - MegaKernel、Persistent Kernel 与自动生成
 - 06-accelerators-architecture/index.md - AI 加速器与计算架构
 - 06-accelerators-architecture/performance-model-roofline.md - AI 加速器性能模型：算力、带宽与 Roofline
 - 06-accelerators-architecture/compute-units-simt-tensorcore.md - 计算单元：SIMT、Tensor Core 与矩阵引擎
@@ -169,7 +172,7 @@ URL: https://amoursec.github.io/aikg/knowledge-map/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-12
+updated: 2026-06-22
 
 # AI 知识地图
 
@@ -214,9 +217,13 @@ updated: 2026-06-12
       <a class="kg-branch-title" href="../05-kernels-compilers/">Kernel 与编译</a>
       <ul>
         <li class="kg-node-main"><a href="../05-kernels-compilers/">5 Kernel、算子与编译优化</a></li>
-        <li class="kg-node-child"><a href="../05-kernels-compilers/triton/">5.1 Triton Kernel 编程</a></li>
-        <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">5.2 TorchInductor 与 PyTorch 编译栈</a></li>
-        <li class="kg-node-note"><span>关键词：tiling / fusion / codegen / auto-tuning</span></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/attention-computation-patterns/">5.1 Attention 机制与计算模式</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/triton/">5.2 Triton Kernel 编程</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">5.3 TorchInductor 与 PyTorch 编译栈</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/mlir-ai-compiler-ir/">5.4 MLIR 与 AI 编译 IR</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">5.5 TileLang：面向 AI Kernel 的 Tile 编程模型</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">5.6 MegaKernel、Persistent Kernel 与自动生成</a></li>
+        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / TorchInductor / MLIR / TileLang / tiling / fusion / codegen / auto-tuning / persistent kernel / MegaKernel</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -270,7 +277,7 @@ updated: 2026-06-12
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载 | 只做入门科普：先讲清模型、token、参数、loss，再讲 Transformer 如何读上下文，训练如何从 next-token labels、forward、loss、backward、optimizer step 中调参数，推理如何逐 token 生成，多模态如何理解输入和生成内容。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md)、[AI 基础概念](02-ai-workloads/ai-fundamentals.md)、[Transformer 流程与原理](02-ai-workloads/transformer.md)、[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[多模态原理](02-ai-workloads/multimodal-primer.md) |
-| 单机执行 | 研究推理服务、算子、Triton Kernel、TorchInductor、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 单机执行 | 研究推理服务、Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、runtime 和加速器如何决定延迟、吞吐、显存和能效。 | [3 推理系统与优化](03-inference-systems/index.md)、[5 Kernel、算子与编译优化](05-kernels-compilers/index.md)、[Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md)、[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)、[MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md)、[6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 多机基础设施 | 研究训练系统、通信、调度、网络、存储和集群隔离如何影响规模化效率。 | [4 训练系统与优化](04-training-systems/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、故障复盘和论文复现把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 
@@ -283,7 +290,7 @@ updated: 2026-06-12
 | 想先搞懂训练和推理怎么回事 | [训练过程与原理](02-ai-workloads/training-primer.md) -> [推理过程与原理](02-ai-workloads/inference-primer.md) -> [3 推理系统与优化](03-inference-systems/index.md) -> [4 训练系统与优化](04-training-systems/index.md) |
 | 想提高吞吐和 GPU 利用率 | [3 推理系统与优化](03-inference-systems/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
 | 想做分布式训练系统 | [4 训练系统与优化](04-training-systems/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [7 集群、网络、存储与调度](07-cluster-infra/index.md) |
-| 想做 Triton Kernel 或编译优化 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
+| 想做 Triton Kernel 或编译优化 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) |
 | 想做 AI 加速器或硬件架构 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) -> [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) -> [6 AI 加速器与计算架构](06-accelerators-architecture/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) |
 | 想建设稳定集群或实验平台 | [7 集群、网络、存储与调度](07-cluster-infra/index.md) -> [9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md) -> [11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 | 想复现系统论文 | [10 论文复现与系统案例](10-papers-cases/index.md) -> [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md) -> [技术决策模板](99-templates/adr.md) |
@@ -296,7 +303,7 @@ updated: 2026-06-12
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理的浅层科普 |
 | 3 推理系统与优化 | 2、5、6、8 | 推理链路、调度策略、缓存策略、延迟吞吐分析 |
 | 4 训练系统与优化 | 2、6、7、8 | 并行策略、通信模型、训练稳定性和扩展效率 |
-| 5 Kernel、算子与编译优化 | 2、6、8 | Triton Kernel、TorchInductor、算子实现、图优化、编译和自动调优 |
+| 5 Kernel、算子与编译优化 | 2、6、8 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化、编译和自动调优 |
 | 6 AI 加速器与计算架构 | 2、5、8 | 计算、存储、互连、能效和体系结构分析 |
 | 7 集群、网络、存储与调度 | 3、4、6 | 资源调度、网络存储、隔离、镜像环境和实验平台 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、Profiling、Roofline、容量估算和对比方法 |
@@ -43647,11 +43654,20 @@ domain: kernels-compilers
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-12
+updated: 2026-06-22
 
 # Kernel、算子与编译优化
 
-本目录关注 AI workload 在单机和单卡上的执行效率：算子如何映射到硬件、Kernel 为什么慢、编译器如何做图优化和融合，以及自动调优如何找到更好的实现。Triton 和 TorchInductor 是本目录的核心专题，分别对应手写高性能 Kernel 和 PyTorch 编译栈中的自动代码生成路径。
+本目录关注 AI workload 在单机和单卡上的执行效率：算子如何映射到硬件、Kernel 为什么慢、编译器如何做图优化和融合，IR 如何承载 lowering，tile/schedule 如何影响硬件效率，以及 MegaKernel 这类更激进的融合路径什么时候值得研究。
+
+本章的主线是：
+
+```text
+先理解 Attention 等核心 workload 的计算模式
+-> 再理解 Triton / TileLang 这类 kernel 编程方式
+-> 再理解 TorchInductor / MLIR 这类编译表示和生成路径
+-> 最后评估 Persistent Kernel / MegaKernel / 自动生成
+```
 
 ## 技术分层
 
@@ -43659,7 +43675,10 @@ updated: 2026-06-12
 | --- | --- | --- |
 | 算子语义 | workload 需要什么计算和数据访问模式 | GEMM、Attention、LayerNorm、Softmax、Embedding、MoE dispatch |
 | 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS |
+| Tile 与 Schedule | 如何表达 tile、layout、pipeline、tensorization 和 autotuning | TileLang、Triton、CUTLASS、TVM |
 | 图编译与代码生成 | 如何从 PyTorch graph 自动融合、调度和生成代码 | TorchDynamo、AOTAutograd、TorchInductor、Triton backend |
+| 编译 IR 与 Lowering | 如何在多层抽象中表达、验证和降低计算 | MLIR、StableHLO、Linalg、MemRef、Vector、GPU dialect |
+| 跨算子融合 | 如何把多个算子或子图变成更少、更长驻的执行单元 | operator fusion、persistent kernel、MegaKernel |
 | 性能诊断 | 如何证明 Kernel 或编译优化真的有效 | profiler、roofline、IR/PTX/SASS inspection |
 
 ## 建议主题
@@ -43670,7 +43689,9 @@ updated: 2026-06-12
 - FlashAttention、fused operator、persistent kernel
 - Triton、CUDA、ROCm、CUTLASS、cuDNN、cuBLAS
 - TorchDynamo、AOTAutograd、TorchInductor、XLA、TVM、MLIR、ONNX Runtime
-- graph capture、operator fusion、layout transform、auto-tuning
+- TileLang、tile DSL、schedule、pipeline、tensorization
+- graph capture、operator fusion、layout transform、auto-tuning、lowering
+- MegaKernel、persistent kernel、device-side scheduling、automatic kernel generation
 - kernel profiling、roofline、SASS/PTX/IR inspection
 
 ## 关键问题
@@ -43679,6 +43700,9 @@ updated: 2026-06-12
 - 是否存在多余的 memory read/write、layout transform 或 kernel launch。
 - Fusion 是否减少访存，是否引入寄存器压力和 occupancy 下降。
 - Triton Kernel 或 TorchInductor 生成的 kernel 是否符合 workload shape。
+- IR/lowering 层是否保留了必要语义，是否过早丢失优化空间。
+- Tile、layout、pipeline 和 tensorization 是否真正适合目标硬件。
+- MegaKernel 是否真的减少 launch 和 HBM round trip，还是只把问题合进一个更难 debug 的 kernel。
 - 优化在不同 batch、sequence length、precision 下是否仍然成立。
 
 ## 专题入口
@@ -43686,6 +43710,9 @@ updated: 2026-06-12
 - [Attention 机制与计算模式](attention-computation-patterns.md)：区分 attention pattern、exact/approx、kernel 实现和 KV Cache 管理，理解 Dense/Sparse/Flash/PagedAttention、MHA/MQA/GQA、Prefill/Decode、长上下文、显存 IO 和 benchmark 方法。
 - [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel，覆盖 block program、JIT specialization、launch grid、tiling、资源模型、数值、autotune、PyTorch/Inductor 集成和端到端 benchmark。
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
+- [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：理解为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、vector/GPU 后端，以及它和 Triton、TorchInductor、TileLang、MegaKernel 的关系。
+- [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：理解 tile、layout、pipeline、tensorization、autotuning 如何共同决定 GEMM、Attention、Dequant GEMM、Sparse MM 等 kernel 的硬件效率。
+- [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：区分普通 fusion、persistent kernel、CUDA Graph 和 MegaKernel，理解 Triton MegaKernel、Ascend C MegaKernel-style 实现和自动生成路径的收益与风险。
 
 ---
 
@@ -47225,6 +47252,1308 @@ TorchInductor 与 PyTorch 编译栈的价值，不是“打开一个开关”，
 - [PyTorch: TorchInductor and torch.compile GPU Profiling](https://docs.pytorch.org/docs/2.12/user_guide/torch_compiler/torch.compiler_inductor_profiling.html)
 - [PyTorch: tlparse / TORCH_TRACE](https://docs.pytorch.org/docs/2.12/user_guide/torch_compiler/torch.compiler_troubleshooting.html)
 - [PyTorch: AOTInductor](https://docs.pytorch.org/docs/2.12/user_guide/torch_compiler/torch.compiler_aot_inductor.html)
+
+---
+
+# Document: MLIR 与 AI 编译 IR
+
+Source: docs/05-kernels-compilers/mlir-ai-compiler-ir.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/mlir-ai-compiler-ir/
+domain: kernels-compilers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-22
+
+# MLIR 与 AI 编译 IR
+
+MLIR 是 Multi-Level Intermediate Representation 的缩写。它不是某一个 AI 框架，也不是某一种硬件后端，而是一套用来构建编译器的中间表示和基础设施。
+
+如果只记一句话：
+
+> MLIR 的核心价值，是允许编译器在不同抽象层级上表达同一段计算：上层保留 tensor、shape、layout 等语义，下层逐步变成 loop、memory、vector、GPU、LLVM 或硬件相关指令。
+
+这篇文章的目标不是教你写 MLIR pass，而是解释为什么 AI 编译器需要 IR，MLIR 的分层思想是什么，它和 TorchInductor、Triton、TileLang、MegaKernel 这些技术分别是什么关系。
+
+## MLIR 在系统里的位置
+
+AI 程序从模型代码到硬件执行，中间通常要经历多层表示：
+
+```mermaid
+flowchart TB
+    A["Python / PyTorch / JAX / DSL"] --> B["高层计算图<br/>Tensor、Shape、Op"]
+    B --> C["中层 IR<br/>算子融合、Layout、Tiling、Loop"]
+    C --> D["低层 IR<br/>Memory、Vector、GPU、Runtime"]
+    D --> E["目标代码<br/>LLVM IR / PTX / SASS / ROCm / CPU code"]
+    E --> F["硬件执行<br/>GPU / CPU / NPU / ASIC"]
+```
+
+MLIR 主要解决中间几层的问题：如何表示计算，如何逐步降低抽象，如何让优化 pass 在合适的层级工作。
+
+例如，同一个 matmul 在不同层级可以被看成：
+
+| 层级 | 看到的东西 | 适合做什么优化 |
+| --- | --- | --- |
+| 高层 tensor | `C = A @ B` | op fusion、shape 推导、layout 规划 |
+| loop 层 | `for m/n/k` 循环 | loop tiling、loop interchange、parallel mapping |
+| memory 层 | load/store 到 buffer | memory planning、buffer reuse、copy 消除 |
+| vector/GPU 层 | vector op、thread/block、warp | 向量化、Tensor Core 映射、shared memory 规划 |
+| 目标层 | LLVM/NVVM/ROCDL 等 | 指令选择、寄存器分配、目标后端 codegen |
+
+如果只有一种 IR，要么太抽象，无法做硬件优化；要么太底层，早早丢掉 tensor 语义。MLIR 的名字里有 Multi-Level，就是为了解决这个问题。
+
+## IR 是什么
+
+IR 可以理解为编译器内部使用的“可分析、可变换、可生成代码”的程序表示。
+
+普通模型代码像这样：
+
+```python
+y = torch.relu(x @ w + b)
+```
+
+人能看懂，但编译器如果要优化，需要知道更结构化的信息：
+
+- 这里有哪些 op。
+- 输入输出 tensor 的 shape、dtype、layout 是什么。
+- 哪些 tensor 会被复用。
+- 哪些 op 可以融合。
+- 哪些循环可以并行。
+- 哪些访存可以消除。
+- 哪些部分必须保持原顺序。
+
+IR 的作用就是把这些信息表达出来。
+
+所以，IR 不是为了让人读起来更舒服，而是为了让编译器能够可靠回答问题：
+
+```text
+这段计算是否等价？
+这个 op 能不能往前/往后移动？
+这两个 op 能不能 fusion？
+这个 tensor 是否必须真的写回 HBM？
+这个 loop 能不能切 tile？
+这个 tile 能不能映射到 thread block 或 Tensor Core？
+```
+
+## 为什么 AI 编译需要多层 IR
+
+AI workload 的优化跨越很多层级。
+
+高层优化关心：
+
+- 模型图是否连续。
+- 算子之间能否融合。
+- shape 是否静态或可符号化。
+- layout 是否需要转换。
+- 哪些 op 可以换成高性能库调用。
+
+中层优化关心：
+
+- loop nest 如何组织。
+- tile 大小如何选择。
+- reduction 如何分块。
+- memory buffer 如何复用。
+- producer/consumer 是否可以合并。
+
+低层优化关心：
+
+- 线程、warp、CTA 如何分配。
+- register 和 shared memory 是否超限。
+- vector load/store 是否对齐。
+- 是否能使用 Tensor Core。
+- 是否产生 bank conflict、warp divergence 或 spill。
+
+这些问题不能都放在同一个抽象层里解决。太早降到底层会丢失模型语义，太晚停在高层又无法控制硬件效率。
+
+MLIR 的做法是允许编译器保留多个层级，并通过 lowering 逐步从高层走向低层。
+
+## Dialect 是 MLIR 的核心概念
+
+MLIR 里最重要的概念之一是 dialect。
+
+可以把 dialect 理解成“某个领域的一组 IR 语义”。不同 dialect 可以定义自己的：
+
+- operation。
+- type。
+- attribute。
+- region。
+- verification rule。
+- lowering rule。
+
+例如，一个编译器可以在高层使用 tensor / linalg 风格的表示，在中层使用 affine / scf / memref / vector，在低层使用 gpu / nvgpu / nvvm / rocdl / llvm 等表示。
+
+这带来一个实际好处：
+
+> 一个 AI 编译器不必从零开始定义所有 IR。它可以复用 MLIR 已有基础设施，同时为自己的 workload 或硬件增加专门 dialect。
+
+这也是 MLIR 适合 AI 编译器、DSL、硬件后端的原因：AI 领域变化快，新的算子、新的 layout、新的数据类型、新的加速器都需要可扩展的表示方式。
+
+## Lowering 是什么
+
+Lowering 是把高层表示逐步转换成低层表示的过程。
+
+一个简化例子：
+
+```text
+tensor matmul
+-> linalg.matmul
+-> tiled loop nest
+-> bufferized memref load/store
+-> vector / gpu operations
+-> LLVM / target backend
+```
+
+每一步都应该尽量保持语义等价，但表达形式越来越接近硬件。
+
+Lowering 不是简单翻译。它通常会伴随优化：
+
+- fusion：把 producer 和 consumer 合并。
+- tiling：把大矩阵切成适合 cache/shared memory/register 的块。
+- vectorization：把标量循环改成向量操作。
+- bufferization：把 tensor value 显式变成 memory buffer。
+- layout conversion：改变内存排布以适配后端。
+- canonicalization：简化 IR，消除冗余 op。
+- specialization：根据 shape、dtype、target 生成专门路径。
+
+所以看一个 MLIR pipeline，不只是看“从 A 变成 B”，更要看每个阶段保留了什么信息、丢弃了什么信息、引入了什么硬件约束。
+
+## AI 编译器常见分层
+
+不同项目的名字不一样，但 AI 编译器大体会遇到类似分层。
+
+| 层级 | 典型内容 | 主要问题 |
+| --- | --- | --- |
+| Frontend graph | PyTorch FX、JAXPR、ONNX、StableHLO 等 | 程序能否被捕获，op 语义是否清楚 |
+| Tensor / linalg IR | tensor op、linalg op、shape 信息 | fusion、shape 推导、layout 规划 |
+| Loop / schedule IR | scf、affine、loop nest、tiling | 循环变换、并行策略、reduction 分解 |
+| Memory IR | memref、buffer、copy、view | bufferization、memory planning、数据复用 |
+| Vector / GPU IR | vector、gpu、nvgpu、amdgpu 等 | thread/block 映射、向量化、Tensor Core |
+| Target IR | LLVM、NVVM、ROCDL、SPIR-V 等 | 目标代码生成和 runtime ABI |
+
+对 AI Infra 工程师来说，最重要的不是背 dialect 名字，而是建立一个判断：
+
+```text
+当前优化问题应该在哪个层级解决？
+```
+
+如果问题是 graph break，就不该去调 GPU tile。
+
+如果问题是 HBM 中间写回太多，就要看 fusion、layout 和 memory planning。
+
+如果问题是 Tensor Core 利用率低，就要看低层 tiling、dtype、layout、指令映射和寄存器压力。
+
+## MLIR 和 Triton 的关系
+
+Triton 面向用户提供 Python DSL，但它内部也有编译 pipeline。Triton 程序通常会被转换到 Triton 自己的 IR，再逐步 lowering 到更接近 GPU 后端的表示。
+
+学习 MLIR 对理解 Triton 有两个帮助。
+
+第一，你能理解为什么 Triton 不是“直接把 Python 变 CUDA”。`tl.load`、`tl.dot`、block tensor、mask、program id 这些概念都会进入编译器 IR，然后经过优化和 lowering。
+
+第二，你能理解为什么某些 Triton kernel 性能差异来自 codegen 层，而不只是 Python 代码层。例如：
+
+- `BLOCK_M/N/K` 改变了 tile 形状。
+- `num_warps` 改变了执行资源。
+- `num_stages` 影响 pipeline 和 shared memory。
+- dtype/layout 决定是否能走 Tensor Core。
+- mask 和 pointer pattern 影响 vectorized load/store。
+
+这些最终都会体现在 IR 和目标代码里。
+
+## MLIR 和 TorchInductor 的关系
+
+TorchInductor 的直接输入主要来自 PyTorch 编译栈捕获出的 FX/ATen 图。它会做 lowering、fusion、scheduler 和 codegen，GPU 路径常见输出是 Triton kernel。
+
+因此，TorchInductor 不是“把 PyTorch 直接变成 MLIR 然后结束”的简单关系。更准确的理解是：
+
+- TorchDynamo / FX / AOTAutograd 负责 PyTorch 前端捕获和图表示。
+- TorchInductor 负责 PyTorch 图层面的 lowering、fusion、调度和代码生成。
+- 生成的 Triton kernel 进入 Triton 自己的编译流程。
+- Triton 编译流程内部会继续进入更低层 IR 和目标后端。
+
+所以 MLIR 更像一类编译基础设施思想和底层工具链生态，而 TorchInductor 是 PyTorch 生态里的图编译后端。
+
+排查 `torch.compile` 时，优先看 graph break、guards、generated code 和 Inductor scheduler；排查 Triton codegen 或目标指令质量时，才进一步进入 Triton/MLIR/LLVM 这类更低层视角。
+
+## MLIR 和 TileLang 的关系
+
+TileLang 这类 tile-oriented DSL 关注的是：如何用更贴近 AI kernel 的方式描述 tile、pipeline、layout、tensorization 和 schedule。
+
+它和 MLIR 的关系可以这样理解：
+
+```text
+TileLang 更靠近“用户如何表达 tile kernel”
+MLIR 更靠近“编译器如何承载和变换多层 IR”
+```
+
+一个 DSL 可以把自己的程序表示 lower 到 TVM、MLIR 或其他编译基础设施；也可以自己定义 IR 和 pass。关键不是名字，而是它是否有清晰的中间表示，能否表达 dataflow、schedule、memory 和 target constraints。
+
+## MLIR 和 MegaKernel 的关系
+
+MegaKernel 会把多个算子或多个阶段合成一个更大的 kernel，甚至用 persistent kernel 长时间驻留在设备上执行一段任务图。
+
+这类优化需要比普通算子 fusion 更复杂的表示：
+
+- 多个 operator 或 tile task 的依赖关系。
+- 每个 tile 的 producer/consumer。
+- buffer 生命周期和复用。
+- 全局同步或事件依赖。
+- 不同硬件资源上的任务分配。
+- 形状、路由、动态分支带来的不确定性。
+
+MLIR 或类似 IR 基础设施的价值，是提供一个比手写字符串拼接更可靠的承载方式：先把任务图、调度、memory planning 表示出来，再做验证、lowering 和 codegen。
+
+所以 MegaKernel 自动生成不是“把很多 Python 代码粘成一个 kernel”。它更像编译器问题：需要 IR 表达、依赖分析、资源建模、正确性验证和代码生成。
+
+## MLIR 能解决什么，不能解决什么
+
+MLIR 能帮助解决：
+
+- 多层抽象表示。
+- 自定义 dialect。
+- pass 管理和 pattern rewrite。
+- verifier 和 canonicalization。
+- lowering pipeline 组织。
+- 不同编译项目之间复用基础设施。
+- 给新硬件或新 DSL 提供可扩展路径。
+
+但 MLIR 不能自动保证：
+
+- 你的 schedule 一定快。
+- 你的 fusion 一定减少端到端延迟。
+- 你的 memory planning 一定不超显存。
+- 你的动态 shape 一定不频繁 recompile。
+- 你的后端 codegen 一定比库函数好。
+- 你的数值行为一定与 eager baseline 完全一致。
+
+IR 是优化的载体，不是性能的保证。真正的性能仍然要靠 workload 建模、benchmark、profiler、正确性测试和版本治理。
+
+## 读 MLIR 或编译 IR 时看什么
+
+刚开始读 IR 不要追求每个 op 都背下来。建议按问题读。
+
+### 看语义是否还在
+
+关注：
+
+- tensor shape 是否清楚。
+- dtype 是否正确。
+- layout 是否显式。
+- reduction 维度是否正确。
+- mask、broadcast、reshape 是否保持语义。
+
+如果高层语义已经错了，后面再优化也没有意义。
+
+### 看 fusion boundary
+
+关注：
+
+- 哪些 producer/consumer 被合并。
+- 哪些中间 tensor 仍然写回 memory。
+- fusion 是否跨过 expensive op。
+- 是否因为 shape、layout、alias、mutation 或 unsupported op 被迫断开。
+
+### 看 memory
+
+关注：
+
+- 是否发生多余 copy。
+- buffer 是否复用。
+- layout transform 是否过多。
+- intermediate tensor 是否过大。
+- global memory 和 shared/local memory 边界在哪里。
+
+### 看 loop 和 tile
+
+关注：
+
+- loop order 是否匹配 memory layout。
+- tile size 是否适合 cache/shared memory/register。
+- reduction 是否分块。
+- parallel mapping 是否足够。
+- 是否有很多 tail/mask 开销。
+
+### 看 target lowering
+
+关注：
+
+- 是否生成目标后端支持的 op。
+- 是否使用 Tensor Core 或矩阵指令。
+- register/shared memory 是否超限。
+- 是否出现 scalar fallback。
+- 是否出现过多 synchronization。
+
+## 常见误区
+
+### 误区一：有 MLIR 就会自动高性能
+
+MLIR 是基础设施，不是自动调优器。它提供表达和变换能力，但调度策略、代价模型、autotune、benchmark 仍然要做。
+
+### 误区二：IR 越低层越有价值
+
+低层 IR 能看硬件细节，但很多优化机会在高层才看得见。例如 op fusion、layout propagation、shape specialization。如果太早降到底层，反而可能丢失优化空间。
+
+### 误区三：所有 AI 编译器都应该直接统一到一种 IR
+
+现实里不同前端、后端、硬件和 workload 差异很大。统一 IR 的价值在于共享抽象和 pass，不是消灭所有项目自己的表示。
+
+### 误区四：读 IR 就能替代 profiler
+
+IR 可以解释“编译器打算怎么做”，profiler 才能证明“硬件实际怎么跑”。两者要结合。
+
+## 工程检查清单
+
+做 AI 编译或 IR 相关工作时，建议记录：
+
+- 输入模型、shape、dtype、layout。
+- frontend graph 是否完整捕获。
+- 每个 lowering 阶段的 IR dump。
+- fusion boundary 和 graph break 原因。
+- bufferization 和 memory planning 结果。
+- tile size、parallel mapping、vectorization 策略。
+- 目标后端、driver、compiler 版本。
+- 生成 kernel 数量和 launch 数量。
+- correctness 对比方式和 tolerance。
+- microbenchmark 与端到端 benchmark。
+- profiler 证据：kernel time、memory bandwidth、occupancy、Tensor Core 使用率。
+
+这些记录比单独保存一段 IR 更有用，因为性能问题通常跨越多层。
+
+## 与本章其他文章的关系
+
+- [Attention 机制与计算模式](attention-computation-patterns.md)：解释 attention workload 的计算模式，是编译和 kernel 优化的上游语义。
+- [Triton Kernel 编程](triton.md)：解释如何手写或理解 block program 形式的 GPU kernel。
+- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：解释 PyTorch 程序如何被捕获、融合、调度和生成 kernel。
+- [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：解释 tile-oriented DSL 如何让 kernel schedule 更显式。
+- [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：解释更激进的跨算子、长驻 kernel 和自动生成路径。
+
+## 参考资料
+
+- [MLIR 官方网站](https://mlir.llvm.org/)
+- [MLIR Dialects 官方文档](https://mlir.llvm.org/docs/Dialects/)
+- [MLIR: A Compiler Infrastructure for the End of Moore's Law](https://arxiv.org/abs/2002.11054)
+- [Triton 官方文档](https://triton-lang.org/main/index.html)
+- [PyTorch torch.compile 文档](https://pytorch.org/docs/stable/torch.compiler.html)
+
+---
+
+# Document: TileLang：面向 AI Kernel 的 Tile 编程模型
+
+Source: docs/05-kernels-compilers/tilelang.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/tilelang/
+domain: kernels-compilers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-22
+
+# TileLang：面向 AI Kernel 的 Tile 编程模型
+
+TileLang 是面向高性能 AI kernel 的 tile-oriented 编程语言和编译工具。它试图让工程师用比 CUDA 更高层、比纯图编译更可控的方式描述 GEMM、Dequant GEMM、FlashAttention、LinearAttention、Sparse MM 等 kernel。
+
+如果只记一句话：
+
+> TileLang 把 AI kernel 的核心抽象放在 tile 上：程序员描述数据如何分块、搬运、流水和计算，编译器再把这些 tile 映射到线程、内存层次和目标硬件。
+
+这篇文章关注 TileLang 的系统位置和思维模型，不追求覆盖全部语法。
+
+## 为什么需要 Tile 编程模型
+
+AI kernel 的性能很大程度上取决于数据块怎么搬、怎么复用、怎么落到硬件矩阵单元。
+
+一个矩阵乘或 attention kernel 并不是简单做一次大矩阵运算。真实执行里会被切成很多 tile：
+
+```mermaid
+flowchart TB
+    A["Global Memory<br/>大 Tensor"] --> B["Tile 读取<br/>按 BLOCK_M/N/K 分块"]
+    B --> C["片上缓存<br/>Shared / Local / Register"]
+    C --> D["计算<br/>Tensor Core / Vector / Scalar"]
+    D --> E["Epilogue<br/>bias / activation / scale / cast"]
+    E --> F["写回 Global Memory"]
+```
+
+性能差异经常来自这些问题：
+
+- tile 太小，计算单元吃不饱。
+- tile 太大，register 或 shared memory 超限。
+- 数据复用不足，反复访问 HBM。
+- load/store 不连续，带宽打不满。
+- pipeline 没有隐藏 memory latency。
+- reduction 切分方式不适合 shape。
+- epilogue 单独成 kernel，产生额外 launch 和 HBM round trip。
+
+TileLang 这类 DSL 的目标，是让这些问题在程序层面更容易表达、组合和调优。
+
+## Tile 是什么
+
+Tile 可以理解为大 tensor 上的一小块计算区域。
+
+例如 GEMM：
+
+```text
+C[M, N] = A[M, K] @ B[K, N]
+```
+
+不会一次让一个 kernel 实例处理完整 `M x N`。通常会把 `C` 切成很多 `BLOCK_M x BLOCK_N` 的输出 tile，每个输出 tile 再沿 `K` 维分块累加：
+
+```text
+for tile_m in M:
+  for tile_n in N:
+    acc = 0
+    for tile_k in K:
+      acc += A[tile_m, tile_k] @ B[tile_k, tile_n]
+    C[tile_m, tile_n] = acc
+```
+
+这个伪代码看起来简单，但真正难点在于：
+
+- `A` 和 `B` 的 tile 怎么从 HBM 搬到片上。
+- 多个 tile 的 load 和 compute 怎么流水。
+- 每个 tile 分给多少 warp/thread。
+- 数据 layout 是否适合矩阵指令。
+- 累加器放 register 是否够。
+- 输出前是否融合 bias、activation、scale、quant/dequant。
+
+TileLang 的价值就是让这些 tile 级决策成为一等概念，而不是藏在底层 CUDA 线程细节里。
+
+## TileLang 在系统里的位置
+
+可以把相关技术放在一条抽象轴上：
+
+| 技术 | 更关注什么 | 典型使用者 |
+| --- | --- | --- |
+| PyTorch eager | 模型表达和灵活性 | 模型开发者 |
+| TorchInductor | 自动图捕获、融合、代码生成 | PyTorch 系统工程师 |
+| Triton | block program 形式的手写 GPU kernel | AI kernel 工程师 |
+| TileLang | tile、schedule、pipeline、tensorization | kernel/compiler 工程师 |
+| CUDA / HIP / Ascend C | 线程、内存、指令级控制 | 底层性能工程师 |
+| CUTLASS / vendor library | 高度优化的库模板或黑盒实现 | 系统集成者 |
+
+TileLang 不是替代所有路径，而是落在一个中间区域：
+
+```text
+想控制 tile 和 schedule，
+但不想每次都手写完整低层 kernel。
+```
+
+## Dataflow 和 Schedule 要分开看
+
+理解 TileLang 时，一个关键视角是区分 dataflow 和 schedule。
+
+Dataflow 描述算什么：
+
+```text
+O = softmax(Q @ K^T) @ V
+```
+
+Schedule 描述怎么执行：
+
+```text
+把 Q/K/V 分成多大的 tile
+每个 tile 由哪些线程处理
+什么时候 load
+什么时候 compute
+是否 double buffering
+是否 tensorize 到矩阵指令
+是否 fused epilogue
+```
+
+很多 AI kernel 的数学公式很短，但 schedule 很复杂。FlashAttention 就是典型例子：数学上仍然是 exact attention，但为了减少 HBM IO，它把 Q/K/V 分块读入片上，边做 softmax 边维护统计量，避免完整 `S x S` attention matrix 写回显存。
+
+TileLang 的意义，是让 dataflow 和 schedule 都能被表达，并且让 schedule 可以被编译器分析、变换和调优。
+
+## TileLang 常见概念
+
+不同版本和项目 API 会演进，但理解 TileLang 通常要抓住以下概念。
+
+### Tile-based program
+
+程序围绕 tile 展开，而不是围绕单个 scalar element 展开。
+
+这接近 AI kernel 的真实优化单位。GEMM、attention、normalization、dequant、MoE grouped GEMM 都需要按 tile 组织计算和访存。
+
+### Layout
+
+Layout 决定 tensor 在内存中的排布，以及 tile 内元素如何对应到线程和指令。
+
+不合适的 layout 会导致：
+
+- load/store 不连续。
+- bank conflict。
+- 无法走矩阵指令。
+- 多余 transpose 或 copy。
+- 跨 tile 数据复用差。
+
+TileLang 里 layout 不只是数据格式，它直接影响 schedule 和 codegen。
+
+### Thread binding
+
+Thread binding 决定 tile 内工作如何映射到 thread、warp、block 或硬件等价执行单元。
+
+这类信息通常决定：
+
+- 并行度。
+- occupancy。
+- 每个线程的寄存器压力。
+- warp 内协作方式。
+- 是否出现 divergence。
+
+### Pipeline
+
+Pipeline 关注 load、compute、store 的重叠。
+
+简化地说，理想 kernel 不希望这样执行：
+
+```text
+load tile 0
+compute tile 0
+load tile 1
+compute tile 1
+```
+
+而希望接近：
+
+```text
+load tile 1 的同时 compute tile 0
+load tile 2 的同时 compute tile 1
+```
+
+这需要 double buffering、async copy、stage 管理和同步。TileLang 这类 DSL 会把 pipeline annotation 作为重要能力。
+
+### Tensorization
+
+Tensorization 是把一段小矩阵计算映射到硬件矩阵指令或专门 intrinsic。
+
+例如 NVIDIA Tensor Core、AMD MFMA、某些 NPU Cube/Matrix 单元，本质上都要求程序以特定 tile、dtype、layout 进入硬件路径。
+
+TileLang 关注 tensorization，是因为 AI kernel 的峰值性能通常来自这些矩阵单元，而不是普通 scalar ALU。
+
+### Autotuning
+
+TileLang 仍然需要 autotuning。
+
+原因很直接：最佳 tile size、stage、warp 数、layout、unroll、split-k 策略会随 shape、dtype、硬件、driver、编译器版本变化。
+
+所以一个严肃的 TileLang 工作流通常包括：
+
+```text
+正确性 baseline
+-> 候选 schedule 空间
+-> autotune
+-> microbenchmark
+-> profiler
+-> 端到端验证
+```
+
+## 和 Triton 的差异
+
+Triton 和 TileLang 都服务高性能 kernel，但思维重心不同。
+
+| 维度 | Triton | TileLang |
+| --- | --- | --- |
+| 用户视角 | block program | tile dataflow + schedule |
+| 常见表达 | `tl.load`、`tl.dot`、mask、program id | tile、layout、pipeline、tensorization、schedule annotation |
+| 适合场景 | 自定义 GPU kernel、fused op、Inductor 后端代码 | GEMM/attention 等 tile-heavy kernel 的 schedule 探索 |
+| 调优方式 | meta-parameter、autotune、手动重写 | schedule space、layout、pipeline、autotune |
+| 抽象层级 | 比 CUDA 高，比图编译低 | 强调 tile 和 schedule 的中间层 |
+
+两者不是非此即彼。可以这样选：
+
+- 想快速写一个 fused elementwise/reduction/GEMM-like kernel，Triton 很自然。
+- 想系统探索 tile、layout、pipeline、tensorization，TileLang 这类 DSL 更贴近问题。
+- 已有 vendor library 明显更快，优先用库。
+- 想从 PyTorch 自动生成，先看 TorchInductor。
+
+## 和 TVM、MLIR 的关系
+
+TileLang 官方资料中强调它构建在 TVM 编译基础设施之上，并提供 Pythonic 的 tile 编程方式。这里要分清三层：
+
+| 层 | 作用 |
+| --- | --- |
+| DSL | 让工程师表达 kernel 和 schedule |
+| IR / compiler infra | 承载、分析、变换和 lowering |
+| Backend | 生成目标硬件代码并运行 |
+
+TVM、MLIR 这类基础设施更偏编译器底座。TileLang 这类 DSL 更偏用户表达和 schedule 设计。
+
+对研发人员来说，重要问题不是“名字属于哪一层”，而是：
+
+- 能不能表达目标 kernel。
+- 能不能控制关键 schedule。
+- 能不能生成目标硬件可用代码。
+- 能不能做正确性验证和性能回归。
+- 能不能融入 PyTorch、serving 或 training runtime。
+
+## 典型适用场景
+
+TileLang 适合研究和实现这类 kernel：
+
+- GEMM、batched GEMM、grouped GEMM。
+- Dequant GEMM、weight-only quant matmul。
+- FlashAttention、FlashMLA、LinearAttention。
+- Sparse MM、block sparse attention。
+- fused normalization、activation、epilogue。
+- MoE dispatch/combine 附近的 tile 化计算。
+- 需要探索新硬件后端或新 layout 的实验 kernel。
+
+这些 workload 的共同点是：性能很依赖 tile 和数据复用。
+
+## 不适合优先使用的场景
+
+不建议一开始就用 TileLang 的情况：
+
+- 标准算子已经由 cuBLAS、cuDNN、FlashAttention、CUTLASS 或厂商库很好覆盖。
+- 端到端瓶颈不在该 kernel。
+- shape 非常发散，schedule 特化收益不稳定。
+- 团队还没有 correctness、benchmark、profiler、回归测试流程。
+- 只是想减少 Python overhead，`torch.compile` 可能更合适。
+- 需要复杂跨算子控制流和全局 runtime 调度，MegaKernel 或 runtime 层设计可能更相关。
+
+TileLang 是性能研发工具，不是免 benchmark 的捷径。
+
+## Benchmark 方法
+
+评估 TileLang kernel 时，至少要同时看四层。
+
+### 正确性
+
+- 和 PyTorch eager 或 vendor library 对齐。
+- 覆盖 dtype、shape、stride、mask、边界 tile。
+- 明确 absolute/relative tolerance。
+- 对 reduction、softmax、low-bit dequant 做数值误差分析。
+- 对随机 shape 和极端 shape 做 stress test。
+
+### Microbenchmark
+
+- 预热和 steady-state 分开。
+- 记录 compile/autotune 时间。
+- 固定输入 shape、dtype、layout。
+- 报告 latency、GB/s、TFLOPs、effective bandwidth。
+- 和 vendor library、Triton、Inductor baseline 对比。
+
+### Profiler
+
+- 看 kernel launch 数量。
+- 看 HBM 带宽。
+- 看 Tensor Core 或矩阵单元使用率。
+- 看 occupancy、register、shared memory、spill。
+- 看 memory coalescing、bank conflict、warp stall。
+
+### End-to-end
+
+- 看训练 step time 或推理 TTFT/TPOT/吞吐。
+- 看是否改变显存峰值。
+- 看是否引入编译时延或缓存膨胀。
+- 看不同 batch、sequence length、并发下是否稳定。
+
+只看 microbenchmark 容易误判，因为一个 kernel 变快不一定让端到端变快。
+
+## 学习路线
+
+建议按这个顺序学习 TileLang 相关内容：
+
+1. 先掌握 [Attention 机制与计算模式](attention-computation-patterns.md) 里的 Dense/Sparse/Flash Attention。
+2. 再掌握 [Triton Kernel 编程](triton.md) 的 block program、tiling、mask 和 resource model。
+3. 然后学习 tile、layout、pipeline、tensorization 的 schedule 思维。
+4. 最后再看自动调优、IR lowering、跨硬件后端和 MegaKernel 生成。
+
+这样不会一开始就陷入语法，而是知道每个抽象为什么存在。
+
+## 工程检查清单
+
+为一个 TileLang kernel 建档时，建议记录：
+
+- kernel 语义：输入、输出、shape、dtype、stride、mask。
+- baseline：PyTorch、vendor library、Triton 或 Inductor。
+- tile 参数：block size、split-k、stage、warp/thread 映射。
+- layout：输入、输出、中间 tile、shared/local memory layout。
+- pipeline：stage 数、double buffering、async copy、同步点。
+- tensorization：是否走矩阵指令，目标硬件是什么。
+- autotune space：候选参数和筛选规则。
+- correctness：测试 shape、tolerance、随机种子。
+- microbenchmark：latency、throughput、带宽、重复次数。
+- profiler：资源占用和 stall 原因。
+- end-to-end：对训练或推理指标的影响。
+- fallback：不支持 shape/dtype/hardware 时如何回退。
+
+## 与本章其他文章的关系
+
+- [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：解释 IR 和 lowering 思想。
+- [Triton Kernel 编程](triton.md)：解释更常用的 block program 手写 kernel 路径。
+- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：解释 PyTorch 图编译如何自动生成 kernel。
+- [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：解释比单算子更激进的跨算子融合与长驻 kernel。
+
+## 参考资料
+
+- [TileLang 官方文档](https://tilelang.com/)
+- [TileLang GitHub 仓库](https://github.com/tile-ai/tilelang)
+- [TileLang: A Composable Tiled Programming Model for AI Systems](https://arxiv.org/abs/2504.17577)
+- [TVM 官方文档](https://tvm.apache.org/docs/)
+- [Triton 官方文档](https://triton-lang.org/main/index.html)
+
+---
+
+# Document: MegaKernel、Persistent Kernel 与自动生成
+
+Source: docs/05-kernels-compilers/megakernel-persistent-automatic-generation.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/
+domain: kernels-compilers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-22
+
+# MegaKernel、Persistent Kernel 与自动生成
+
+MegaKernel 是把多个计算阶段、多个算子，甚至一段模型子图合并到一个更大的 kernel 中执行的思路。它常常和 persistent kernel 一起出现：kernel 启动后让一批 worker 长时间驻留在设备上，持续执行多个 tile task 或 operator stage。
+
+如果只记一句话：
+
+> MegaKernel 试图减少 kernel launch、减少中间结果反复写回 HBM，并暴露跨算子并行；persistent kernel 则让设备上的 worker 长驻，通过任务调度或静态 schedule 连续完成一段更大的计算。
+
+这篇文章解释四件事：
+
+- MegaKernel 和普通 fusion、CUDA Graph、persistent kernel 的区别。
+- Persistent kernel 为什么对 LLM 推理、decode、小 batch、多小算子有吸引力。
+- Triton MegaKernel 和 Ascend C MegaKernel-style 实现分别该怎么理解。
+- MegaKernel 自动生成为什么是编译器问题，而不是简单代码拼接。
+
+## 先分清几个概念
+
+这些名词经常混在一起，需要先拆开。
+
+| 概念 | 核心含义 | 解决的问题 | 不等于 |
+| --- | --- | --- | --- |
+| Operator fusion | 把相邻 op 合成一个 kernel | 减少中间 tensor 写回、减少 launch | 不一定跨很多算子，也不一定 persistent |
+| CUDA Graph / Graph capture | 把一串 kernel launch 录制后复用 | 减少 CPU launch overhead | kernel 之间仍然通常是多个 kernel |
+| Persistent kernel | kernel 启动后长驻执行多个任务 | 减少反复 launch，允许设备侧调度 | 不一定融合很多不同 op |
+| MegaKernel | 把多个阶段或子图放进一个大 kernel | 减少 launch 和 HBM round trip，暴露跨 op 优化 | 不一定自动生成，也不一定总是更快 |
+| Vendor fused op | 厂商库提供的融合实现 | 稳定高性能路径 | 不代表任意子图都可融合 |
+
+一句话区别：
+
+```text
+fusion 关注“合并哪些计算”
+persistent 关注“kernel 是否长驻执行”
+MegaKernel 关注“把多大一段子图放进一个 kernel”
+CUDA Graph 关注“多个 launch 如何被 runtime 更低成本地提交”
+```
+
+它们可以组合，但不是同一个东西。
+
+## 为什么会出现 MegaKernel
+
+传统深度学习执行里，一个模型层可能拆成多个 kernel：
+
+```text
+matmul
+-> bias
+-> activation
+-> residual add
+-> layer norm
+-> attention pre/post processing
+-> quant/dequant
+```
+
+每个 kernel 之间通常需要：
+
+- 前一个 kernel 把结果写回 HBM。
+- 后一个 kernel 再从 HBM 读回来。
+- CPU 或 runtime 发起下一次 kernel launch。
+- kernel 之间存在全局顺序边界。
+
+当单个 kernel 计算很大时，launch overhead 可能不显眼；但在 LLM decode、小 batch、MoE routing、RAG/Agent 小请求、后处理、低延迟服务里，很多 kernel 可能都很短，launch overhead 和 HBM round trip 变得明显。
+
+MegaKernel 的思路是：
+
+```mermaid
+flowchart TB
+    A["多个小算子 / 多个阶段"] --> B["任务图分析<br/>依赖、shape、memory"]
+    B --> C["融合与调度<br/>tile task / stage / pipeline"]
+    C --> D["一个更大的 Kernel<br/>常常是 Persistent"]
+    D --> E["更少 Launch<br/>更少 HBM 中间写回<br/>更多设备侧调度空间"]
+```
+
+目标不是追求“kernel 越大越好”，而是在合适场景减少调度和访存边界。
+
+## Persistent Kernel 是什么
+
+普通 kernel 通常是：
+
+```text
+启动 kernel
+-> 所有 block 执行固定工作
+-> kernel 结束
+-> 启动下一个 kernel
+```
+
+Persistent kernel 更像：
+
+```text
+启动一批常驻 worker
+-> worker 从任务队列或静态任务表取任务
+-> 执行 tile / stage / operator fragment
+-> 继续取下一个任务
+-> 所有任务完成后 kernel 结束
+```
+
+这里的 worker 可以理解为 SM/CTA/warp 级别的执行单元，具体取决于实现。
+
+Persistent kernel 的潜在收益：
+
+- 减少多次 kernel launch。
+- 让任务调度从 CPU/runtime 部分转移到 device。
+- 对动态任务量或小任务更友好。
+- 可以做跨 tile、跨 stage 的流水。
+- 有机会减少中间结果落 HBM。
+
+代价也很明确：
+
+- kernel 更复杂。
+- 资源长期占用，影响并发。
+- 需要自己处理任务分配和同步。
+- deadlock、race、memory ordering 风险更高。
+- debug 和 profiler 归因更难。
+- 不同硬件上的最佳策略差异大。
+
+所以 persistent kernel 不是通用加速按钮，而是适合特定 workload 的系统设计。
+
+## 为什么 LLM 推理会关注 Persistent Kernel
+
+LLM 推理尤其 decode 阶段有几个特点：
+
+- 每次只生成一个或少量 token。
+- batch 可能动态变化。
+- 单个请求的计算被很多层和很多小操作切开。
+- KV Cache 访问、routing、sampling、logits 处理可能造成很多小 kernel。
+- 在线服务关心 TTFT、TPOT、tail latency。
+
+在这种情况下，多次 kernel launch、host/device 同步、global memory 中间读写，会对延迟产生明显影响。
+
+Persistent kernel 或 MegaKernel 的吸引力在于：
+
+- 把一段 decode 子图放到更少 kernel 中。
+- 让设备侧持续执行 token/layer/tile 任务。
+- 减少 CPU 参与频率。
+- 对小 batch 和低延迟场景更可能有收益。
+
+但训练阶段、大 batch prefill、标准大 GEMM 未必适合用 MegaKernel 替代成熟库。对于计算足够大的 kernel，cuBLAS、FlashAttention、CUTLASS、厂商库可能已经把硬件吃得很满，MegaKernel 反而可能因为资源压力更慢。
+
+## MegaKernel 和普通 Fusion 的差异
+
+普通 fusion 常见例子：
+
+```text
+add + relu
+matmul + bias + gelu
+layernorm 的多个 elementwise/reduction
+```
+
+这类 fusion 通常局部、边界清楚、容易验证。
+
+MegaKernel 更激进：
+
+- 可能跨多个算子类型。
+- 可能跨多个 tile task。
+- 可能包含 runtime 调度。
+- 可能在一个 kernel 内管理多个阶段的依赖。
+- 可能需要手动或自动做 memory planning。
+- 可能需要处理动态 shape、动态路由或 sparse pattern。
+
+可以把它看成更靠近“把一段子图编译成设备侧程序”，而不只是“把两个 elementwise 合并”。
+
+## Triton MegaKernel 怎么理解
+
+Triton 官方教程中有 persistent matmul 示例，展示了如何用 Triton 写 persistent kernel 形式的矩阵乘。这个例子说明：Triton 并不只能写一次性 block program，也可以表达更长驻、更调度化的执行方式。
+
+Triton MegaKernel 可以按三层理解。
+
+### 第一层：Persistent Matmul
+
+Persistent matmul 的核心是让 program/CTA 以更持久的方式处理多个 tile，而不是每个 tile 都被简单静态分配后结束。
+
+它适合讨论：
+
+- tile task 怎么分配。
+- worker 如何循环处理多个 tile。
+- load/compute pipeline 如何设计。
+- TMA、warp specialization 等硬件能力如何利用。
+
+这还不一定是“完整模型子图 MegaKernel”，但它是理解 persistent kernel 的基础。
+
+### 第二层：更大的 Fused Kernel
+
+Triton 很适合把某些 epilogue 和前后处理融合进一个 kernel，例如：
+
+- matmul + bias + activation。
+- dequant + matmul。
+- normalization + elementwise。
+- attention 内部的 softmax、mask、scale、V 聚合。
+- MoE dispatch/combine 附近的 packing 或 indexing。
+
+这些 fused kernel 如果继续扩大，就会接近 MegaKernel 思路。
+
+### 第三层：Triton 作为自动生成目标
+
+TorchInductor 已经会生成 Triton kernel。更激进的编译器或研究系统，也可能把一段任务图 lowering 成 Triton 或 Triton-like IR，再自动生成 persistent / mega kernel。
+
+这时 Triton 的角色不是手写语言，而是 codegen target 或中间 backend。
+
+### Triton MegaKernel 的限制
+
+Triton 的限制也要清楚：
+
+- 跨 program 的全局同步能力有限。
+- 一个 kernel 内的复杂控制流会增加编译和 debug 难度。
+- register/shared memory 压力容易上升。
+- shape 发散会带来大量 specialization。
+- autotune 空间变大后成本很高。
+- profiler 看到的是一个大 kernel，内部归因更难。
+
+所以 Triton MegaKernel 更适合被严格 benchmark 驱动，而不是凭直觉扩大 fusion 范围。
+
+## Ascend C MegaKernel-style 怎么理解
+
+公开资料中，“Ascend C MegaKernel”并不像 Triton persistent matmul 那样有一个统一、标准、公开的教程名称。这里采用更谨慎的说法：Ascend C MegaKernel-style，是指在 Ascend C 编程模型上实现 MegaKernel 思路。
+
+也就是：
+
+```text
+把多阶段算子或多算子链路
+通过 Ascend C 的 tiling、数据搬运、片上存储和 kernel pipeline
+合成更少 kernel 或更长的设备侧执行路径
+```
+
+Ascend C 相关资料里经常能看到两个重要部分：
+
+- host-side tiling：在 host 侧根据 shape、硬件资源和算子参数生成 tiling 配置。
+- device kernel：在设备侧按照 tiling 配置组织数据搬运、计算和 pipeline。
+
+这和 MegaKernel 思路天然相关，因为 MegaKernel 需要解决：
+
+- 多个阶段的 tile 如何划分。
+- 每个阶段使用什么片上 buffer。
+- 数据从 global memory 到片上再到计算单元如何流动。
+- 哪些中间结果可以不写回全局内存。
+- 多阶段之间如何同步和传递元数据。
+- 不同 shape 下 tiling 参数如何选择。
+
+但这里不能过度推断。更严谨的边界是：
+
+- 可以讨论“在 Ascend C 上用 MegaKernel 思路做融合和长流水 kernel”。
+- 不应该把它说成公开标准化的单一产品能力。
+- 具体性能取决于 Ascend 硬件代际、CANN/编译器版本、算子形态、tiling 策略和 profiler 证据。
+
+## Ascend C MegaKernel-style 的工程关注点
+
+如果在 Ascend C 方向做 MegaKernel-style 实现，建议重点看这些问题。
+
+### Host-side tiling
+
+Host tiling 要决定：
+
+- 每个阶段的 tile shape。
+- 输入输出和中间 buffer 的大小。
+- 哪些维度并行。
+- reduction 如何拆分。
+- 边界 tile 如何处理。
+- shape/dtype/layout 变化如何生成不同配置。
+
+MegaKernel 的 tiling 更难，因为多个算子共用同一套资源，不能只优化其中一个算子。
+
+### Device-side pipeline
+
+Device kernel 要组织：
+
+- global memory 到片上内存的数据搬运。
+- 计算单元执行。
+- 多 buffer 轮转。
+- 阶段之间的依赖。
+- 写回策略。
+
+如果 pipeline 设计不好，MegaKernel 可能只是把多个慢阶段塞进一个更难 debug 的 kernel。
+
+### Memory planning
+
+关键问题是中间结果是否真的省掉了 HBM round trip。
+
+要记录：
+
+- 哪些中间 tensor 不再写回 global memory。
+- 哪些 buffer 被复用。
+- 片上空间是否超限。
+- 是否引入额外 copy 或 layout transform。
+- 边界 shape 是否导致低效分支。
+
+### Correctness
+
+Ascend C 这类低层 kernel 需要非常严格的正确性测试：
+
+- 多 shape。
+- 多 dtype。
+- 边界 tile。
+- mask。
+- reduction 误差。
+- 对齐和 stride。
+- 与 PyTorch 或参考算子对比。
+
+MegaKernel 一旦出错，定位会比单算子更难。
+
+## MegaKernel 自动生成为什么难
+
+手写 MegaKernel 成本高，所以研究和工程上都会关注自动生成。
+
+但自动生成不是简单把多个 kernel 源码拼接到一起。它至少要做这些事情：
+
+```mermaid
+flowchart TB
+    A["输入子图<br/>operators / tensor shapes / dependencies"] --> B["候选融合区域选择"]
+    B --> C["任务图表示<br/>tile task / stage / dependency"]
+    C --> D["Schedule 搜索<br/>tiling / mapping / pipeline"]
+    D --> E["Memory Planning<br/>buffer reuse / lifetime / layout"]
+    E --> F["Codegen<br/>Triton / CUDA / Ascend C / backend IR"]
+    F --> G["静态验证<br/>依赖、同步、资源、边界"]
+    G --> H["Correctness 测试"]
+    H --> I["Benchmark / Profiler"]
+    I --> J["选择或回退"]
+```
+
+每一步都可能失败。
+
+候选融合区域太小，收益不明显。
+
+融合区域太大，register/shared memory 超限。
+
+schedule 太保守，性能不如多个成熟库 kernel。
+
+memory planning 错，可能产生数据覆盖或 race。
+
+动态 shape 和动态路由多，编译特化和验证成本上升。
+
+profiler 只看到一个大 kernel，内部瓶颈归因困难。
+
+## 自动生成系统常见方向
+
+公开研究里，MegaKernel 自动生成大体有几类思路。
+
+### 任务图编译
+
+把模型子图拆成更细粒度的 task，例如 tile-level task 或 SM-level task，然后让编译器分析依赖并生成 persistent runtime。
+
+代表思路是把一段推理计算变成设备侧任务图，kernel 内部调度这些任务。
+
+这种方法的关键是：
+
+- 任务粒度不能太粗，否则并行度不足。
+- 任务粒度不能太细，否则调度开销过高。
+- 依赖必须可验证。
+- memory lifetime 必须清楚。
+
+### Event / Dependency 表示
+
+有些研究用 event tensor 或类似机制表达 tile task 之间的依赖。这样可以在一个 persistent kernel 里处理更动态的任务关系。
+
+这类方法的价值是：比静态串行 fusion 更灵活，可以表达 producer/consumer、shape-dependent 或 data-dependent 的任务完成关系。
+
+代价是：事件管理本身有开销，且正确性更难验证。
+
+### MLIR / IR-based 自动生成
+
+另一类方法把 MegaKernel 生成建模为 IR lowering 问题：
+
+```text
+高层子图
+-> 细粒度 DAG
+-> schedule IR
+-> memory planning IR
+-> backend codegen
+```
+
+这和 [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md) 的关系很紧密。没有结构化 IR，自动生成很容易退化成脆弱的模板拼接。
+
+### 面向 LLM 子图的自动生成
+
+还有一些工作直接面向 Llama-family 或 Transformer block，把特定模型结构编译成一个或少数几个 persistent MegaKernel。
+
+这种方法收益可能很高，但要注意适用边界：
+
+- 模型结构是否固定。
+- shape 是否固定。
+- 是否支持不同 batch/sequence。
+- 是否支持动态 KV Cache。
+- 是否支持量化、MoE、多卡并行。
+- 生成代码是否可验证、可回退。
+
+## MegaKernel 的收益来源
+
+收益通常来自四类。
+
+### 减少 Launch
+
+多个小 kernel 合成一个 kernel，减少 CPU/runtime launch 开销。
+
+这对 decode、小 batch、在线服务尾延迟尤其有意义。
+
+### 减少 HBM Round Trip
+
+如果中间结果能留在 register/shared/local memory，而不是写回 HBM 再读回来，就可能显著降低 memory traffic。
+
+这是 MegaKernel 最重要的收益之一。
+
+### 暴露跨算子并行
+
+普通 kernel 边界会强制阶段顺序。MegaKernel 内部可以更细粒度地调度 tile task，让不同阶段之间形成流水或交错执行。
+
+### 设备侧调度
+
+Persistent kernel 可以减少 CPU 参与，让 device worker 在 kernel 内继续取任务。这对动态任务、小任务、多请求混合有潜在价值。
+
+## MegaKernel 的主要风险
+
+### 资源压力
+
+融合越大，寄存器、shared/local memory、code size、instruction cache 压力越高。资源压力上升可能导致 occupancy 下降，甚至比拆开的 kernel 更慢。
+
+### 同步复杂
+
+跨 tile、跨 stage 的依赖需要同步。如果同步不充分，会错；同步过多，会慢；同步顺序不当，可能 deadlock。
+
+### 动态性
+
+LLM 服务里 shape、batch、sequence、KV Cache 状态、MoE routing 都可能动态变化。MegaKernel 如果过度特化，会造成编译组合爆炸。
+
+### Debug 困难
+
+多个算子合在一个 kernel 里后：
+
+- 错误定位更难。
+- profiler 归因更难。
+- 数值差异来源更难拆。
+- 单独替换某个阶段更难。
+
+### 可移植性
+
+不同硬件后端的线程模型、片上内存、矩阵指令、同步能力、编译器能力都不同。MegaKernel 往往更依赖硬件细节，可移植性弱于高层图优化。
+
+## 什么时候值得考虑 MegaKernel
+
+适合优先评估：
+
+- decode 小 batch 低延迟服务。
+- 很多小 kernel 组成的后处理或路由链路。
+- 中间 tensor 很大但生命周期很短。
+- 端到端 profiler 显示 launch overhead 或 HBM round trip 明显。
+- 标准库没有覆盖的 fused pattern。
+- 某个固定 workload 反复执行，值得投入特化。
+
+不适合优先评估：
+
+- 标准大 GEMM 已经由 cuBLAS/CUTLASS/厂商库吃满。
+- prefill 大 batch compute-bound，launch overhead 不明显。
+- shape 非常发散，特化和 autotune 成本过高。
+- 正确性风险不可接受。
+- 没有稳定 benchmark 和 rollback 路径。
+
+## Benchmark 方法
+
+评估 MegaKernel 必须同时做 micro 和 end-to-end。
+
+### Microbenchmark
+
+记录：
+
+- 单个 MegaKernel latency。
+- 替代前多个 kernel 的总 latency。
+- launch 数变化。
+- HBM read/write bytes 变化。
+- register/shared memory 使用。
+- occupancy。
+- Tensor Core 或矩阵单元利用率。
+- compile/autotune 时间。
+
+### End-to-end
+
+推理场景至少看：
+
+- TTFT。
+- TPOT。
+- tokens/s。
+- request/s。
+- p50/p95/p99。
+- 显存峰值。
+- 并发变化。
+- 不同 prompt/output length。
+- cache hit/miss 情况。
+
+训练场景至少看：
+
+- step time。
+- tokens/s。
+- MFU/HFU。
+- 显存峰值。
+- backward correctness。
+- optimizer/checkpoint 交互。
+
+### Ablation
+
+要拆出收益来自哪里：
+
+- 只减少 launch，不减少 HBM，收益多少。
+- 只做 epilogue fusion，收益多少。
+- 加 persistent 调度，收益多少。
+- 改 tile/schedule，收益多少。
+- 不同 batch/shape 下收益是否稳定。
+
+如果不能解释收益来源，就很难维护。
+
+## 设计决策表
+
+| 问题 | 倾向选择 |
+| --- | --- |
+| 只是 Python 或 CPU launch overhead 高，但 kernel 本身已经很好 | 先看 CUDA Graph / runtime batching |
+| elementwise/reduction 链路很多 | 先看 TorchInductor 或普通 fusion |
+| 自定义 tile-heavy kernel | 先看 Triton、TileLang、CUTLASS |
+| 多个小阶段反复读写 HBM | 评估 fused kernel 或 MegaKernel |
+| decode 小 batch 多小任务 | 评估 persistent kernel |
+| 固定模型子图长期高频运行 | 可研究自动 MegaKernel 生成 |
+| 形状高度动态且缺少回退 | 谨慎使用 MegaKernel |
+
+## 工程检查清单
+
+做 MegaKernel 方案时，建议必须写清楚：
+
+- 替代了哪些 kernel。
+- 每个原始 kernel 的 latency 和 memory traffic。
+- MegaKernel 内部阶段和依赖图。
+- tile task 粒度。
+- 调度方式：静态、队列、event、persistent worker。
+- memory planning：哪些中间结果不再写回 HBM。
+- 资源使用：register、shared/local memory、occupancy。
+- 支持 shape/dtype/layout 范围。
+- dynamic shape 和 fallback 策略。
+- correctness 测试矩阵。
+- profiler 证据。
+- end-to-end 指标变化。
+- 出问题时如何禁用或回滚。
+
+## 与本章其他文章的关系
+
+- [Attention 机制与计算模式](attention-computation-patterns.md)：MegaKernel 需要先理解 workload 形态，尤其 attention 的 Dense/Sparse/Flash/Paged 维度。
+- [Triton Kernel 编程](triton.md)：Triton 是手写 persistent kernel 和自动生成 kernel 的重要路径之一。
+- [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：Inductor 代表 PyTorch 图编译与普通 fusion 路径，是 MegaKernel 的上游对照。
+- [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：解释自动生成 MegaKernel 所需的 IR 和 lowering 思想。
+- [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：解释 tile、pipeline、tensorization 这些 MegaKernel 内部也必须处理的问题。
+
+## 参考资料
+
+- [Triton Persistent Matmul Tutorial](https://triton-lang.org/main/getting-started/tutorials/09-persistent-matmul.html)
+- [MPK: A Compiler and Runtime for Mega-Kernelizing Tensor Programs](https://arxiv.org/abs/2512.22219)
+- [Mirage Persistent Kernel GitHub](https://github.com/mirage-project/mirage)
+- [Event Tensor: Efficient and Flexible Megakernel Compilation for Sparse and Dynamic Workloads](https://arxiv.org/abs/2604.13327)
+- [Ada-MK: Adaptive LLM Inference Serving with Megakernels](https://arxiv.org/abs/2605.11581)
+- [AutoMegaKernel: Automated Megakernel Generation for LLM Inference](https://arxiv.org/abs/2606.09682)
+- [AscendOptimizer: Automated Program Optimization for Ascend Kernels](https://arxiv.org/abs/2603.23566)
+- [AscendCraft: DSL-Guided LLM Generation of High-Performance CANN Kernels](https://arxiv.org/abs/2601.22760)
 
 ---
 

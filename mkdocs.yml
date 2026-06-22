@@ -127,6 +127,9 @@ nav:
       - Attention 机制与计算模式: 05-kernels-compilers/attention-computation-patterns.md
       - Triton Kernel 编程: 05-kernels-compilers/triton.md
       - TorchInductor 与 PyTorch 编译栈: 05-kernels-compilers/torchinductor.md
+      - MLIR 与 AI 编译 IR: 05-kernels-compilers/mlir-ai-compiler-ir.md
+      - TileLang：面向 AI Kernel 的 Tile 编程模型: 05-kernels-compilers/tilelang.md
+      - MegaKernel、Persistent Kernel 与自动生成: 05-kernels-compilers/megakernel-persistent-automatic-generation.md
   - AI 加速器与计算架构:
       - 概览: 06-accelerators-architecture/index.md
       - AI 加速器性能模型：算力、带宽与 Roofline: 06-accelerators-architecture/performance-model-roofline.md
