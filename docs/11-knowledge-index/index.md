@@ -709,9 +709,9 @@ relations:
 
 ```text
 GitHub: https://github.com/AmourSec/aikg
-Docs: https://amoursec.github.io/aikg/
-LLM index: https://amoursec.github.io/aikg/llms.txt
-Full context: https://amoursec.github.io/aikg/llms-full.txt
+Docs: https://amoursec.github.io/
+LLM index: https://amoursec.github.io/llms.txt
+Full context: https://amoursec.github.io/llms-full.txt
 ```
 
 建议提示语：

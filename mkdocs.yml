@@ -1,6 +1,6 @@
 site_name: AI Knowledge Graph
 site_description: AI infrastructure and efficient computing knowledge base for systems researchers and AI agents
-site_url: https://amoursec.github.io/aikg/
+site_url: https://amoursec.github.io/
 repo_url: https://github.com/AmourSec/aikg
 repo_name: AmourSec/aikg
 dev_addr: 127.0.0.1:8801

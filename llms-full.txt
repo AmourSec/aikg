@@ -1,7 +1,7 @@
 # AI Knowledge Graph - Full LLM Context
 
 Repository: https://github.com/AmourSec/aikg
-Documentation site: https://amoursec.github.io/aikg/
+Documentation site: https://amoursec.github.io/
 Generated from Markdown source files in `docs/` and task-oriented skill samples in `skills/`.
 
 Use this file as a compact ingestion target when an AI system cannot crawl the full repository. For exact source locations, each document section includes its repository path and site URL.
@@ -140,7 +140,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 # Document: 首页
 
 Source: docs/index.md
-URL: https://amoursec.github.io/aikg/
+URL: https://amoursec.github.io/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
@@ -179,7 +179,7 @@ updated: 2026-06-04
 # Document: AI 知识地图
 
 Source: docs/knowledge-map.md
-URL: https://amoursec.github.io/aikg/knowledge-map/
+URL: https://amoursec.github.io/knowledge-map/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
@@ -456,7 +456,7 @@ updated: 2026-06-25
 # Document: 入门导读
 
 Source: docs/01-getting-started/index.md
-URL: https://amoursec.github.io/aikg/01-getting-started/
+URL: https://amoursec.github.io/01-getting-started/
 domain: getting-started
 status: draft
 owner: maintainers
@@ -507,7 +507,7 @@ updated: 2026-05-30
 # Document: AI 计算工作负载基础
 
 Source: docs/02-ai-workloads/index.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/
+URL: https://amoursec.github.io/02-ai-workloads/
 domain: ai-workloads
 status: draft
 owner: maintainers
@@ -580,7 +580,7 @@ updated: 2026-06-12
 # Document: AI 基础概念
 
 Source: docs/02-ai-workloads/ai-fundamentals.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/ai-fundamentals/
+URL: https://amoursec.github.io/02-ai-workloads/ai-fundamentals/
 domain: ai-fundamentals
 status: draft
 owner: maintainers
@@ -1262,7 +1262,7 @@ loss 低说明模型在某个训练或验证目标上表现更好。
 # Document: Transformer 流程与原理
 
 Source: docs/02-ai-workloads/transformer.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/transformer/
+URL: https://amoursec.github.io/02-ai-workloads/transformer/
 domain: transformer
 status: draft
 owner: maintainers
@@ -2108,7 +2108,7 @@ Attention 很重要，但不是全部。
 # Document: 训练过程与原理
 
 Source: docs/02-ai-workloads/training-primer.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/training-primer/
+URL: https://amoursec.github.io/02-ai-workloads/training-primer/
 domain: training-primer
 status: draft
 owner: maintainers
@@ -2954,7 +2954,7 @@ forward -> loss -> backward -> optimizer step
 # Document: 推理过程与原理
 
 Source: docs/02-ai-workloads/inference-primer.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/inference-primer/
+URL: https://amoursec.github.io/02-ai-workloads/inference-primer/
 domain: inference-primer
 status: draft
 owner: maintainers
@@ -3136,7 +3136,7 @@ Transformer 是一种
 # Document: 多模态原理
 
 Source: docs/02-ai-workloads/multimodal-primer.md
-URL: https://amoursec.github.io/aikg/02-ai-workloads/multimodal-primer/
+URL: https://amoursec.github.io/02-ai-workloads/multimodal-primer/
 domain: multimodal-primer
 status: draft
 owner: maintainers
@@ -3428,7 +3428,7 @@ flowchart TD
 # Document: 推理系统与优化
 
 Source: docs/03-inference-systems/index.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/
+URL: https://amoursec.github.io/03-inference-systems/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -3611,7 +3611,7 @@ RAG / Agent 不是单次模型调用，而是检索、rerank、上下文拼接�
 # Document: 推理请求生命周期
 
 Source: docs/03-inference-systems/request-lifecycle.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/request-lifecycle/
+URL: https://amoursec.github.io/03-inference-systems/request-lifecycle/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -3812,7 +3812,7 @@ Decode 不会无限继续。请求会在满足某个停止条件后结束，例�
 # Document: Prefill 与 Decode
 
 Source: docs/03-inference-systems/prefill-decode.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/prefill-decode/
+URL: https://amoursec.github.io/03-inference-systems/prefill-decode/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -4020,7 +4020,7 @@ Decode 侧常见优化：
 # Document: 指标体系
 
 Source: docs/03-inference-systems/metrics.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/metrics/
+URL: https://amoursec.github.io/03-inference-systems/metrics/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -4280,7 +4280,7 @@ LLM 推理的成本强烈依赖 token 数。比较两个推理系统时，如果
 # Document: Batching
 
 Source: docs/03-inference-systems/batching.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/batching/
+URL: https://amoursec.github.io/03-inference-systems/batching/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -4527,7 +4527,7 @@ batch 越大，同时活跃请求越多，KV Cache 占用越高。如果显存�
 # Document: KV Cache
 
 Source: docs/03-inference-systems/kv-cache.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/kv-cache/
+URL: https://amoursec.github.io/03-inference-systems/kv-cache/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -4999,7 +4999,7 @@ KV Cache 的问题经常不是单个指标能说明的。比如显存占用高�
 # Document: PagedAttention
 
 Source: docs/03-inference-systems/paged-attention.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/paged-attention/
+URL: https://amoursec.github.io/03-inference-systems/paged-attention/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -5293,7 +5293,7 @@ PagedAttention 很重要，但不是万能的。
 # Document: Prefix Cache
 
 Source: docs/03-inference-systems/prefix-cache.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/prefix-cache/
+URL: https://amoursec.github.io/03-inference-systems/prefix-cache/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -5674,7 +5674,7 @@ RAG 请求则要看资料放在哪里。如果每个请求检索到的文档不�
 # Document: 调度策略
 
 Source: docs/03-inference-systems/scheduling.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/scheduling/
+URL: https://amoursec.github.io/03-inference-systems/scheduling/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -6092,7 +6092,7 @@ Prefill 请求太多会影响 Decode 流式输出。可以限制每轮调度中 
 # Document: 量化推理
 
 Source: docs/03-inference-systems/quantization.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/quantization/
+URL: https://amoursec.github.io/03-inference-systems/quantization/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -6565,7 +6565,7 @@ Speculative Decoding 可能使用 draft model。draft model 可以更小或更�
 # Document: Speculative Decoding
 
 Source: docs/03-inference-systems/speculative-decoding.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/speculative-decoding/
+URL: https://amoursec.github.io/03-inference-systems/speculative-decoding/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -7043,7 +7043,7 @@ Speculative Decoding 应该是可控优化，而不是不可关闭的复杂路�
 # Document: Prefill/Decode 分离部署
 
 Source: docs/03-inference-systems/prefill-decode-disaggregation.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/prefill-decode-disaggregation/
+URL: https://amoursec.github.io/03-inference-systems/prefill-decode-disaggregation/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -7524,7 +7524,7 @@ KV 传输失败、Decode worker 满载、Prefill worker 异常时，系统要有
 # Document: MoE 模型推理优化
 
 Source: docs/03-inference-systems/moe-inference-optimization.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/moe-inference-optimization/
+URL: https://amoursec.github.io/03-inference-systems/moe-inference-optimization/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -8049,7 +8049,7 @@ MoE 推理优化的重点是同时控制专家负载、通信、GEMM 形态和�
 # Document: EP Size 与大 EP / 小 EP
 
 Source: docs/03-inference-systems/ep-size-large-small-ep.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/ep-size-large-small-ep/
+URL: https://amoursec.github.io/03-inference-systems/ep-size-large-small-ep/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -8525,7 +8525,7 @@ EP size 是 MoE 推理部署里的关键参数。它决定专家权重如何分�
 # Document: 单机推理服务架构
 
 Source: docs/03-inference-systems/single-node-serving-architecture.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/single-node-serving-architecture/
+URL: https://amoursec.github.io/03-inference-systems/single-node-serving-architecture/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -9060,7 +9060,7 @@ Streaming 太频繁会增加网络和序列化开销；flush 太慢又会影响�
 # Document: 多机分布式推理
 
 Source: docs/03-inference-systems/distributed-inference.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/distributed-inference/
+URL: https://amoursec.github.io/03-inference-systems/distributed-inference/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -9563,7 +9563,7 @@ KV Cache 很大，迁移成本高。尽量让一个请求在同一个 worker gro
 # Document: 缓存体系
 
 Source: docs/03-inference-systems/cache-system.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/cache-system/
+URL: https://amoursec.github.io/03-inference-systems/cache-system/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -10081,7 +10081,7 @@ RAG 和 Agent 不是一次模型调用，而是多个步骤组成的链路。
 # Document: Benchmark 方法
 
 Source: docs/03-inference-systems/benchmark-methodology.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/benchmark-methodology/
+URL: https://amoursec.github.io/03-inference-systems/benchmark-methodology/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -10645,7 +10645,7 @@ Prefill-heavy workload 和 decode-heavy workload 的瓶颈不同，优化方向�
 # Document: vLLM
 
 Source: docs/03-inference-systems/vllm.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/vllm/
+URL: https://amoursec.github.io/03-inference-systems/vllm/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -11171,7 +11171,7 @@ vLLM 是现代 LLM 推理系统的一个重要案例。它的核心不在于某�
 # Document: TensorRT-LLM
 
 Source: docs/03-inference-systems/tensorrt-llm.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/tensorrt-llm/
+URL: https://amoursec.github.io/03-inference-systems/tensorrt-llm/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -11705,7 +11705,7 @@ TensorRT-LLM 是 NVIDIA GPU 上非常重要的 LLM 推理优化栈。它最值�
 # Document: SGLang
 
 Source: docs/03-inference-systems/sglang.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/sglang/
+URL: https://amoursec.github.io/03-inference-systems/sglang/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -12179,7 +12179,7 @@ SGLang 是结构化生成和高性能 runtime 结合的代表性系统。它最�
 # Document: RAG 与 Agent 推理负载
 
 Source: docs/03-inference-systems/rag-agent-workloads.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/rag-agent-workloads/
+URL: https://amoursec.github.io/03-inference-systems/rag-agent-workloads/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -12813,7 +12813,7 @@ RAG / Agent 推理负载的核心，是把一次用户请求变成多阶段、�
 # Document: Benchmark 方法与性能剖析
 
 Source: docs/03-inference-systems/benchmark-profiling.md
-URL: https://amoursec.github.io/aikg/03-inference-systems/benchmark-profiling/
+URL: https://amoursec.github.io/03-inference-systems/benchmark-profiling/
 domain: inference-systems
 status: draft
 owner: maintainers
@@ -13358,7 +13358,7 @@ Benchmark 方法与性能剖析的核心，是把性能优化从“看数字”�
 # Document: 训练系统与优化
 
 Source: docs/04-training-systems/index.md
-URL: https://amoursec.github.io/aikg/04-training-systems/
+URL: https://amoursec.github.io/04-training-systems/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -13607,7 +13607,7 @@ DeepSpeed、Megatron-LM / Megatron Core 和 PyTorch FSDP 是理解大模型训�
 # Document: 训练任务生命周期
 
 Source: docs/04-training-systems/training-lifecycle.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-lifecycle/
+URL: https://amoursec.github.io/04-training-systems/training-lifecycle/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -14192,7 +14192,7 @@ Logging 也不是免费。过于频繁的日志、过大的指标、同步写入
 # Document: 数据输入与 Data Pipeline
 
 Source: docs/04-training-systems/data-pipeline.md
-URL: https://amoursec.github.io/aikg/04-training-systems/data-pipeline/
+URL: https://amoursec.github.io/04-training-systems/data-pipeline/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -14833,7 +14833,7 @@ Data Pipeline 是训练系统的入口。它决定 GPU 能不能持续工作，�
 # Document: 训练数据混合、采样与有效 Token
 
 Source: docs/04-training-systems/training-data-mixing-sampling-effective-tokens.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-data-mixing-sampling-effective-tokens/
+URL: https://amoursec.github.io/04-training-systems/training-data-mixing-sampling-effective-tokens/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -15599,7 +15599,7 @@ Checkpoint 至少要能回答：
 # Document: Batch、Micro-batch 与 Gradient Accumulation
 
 Source: docs/04-training-systems/batch-gradient-accumulation.md
-URL: https://amoursec.github.io/aikg/04-training-systems/batch-gradient-accumulation/
+URL: https://amoursec.github.io/04-training-systems/batch-gradient-accumulation/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -16181,7 +16181,7 @@ Batch 相关配置的核心不是记住某个参数名，而是分清三个层�
 # Document: 大词表输出层、Logits 与 Cross Entropy 系统优化
 
 Source: docs/04-training-systems/vocab-output-cross-entropy.md
-URL: https://amoursec.github.io/aikg/04-training-systems/vocab-output-cross-entropy/
+URL: https://amoursec.github.io/04-training-systems/vocab-output-cross-entropy/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -16962,7 +16962,7 @@ SFT、DPO、RLHF、GRPO 等后训练任务经常需要 token logprob。
 # Document: 显存组成与优化总览
 
 Source: docs/04-training-systems/memory-composition-optimization.md
-URL: https://amoursec.github.io/aikg/04-training-systems/memory-composition-optimization/
+URL: https://amoursec.github.io/04-training-systems/memory-composition-optimization/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -17569,7 +17569,7 @@ Offload 更适合“必须训练更大模型，但 GPU 显存不够”的场景�
 # Document: Backward、Autograd Graph 与梯度生命周期
 
 Source: docs/04-training-systems/backward-autograd-gradient-lifecycle.md
-URL: https://amoursec.github.io/aikg/04-training-systems/backward-autograd-gradient-lifecycle/
+URL: https://amoursec.github.io/04-training-systems/backward-autograd-gradient-lifecycle/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -18451,7 +18451,7 @@ Profiler 里要特别看：
 # Document: 分布式训练启动与运行时：torchrun、Rank、Process Group 与 NCCL
 
 Source: docs/04-training-systems/distributed-training-runtime.md
-URL: https://amoursec.github.io/aikg/04-training-systems/distributed-training-runtime/
+URL: https://amoursec.github.io/04-training-systems/distributed-training-runtime/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -19490,7 +19490,7 @@ backend/NCCL 执行通信，
 # Document: Collective 通信原语与通信量模型
 
 Source: docs/04-training-systems/collective-communication-primitives.md
-URL: https://amoursec.github.io/aikg/04-training-systems/collective-communication-primitives/
+URL: https://amoursec.github.io/04-training-systems/collective-communication-primitives/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -20446,7 +20446,7 @@ communication time != exposed communication time
 # Document: Data Parallel 与梯度同步
 
 Source: docs/04-training-systems/data-parallel-gradient-sync.md
-URL: https://amoursec.github.io/aikg/04-training-systems/data-parallel-gradient-sync/
+URL: https://amoursec.github.io/04-training-systems/data-parallel-gradient-sync/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -21158,7 +21158,7 @@ Data Parallel 的核心是三件事：
 # Document: ZeRO 与 FSDP
 
 Source: docs/04-training-systems/zero-fsdp.md
-URL: https://amoursec.github.io/aikg/04-training-systems/zero-fsdp/
+URL: https://amoursec.github.io/04-training-systems/zero-fsdp/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -21946,7 +21946,7 @@ ZeRO/FSDP 逐步把这些状态切分：
 # Document: Tensor Parallel
 
 Source: docs/04-training-systems/tensor-parallel.md
-URL: https://amoursec.github.io/aikg/04-training-systems/tensor-parallel/
+URL: https://amoursec.github.io/04-training-systems/tensor-parallel/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -22589,7 +22589,7 @@ Tensor Parallel 是大模型训练中最重要的层内并行方式。它把 Tra
 # Document: Sequence Parallel 与 Context Parallel
 
 Source: docs/04-training-systems/sequence-context-parallel.md
-URL: https://amoursec.github.io/aikg/04-training-systems/sequence-context-parallel/
+URL: https://amoursec.github.io/04-training-systems/sequence-context-parallel/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -23370,7 +23370,7 @@ CP 更像长上下文 attention 的分布式执行方式。
 # Document: Pipeline Parallel
 
 Source: docs/04-training-systems/pipeline-parallel.md
-URL: https://amoursec.github.io/aikg/04-training-systems/pipeline-parallel/
+URL: https://amoursec.github.io/04-training-systems/pipeline-parallel/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -23944,7 +23944,7 @@ Pipeline Parallel 把模型按层切到多个 stage，让单个 GPU 或 TP group
 # Document: Expert Parallel 与 MoE 训练
 
 Source: docs/04-training-systems/expert-parallel-moe-training.md
-URL: https://amoursec.github.io/aikg/04-training-systems/expert-parallel-moe-training/
+URL: https://amoursec.github.io/04-training-systems/expert-parallel-moe-training/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -24480,7 +24480,7 @@ MoE 训练的核心是条件计算：模型拥有很多 expert，但每个 token
 # Document: 并行策略组合：3D/4D/5D Parallelism
 
 Source: docs/04-training-systems/hybrid-parallelism-composition.md
-URL: https://amoursec.github.io/aikg/04-training-systems/hybrid-parallelism-composition/
+URL: https://amoursec.github.io/04-training-systems/hybrid-parallelism-composition/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -25550,7 +25550,7 @@ Benchmark 时：
 # Document: Activation Checkpointing
 
 Source: docs/04-training-systems/activation-checkpointing.md
-URL: https://amoursec.github.io/aikg/04-training-systems/activation-checkpointing/
+URL: https://amoursec.github.io/04-training-systems/activation-checkpointing/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -26767,7 +26767,7 @@ Activation Checkpointing 是大模型训练中最常用的显存优化方法之�
 # Document: 混合精度训练
 
 Source: docs/04-training-systems/mixed-precision-training.md
-URL: https://amoursec.github.io/aikg/04-training-systems/mixed-precision-training/
+URL: https://amoursec.github.io/04-training-systems/mixed-precision-training/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -28020,7 +28020,7 @@ FP32/TF32 debug
 # Document: 训练稳定性与数值异常：NaN、Inf、Loss Spike 与梯度健康
 
 Source: docs/04-training-systems/training-stability-numerical-debugging.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-stability-numerical-debugging/
+URL: https://amoursec.github.io/04-training-systems/training-stability-numerical-debugging/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -28872,7 +28872,7 @@ Benchmark 时：
 # Document: 通信与计算重叠
 
 Source: docs/04-training-systems/communication-computation-overlap.md
-URL: https://amoursec.github.io/aikg/04-training-systems/communication-computation-overlap/
+URL: https://amoursec.github.io/04-training-systems/communication-computation-overlap/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -29302,7 +29302,7 @@ FSDP wrap 太细会产生很多小 all-gather/reduce-scatter；太粗又可能�
 # Document: FLUX 通信重叠与 Kernel Fusion
 
 Source: docs/04-training-systems/flux-kernel-fusion.md
-URL: https://amoursec.github.io/aikg/04-training-systems/flux-kernel-fusion/
+URL: https://amoursec.github.io/04-training-systems/flux-kernel-fusion/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -30558,7 +30558,7 @@ FLUX 的核心不是“多开一个通信 stream”，而是把依赖通信和�
 # Document: Optimizer 与 Scheduler 系统成本
 
 Source: docs/04-training-systems/optimizer-scheduler-cost.md
-URL: https://amoursec.github.io/aikg/04-training-systems/optimizer-scheduler-cost/
+URL: https://amoursec.github.io/04-training-systems/optimizer-scheduler-cost/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -31585,7 +31585,7 @@ Optimizer 与 Scheduler 是训练系统里的关键成本中心。
 # Document: 参数高效微调：LoRA、QLoRA 与 Adapter 系统优化
 
 Source: docs/04-training-systems/parameter-efficient-finetuning-lora-qlora.md
-URL: https://amoursec.github.io/aikg/04-training-systems/parameter-efficient-finetuning-lora-qlora/
+URL: https://amoursec.github.io/04-training-systems/parameter-efficient-finetuning-lora-qlora/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -32882,7 +32882,7 @@ metrics:
 # Document: 后训练工作负载：SFT、DPO、RLHF 与 GRPO 系统视角
 
 Source: docs/04-training-systems/post-training-workloads-sft-dpo-rlhf-grpo.md
-URL: https://amoursec.github.io/aikg/04-training-systems/post-training-workloads-sft-dpo-rlhf-grpo/
+URL: https://amoursec.github.io/04-training-systems/post-training-workloads-sft-dpo-rlhf-grpo/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -34175,7 +34175,7 @@ temperature、top-p、max tokens、stop words 都会影响 rollout 数据分布�
 # Document: Muon 优化器
 
 Source: docs/04-training-systems/muon-optimizer.md
-URL: https://amoursec.github.io/aikg/04-training-systems/muon-optimizer/
+URL: https://amoursec.github.io/04-training-systems/muon-optimizer/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -35491,7 +35491,7 @@ Muon 的价值不只是“换一个优化器”。它代表一种训练系统趋
 # Document: Evaluation、Validation 与 Checkpoint Selection
 
 Source: docs/04-training-systems/evaluation-validation-checkpoint-selection.md
-URL: https://amoursec.github.io/aikg/04-training-systems/evaluation-validation-checkpoint-selection/
+URL: https://amoursec.github.io/04-training-systems/evaluation-validation-checkpoint-selection/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -37009,7 +37009,7 @@ regression_rules:
 # Document: 训练可复现性、随机性与 Run Manifest
 
 Source: docs/04-training-systems/training-reproducibility-randomness-run-manifest.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-reproducibility-randomness-run-manifest/
+URL: https://amoursec.github.io/04-training-systems/training-reproducibility-randomness-run-manifest/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -38682,7 +38682,7 @@ eval / benchmark：
 # Document: Checkpoint、Resume 与容错
 
 Source: docs/04-training-systems/checkpoint-resume-fault-tolerance.md
-URL: https://amoursec.github.io/aikg/04-training-systems/checkpoint-resume-fault-tolerance/
+URL: https://amoursec.github.io/04-training-systems/checkpoint-resume-fault-tolerance/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -39998,7 +39998,7 @@ Checkpoint、Resume 与容错是训练系统的可靠性基础。
 # Document: 训练性能指标与扩展效率
 
 Source: docs/04-training-systems/training-performance-metrics-scaling.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-performance-metrics-scaling/
+URL: https://amoursec.github.io/04-training-systems/training-performance-metrics-scaling/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -41261,7 +41261,7 @@ optimization scaling problem:
 # Document: 训练性能剖析与 Benchmark
 
 Source: docs/04-training-systems/training-benchmark-profiling.md
-URL: https://amoursec.github.io/aikg/04-training-systems/training-benchmark-profiling/
+URL: https://amoursec.github.io/04-training-systems/training-benchmark-profiling/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -42731,7 +42731,7 @@ detect regression
 # Document: DeepSpeed、Megatron-LM 与 PyTorch FSDP
 
 Source: docs/04-training-systems/deepspeed-megatron-fsdp.md
-URL: https://amoursec.github.io/aikg/04-training-systems/deepspeed-megatron-fsdp/
+URL: https://amoursec.github.io/04-training-systems/deepspeed-megatron-fsdp/
 domain: training-systems
 status: draft
 owner: maintainers
@@ -43867,7 +43867,7 @@ DeepSpeed、Megatron-LM / Megatron Core、PyTorch FSDP 都很重要，但它们�
 # Document: Kernel、算子与编译优化
 
 Source: docs/05-kernels-compilers/index.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/
+URL: https://amoursec.github.io/05-kernels-compilers/
 domain: kernels-compilers
 status: draft
 owner: maintainers
@@ -43937,7 +43937,7 @@ updated: 2026-06-25
 # Document: Attention 机制与计算模式
 
 Source: docs/05-kernels-compilers/attention-computation-patterns.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/attention-computation-patterns/
+URL: https://amoursec.github.io/05-kernels-compilers/attention-computation-patterns/
 domain: kernels-compilers
 status: draft
 owner: maintainers
@@ -44814,7 +44814,7 @@ Dense Attention、Sparse Attention 和 FlashAttention 是理解高效 Transforme
 # Document: Triton Kernel 编程
 
 Source: docs/05-kernels-compilers/triton.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/triton/
+URL: https://amoursec.github.io/05-kernels-compilers/triton/
 domain: triton
 status: draft
 owner: maintainers
@@ -46269,7 +46269,7 @@ Triton 是 AI kernel 工程里的关键工具。它让我们用 block program �
 # Document: TorchInductor 与 PyTorch 编译栈
 
 Source: docs/05-kernels-compilers/torchinductor.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/torchinductor/
+URL: https://amoursec.github.io/05-kernels-compilers/torchinductor/
 domain: torchinductor
 status: draft
 owner: maintainers
@@ -47560,7 +47560,7 @@ TorchInductor 与 PyTorch 编译栈的价值，不是“打开一个开关”，
 # Document: MLIR 与 AI 编译 IR
 
 Source: docs/05-kernels-compilers/mlir-ai-compiler-ir.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/mlir-ai-compiler-ir/
+URL: https://amoursec.github.io/05-kernels-compilers/mlir-ai-compiler-ir/
 domain: kernels-compilers
 status: draft
 owner: maintainers
@@ -47942,7 +47942,7 @@ IR 可以解释“编译器打算怎么做”，profiler 才能证明“硬件�
 # Document: TileLang：面向 AI Kernel 的 Tile 编程模型
 
 Source: docs/05-kernels-compilers/tilelang.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/tilelang/
+URL: https://amoursec.github.io/05-kernels-compilers/tilelang/
 domain: kernels-compilers
 status: draft
 owner: maintainers
@@ -48333,7 +48333,7 @@ TileLang 是性能研发工具，不是免 benchmark 的捷径。
 # Document: MegaKernel、Persistent Kernel 与自动生成
 
 Source: docs/05-kernels-compilers/megakernel-persistent-automatic-generation.md
-URL: https://amoursec.github.io/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/
+URL: https://amoursec.github.io/05-kernels-compilers/megakernel-persistent-automatic-generation/
 domain: kernels-compilers
 status: draft
 owner: maintainers
@@ -48897,7 +48897,7 @@ LLM 服务里 shape、batch、sequence、KV Cache 状态、MoE routing 都可能
 # Document: 硬件基础
 
 Source: docs/12-hardware-basics/index.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/
+URL: https://amoursec.github.io/12-hardware-basics/
 domain: hardware
 status: draft
 owner: maintainers
@@ -48947,7 +48947,7 @@ updated: 2026-06-25
 # Document: NPU 基础概念
 
 Source: docs/12-hardware-basics/npu-basics.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/npu-basics/
+URL: https://amoursec.github.io/12-hardware-basics/npu-basics/
 domain: hardware
 status: draft
 owner: maintainers
@@ -49027,7 +49027,7 @@ GPU 生态里很多工程经验围绕 CUDA、Tensor Core、NCCL、Triton、Tenso
 # Document: 昇腾 NPU 型号与架构映射
 
 Source: docs/12-hardware-basics/ascend-npu-models.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/ascend-npu-models/
+URL: https://amoursec.github.io/12-hardware-basics/ascend-npu-models/
 domain: hardware
 status: draft
 owner: maintainers
@@ -49108,7 +49108,7 @@ updated: 2026-06-25
 # Document: Ascend 910 系列
 
 Source: docs/12-hardware-basics/ascend-910-series.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/ascend-910-series/
+URL: https://amoursec.github.io/12-hardware-basics/ascend-910-series/
 domain: hardware
 status: draft
 owner: maintainers
@@ -49197,7 +49197,7 @@ Ascend 910 系列是学习服务器侧昇腾 AI 计算时最应该先掌握的�
 # Document: Ascend 950 系列
 
 Source: docs/12-hardware-basics/ascend-950-series.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/ascend-950-series/
+URL: https://amoursec.github.io/12-hardware-basics/ascend-950-series/
 domain: hardware
 status: draft
 owner: maintainers
@@ -49296,7 +49296,7 @@ results:
 # Document: CANN 软件栈与开发入口
 
 Source: docs/12-hardware-basics/cann-stack.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/cann-stack/
+URL: https://amoursec.github.io/12-hardware-basics/cann-stack/
 domain: hardware
 status: draft
 owner: maintainers
@@ -49383,7 +49383,7 @@ CANNBot Skills 仓库值得参考的不是某一篇具体文档，而是它的�
 # Document: NPU 相关 AI Skills 样例
 
 Source: docs/12-hardware-basics/ai-skills-sample.md
-URL: https://amoursec.github.io/aikg/12-hardware-basics/ai-skills-sample/
+URL: https://amoursec.github.io/12-hardware-basics/ai-skills-sample/
 domain: knowledge-management
 status: draft
 owner: maintainers
@@ -49459,7 +49459,7 @@ skills/
 # Document: AI 加速器与计算架构
 
 Source: docs/06-accelerators-architecture/index.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/
+URL: https://amoursec.github.io/06-accelerators-architecture/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -49505,7 +49505,7 @@ updated: 2026-06-11
 # Document: AI 加速器性能模型：算力、带宽与 Roofline
 
 Source: docs/06-accelerators-architecture/performance-model-roofline.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/performance-model-roofline/
+URL: https://amoursec.github.io/06-accelerators-architecture/performance-model-roofline/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -50844,7 +50844,7 @@ AI 加速器性能模型的核心不是背芯片参数，而是理解工作负�
 # Document: 计算单元：SIMT、Tensor Core 与矩阵引擎
 
 Source: docs/06-accelerators-architecture/compute-units-simt-tensorcore.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/compute-units-simt-tensorcore/
+URL: https://amoursec.github.io/06-accelerators-architecture/compute-units-simt-tensorcore/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -52098,7 +52098,7 @@ energy/token
 # Document: 存储层次：HBM、SRAM、Cache 与数据复用
 
 Source: docs/06-accelerators-architecture/memory-hierarchy-data-reuse.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/memory-hierarchy-data-reuse/
+URL: https://amoursec.github.io/06-accelerators-architecture/memory-hierarchy-data-reuse/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -53390,7 +53390,7 @@ AI 加速器的性能不只由计算单元决定，还由数据能否高效进�
 # Document: 精度格式：FP16、BF16、FP8 与量化计算
 
 Source: docs/06-accelerators-architecture/precision-formats-low-bit-compute.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/precision-formats-low-bit-compute/
+URL: https://amoursec.github.io/06-accelerators-architecture/precision-formats-low-bit-compute/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -54476,7 +54476,7 @@ KV Cache 量化要按端到端推理指标评估，而不是只看显存下降�
 # Document: 互连与通信架构：PCIe、NVLink、CXL、RDMA 与 NoC
 
 Source: docs/06-accelerators-architecture/interconnect-communication-architecture.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/interconnect-communication-architecture/
+URL: https://amoursec.github.io/06-accelerators-architecture/interconnect-communication-architecture/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -55456,7 +55456,7 @@ AI 互连架构的核心不是记住每种链路的名字，而是建立路径�
 # Document: 功耗、散热、频率与可靠性：从峰值算力到持续吞吐
 
 Source: docs/06-accelerators-architecture/power-thermal-reliability.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/power-thermal-reliability/
+URL: https://amoursec.github.io/06-accelerators-architecture/power-thermal-reliability/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -56406,7 +56406,7 @@ AI 加速器的真实能力可以理解为：
 # Document: 架构取舍：GPU、NPU、TPU、ASIC 与 FPGA
 
 Source: docs/06-accelerators-architecture/accelerator-architecture-tradeoffs.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/accelerator-architecture-tradeoffs/
+URL: https://amoursec.github.io/06-accelerators-architecture/accelerator-architecture-tradeoffs/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -57524,7 +57524,7 @@ AI 加速器的竞争，最终不是单芯片峰值的竞争，而是“硬件�
 # Document: Workload Mapping：算子、Compiler、Runtime 与硬件执行
 
 Source: docs/06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md
-URL: https://amoursec.github.io/aikg/06-accelerators-architecture/workload-mapping-compiler-runtime-interface/
+URL: https://amoursec.github.io/06-accelerators-architecture/workload-mapping-compiler-runtime-interface/
 domain: accelerators-architecture
 status: draft
 owner: maintainers
@@ -58830,7 +58830,7 @@ benchmark 告诉我们 mapping 是否真的有效
 # Document: 集群、网络、存储与调度
 
 Source: docs/07-cluster-infra/index.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/
+URL: https://amoursec.github.io/07-cluster-infra/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -58877,7 +58877,7 @@ updated: 2026-05-30
 # Document: AI 集群架构总览：节点、网络、存储与调度
 
 Source: docs/07-cluster-infra/ai-cluster-architecture-overview.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/ai-cluster-architecture-overview/
+URL: https://amoursec.github.io/07-cluster-infra/ai-cluster-architecture-overview/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -59973,7 +59973,7 @@ AI 集群可以理解为：
 # Document: 调度系统与资源队列：Slurm、Kubernetes、Ray、Volcano 与 Kueue
 
 Source: docs/07-cluster-infra/scheduling-queues-resource-management.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/scheduling-queues-resource-management/
+URL: https://amoursec.github.io/07-cluster-infra/scheduling-queues-resource-management/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -61124,7 +61124,7 @@ Slurm、Kubernetes、Ray、Volcano、Kueue 解决的问题层次不同：
 # Document: GPU 拓扑、NUMA、MIG/MPS 与资源隔离
 
 Source: docs/07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/gpu-topology-numa-mig-mps-isolation/
+URL: https://amoursec.github.io/07-cluster-infra/gpu-topology-numa-mig-mps-isolation/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -62039,7 +62039,7 @@ GPU 在哪里
 # Document: RDMA 网络与 NCCL 拓扑：InfiniBand、RoCE 与拥塞控制
 
 Source: docs/07-cluster-infra/rdma-network-nccl-topology-congestion.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/rdma-network-nccl-topology-congestion/
+URL: https://amoursec.github.io/07-cluster-infra/rdma-network-nccl-topology-congestion/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -62932,7 +62932,7 @@ AI 集群网络的核心不是“网卡速率是多少”，而是：
 # Document: 存储、数据缓存与 Checkpoint：NVMe、并行文件系统与对象存储
 
 Source: docs/07-cluster-infra/storage-data-cache-checkpoint.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/storage-data-cache-checkpoint/
+URL: https://amoursec.github.io/07-cluster-infra/storage-data-cache-checkpoint/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -64042,7 +64042,7 @@ AI 存储设计的核心不是“盘够不够大”，而是：
 # Document: 环境可复现：镜像、驱动、CUDA 与依赖锁定
 
 Source: docs/07-cluster-infra/environment-reproducibility-containers.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/environment-reproducibility-containers/
+URL: https://amoursec.github.io/07-cluster-infra/environment-reproducibility-containers/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -65269,7 +65269,7 @@ hardware / firmware
 # Document: 混合集群与多租户隔离：训练、推理、Notebook 与批处理共存
 
 Source: docs/07-cluster-infra/mixed-workload-multitenancy-isolation.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/mixed-workload-multitenancy-isolation/
+URL: https://amoursec.github.io/07-cluster-infra/mixed-workload-multitenancy-isolation/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -66506,7 +66506,7 @@ workload classification
 # Document: 资源利用率、碎片与容量治理：从 GPU 分配到有效吞吐
 
 Source: docs/07-cluster-infra/resource-utilization-fragmentation-capacity.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/resource-utilization-fragmentation-capacity/
+URL: https://amoursec.github.io/07-cluster-infra/resource-utilization-fragmentation-capacity/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -67834,7 +67834,7 @@ capacity
 # Document: 节点生命周期与集群运维：交付、验收、入池、维护与下线
 
 Source: docs/07-cluster-infra/node-lifecycle-health-maintenance.md
-URL: https://amoursec.github.io/aikg/07-cluster-infra/node-lifecycle-health-maintenance/
+URL: https://amoursec.github.io/07-cluster-infra/node-lifecycle-health-maintenance/
 domain: cluster-infra
 status: draft
 owner: maintainers
@@ -68924,7 +68924,7 @@ asset
 # Document: 性能分析、Benchmark 与容量建模
 
 Source: docs/08-benchmark-capacity/index.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/
+URL: https://amoursec.github.io/08-benchmark-capacity/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -68973,7 +68973,7 @@ updated: 2026-05-30
 # Document: 性能分析与 Benchmark 方法论：指标、实验设计与瓶颈定位
 
 Source: docs/08-benchmark-capacity/performance-analysis-benchmark-methodology.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/performance-analysis-benchmark-methodology/
+URL: https://amoursec.github.io/08-benchmark-capacity/performance-analysis-benchmark-methodology/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -70116,7 +70116,7 @@ question
 # Document: 推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数
 
 Source: docs/08-benchmark-capacity/inference-capacity-modeling.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/inference-capacity-modeling/
+URL: https://amoursec.github.io/08-benchmark-capacity/inference-capacity-modeling/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -71382,7 +71382,7 @@ traffic distribution
 # Document: 训练容量建模：Tokens/s、Step Time、MFU 与扩展效率
 
 Source: docs/08-benchmark-capacity/training-capacity-scaling-efficiency.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/training-capacity-scaling-efficiency/
+URL: https://amoursec.github.io/08-benchmark-capacity/training-capacity-scaling-efficiency/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -73072,7 +73072,7 @@ training goal
 # Document: Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF
 
 Source: docs/08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/
+URL: https://amoursec.github.io/08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -74511,7 +74511,7 @@ monitoring 发现症状
 # Document: Roofline 分析：算力、带宽与瓶颈上限
 
 Source: docs/08-benchmark-capacity/roofline-analysis-compute-bandwidth.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/roofline-analysis-compute-bandwidth/
+URL: https://amoursec.github.io/08-benchmark-capacity/roofline-analysis-compute-bandwidth/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -76055,7 +76055,7 @@ Roofline 分析的核心不是画图，而是建立一种性能判断方式：
 # Document: 排队模型与尾延迟：QPS、并发、利用率和 p99
 
 Source: docs/08-benchmark-capacity/queueing-model-tail-latency.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/queueing-model-tail-latency/
+URL: https://amoursec.github.io/08-benchmark-capacity/queueing-model-tail-latency/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -77821,7 +77821,7 @@ Decision:
 # Document: 能效、功耗与热限制：Power、Energy per Token 与持续吞吐
 
 Source: docs/08-benchmark-capacity/energy-power-thermal-benchmark.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/energy-power-thermal-benchmark/
+URL: https://amoursec.github.io/08-benchmark-capacity/energy-power-thermal-benchmark/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -79588,7 +79588,7 @@ Decision:
 # Document: Benchmark 负载设计与 Trace Replay：从玩具测试到真实 Workload
 
 Source: docs/08-benchmark-capacity/benchmark-workload-design-trace-replay.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/benchmark-workload-design-trace-replay/
+URL: https://amoursec.github.io/08-benchmark-capacity/benchmark-workload-design-trace-replay/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -81073,7 +81073,7 @@ Synthetic workload 用来隔离变量，sampled workload 用来逼近分布，tr
 # Document: A/B 对比、消融实验与性能回归检测
 
 Source: docs/08-benchmark-capacity/ab-testing-ablation-regression-detection.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/ab-testing-ablation-regression-detection/
+URL: https://amoursec.github.io/08-benchmark-capacity/ab-testing-ablation-regression-detection/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -82633,7 +82633,7 @@ A/B 对比、消融实验和回归检测，是把一次性优化变成长期工�
 # Document: 成本模型与单位经济性：Cost per Token、GPU Hour 与有效产出
 
 Source: docs/08-benchmark-capacity/cost-model-unit-economics.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/cost-model-unit-economics/
+URL: https://amoursec.github.io/08-benchmark-capacity/cost-model-unit-economics/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -84370,7 +84370,7 @@ AI 成本模型的核心不是压低账单，而是提高单位有效产出。
 # Document: Benchmark 数据治理与实验记录：Run Manifest、Raw Data 与可复现报告
 
 Source: docs/08-benchmark-capacity/benchmark-data-governance-run-records.md
-URL: https://amoursec.github.io/aikg/08-benchmark-capacity/benchmark-data-governance-run-records/
+URL: https://amoursec.github.io/08-benchmark-capacity/benchmark-data-governance-run-records/
 domain: benchmark-capacity
 status: draft
 owner: maintainers
@@ -85907,7 +85907,7 @@ Benchmark 数据治理的核心是让性能结论可以被追溯。
 # Document: 可靠性、可观测性与故障复盘
 
 Source: docs/09-reliability-observability/index.md
-URL: https://amoursec.github.io/aikg/09-reliability-observability/
+URL: https://amoursec.github.io/09-reliability-observability/
 domain: reliability-observability
 status: draft
 owner: maintainers
@@ -85949,7 +85949,7 @@ updated: 2026-05-30
 # Document: AI 系统可观测性总览：Metrics、Logs、Traces、Profiles 与 Events
 
 Source: docs/09-reliability-observability/observability-overview-signals.md
-URL: https://amoursec.github.io/aikg/09-reliability-observability/observability-overview-signals/
+URL: https://amoursec.github.io/09-reliability-observability/observability-overview-signals/
 domain: reliability-observability
 status: draft
 owner: maintainers
@@ -86962,7 +86962,7 @@ events 告诉你系统状态何时改变。
 # Document: SLO、SLI、错误预算与告警策略：从用户体验到行动门槛
 
 Source: docs/09-reliability-observability/slo-sli-error-budget-alerting.md
-URL: https://amoursec.github.io/aikg/09-reliability-observability/slo-sli-error-budget-alerting/
+URL: https://amoursec.github.io/09-reliability-observability/slo-sli-error-budget-alerting/
 domain: reliability-observability
 status: draft
 owner: maintainers
@@ -88406,7 +88406,7 @@ burn rate 定义坏得有多快，
 # Document: AI 系统故障模式：GPU、NCCL、网络、存储与 Runtime
 
 Source: docs/09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage.md
-URL: https://amoursec.github.io/aikg/09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage/
+URL: https://amoursec.github.io/09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage/
 domain: reliability-observability
 status: draft
 owner: maintainers
@@ -89439,7 +89439,7 @@ GPU、NCCL、网络、存储和 Runtime 故障都可能表现为 latency、hang�
 # Document: Incident Response、Runbook 与故障复盘：从止血到可复现改进
 
 Source: docs/09-reliability-observability/incident-response-runbook-postmortem.md
-URL: https://amoursec.github.io/aikg/09-reliability-observability/incident-response-runbook-postmortem/
+URL: https://amoursec.github.io/09-reliability-observability/incident-response-runbook-postmortem/
 domain: reliability-observability
 status: draft
 owner: maintainers
@@ -90586,7 +90586,7 @@ Benchmark 和 Alert 负责防止同类问题再次悄悄发生。
 # Document: 论文复现与系统案例
 
 Source: docs/10-papers-cases/index.md
-URL: https://amoursec.github.io/aikg/10-papers-cases/
+URL: https://amoursec.github.io/10-papers-cases/
 domain: papers-cases
 status: draft
 owner: maintainers
@@ -90626,7 +90626,7 @@ updated: 2026-06-12
 # Document: AI 系统论文与架构：从论文贡献到可复现实验
 
 Source: docs/10-papers-cases/ai-system-architecture.md
-URL: https://amoursec.github.io/aikg/10-papers-cases/ai-system-architecture/
+URL: https://amoursec.github.io/10-papers-cases/ai-system-architecture/
 domain: ai-system-papers
 status: draft
 owner: maintainers
@@ -91738,7 +91738,7 @@ AI 系统论文的价值不在于“又知道一个新方法”，而在于把�
 # Document: 技术决策记录：从 Benchmark 证据到可追溯选择
 
 Source: docs/10-papers-cases/adr.md
-URL: https://amoursec.github.io/aikg/10-papers-cases/adr/
+URL: https://amoursec.github.io/10-papers-cases/adr/
 domain: technical-decision-records
 status: draft
 owner: maintainers
@@ -93051,7 +93051,7 @@ ADR 不是论文。
 # Document: 故障案例库：从失败复现到系统改进
 
 Source: docs/10-papers-cases/failure-cases.md
-URL: https://amoursec.github.io/aikg/10-papers-cases/failure-cases/
+URL: https://amoursec.github.io/10-papers-cases/failure-cases/
 domain: failure-cases
 status: draft
 owner: maintainers
@@ -94348,7 +94348,7 @@ Failure case library 的目标不是保存失败情绪，而是保存系统知�
 # Document: 知识组织、模板与 AI 可读索引
 
 Source: docs/11-knowledge-index/index.md
-URL: https://amoursec.github.io/aikg/11-knowledge-index/
+URL: https://amoursec.github.io/11-knowledge-index/
 domain: knowledge-index
 status: draft
 owner: maintainers
@@ -95057,9 +95057,9 @@ relations:
 
 ```text
 GitHub: https://github.com/AmourSec/aikg
-Docs: https://amoursec.github.io/aikg/
-LLM index: https://amoursec.github.io/aikg/llms.txt
-Full context: https://amoursec.github.io/aikg/llms-full.txt
+Docs: https://amoursec.github.io/
+LLM index: https://amoursec.github.io/llms.txt
+Full context: https://amoursec.github.io/llms-full.txt
 ```
 
 建议提示语：
@@ -95870,7 +95870,7 @@ AI 引用模板里的示例数据。
 # Document: 知识点模板：从概念解释到 AI 可读卡片
 
 Source: docs/99-templates/knowledge-note.md
-URL: https://amoursec.github.io/aikg/99-templates/knowledge-note/
+URL: https://amoursec.github.io/99-templates/knowledge-note/
 domain: template
 status: reviewed
 owner: maintainers
@@ -96772,7 +96772,7 @@ AI Infra 不是纯术语表。
 # Document: 技术决策模板：从问题、证据到可追溯决策
 
 Source: docs/99-templates/adr.md
-URL: https://amoursec.github.io/aikg/99-templates/adr/
+URL: https://amoursec.github.io/99-templates/adr/
 domain: template
 status: reviewed
 owner: maintainers
@@ -97868,7 +97868,7 @@ ADR 不应该吞掉这些文档。
 # Document: 基准实验报告模板：从问题设计到可复现实验
 
 Source: docs/99-templates/benchmark-report.md
-URL: https://amoursec.github.io/aikg/99-templates/benchmark-report/
+URL: https://amoursec.github.io/99-templates/benchmark-report/
 domain: template
 status: reviewed
 owner: maintainers

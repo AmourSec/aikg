@@ -10,7 +10,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 SKILLS = ROOT / "skills"
-SITE_URL = "https://amoursec.github.io/aikg/"
+SITE_URL = "https://amoursec.github.io/"
 REPO_URL = "https://github.com/AmourSec/aikg"
 RAW_URL = "https://raw.githubusercontent.com/AmourSec/aikg/main"
 
