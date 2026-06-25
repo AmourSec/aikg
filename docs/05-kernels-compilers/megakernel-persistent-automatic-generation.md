@@ -5,12 +5,12 @@ doc_type: explanation
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-22
+updated: 2026-06-25
 ---
 
 # MegaKernel、Persistent Kernel 与自动生成
 
-MegaKernel 是把多个计算阶段、多个算子，甚至一段模型子图合并到一个更大的 kernel 中执行的思路。它常常和 persistent kernel 一起出现：kernel 启动后让一批 worker 长时间驻留在设备上，持续执行多个 tile task 或 operator stage。
+MegaKernel，也常写作 mega kernel 或 mega-kernel，是把多个计算阶段、多个算子，甚至一段模型子图合并到一个更大的 kernel 中执行的思路。它常常和 persistent kernel 一起出现：kernel 启动后让一批 worker 长时间驻留在设备上，持续执行多个 tile task 或 operator stage。
 
 如果只记一句话：
 

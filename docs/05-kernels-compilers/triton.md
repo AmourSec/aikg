@@ -4,7 +4,7 @@ domain: triton
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-12
+updated: 2026-06-25
 ---
 
 # Triton Kernel 编程
@@ -171,6 +171,90 @@ end-to-end latency
 - fallback kernel。
 - 支持的 dtype/shape 列表。
 - Triton/PyTorch/CUDA/ROCm 版本。
+
+## Triton 编译器视角
+
+从使用者角度看，Triton 是 `@triton.jit` 加一段 Python DSL。从系统角度看，Triton 更像一个 AI kernel 编译器：它把 block program 形式的用户代码转成多层 IR，再经过优化和 lowering，最终生成目标 GPU 后端代码。
+
+可以把 Triton 编译器 pipeline 简化为：
+
+```text
+Python DSL
+-> Triton AST / semantic analysis
+-> Triton IR / Triton dialect
+-> Triton GPU IR / layout and memory lowering
+-> backend-specific lowering
+-> PTX / AMDGCN / target code
+-> driver JIT / machine code
+```
+
+这个视角很重要，因为很多性能问题不是 Python 语法问题，而是编译器是否能从你的表达里推导出好的执行方式。
+
+例如：
+
+- pointer pattern 是否让编译器看出 coalesced load/store。
+- block tensor shape 是否适合 vectorization。
+- `tl.dot` 的 dtype、shape、layout 是否能映射到 Tensor Core 或等价矩阵单元。
+- mask 是否过于复杂，导致 predicate 和控制流开销上升。
+- `num_warps`、`num_stages` 是否造成 register/shared memory 压力。
+- program ordering 是否有利于 L2 reuse。
+
+排查 Triton 编译器相关问题时，可以按三层看：
+
+| 层 | 看什么 | 常见问题 |
+| --- | --- | --- |
+| DSL 层 | `tl.load`、`tl.store`、`tl.dot`、mask、constexpr | 语义错、stride 错、shape 特化太多 |
+| IR / lowering 层 | Triton dialect、TritonGPU dialect、layout encoding | layout 不理想、vectorization 不生效、fallback |
+| 目标代码层 | PTX/SASS/ISA、register、shared memory、occupancy | spill、bank conflict、Tensor Core 利用率低 |
+
+不要把 Triton 编译器当黑盒。对于关键 kernel，至少要能回答：它生成了几个 kernel、是否命中编译缓存、是否走目标矩阵指令、资源占用是多少、和预期 schedule 是否一致。
+
+## Triton AI 算子生成
+
+这类方向有时会被写成 Triton AI算子生成或 Triton AI 算子生成。这里指同一类问题：围绕 AI workload 自动或半自动生成 Triton kernel。
+
+它可以分成三种来源。
+
+| 来源 | 说明 | 适合场景 |
+| --- | --- | --- |
+| 手写生成 | 工程师直接写 Triton kernel | 自定义 fused op、特殊 layout、MoE routing |
+| 编译器生成 | TorchInductor 等后端生成 Triton | PyTorch graph 自动融合、elementwise/reduction 组合 |
+| 自动模板/搜索生成 | 根据算子 schema、shape 和硬件搜索 Triton 实现 | 大量候选 kernel、自动调参、跨硬件移植 |
+
+第三类是“AI 算子生成”里越来越重要的方向。它不是让模型随便写一段 kernel，而是把算子语义、shape、dtype、layout、memory hierarchy、tile space 和 correctness test 组织成一个生成闭环。
+
+一个相对可靠的 Triton 算子生成流程应该是：
+
+```text
+算子语义 / schema
+-> reference implementation
+-> shape / dtype / layout 约束
+-> Triton template 或生成候选
+-> autotune / schedule search
+-> correctness test
+-> microbenchmark
+-> profiler
+-> end-to-end validation
+-> fallback / guard
+```
+
+这类流程适合：
+
+- layernorm、RMSNorm、softmax、activation 等 fused reduction/elementwise。
+- quant/dequant、scale、cast 和 epilogue 融合。
+- MoE dispatch/combine、top-k、packing。
+- 特殊 attention pattern。
+- 固定 shape 的服务端 hot path。
+
+但它也有硬约束：
+
+- 必须有参考实现和误差容忍标准。
+- 必须覆盖边界 shape、非连续 stride、mask 和 dtype。
+- 必须记录生成代码、tuning 参数和环境版本。
+- 必须有 fallback，不能让生成失败影响线上请求。
+- 不能只看单 kernel microbenchmark，要看端到端收益。
+
+因此，Triton AI 算子生成的关键不是“生成代码”，而是“生成、验证、调优、回退和追踪”这一整套工程闭环。
 
 ## Triton Kernel 的基本结构
 

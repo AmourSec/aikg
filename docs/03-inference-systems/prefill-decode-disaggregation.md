@@ -4,7 +4,7 @@ domain: inference-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-08
+updated: 2026-06-25
 ---
 
 # Prefill/Decode 分离部署
@@ -79,6 +79,31 @@ Prefill worker 和 Decode worker 的优化目标不同。
 Prefill worker 可以更关注大 batch、高算力利用和输入 token 吞吐。Decode worker 可以更关注低延迟、KV Cache 管理、连续调度和流式输出稳定性。
 
 如果硬件资源异构，也可以让不同阶段使用不同类型的 GPU 或不同配置的实例。但这要求调度、网络和 KV 传输能力足够强。
+
+## AFD：Attention-FFN 分离
+
+Prefill/Decode 分离部署通常缩写为 PDD，它按时间阶段拆分：先读 prompt，再逐 token 生成。另一个更细的方向是 AFD，也就是 Attention-FFN Disaggregation，把 Transformer block 内部的 attention 路径和 FFN/MLP 路径按资源角色拆开。
+
+AFD 的动机来自一个观察：attention 和 FFN 的资源形态并不完全一样。
+
+| 子模块 | 主要压力 | 常见系统关注点 |
+| --- | --- | --- |
+| Attention | KV Cache 访问、sequence length、显存带宽、上下文状态 | KV layout、cache locality、通信和状态迁移 |
+| FFN / MLP | 大矩阵乘、MoE expert、计算吞吐 | GEMM/Grouped GEMM、专家放置、算力利用 |
+
+在同构部署里，这两个子模块通常在同一批 worker 上顺序执行。AFD 会尝试让 attention worker 和 FFN worker 变成不同角色，甚至放在不同硬件池上。这样做的目标是让带宽敏感和计算密集的工作分别匹配更合适的资源。
+
+异构下的 AFD 更进一步：attention 可以放在显存容量、KV 带宽或网络路径更适合的资源上，FFN 可以放在矩阵吞吐更强的资源上。对 MoE 模型，还可能把 FFN/expert 层和 attention 层的扩缩容策略分开。
+
+AFD 比 PDD 更难，因为它不仅要传递 Prefill 后的 KV，还要在每一层或每一组层之间维护中间 hidden states、执行顺序和跨 worker 通信。需要重点评估：
+
+- Attention worker 和 FFN worker 之间传什么数据，是 hidden states、partial output 还是更细粒度 tile。
+- 传输数据量是否超过节省的计算/带宽收益。
+- 不同硬件池的速度不一致时，哪一侧成为瓶颈。
+- 调度器是否能同时感知 request、layer、token、KV 状态和 worker role。
+- 失败恢复时，跨角色状态如何回滚或重算。
+
+因此，AFD 更适合在大规模、异构、强 SLO 约束或需要模拟验证的 serving 系统里研究。对于普通单机或小规模部署，先把 PDD、batching、KV Cache、Prefix Cache 和调度做好，通常更现实。
 
 ## KV Cache 为什么是核心
 

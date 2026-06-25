@@ -4,7 +4,7 @@ domain: kernels-compilers
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-22
+updated: 2026-06-25
 ---
 
 # Kernel、算子与编译优化
@@ -40,9 +40,9 @@ updated: 2026-06-22
 - FlashAttention、fused operator、persistent kernel
 - Triton、CUDA、ROCm、CUTLASS、cuDNN、cuBLAS
 - TorchDynamo、AOTAutograd、TorchInductor、XLA、TVM、MLIR、ONNX Runtime
-- TileLang、tile DSL、schedule、pipeline、tensorization
+- TileLang、OpenTileIR / open tile IR、tile DSL、schedule、pipeline、tensorization
 - graph capture、operator fusion、layout transform、auto-tuning、lowering
-- MegaKernel、persistent kernel、device-side scheduling、automatic kernel generation
+- Triton 编译器、Triton AI 算子生成、MegaKernel、persistent kernel、device-side scheduling、automatic kernel generation
 - kernel profiling、roofline、SASS/PTX/IR inspection
 
 ## 关键问题
@@ -59,8 +59,8 @@ updated: 2026-06-22
 ## 专题入口
 
 - [Attention 机制与计算模式](attention-computation-patterns.md)：区分 attention pattern、exact/approx、kernel 实现和 KV Cache 管理，理解 Dense/Sparse/Flash/PagedAttention、MHA/MQA/GQA、Prefill/Decode、长上下文、显存 IO 和 benchmark 方法。
-- [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel，覆盖 block program、JIT specialization、launch grid、tiling、资源模型、数值、autotune、PyTorch/Inductor 集成和端到端 benchmark。
+- [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel，覆盖 block program、Triton 编译器、Triton AI 算子生成、JIT specialization、launch grid、tiling、资源模型、数值、autotune、PyTorch/Inductor 集成和端到端 benchmark。
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
 - [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：理解为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、vector/GPU 后端，以及它和 Triton、TorchInductor、TileLang、MegaKernel 的关系。
-- [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：理解 tile、layout、pipeline、tensorization、autotuning 如何共同决定 GEMM、Attention、Dequant GEMM、Sparse MM 等 kernel 的硬件效率。
+- [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：理解 tile、layout、pipeline、tensorization、autotuning、OpenTileIR / open tile IR 如何共同决定 GEMM、Attention、Dequant GEMM、Sparse MM 等 kernel 的硬件效率。
 - [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：区分普通 fusion、persistent kernel、CUDA Graph 和 MegaKernel，理解 Triton MegaKernel、Ascend C MegaKernel-style 实现和自动生成路径的收益与风险。

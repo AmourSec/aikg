@@ -50,7 +50,7 @@ updated: 2026-06-25
         <li class="kg-node-child"><a href="../03-inference-systems/single-node-serving-architecture/">单机 / 多机部署</a></li>
         <li class="kg-node-child"><a href="../03-inference-systems/vllm/">推理引擎与框架</a></li>
         <li class="kg-node-child"><a href="../03-inference-systems/benchmark-profiling/">Benchmark 与性能剖析</a></li>
-        <li class="kg-node-note"><span>关键词：TTFT / TPOT / batching / scheduling / KV Cache / PagedAttention / Prefix Cache / vLLM / TensorRT-LLM / SGLang</span></li>
+        <li class="kg-node-note"><span>关键词：TTFT / TPOT / batching / scheduling / KV Cache / PagedAttention / Prefix Cache / PDD / AFD / 沙箱快启 / PVM / vLLM / TensorRT-LLM / SGLang</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -78,7 +78,7 @@ updated: 2026-06-25
         <li class="kg-node-child"><a href="../05-kernels-compilers/mlir-ai-compiler-ir/">MLIR 与 AI 编译 IR</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">TileLang</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">MegaKernel 与 Persistent Kernel</a></li>
-        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / TorchInductor / MLIR / TileLang / MegaKernel</span></li>
+        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Persistent Kernel / MegaKernel</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
