@@ -2,7 +2,7 @@
 
 > AI infrastructure and efficient computing knowledge base for systems-oriented graduate students, engineers, and AI-assisted retrieval.
 
-This repository is a public Markdown knowledge base rendered as a MkDocs site. Use `llms.txt` as the entry index and `llms-full.txt` when a single-file context dump is preferred.
+This repository is a public Markdown knowledge base rendered as a MkDocs site. Human-readable documents live in `docs/`; task-oriented AI skill samples live in `skills/`. Use `llms.txt` as the entry index and `llms-full.txt` when a single-file context dump is preferred.
 
 ## Canonical Locations
 
@@ -15,8 +15,8 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 
 1. Start with `首页` and `知识地图` to understand the scope and structure.
 2. Read `AI 基础概念`, `Transformer 流程与原理`, `训练过程与原理`, `推理过程与原理`, and `多模态原理` for baseline AI workload understanding.
-3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
-4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, and the templates.
+3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `硬件基础`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
+4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, the templates, and task-oriented skill samples.
 
 ## Primary Documents
 
@@ -94,6 +94,13 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [MLIR 与 AI 编译 IR](https://amoursec.github.io/aikg/05-kernels-compilers/mlir-ai-compiler-ir/): MLIR 与 AI 编译 IR 解释为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、loop/tile/vector/GPU 层级、MLIR 与 Triton/TorchInductor/TileLang/MegaKernel 的关系、IR 能解决和不能解决的问题、读 IR 的方法、常见误区和工程检查清单。
 - [TileLang：面向 AI Kernel 的 Tile 编程模型](https://amoursec.github.io/aikg/05-kernels-compilers/tilelang/): TileLang：面向 AI Kernel 的 Tile 编程模型解释 tile-oriented DSL 在 AI kernel 中的位置，覆盖 tile、dataflow、schedule、layout、thread binding、pipeline、tensorization、autotuning、OpenTileIR/open tile IR 方向、与 Triton/TVM/MLIR 的关系、适用场景、benchmark 方法和工程检查清单。
 - [MegaKernel、Persistent Kernel 与自动生成](https://amoursec.github.io/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/): MegaKernel / mega kernel / mega-kernel、Persistent Kernel 与自动生成解释普通 fusion、CUDA Graph、persistent kernel、MegaKernel 的区别，覆盖 LLM 推理为何关注 persistent kernel、Triton MegaKernel、Ascend C MegaKernel-style 实现、自动生成 pipeline、任务图/Event/IR-based 方向、收益来源、风险、benchmark 方法和设计决策表。
+- [硬件基础](https://amoursec.github.io/aikg/12-hardware-basics/): 硬件基础章节入口，聚焦 NPU、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
+- [NPU 基础概念](https://amoursec.github.io/aikg/12-hardware-basics/npu-basics/): NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。
+- [昇腾 NPU 型号与架构映射](https://amoursec.github.io/aikg/12-hardware-basics/ascend-npu-models/): 昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
+- [Ascend 910 系列](https://amoursec.github.io/aikg/12-hardware-basics/ascend-910-series/): Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
+- [Ascend 950 系列](https://amoursec.github.io/aikg/12-hardware-basics/ascend-950-series/): Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
+- [CANN 软件栈与开发入口](https://amoursec.github.io/aikg/12-hardware-basics/cann-stack/): CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
+- [NPU 相关 AI Skills 样例](https://amoursec.github.io/aikg/12-hardware-basics/ai-skills-sample/): NPU 相关 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
 - [AI 加速器与计算架构](https://amoursec.github.io/aikg/06-accelerators-architecture/): AI 加速器与计算架构主题入口，关注 GPU、NPU、TPU、ASIC、FPGA 的计算、存储、互连、能效和可编程性。
 - [AI 加速器性能模型：算力、带宽与 Roofline](https://amoursec.github.io/aikg/06-accelerators-architecture/performance-model-roofline/): AI 加速器性能模型用 arithmetic intensity、ridge point、多重 Roofline、compute/memory/network/energy roof、FLOPs/bytes 口径、compute-bound、memory-bound、launch-bound、HBM、片上存储、矩阵单元、低精度、Prefill/Decode、训练、MoE、互连、能效、硬件选型和 benchmark 分析硬件真实性能上限。
 - [计算单元：SIMT、Tensor Core 与矩阵引擎](https://amoursec.github.io/aikg/06-accelerators-architecture/compute-units-simt-tensorcore/): 计算单元：SIMT、Tensor Core 与矩阵引擎解释 SIMD/SIMT、masked execution、warp、warp scheduler、SM、occupancy、register/shared memory、Tensor Core tile/fragment/accumulator、Matrix Core、systolic array、NPU/ASIC 取舍、vector/scalar/load-store/SFU、稀疏、不规则访存、动态控制流、Transformer/MoE/Prefill/Decode 映射、并行切分、kernel fusion、profiler 指标和真实矩阵单元利用率。
@@ -138,6 +145,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. U
 - [知识点模板：从概念解释到 AI 可读卡片](https://amoursec.github.io/aikg/99-templates/knowledge-note/): 知识点模板说明如何撰写 AI Infra 普通知识点文章，覆盖适用场景、最小模板、完整推荐模板、front matter、domain/doc_type/status/workload/system_layer/metrics/sources 字段、系统对象、成本模型、指标体系、适用范围、相关技术、Benchmark 方法、证据来源、AI-readable knowledge card、写作规则、常见误区和模板质量门禁。
 - [技术决策模板：从问题、证据到可追溯决策](https://amoursec.github.io/aikg/99-templates/adr/): 技术决策模板说明如何撰写 AI Infra ADR，覆盖使用场景、文件命名、状态流转、最小模板、完整推荐模板、decision question、context、workload contract、system scope、decision drivers、options、evidence matrix、benchmark evidence、evidence level、decision、consequences、cost model、reliability impact、implementation plan、rollout、rollback、confirmation、revisit condition、AI-readable ADR card、字段说明、写作规则、常见误区、质量门禁以及与知识点、Benchmark、Failure Case、Runbook 和 Paper Note 的关系。
 - [基准实验报告模板：从问题设计到可复现实验](https://amoursec.github.io/aikg/99-templates/benchmark-report/): 基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。
+
+## AI Skill Samples
+
+- [npu-arch-capability-check](https://raw.githubusercontent.com/AmourSec/aikg/main/skills/npu-arch-capability-check/SKILL.md): NPU 架构能力判断 skill，指导 AI 根据 Ascend 设备型号、SocVersion、NpuArch、CANN 版本、编译宏和代码分支收集证据并输出能力判断。
 
 ## Markdown Source
 
@@ -214,6 +225,13 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [05-kernels-compilers/mlir-ai-compiler-ir.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/mlir-ai-compiler-ir.md)
 - [05-kernels-compilers/tilelang.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/tilelang.md)
 - [05-kernels-compilers/megakernel-persistent-automatic-generation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/megakernel-persistent-automatic-generation.md)
+- [12-hardware-basics/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/index.md)
+- [12-hardware-basics/npu-basics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/npu-basics.md)
+- [12-hardware-basics/ascend-npu-models.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-npu-models.md)
+- [12-hardware-basics/ascend-910-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-910-series.md)
+- [12-hardware-basics/ascend-950-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-950-series.md)
+- [12-hardware-basics/cann-stack.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/cann-stack.md)
+- [12-hardware-basics/ai-skills-sample.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ai-skills-sample.md)
 - [06-accelerators-architecture/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/index.md)
 - [06-accelerators-architecture/performance-model-roofline.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/performance-model-roofline.md)
 - [06-accelerators-architecture/compute-units-simt-tensorcore.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/compute-units-simt-tensorcore.md)
@@ -258,10 +276,12 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [99-templates/knowledge-note.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/knowledge-note.md)
 - [99-templates/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/adr.md)
 - [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/benchmark-report.md)
+- [skills/npu-arch-capability-check/SKILL.md](https://raw.githubusercontent.com/AmourSec/aikg/main/skills/npu-arch-capability-check/SKILL.md)
 
 ## AI Usage Notes
 
 - Treat front matter fields as metadata for domain, status, owner, license, and update time.
 - Prefer citing source document paths when answering from this knowledge base.
+- Use `skills/` files as task workflows, not as general-purpose encyclopedic articles.
 - Performance claims should preserve workload, batch shape, sequence length, precision, hardware, software version, and benchmark context when available.
 - Draft pages are useful for orientation, but should not be treated as verified conclusions unless the page status says reviewed or verified.

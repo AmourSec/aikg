@@ -9,9 +9,14 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
+SKILLS = ROOT / "skills"
 SITE_URL = "https://amoursec.github.io/aikg/"
 REPO_URL = "https://github.com/AmourSec/aikg"
 RAW_URL = "https://raw.githubusercontent.com/AmourSec/aikg/main"
+
+PRIORITY_SKILLS = [
+    "skills/npu-arch-capability-check/SKILL.md",
+]
 
 PRIORITY_DOCS = [
     "index.md",
@@ -85,6 +90,13 @@ PRIORITY_DOCS = [
     "05-kernels-compilers/mlir-ai-compiler-ir.md",
     "05-kernels-compilers/tilelang.md",
     "05-kernels-compilers/megakernel-persistent-automatic-generation.md",
+    "12-hardware-basics/index.md",
+    "12-hardware-basics/npu-basics.md",
+    "12-hardware-basics/ascend-npu-models.md",
+    "12-hardware-basics/ascend-910-series.md",
+    "12-hardware-basics/ascend-950-series.md",
+    "12-hardware-basics/cann-stack.md",
+    "12-hardware-basics/ai-skills-sample.md",
     "06-accelerators-architecture/index.md",
     "06-accelerators-architecture/performance-model-roofline.md",
     "06-accelerators-architecture/compute-units-simt-tensorcore.md",
@@ -203,6 +215,13 @@ DESCRIPTIONS = {
     "05-kernels-compilers/mlir-ai-compiler-ir.md": "MLIR 与 AI 编译 IR 解释为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、loop/tile/vector/GPU 层级、MLIR 与 Triton/TorchInductor/TileLang/MegaKernel 的关系、IR 能解决和不能解决的问题、读 IR 的方法、常见误区和工程检查清单。",
     "05-kernels-compilers/tilelang.md": "TileLang：面向 AI Kernel 的 Tile 编程模型解释 tile-oriented DSL 在 AI kernel 中的位置，覆盖 tile、dataflow、schedule、layout、thread binding、pipeline、tensorization、autotuning、OpenTileIR/open tile IR 方向、与 Triton/TVM/MLIR 的关系、适用场景、benchmark 方法和工程检查清单。",
     "05-kernels-compilers/megakernel-persistent-automatic-generation.md": "MegaKernel / mega kernel / mega-kernel、Persistent Kernel 与自动生成解释普通 fusion、CUDA Graph、persistent kernel、MegaKernel 的区别，覆盖 LLM 推理为何关注 persistent kernel、Triton MegaKernel、Ascend C MegaKernel-style 实现、自动生成 pipeline、任务图/Event/IR-based 方向、收益来源、风险、benchmark 方法和设计决策表。",
+    "12-hardware-basics/index.md": "硬件基础章节入口，聚焦 NPU、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。",
+    "12-hardware-basics/npu-basics.md": "NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。",
+    "12-hardware-basics/ascend-npu-models.md": "昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。",
+    "12-hardware-basics/ascend-910-series.md": "Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。",
+    "12-hardware-basics/ascend-950-series.md": "Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。",
+    "12-hardware-basics/cann-stack.md": "CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。",
+    "12-hardware-basics/ai-skills-sample.md": "NPU 相关 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。",
     "06-accelerators-architecture/index.md": "AI 加速器与计算架构主题入口，关注 GPU、NPU、TPU、ASIC、FPGA 的计算、存储、互连、能效和可编程性。",
     "06-accelerators-architecture/performance-model-roofline.md": "AI 加速器性能模型用 arithmetic intensity、ridge point、多重 Roofline、compute/memory/network/energy roof、FLOPs/bytes 口径、compute-bound、memory-bound、launch-bound、HBM、片上存储、矩阵单元、低精度、Prefill/Decode、训练、MoE、互连、能效、硬件选型和 benchmark 分析硬件真实性能上限。",
     "06-accelerators-architecture/compute-units-simt-tensorcore.md": "计算单元：SIMT、Tensor Core 与矩阵引擎解释 SIMD/SIMT、masked execution、warp、warp scheduler、SM、occupancy、register/shared memory、Tensor Core tile/fragment/accumulator、Matrix Core、systolic array、NPU/ASIC 取舍、vector/scalar/load-store/SFU、稀疏、不规则访存、动态控制流、Transformer/MoE/Prefill/Decode 映射、并行切分、kernel fusion、profiler 指标和真实矩阵单元利用率。",
@@ -249,6 +268,10 @@ DESCRIPTIONS = {
     "99-templates/benchmark-report.md": "基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。",
 }
 
+SKILL_DESCRIPTIONS = {
+    "skills/npu-arch-capability-check/SKILL.md": "NPU 架构能力判断 skill，指导 AI 根据 Ascend 设备型号、SocVersion、NpuArch、CANN 版本、编译宏和代码分支收集证据并输出能力判断。",
+}
+
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -271,15 +294,25 @@ def front_matter(text: str) -> dict[str, str]:
     return fields
 
 
-def title_for(rel_path: str) -> str:
-    text = read_text(DOCS / rel_path)
+def title_for_path(path: Path) -> str:
+    text = read_text(path)
     metadata = front_matter(text)
     if metadata.get("title"):
         return metadata["title"]
+    if metadata.get("name"):
+        return metadata["name"]
     for line in strip_front_matter(text).splitlines():
         if line.startswith("# "):
             return line[2:].strip()
-    return rel_path
+    return str(path.relative_to(ROOT))
+
+
+def title_for(rel_path: str) -> str:
+    return title_for_path(DOCS / rel_path)
+
+
+def title_for_skill(rel_path: str) -> str:
+    return title_for_path(ROOT / rel_path)
 
 
 def site_link(rel_path: str) -> str:
@@ -293,6 +326,10 @@ def raw_link(rel_path: str) -> str:
     return f"{RAW_URL}/docs/{rel_path}"
 
 
+def raw_link_root(rel_path: str) -> str:
+    return f"{RAW_URL}/{rel_path}"
+
+
 def doc_paths() -> list[str]:
     available = {str(path.relative_to(DOCS)) for path in DOCS.rglob("*.md")}
     ordered = [path for path in PRIORITY_DOCS if path in available]
@@ -300,7 +337,16 @@ def doc_paths() -> list[str]:
     return ordered
 
 
-def build_llms_txt(paths: list[str]) -> str:
+def skill_paths() -> list[str]:
+    if not SKILLS.exists():
+        return []
+    available = {str(path.relative_to(ROOT)) for path in SKILLS.rglob("SKILL.md")}
+    ordered = [path for path in PRIORITY_SKILLS if path in available]
+    ordered.extend(sorted(available - set(ordered)))
+    return ordered
+
+
+def build_llms_txt(paths: list[str], skills: list[str]) -> str:
     primary = paths[:24]
     optional = paths[24:]
     lines = [
@@ -308,7 +354,7 @@ def build_llms_txt(paths: list[str]) -> str:
         "",
         "> AI infrastructure and efficient computing knowledge base for systems-oriented graduate students, engineers, and AI-assisted retrieval.",
         "",
-        "This repository is a public Markdown knowledge base rendered as a MkDocs site. Use `llms.txt` as the entry index and `llms-full.txt` when a single-file context dump is preferred.",
+        "This repository is a public Markdown knowledge base rendered as a MkDocs site. Human-readable documents live in `docs/`; task-oriented AI skill samples live in `skills/`. Use `llms.txt` as the entry index and `llms-full.txt` when a single-file context dump is preferred.",
         "",
         "## Canonical Locations",
         "",
@@ -321,8 +367,8 @@ def build_llms_txt(paths: list[str]) -> str:
         "",
         "1. Start with `首页` and `知识地图` to understand the scope and structure.",
         "2. Read `AI 基础概念`, `Transformer 流程与原理`, `训练过程与原理`, `推理过程与原理`, and `多模态原理` for baseline AI workload understanding.",
-        "3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.",
-        "4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, and the templates.",
+        "3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `硬件基础`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.",
+        "4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, the templates, and task-oriented skill samples.",
         "",
         "## Primary Documents",
         "",
@@ -333,6 +379,10 @@ def build_llms_txt(paths: list[str]) -> str:
         lines.extend(["", "## Optional Documents", ""])
         for rel_path in optional:
             lines.append(f"- [{title_for(rel_path)}]({site_link(rel_path)}): {DESCRIPTIONS.get(rel_path, '补充文档或模板。')}")
+    if skills:
+        lines.extend(["", "## AI Skill Samples", ""])
+        for rel_path in skills:
+            lines.append(f"- [{title_for_skill(rel_path)}]({raw_link_root(rel_path)}): {SKILL_DESCRIPTIONS.get(rel_path, 'AI 可调用工作流样例。')}")
     lines.extend(
         [
             "",
@@ -344,6 +394,8 @@ def build_llms_txt(paths: list[str]) -> str:
     )
     for rel_path in paths:
         lines.append(f"- [{rel_path}]({raw_link(rel_path)})")
+    for rel_path in skills:
+        lines.append(f"- [{rel_path}]({raw_link_root(rel_path)})")
     lines.extend(
         [
             "",
@@ -351,6 +403,7 @@ def build_llms_txt(paths: list[str]) -> str:
             "",
             "- Treat front matter fields as metadata for domain, status, owner, license, and update time.",
             "- Prefer citing source document paths when answering from this knowledge base.",
+            "- Use `skills/` files as task workflows, not as general-purpose encyclopedic articles.",
             "- Performance claims should preserve workload, batch shape, sequence length, precision, hardware, software version, and benchmark context when available.",
             "- Draft pages are useful for orientation, but should not be treated as verified conclusions unless the page status says reviewed or verified.",
             "",
@@ -359,13 +412,13 @@ def build_llms_txt(paths: list[str]) -> str:
     return "\n".join(lines)
 
 
-def build_llms_full(paths: list[str]) -> str:
+def build_llms_full(paths: list[str], skills: list[str]) -> str:
     lines = [
         "# AI Knowledge Graph - Full LLM Context",
         "",
         f"Repository: {REPO_URL}",
         f"Documentation site: {SITE_URL}",
-        "Generated from Markdown source files in `docs/`.",
+        "Generated from Markdown source files in `docs/` and task-oriented skill samples in `skills/`.",
         "",
         "Use this file as a compact ingestion target when an AI system cannot crawl the full repository. For exact source locations, each document section includes its repository path and site URL.",
         "",
@@ -374,6 +427,10 @@ def build_llms_full(paths: list[str]) -> str:
     ]
     for rel_path in paths:
         lines.append(f"- {rel_path} - {title_for(rel_path)}")
+    if skills:
+        lines.extend(["", "## Skill Index", ""])
+        for rel_path in skills:
+            lines.append(f"- {rel_path} - {title_for_skill(rel_path)}")
     lines.extend(["", "---", ""])
     for rel_path in paths:
         source = DOCS / rel_path
@@ -392,6 +449,23 @@ def build_llms_full(paths: list[str]) -> str:
             if key in metadata:
                 lines.append(f"{key}: {metadata[key]}")
         lines.extend(["", body, "", "---", ""])
+    for rel_path in skills:
+        source = ROOT / rel_path
+        text = read_text(source)
+        metadata = front_matter(text)
+        body = strip_front_matter(text).strip()
+        lines.extend(
+            [
+                f"# Skill: {title_for_skill(rel_path)}",
+                "",
+                f"Source: {rel_path}",
+                f"Raw URL: {raw_link_root(rel_path)}",
+            ]
+        )
+        for key in ["name", "description"]:
+            if key in metadata:
+                lines.append(f"{key}: {metadata[key]}")
+        lines.extend(["", body, "", "---", ""])
     return "\n".join(lines)
 
 
@@ -402,8 +476,9 @@ def write_pair(filename: str, content: str) -> None:
 
 def main() -> None:
     paths = doc_paths()
-    write_pair("llms.txt", build_llms_txt(paths))
-    write_pair("llms-full.txt", build_llms_full(paths))
+    skills = skill_paths()
+    write_pair("llms.txt", build_llms_txt(paths, skills))
+    write_pair("llms-full.txt", build_llms_full(paths, skills))
 
 
 if __name__ == "__main__":
