@@ -29,8 +29,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [训练过程与原理](https://amoursec.github.io/02-ai-workloads/training-primer/): 训练过程与原理面向新手解释大语言模型训练的最小闭环，覆盖 next-token prediction、shifted labels、batch、step、epoch、forward、logits、cross entropy loss、有效 token loss 汇总、backward、autograd graph、梯度、optimizer step、learning rate、zero_grad、mini-batch 估计、validation/test、pretraining、finetuning、post-training、checkpoint、模型权重产物，以及训练和推理的区别。
 - [推理过程与原理](https://amoursec.github.io/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [多模态原理](https://amoursec.github.io/02-ai-workloads/multimodal-primer/): 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。
-- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，聚焦 NPU、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
+- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，聚焦 GPU 架构、NPU 基础、GPU/NPU 对比、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
+- [GPU 架构基础](https://amoursec.github.io/12-hardware-basics/gpu-architecture-basics/): GPU 架构基础解释 GPU 为什么适合 AI 计算，覆盖 host、kernel、grid/block/thread、SM、warp、SIMT、Tensor Core、register、shared memory、L2、HBM、interconnect、AI 算子映射、内存层次、常见性能瓶颈、优化方向、profiling 和最小实验记录清单。
 - [NPU 基础概念](https://amoursec.github.io/12-hardware-basics/npu-basics/): NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。
+- [GPU 与 NPU 异同点](https://amoursec.github.io/12-hardware-basics/gpu-npu-comparison/): GPU 与 NPU 异同点从执行模型、编程模型、内存与数据搬运、算子覆盖、模型迁移、推理、训练、常见误区、选型和迁移检查清单比较 GPU/NPU，强调用 benchmark、profiler 和 workload manifest 做工程判断。
 - [昇腾 NPU 型号与架构映射](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): 昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
 - [Ascend 910 系列](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
 - [Ascend 950 系列](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
@@ -42,11 +44,11 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [指标体系](https://amoursec.github.io/03-inference-systems/metrics/): 推理系统的 TTFT、TPOT、吞吐、尾延迟、资源、成本和稳定性指标体系。
 - [Batching](https://amoursec.github.io/03-inference-systems/batching/): 推理系统中 static、dynamic、continuous batching 的原理、收益和延迟取舍。
 - [KV Cache](https://amoursec.github.io/03-inference-systems/kv-cache/): KV Cache 在 Decode 中复用历史上下文，并影响显存、并发、长上下文和调度。
-- [PagedAttention](https://amoursec.github.io/03-inference-systems/paged-attention/): PagedAttention 用 block table 和块式 KV Cache 管理减少显存碎片与预留浪费。
-- [Prefix Cache](https://amoursec.github.io/03-inference-systems/prefix-cache/): Prefix Cache 复用相同 prompt 前缀的 KV Cache，降低重复 Prefill 和 TTFT。
 
 ## Optional Documents
 
+- [PagedAttention](https://amoursec.github.io/03-inference-systems/paged-attention/): PagedAttention 用 block table 和块式 KV Cache 管理减少显存碎片与预留浪费。
+- [Prefix Cache](https://amoursec.github.io/03-inference-systems/prefix-cache/): Prefix Cache 复用相同 prompt 前缀的 KV Cache，降低重复 Prefill 和 TTFT。
 - [调度策略](https://amoursec.github.io/03-inference-systems/scheduling/): 推理调度策略如何在队列、优先级、SLO、缓存、准入控制和公平性之间取舍。
 - [量化推理](https://amoursec.github.io/03-inference-systems/quantization/): 量化推理用低精度权重、激活或 KV Cache 降低显存、带宽和推理成本。
 - [Speculative Decoding](https://amoursec.github.io/03-inference-systems/speculative-decoding/): Speculative Decoding 用 draft 和 verify 减少目标模型逐 token Decode 等待。
@@ -164,7 +166,9 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [02-ai-workloads/inference-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/inference-primer.md)
 - [02-ai-workloads/multimodal-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/multimodal-primer.md)
 - [12-hardware-basics/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/index.md)
+- [12-hardware-basics/gpu-architecture-basics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/gpu-architecture-basics.md)
 - [12-hardware-basics/npu-basics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/npu-basics.md)
+- [12-hardware-basics/gpu-npu-comparison.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/gpu-npu-comparison.md)
 - [12-hardware-basics/ascend-npu-models.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-npu-models.md)
 - [12-hardware-basics/ascend-910-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-910-series.md)
 - [12-hardware-basics/ascend-950-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-950-series.md)

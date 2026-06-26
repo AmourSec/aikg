@@ -18,7 +18,9 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 02-ai-workloads/inference-primer.md - 推理过程与原理
 - 02-ai-workloads/multimodal-primer.md - 多模态原理
 - 12-hardware-basics/index.md - 硬件基础
+- 12-hardware-basics/gpu-architecture-basics.md - GPU 架构基础
 - 12-hardware-basics/npu-basics.md - NPU 基础概念
+- 12-hardware-basics/gpu-npu-comparison.md - GPU 与 NPU 异同点
 - 12-hardware-basics/ascend-npu-models.md - 昇腾 NPU 型号与架构映射
 - 12-hardware-basics/ascend-910-series.md - Ascend 910 系列
 - 12-hardware-basics/ascend-950-series.md - Ascend 950 系列
@@ -144,7 +146,7 @@ URL: https://amoursec.github.io/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-04
+updated: 2026-06-26
 
 # AI Knowledge Graph
 
@@ -169,9 +171,9 @@ updated: 2026-06-04
 1. 从 `知识地图` 理解整体结构。
 2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`、`多模态原理`。
 3. 然后阅读 `AI 计算工作负载基础`，先用浅显方式理解模型、Transformer、训练、推理和多模态为什么成立。
-4. 做推理方向重点阅读 `硬件基础`、`推理系统与优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
+4. 做推理方向重点阅读 `硬件基础（GPU/NPU）`、`推理系统与优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
 5. 做训练和集群方向重点阅读 `训练系统与优化`、`集群、网络、存储与调度`、`可靠性、可观测性与故障复盘`。
-6. 做硬件或算子方向重点阅读 `硬件基础`、`Kernel、算子与编译优化`、`AI 加速器与计算架构`、`性能分析、Benchmark 与容量建模`。
+6. 做硬件或算子方向重点阅读 `硬件基础（GPU/NPU）`、`Kernel、算子与编译优化`、`AI 加速器与计算架构`、`性能分析、Benchmark 与容量建模`。
 7. 做论文复现和长期沉淀时，优先使用 `论文复现与系统案例`、`知识组织、模板与 AI 可读索引` 和模板。
 
 ---
@@ -183,7 +185,7 @@ URL: https://amoursec.github.io/knowledge-map/
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-06-26
 
 # AI 知识地图
 
@@ -221,14 +223,16 @@ updated: 2026-06-25
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../12-hardware-basics/">硬件基础</a>
       <ul>
-        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：NPU 与昇腾平台</a></li>
+        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：GPU / NPU / 昇腾平台</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/gpu-architecture-basics/">GPU 架构基础</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 基础概念</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/gpu-npu-comparison/">GPU 与 NPU 异同点</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">昇腾 NPU 型号与架构映射</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ascend-950-series/">Ascend 950 系列</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/cann-stack/">CANN 软件栈与开发入口</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ai-skills-sample/">NPU 相关 AI Skills 样例</a></li>
-        <li class="kg-node-note"><span>关键词：NPU / Ascend / Atlas / CANN / SocVersion / NpuArch / __NPU_ARCH__ / skills</span></li>
+        <li class="kg-node-note"><span>关键词：GPU / SM / warp / Tensor Core / NPU / Ascend / Atlas / CANN / SocVersion / NpuArch / __NPU_ARCH__ / skills</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -324,7 +328,7 @@ updated: 2026-06-25
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载基础 | 只做入门科普：讲清 AI 基础概念、Transformer、训练、推理和多模态原理。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) |
-| 具体硬件平台 | 研究 NPU、昇腾型号映射、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
+| 具体硬件平台 | 研究 GPU/NPU 执行模型、GPU 与 NPU 差异、昇腾型号映射、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
 | 推理系统 | 从请求生命周期出发，理解 Prefill/Decode、指标、batching、KV Cache、调度、部署架构、推理引擎和 RAG/Agent 负载。 | [3 推理系统与优化](03-inference-systems/index.md) |
 | 训练系统 | 从训练 step 出发，理解数据、batch、loss、backward、分布式通信、并行策略、显存、稳定性、优化器、后训练和 benchmark。 | [4 训练系统与优化](04-training-systems/index.md) |
 | 单机执行与编译 | 研究 Attention、Triton、TorchInductor、MLIR、TileLang、MegaKernel 如何决定 kernel 级性能和自动生成能力。 | [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) |
@@ -345,7 +349,9 @@ updated: 2026-06-25
 
 ### 硬件基础
 
+- GPU 入门：[GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md)
 - NPU 入门：[NPU 基础概念](12-hardware-basics/npu-basics.md)
+- GPU/NPU 对比：[GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md)
 - 昇腾平台：[昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列](12-hardware-basics/ascend-950-series.md)
 - 软件栈与 AI 输入：[CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)、[NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
 
@@ -427,8 +433,8 @@ updated: 2026-06-25
 | 想降低训练显存和提升稳定性 | [显存组成与优化总览](04-training-systems/memory-composition-optimization.md) -> [Activation Checkpointing](04-training-systems/activation-checkpointing.md) -> [混合精度训练](04-training-systems/mixed-precision-training.md) -> [训练稳定性与数值异常](04-training-systems/training-stability-numerical-debugging.md) |
 | 想做 Kernel 或编译优化 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) |
 | 想研究 MegaKernel / Persistent Kernel | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) |
-| 想做 NPU 或昇腾平台适配 | [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md) -> [CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
-| 想做 AI 加速器或硬件架构 | [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
+| 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md) -> [CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
+| 想做 AI 加速器或硬件架构 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) -> [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
 | 想建设稳定集群或实验平台 | [AI 集群架构总览](07-cluster-infra/ai-cluster-architecture-overview.md) -> [调度系统与资源队列](07-cluster-infra/scheduling-queues-resource-management.md) -> [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md) -> [RDMA 网络与 NCCL 拓扑](07-cluster-infra/rdma-network-nccl-topology-congestion.md) -> [存储、数据缓存与 Checkpoint](07-cluster-infra/storage-data-cache-checkpoint.md) |
 | 想做 Benchmark 和容量规划 | [性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md) -> [Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md) -> [推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md) -> [训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md) -> [成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md) |
 | 想做可靠性和事故复盘 | [AI 系统可观测性总览](09-reliability-observability/observability-overview-signals.md) -> [SLO、SLI、错误预算与告警策略](09-reliability-observability/slo-sli-error-budget-alerting.md) -> [AI 系统故障模式](09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage.md) -> [Incident Response、Runbook 与故障复盘](09-reliability-observability/incident-response-runbook-postmortem.md) |
@@ -440,7 +446,7 @@ updated: 2026-06-25
 | --- | --- | --- |
 | 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理 |
-| 硬件基础 | 2、5、6、8 | NPU 基础、昇腾型号映射、Ascend 910/950、CANN 软件栈、平台证据收集和 AI skill 样例 |
+| 硬件基础 | 2、5、6、8 | GPU 架构、NPU 基础、GPU/NPU 对比、昇腾型号映射、Ascend 910/950、CANN 软件栈、平台证据收集和 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
 | 4 训练系统与优化 | 2、5、6、7、8、硬件基础 | 数据、batch、loss、backward、并行策略、通信、显存、稳定性、优化器、后训练、checkpoint 和 benchmark |
 | 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化和自动调优 |
@@ -3433,22 +3439,24 @@ domain: hardware
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-06-26
 
 # 硬件基础
 
 本章把“具体硬件平台怎么认识、怎么适配、怎么沉淀成 AI 可用经验”单独拿出来。它和 [AI 加速器与计算架构](../06-accelerators-architecture/index.md) 的关系是：
 
 - `AI 加速器与计算架构` 讲通用原理：算力、带宽、存储层次、互连、功耗、workload mapping。
-- `硬件基础` 讲具体平台：型号怎么叫、软件栈怎么识别硬件、算子和模型服务适配时该收集哪些证据、怎么把经验写成 skill。
+- `硬件基础` 讲工程入口：GPU/NPU 的基本执行模型、具体平台型号怎么叫、软件栈怎么识别硬件、算子和模型服务适配时该收集哪些证据、怎么把经验写成 skill。
 
-第一版聚焦 NPU 和昇腾 Ascend/CANN 生态，只围绕服务器、训练和推理加速场景组织内容，不展开端侧移动芯片线索。
+本章围绕服务器、训练和推理加速场景组织内容。GPU 部分先讲通用架构视角，NPU 部分先讲基础概念，再进入昇腾 Ascend/CANN 生态；不展开端侧移动芯片线索。
 
 ## 本章结构
 
 | 主题 | 解决的问题 |
 | --- | --- |
+| [GPU 架构基础](gpu-architecture-basics.md) | GPU 为什么适合 AI 计算，SM、warp、SIMT、Tensor Core、显存层次和 kernel 执行是什么关系。 |
 | [NPU 基础概念](npu-basics.md) | NPU 是什么，为什么 AI 系统工程师需要理解 NPU 的执行模型和软件栈。 |
+| [GPU 与 NPU 异同点](gpu-npu-comparison.md) | GPU/NPU 在执行模型、软件栈、内存、算子覆盖、训练推理和迁移适配上有什么相同和不同。 |
 | [昇腾 NPU 型号与架构映射](ascend-npu-models.md) | 产品名、芯片型号、SocVersion、NpuArch、编译宏之间是什么关系。 |
 | [Ascend 910 系列](ascend-910-series.md) | 910/910B/910_93 这类服务器训练和推理平台应该重点关注什么。 |
 | [Ascend 950 系列](ascend-950-series.md) | 950PR/950DT 这类新平台的公开线索、学习重点和验证边界。 |
@@ -3457,11 +3465,12 @@ updated: 2026-06-25
 
 ## 学习顺序
 
-1. 先读 [NPU 基础概念](npu-basics.md)，建立“硬件不是孤立芯片，而是硬件、runtime、compiler、framework 和 workload 的组合”的视角。
-2. 再读 [昇腾 NPU 型号与架构映射](ascend-npu-models.md)，理解为什么不能只说“910B”或“950”，而要同时记录 CANN 版本、SocVersion、NpuArch 和实际设备信息。
-3. 根据手头平台选择 [Ascend 910 系列](ascend-910-series.md) 或 [Ascend 950 系列](ascend-950-series.md)。
-4. 如果要做迁移、算子、性能优化或问题诊断，继续读 [CANN 软件栈与开发入口](cann-stack.md)。
-5. 如果要让 AI 以后能复用团队经验，读 [NPU 相关 AI Skills 样例](ai-skills-sample.md)，并参考 `skills/` 目录中的样例写法。
+1. 先读 [GPU 架构基础](gpu-architecture-basics.md) 和 [NPU 基础概念](npu-basics.md)，建立“硬件不是孤立芯片，而是硬件、runtime、compiler、framework 和 workload 的组合”的视角。
+2. 再读 [GPU 与 NPU 异同点](gpu-npu-comparison.md)，理解哪些 GPU 经验可以迁移，哪些必须重新验证。
+3. 继续读 [昇腾 NPU 型号与架构映射](ascend-npu-models.md)，理解为什么不能只说“910B”或“950”，而要同时记录 CANN 版本、SocVersion、NpuArch 和实际设备信息。
+4. 根据手头平台选择 [Ascend 910 系列](ascend-910-series.md) 或 [Ascend 950 系列](ascend-950-series.md)。
+5. 如果要做迁移、算子、性能优化或问题诊断，继续读 [CANN 软件栈与开发入口](cann-stack.md)。
+6. 如果要让 AI 以后能复用团队经验，读 [NPU 相关 AI Skills 样例](ai-skills-sample.md)，并参考 `skills/` 目录中的样例写法。
 
 ## 写作边界
 
@@ -3472,6 +3481,167 @@ updated: 2026-06-25
 - `本地实验结论`：benchmark、profiler、错误复现、调优记录，必须带上硬件、软件版本和 workload。
 
 后续如果补充内部实验或实际部署经验，建议先写成 benchmark report、failure case 或 ADR，再抽象成可被 AI 调用的 skill。
+
+---
+
+# Document: GPU 架构基础
+
+Source: docs/12-hardware-basics/gpu-architecture-basics.md
+URL: https://amoursec.github.io/12-hardware-basics/gpu-architecture-basics/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-26
+
+# GPU 架构基础
+
+GPU 可以先理解成“为大规模并行吞吐设计的处理器”。CPU 更擅长复杂控制流、低延迟串行逻辑和操作系统管理；GPU 更擅长把同一种计算同时作用到大量数据上。AI 训练和推理里最核心的 MatMul、卷积、Attention、MLP、embedding lookup、normalization、sampling 和数据搬运，往往都能拆成大量相似的小任务，因此非常适合 GPU。
+
+但 GPU 不是“只要有算力峰值就会快”。模型真正跑起来时，性能取决于算子如何切分、数据如何复用、显存带宽是否够、kernel launch 是否太碎、Tensor Core 是否被用上、多卡通信是否卡住，以及框架、编译器和 runtime 是否走到了正确路径。
+
+## 一个最小视角
+
+```mermaid
+flowchart TB
+  A["模型或应用\nPyTorch / JAX / 推理引擎"] --> B["算子或图\nMatMul / Attention / LayerNorm / AllReduce"]
+  B --> C["库、编译器与 Runtime\ncuBLAS / cuDNN / NCCL / Triton / TensorRT / torch.compile"]
+  C --> D["GPU Kernel\nGrid / Block / Thread / Warp"]
+  D --> E["GPU 硬件执行\nSM / Tensor Core / Register / Shared Memory / L2 / HBM"]
+  E --> F["系统指标\n吞吐 / 延迟 / 显存 / 能耗 / 稳定性"]
+```
+
+这条链路说明：AI workload 到 GPU 不是一步到位的。模型代码先被拆成算子或图，再由库、编译器和 runtime 选择或生成 kernel，最后由 GPU 的硬件执行模型完成计算。
+
+## GPU 里最重要的几个层次
+
+| 层次 | 可以怎么理解 | 为什么重要 |
+| --- | --- | --- |
+| Host CPU | 提交任务、准备数据、调度进程、运行 Python 和服务逻辑。 | CPU 侧过慢会造成 GPU 等待，表现为利用率低或请求排队。 |
+| Kernel | 在 GPU 上运行的一段设备程序。 | AI 算子最终要落成一个或多个 kernel，kernel 数量和质量直接影响端到端性能。 |
+| Grid / Block / Thread | kernel 启动后被拆成很多 block，每个 block 包含很多 thread。 | 决定并行粒度、资源占用和调度方式。 |
+| SM | Streaming Multiprocessor，GPU 内部执行 thread block 的主要计算单元。 | SM 数量、调度、寄存器、shared memory 和 Tensor Core 决定单卡计算能力。 |
+| Warp | 一组线程以 SIMT 方式一起执行，NVIDIA GPU 通常以 warp 为基本调度单位。 | 分支发散、访存不连续、线程利用率低都会浪费 warp 执行效率。 |
+| Tensor Core | 面向矩阵乘累加的专用单元。 | Transformer 中大量 GEMM、Attention 和 MLP 性能依赖 Tensor Core 是否被充分使用。 |
+| Register | 每个线程私有的高速寄存器。 | 寄存器太少会限制性能，寄存器使用太多会降低 occupancy，甚至发生 spill。 |
+| Shared Memory | 同一个 block 内线程共享的片上高速存储。 | 常用于 tiling、数据复用、避免反复访问 HBM。 |
+| L2 Cache | GPU 上较大的共享缓存层。 | 影响跨 SM 数据复用、KV Cache 访问、权重读取和不规则访存效率。 |
+| HBM / Global Memory | GPU 外部高带宽显存，存放权重、activation、KV Cache 和临时 buffer。 | 大模型经常受 HBM 容量和带宽限制，而不只是受算力限制。 |
+| Interconnect | PCIe、NVLink、NVSwitch、RDMA 等 GPU 与 CPU、GPU 与 GPU、GPU 与网络之间的连接。 | 分布式训练、Tensor Parallel、Expert Parallel 和大规模推理会被通信链路约束。 |
+
+## SIMT、Warp 和 SM 是怎么一起工作的
+
+GPU 的并行性可以从三个层级理解：
+
+1. 一个 kernel 被启动成很多 thread block。
+2. 每个 thread block 被分配到某个 SM 上执行。
+3. SM 内部把线程组织成 warp，以 SIMT 方式发射指令。
+
+SIMT 可以理解为“很多线程执行同一条指令，但每个线程处理自己的数据”。例如一个矩阵乘 kernel 中，不同线程负责不同 tile 或 tile 内不同元素。这样做的好处是硬件可以用很高吞吐处理规则计算；代价是如果同一个 warp 里的线程走不同分支，或者访存地址非常分散，硬件效率会下降。
+
+对 AI 系统工程来说，理解 SIMT 不是为了手写所有 CUDA kernel，而是为了看懂几个常见现象：
+
+- 为什么 shape 太小或 batch 太小会让 GPU 吃不满。
+- 为什么很多小算子串起来会被 kernel launch overhead 和内存读写拖慢。
+- 为什么 fused kernel、MegaKernel 或 CUDA Graph 能减少调度和访存开销。
+- 为什么不规则 routing、稀疏访问、动态 shape 和长尾请求会让 GPU 利用率变差。
+
+## Tensor Core 为什么重要
+
+Transformer 的主要计算量集中在矩阵乘上，例如：
+
+- Q/K/V projection。
+- Attention score 的矩阵乘。
+- Attention output projection。
+- MLP 的 up/gate/down projection。
+- 训练时的 backward GEMM。
+- 大词表输出层的 logits 计算。
+
+Tensor Core 可以把小块矩阵乘累加用专用硬件高速执行。实际能不能用上 Tensor Core，取决于 dtype、shape、layout、stride、对齐、kernel 实现和编译路径。只把模型改成 FP16、BF16、TF32 或 FP8，并不自动保证所有热点都跑在最优路径上。
+
+判断 Tensor Core 是否真正发挥作用，不能只看理论 TFLOPS。更可靠的方法是结合 profiler 查看热点 kernel、矩阵 shape、achieved FLOP/s、memory bandwidth、occupancy、warp stall、Tensor Core 指标和端到端吞吐。
+
+## GPU 内存层次和数据复用
+
+GPU 上的计算通常不是“算力越大越快”，而是“数据能不能及时送到计算单元”。一个简化的数据路径是：
+
+```mermaid
+flowchart LR
+  A["HBM / Global Memory\n权重、activation、KV Cache"] --> B["L2 Cache"]
+  B --> C["Shared Memory / L1\nblock 内复用"]
+  C --> D["Register\n线程私有数据"]
+  D --> E["Tensor Core / CUDA Core\n计算"]
+  E --> D
+  D --> C
+  C --> B
+  B --> A
+```
+
+高性能 kernel 通常会尽量把数据从 HBM 读进来后，在片上多用几次。例如矩阵乘会把矩阵切成 tile，让一个 tile 在 shared memory 或 register 中反复参与计算。FlashAttention 的核心思想也可以从这个角度理解：不要把完整 attention matrix 写回 HBM，而是在片上分块计算 softmax 和加权求和，减少 HBM 读写。
+
+对 LLM 推理来说，Decode 阶段经常受 KV Cache 读取影响。每生成一个 token，都需要读取已有上下文的 K/V。上下文越长、并发越高，HBM 容量和带宽压力越大。这也是为什么 PagedAttention、KV Cache 量化、Prefix Cache、分离部署和调度策略会显著影响推理系统性能。
+
+## 从 AI 算子看 GPU
+
+| AI 负载 | GPU 上通常关注什么 |
+| --- | --- |
+| 大 GEMM / MLP | Tensor Core 利用率、shape 对齐、batch 大小、layout、epilogue fusion。 |
+| Attention Prefill | 大矩阵乘和 attention kernel，关注 FlashAttention、序列长度、mask、HBM 读写。 |
+| Attention Decode | 每步 token 计算小、KV 读取多，关注 KV Cache layout、batching、memory bandwidth 和调度。 |
+| LayerNorm / RMSNorm | 计算量小但读写频繁，关注 fusion 和 memory bandwidth。 |
+| Softmax / Sampling | 常是小算子或 memory-bound，关注 fusion、batching 和 host/device 同步。 |
+| MoE | router、token dispatch/combine、专家 GEMM、AllToAll 和负载不均。 |
+| 训练 backward | forward 热点会放大，额外关注 activation 保存/重算、gradient、optimizer state 和通信重叠。 |
+| 多卡通信 | NCCL、rank mapping、拓扑、bucket、overlap、网络拥塞和尾部 rank。 |
+
+## GPU 适合什么，不适合什么
+
+GPU 适合：
+
+- 大规模规则并行计算。
+- dense GEMM、卷积、batched matmul、FlashAttention 等成熟高性能算子。
+- 有足够 batch、sequence、head、hidden size 可以摊开并行度的 workload。
+- 需要成熟生态的训练、推理、profiling、通信和自定义 kernel 开发。
+
+GPU 不擅长或需要额外优化：
+
+- 极小 batch、极短序列、很多小算子串联的 workload。
+- 强动态控制流、分支发散、不规则稀疏访问。
+- 频繁 host/device 同步、频繁 kernel launch、CPU 侧服务逻辑过重。
+- Decode 阶段 KV Cache 带宽压力很高的长上下文和高并发负载。
+- 多机训练中通信、存储或数据输入已经成为瓶颈的情况。
+
+因此 GPU 优化不是单纯“换更强的卡”，而是要把 workload 映射到 GPU 擅长的形态上。
+
+## 常见优化方向
+
+| 方向 | 核心问题 | 典型手段 |
+| --- | --- | --- |
+| 让计算更像大块矩阵乘 | 是否有足够并行度和 Tensor Core 利用率。 | 合理 batch、shape 对齐、使用高性能 GEMM/Attention kernel。 |
+| 减少 HBM 读写 | 是否反复把中间结果写回显存。 | kernel fusion、FlashAttention、epilogue fusion、activation checkpointing。 |
+| 提高数据局部性 | 数据是否能在 register、shared memory、L2 中复用。 | tiling、layout 调整、coalesced access、KV Cache layout 优化。 |
+| 降低 launch 和调度开销 | 是否有大量小 kernel 或 CPU/GPU 同步。 | CUDA Graph、torch.compile、TensorRT、Triton fusion、persistent kernel。 |
+| 控制显存占用 | 权重、activation、KV、optimizer state 哪类对象占主导。 | 量化、ZeRO/FSDP、KV Cache 管理、checkpointing、offload。 |
+| 优化多卡通信 | 通信是否压过计算，拓扑是否匹配并行策略。 | NCCL 调优、rank mapping、bucket、overlap、并行策略重排。 |
+| 用 profiler 找证据 | 慢在哪里，是否与猜测一致。 | Nsight Systems、Nsight Compute、PyTorch Profiler、DCGM、benchmark manifest。 |
+
+## 最小记录清单
+
+做 GPU 相关实验时，至少记录：
+
+- GPU 型号、数量、拓扑、驱动、CUDA、cuDNN、NCCL、框架和推理引擎版本。
+- 模型、precision、batch、sequence length、输入输出长度分布、并发和并行策略。
+- 是否使用 TensorRT、Triton、torch.compile、CUDA Graph、FlashAttention、量化、KV Cache 优化或 fused kernel。
+- 显存峰值、GPU 利用率、HBM 带宽、SM/Tensor Core 利用率、通信耗时和端到端指标。
+- profiler trace、benchmark 原始数据、配置文件和可复现命令。
+
+这些信息后续可以进入 benchmark report、ADR、failure case 或 AI skill。没有这些上下文时，“GPU 利用率低”“显存不够”“吞吐不达标”都很难形成可复用结论。
+
+## 参考资料
+
+- [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html) 说明 CUDA 编程模型、thread hierarchy、memory hierarchy 和 SIMT 等基础概念。
+- [CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) 介绍内存访问、并行度、profiling 和性能优化实践。
+- [NVIDIA Deep Learning Performance - GPU Performance Background](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html) 解释深度学习 workload、GPU 执行和 Tensor Core 相关背景。
 
 ---
 
@@ -3552,6 +3722,189 @@ GPU 生态里很多工程经验围绕 CUDA、Tensor Core、NCCL、Triton、Tenso
 - profiler、benchmark 和错误日志的原始文件路径。
 
 这些信息后续可以直接进入 benchmark report、failure case、ADR 或 AI skill。
+
+---
+
+# Document: GPU 与 NPU 异同点
+
+Source: docs/12-hardware-basics/gpu-npu-comparison.md
+URL: https://amoursec.github.io/12-hardware-basics/gpu-npu-comparison/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-26
+
+# GPU 与 NPU 异同点
+
+GPU 和 NPU 都可以用来加速 AI 计算，但它们不是简单的“谁替代谁”。更合理的理解是：GPU 是通用并行处理器发展出来的 AI 加速平台，NPU 是围绕神经网络计算目标设计的一类 AI 加速器。两者都要处理矩阵乘、Attention、数据搬运、显存、通信、编译和 runtime，只是硬件组织方式、软件栈入口和工程边界不同。
+
+评价 GPU 或 NPU 时，不能只看峰值算力。真正要问的是：目标模型、目标 shape、目标精度、目标并发、目标并行策略和目标软件栈，能不能稳定映射到这类硬件的高效路径上。
+
+## 先给一个简化结论
+
+| 维度 | GPU | NPU |
+| --- | --- | --- |
+| 核心定位 | 通用并行吞吐处理器，后来通过 Tensor Core、AI 库和编译栈强化深度学习。 | 面向神经网络和 AI workload 的专用或半专用加速器。 |
+| 常见执行模型 | SIMT、warp、SM、CUDA core、Tensor Core。 | 矩阵/向量/标量单元、片上 buffer、DMA、图/算子/编译器驱动的执行模型。 |
+| 软件入口 | CUDA、cuDNN、cuBLAS、NCCL、TensorRT、Triton、PyTorch/JAX 等生态成熟。 | 厂商软件栈和框架适配更关键，例如 CANN、Ascend C、torch_npu、图编译和算子库。 |
+| 优势场景 | 研究原型、自定义 kernel、训练生态、大量开源框架和工具链。 | 支持路径明确的模型推理、训练、专用算子、能效优化和平台化部署。 |
+| 主要风险 | 成本、功耗、显存、通信、供应和多租户治理。 | 算子覆盖、模型迁移、编译路径、工具链成熟度、生态兼容和版本耦合。 |
+| 判断方法 | benchmark + profiler + workload manifest。 | benchmark + profiler + 软件栈/架构证据 + workload manifest。 |
+
+这张表不是绝对规律。不同厂商、不同代际、不同软件版本之间差异很大。它只提供入门时的工程视角。
+
+## 它们相同的地方
+
+GPU 和 NPU 在 AI 系统里有很多共同问题：
+
+- 都要把模型图拆成算子、kernel 或硬件任务。
+- 都依赖矩阵乘、Attention、归一化、激活函数、数据搬运和通信。
+- 都有“片上高速存储 + 外部高带宽内存”的层次。
+- 都需要考虑 batch、sequence length、hidden size、head、dtype、layout 和并行策略。
+- 都可能被 HBM 带宽、显存容量、通信、CPU 侧调度、数据输入或小算子开销限制。
+- 都需要 profiler，而不是只根据理论峰值判断性能。
+- 都需要记录硬件型号、软件版本、模型配置、精度、shape 和 benchmark 原始数据。
+
+因此，学习 GPU/NPU 的第一原则是：不要把硬件当成孤立芯片，要把它放在 workload、compiler、runtime、framework、kernel 和系统指标的链路里理解。
+
+## 执行模型差异
+
+GPU 的典型抽象是：
+
+```mermaid
+flowchart TB
+  A["Kernel Launch"] --> B["Grid"]
+  B --> C["Thread Blocks"]
+  C --> D["SM"]
+  D --> E["Warps / SIMT"]
+  D --> F["Tensor Core / CUDA Core"]
+  D --> G["Register / Shared Memory"]
+  G --> H["L2 / HBM"]
+```
+
+这个模型强调大量 thread 以 SIMT 方式并行执行。程序员或编译器需要关心 block、warp、occupancy、register、shared memory、coalesced access、Tensor Core tile 等问题。GPU 很适合把规则计算摊平成大量并行线程。
+
+NPU 的具体结构因厂商而异，但入门时可以抽象成：
+
+```mermaid
+flowchart TB
+  A["模型图 / 算子 / Kernel"] --> B["编译器与 Runtime"]
+  B --> C["硬件任务调度"]
+  C --> D["矩阵 / 向量 / 标量计算单元"]
+  C --> E["片上 Buffer / Cache / Scratchpad"]
+  C --> F["DMA / 数据搬运"]
+  E --> G["HBM / 外部内存"]
+  F --> G
+```
+
+这个模型强调算子、图编译、tiling、数据搬运和片上存储配合。很多 NPU 优化问题不是“写很多 thread”，而是“让编译器和算子实现把数据搬运、片上复用和计算流水线组织好”。
+
+## 编程模型差异
+
+| 问题 | GPU 上通常怎么处理 | NPU 上通常怎么处理 |
+| --- | --- | --- |
+| 写自定义算子 | CUDA、Triton、CUTLASS、TVM、PyTorch extension。 | 厂商 DSL / 算子开发框架，例如 Ascend C、TBE、图编译扩展等。 |
+| 使用高性能库 | cuBLAS、cuDNN、NCCL、TensorRT、FlashAttention、xFormers。 | CANN 算子库、图模式、框架适配层、厂商推理/训练优化库。 |
+| 接入 PyTorch | CUDA backend 路径成熟，很多算子默认支持。 | 依赖 torch_npu 或等价 backend，必须关注算子支持、fallback 和版本匹配。 |
+| 编译优化 | torch.compile、TorchInductor、Triton、TensorRT、CUDA Graph。 | 图编译、算子选择、tiling、NpuArch/SocVersion、CANN 版本和平台能力。 |
+| 多卡通信 | NCCL、NVLink/NVSwitch、InfiniBand/RDMA、rank mapping。 | 厂商通信库、集群拓扑、HCCL/等价通信层、并行策略适配。 |
+| Profiling | Nsight Systems、Nsight Compute、PyTorch Profiler、DCGM。 | CANN profiler、framework profiler、runtime log、算子 trace、系统监控。 |
+
+GPU 生态的强项是开放工具和通用开发经验非常丰富。NPU 生态的关键是平台软件栈和硬件能力绑定更紧，做工程时要更重视“当前版本到底支持什么、走了哪条路径、是否发生 fallback”。
+
+## 内存和数据搬运差异
+
+GPU 优化常围绕 register、shared memory、L1/L2、HBM、coalesced access、Tensor Core tile 和 occupancy 展开。程序员写 CUDA/Triton 时，经常直接控制线程如何读写、tile 如何切、数据如何在 shared memory 和 register 中复用。
+
+NPU 优化也关注 HBM、片上存储和数据搬运，但很多时候会通过图编译、算子 tiling、DMA、pipeline 和专用 buffer 管理体现出来。对使用者来说，关键证据往往来自编译日志、算子选择、tiling 配置、profiler timeline 和 runtime 事件。
+
+两者共同的核心问题是：数据从外部内存搬到计算单元的代价很高，必须尽量复用。无论 GPU 还是 NPU，如果一个 workload 反复读写 HBM、频繁产生临时 tensor、无法 fusion，或者 KV Cache 读取量太大，都可能出现“算力很高但跑不快”的情况。
+
+## 算子覆盖和模型迁移差异
+
+模型在 GPU 上能跑，不代表迁移到 NPU 就天然能跑快；反过来，NPU 上有专门优化路径的模型，也不代表 GPU 一定更差。迁移时重点看：
+
+- 目标模型的主要算子是否被支持。
+- Attention、RMSNorm、RoPE、GEMM、MoE、量化、KV Cache 等热点是否有高效实现。
+- dynamic shape、变长 batch、长上下文、稀疏 attention、tool calling 或多模态输入是否走到支持路径。
+- dtype 是否一致，例如 FP16、BF16、FP8、INT8、INT4，以及 accumulator 精度和 scale 处理是否一致。
+- 是否存在 silent fallback，例如某些算子回到 CPU、低效通用实现或未融合路径。
+- profiler 看到的热点是否与模型理论计算量一致。
+
+迁移工作最怕只看“框架接口兼容”。AI Infra 要看的是真实执行路径和性能证据。
+
+## 推理场景怎么比较
+
+| 推理问题 | GPU 视角 | NPU 视角 |
+| --- | --- | --- |
+| TTFT | Prefill GEMM、Attention kernel、batching、Tensor Core、CPU/GPU 调度。 | 图编译、Prefill 算子支持、模型 shape、CANN/runtime 路径、片上复用。 |
+| TPOT | Decode 小步计算、KV Cache bandwidth、scheduler、CUDA Graph、persistent kernel。 | KV Cache layout、Decode kernel、调度、图模式、多流、平台优化路径。 |
+| 并发 | PagedAttention、continuous batching、显存碎片、KV Cache 管理。 | KV Cache 管理、batching、runtime 队列、模型服务框架适配。 |
+| 量化 | TensorRT-LLM、AWQ/GPTQ/FP8/INT8 kernel、scale overhead。 | 平台支持的低精度路径、量化算子覆盖、scale/layout 约束。 |
+| 多机 | TP/PP/EP、NCCL、NVLink/RDMA、rank mapping。 | 平台通信库、拓扑、并行策略、通信与计算重叠。 |
+
+推理系统里最实用的比较方式是固定 workload：模型、输入输出长度分布、并发、SLO、precision、batching 策略和缓存策略都要一致，然后比较 goodput、TTFT、TPOT、p99、显存、功耗和稳定性。
+
+## 训练场景怎么比较
+
+训练比推理更容易暴露系统瓶颈，因为它同时包含 forward、loss、backward、gradient sync、optimizer、checkpoint 和数据输入。
+
+GPU 训练生态成熟，常见工具链包括 PyTorch DDP/FSDP、Megatron-LM、DeepSpeed、NCCL、CUDA profiler 和大量开源 kernel。NPU 训练能否顺利落地，重点看框架适配、混合精度、分布式通信、算子覆盖、checkpoint、profiling、错误诊断和版本兼容。
+
+比较训练平台时，不要只看单卡算力。至少要比较：
+
+- tokens/s/GPU、step time、MFU 或等价利用率指标。
+- global batch、micro-batch、sequence length、parallel strategy。
+- 显存组成：parameter、gradient、optimizer state、activation、temporary buffer。
+- 通信占比：AllReduce、ReduceScatter、AllGather、AllToAll。
+- 数据输入和 checkpoint 是否成为瓶颈。
+- 故障恢复、长稳训练和可复现能力。
+
+## 常见误区
+
+| 误区 | 更准确的说法 |
+| --- | --- |
+| GPU 是通用的，NPU 是固定不可编程的。 | 很多 NPU 也可编程，但编程入口、编译路径、支持边界和生态成熟度不同。 |
+| NPU 一定比 GPU 更省电。 | 能效必须看 workload、batch、precision、利用率、功耗墙和端到端系统，不是看名字。 |
+| GPU 上的优化经验可以直接照搬到 NPU。 | 原理可迁移，例如 tiling、fusion、数据复用；具体 API、工具、限制和最优路径要重新验证。 |
+| 只要算子支持，性能就会好。 | 支持不等于高效，还要看 shape、layout、dtype、fusion、内存和调度。 |
+| 只看单卡 benchmark 就能决定平台。 | 真实训练/推理还涉及多卡通信、服务调度、故障率、版本治理、成本和供应。 |
+
+## 选型或迁移时的检查清单
+
+1. 明确 workload：训练还是推理，模型类型、参数量、上下文长度、输入输出长度分布、并发和 SLO。
+2. 明确软件栈：框架、runtime、编译器、推理引擎、通信库、driver 和容器版本。
+3. 列出热点算子：GEMM、Attention、Norm、RoPE、MoE、量化、KV Cache、optimizer。
+4. 验证支持路径：是否有高性能 kernel，是否发生 fallback，是否支持目标 dtype 和 dynamic shape。
+5. 做最小 benchmark：先跑单算子和小模型，再跑端到端 workload。
+6. 做 profiler 归因：确认瓶颈是计算、显存、通信、调度、CPU、数据输入还是存储。
+7. 做长稳实验：看性能波动、错误率、内存泄漏、温度功耗、恢复和监控。
+8. 沉淀证据：把硬件、软件、workload、benchmark 和结论写入 report、ADR 或 AI skill。
+
+## 什么时候更偏向 GPU，什么时候更偏向 NPU
+
+更偏向 GPU 的情况：
+
+- 需要快速研究原型、频繁改模型结构或写自定义 kernel。
+- 依赖大量现成 CUDA/Triton/TensorRT/NCCL 生态能力。
+- 训练框架和开源实现主要围绕 GPU 优化。
+- 团队已有成熟 GPU benchmark、profiling、运维和故障处理体系。
+
+更偏向 NPU 的情况：
+
+- 目标模型和算子已经在 NPU 软件栈中有明确高性能支持路径。
+- 平台供应、能效、成本、国产化、集成形态或业务约束要求 NPU。
+- 团队愿意围绕 CANN/厂商工具链建设迁移、算子、profiling 和 skill 沉淀。
+- 推理服务或训练任务形态相对稳定，可以通过平台化优化获得持续收益。
+
+最终选择不是口号问题，而是证据问题。对 AI Infra 来说，GPU/NPU 对比的输出应该是一份可复现的 benchmark report 或 ADR，而不是“某硬件更先进”的一句话。
+
+## 参考资料
+
+- [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html) 说明 GPU/CUDA 的 thread hierarchy、memory hierarchy、SIMT 和编程模型。
+- [NVIDIA Deep Learning Performance - GPU Performance Background](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html) 提供深度学习 workload 和 GPU 执行背景。
+- [CANNBot Skills 项目主页](https://gitcode.com/cann/cannbot-skills) 展示了面向昇腾/CANN 生态的模型迁移、算子、编译、profiling 和 skill 组织方式。
 
 ---
 
