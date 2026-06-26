@@ -17,6 +17,13 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 02-ai-workloads/training-primer.md - 训练过程与原理
 - 02-ai-workloads/inference-primer.md - 推理过程与原理
 - 02-ai-workloads/multimodal-primer.md - 多模态原理
+- 12-hardware-basics/index.md - 硬件基础
+- 12-hardware-basics/npu-basics.md - NPU 基础概念
+- 12-hardware-basics/ascend-npu-models.md - 昇腾 NPU 型号与架构映射
+- 12-hardware-basics/ascend-910-series.md - Ascend 910 系列
+- 12-hardware-basics/ascend-950-series.md - Ascend 950 系列
+- 12-hardware-basics/cann-stack.md - CANN 软件栈与开发入口
+- 12-hardware-basics/ai-skills-sample.md - NPU 相关 AI Skills 样例
 - 03-inference-systems/index.md - 推理系统与优化
 - 03-inference-systems/request-lifecycle.md - 推理请求生命周期
 - 03-inference-systems/prefill-decode.md - Prefill 与 Decode
@@ -79,13 +86,6 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 05-kernels-compilers/mlir-ai-compiler-ir.md - MLIR 与 AI 编译 IR
 - 05-kernels-compilers/tilelang.md - TileLang：面向 AI Kernel 的 Tile 编程模型
 - 05-kernels-compilers/megakernel-persistent-automatic-generation.md - MegaKernel、Persistent Kernel 与自动生成
-- 12-hardware-basics/index.md - 硬件基础
-- 12-hardware-basics/npu-basics.md - NPU 基础概念
-- 12-hardware-basics/ascend-npu-models.md - 昇腾 NPU 型号与架构映射
-- 12-hardware-basics/ascend-910-series.md - Ascend 910 系列
-- 12-hardware-basics/ascend-950-series.md - Ascend 950 系列
-- 12-hardware-basics/cann-stack.md - CANN 软件栈与开发入口
-- 12-hardware-basics/ai-skills-sample.md - NPU 相关 AI Skills 样例
 - 06-accelerators-architecture/index.md - AI 加速器与计算架构
 - 06-accelerators-architecture/performance-model-roofline.md - AI 加速器性能模型：算力、带宽与 Roofline
 - 06-accelerators-architecture/compute-units-simt-tensorcore.md - 计算单元：SIMT、Tensor Core 与矩阵引擎
@@ -169,9 +169,9 @@ updated: 2026-06-04
 1. 从 `知识地图` 理解整体结构。
 2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`、`多模态原理`。
 3. 然后阅读 `AI 计算工作负载基础`，先用浅显方式理解模型、Transformer、训练、推理和多模态为什么成立。
-4. 做推理方向重点阅读 `推理系统与优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
+4. 做推理方向重点阅读 `硬件基础`、`推理系统与优化`、`Kernel、算子与编译优化`、`性能分析、Benchmark 与容量建模`。
 5. 做训练和集群方向重点阅读 `训练系统与优化`、`集群、网络、存储与调度`、`可靠性、可观测性与故障复盘`。
-6. 做硬件或算子方向重点阅读 `Kernel、算子与编译优化`、`硬件基础`、`AI 加速器与计算架构`、`性能分析、Benchmark 与容量建模`。
+6. 做硬件或算子方向重点阅读 `硬件基础`、`Kernel、算子与编译优化`、`AI 加速器与计算架构`、`性能分析、Benchmark 与容量建模`。
 7. 做论文复现和长期沉淀时，优先使用 `论文复现与系统案例`、`知识组织、模板与 AI 可读索引` 和模板。
 
 ---
@@ -219,6 +219,19 @@ updated: 2026-06-25
       </ul>
     </section>
     <section class="kg-mindmap-branch">
+      <a class="kg-branch-title" href="../12-hardware-basics/">硬件基础</a>
+      <ul>
+        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：NPU 与昇腾平台</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 基础概念</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">昇腾 NPU 型号与架构映射</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-950-series/">Ascend 950 系列</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/cann-stack/">CANN 软件栈与开发入口</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ai-skills-sample/">NPU 相关 AI Skills 样例</a></li>
+        <li class="kg-node-note"><span>关键词：NPU / Ascend / Atlas / CANN / SocVersion / NpuArch / __NPU_ARCH__ / skills</span></li>
+      </ul>
+    </section>
+    <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../03-inference-systems/">推理系统</a>
       <ul>
         <li class="kg-node-main"><a href="../03-inference-systems/">3 推理系统与优化</a></li>
@@ -258,19 +271,6 @@ updated: 2026-06-25
         <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">TileLang</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">MegaKernel 与 Persistent Kernel</a></li>
         <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Persistent Kernel / MegaKernel</span></li>
-      </ul>
-    </section>
-    <section class="kg-mindmap-branch">
-      <a class="kg-branch-title" href="../12-hardware-basics/">硬件基础</a>
-      <ul>
-        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：NPU 与昇腾平台</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 基础概念</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">昇腾 NPU 型号与架构映射</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-950-series/">Ascend 950 系列</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/cann-stack/">CANN 软件栈与开发入口</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ai-skills-sample/">NPU 相关 AI Skills 样例</a></li>
-        <li class="kg-node-note"><span>关键词：NPU / Ascend / Atlas / CANN / SocVersion / NpuArch / __NPU_ARCH__ / skills</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -324,10 +324,10 @@ updated: 2026-06-25
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载基础 | 只做入门科普：讲清 AI 基础概念、Transformer、训练、推理和多模态原理。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) |
+| 具体硬件平台 | 研究 NPU、昇腾型号映射、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
 | 推理系统 | 从请求生命周期出发，理解 Prefill/Decode、指标、batching、KV Cache、调度、部署架构、推理引擎和 RAG/Agent 负载。 | [3 推理系统与优化](03-inference-systems/index.md) |
 | 训练系统 | 从训练 step 出发，理解数据、batch、loss、backward、分布式通信、并行策略、显存、稳定性、优化器、后训练和 benchmark。 | [4 训练系统与优化](04-training-systems/index.md) |
 | 单机执行与编译 | 研究 Attention、Triton、TorchInductor、MLIR、TileLang、MegaKernel 如何决定 kernel 级性能和自动生成能力。 | [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) |
-| 具体硬件平台 | 研究 NPU、昇腾型号映射、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
 | 架构与集群 | 研究计算单元、存储层次、互连、功耗、架构取舍，以及集群调度、网络、存储和资源治理。 | [6 AI 加速器与计算架构](06-accelerators-architecture/index.md)、[7 集群、网络、存储与调度](07-cluster-infra/index.md) |
 | 度量与沉淀 | 用 Benchmark、Profiling、容量模型、可靠性、故障复盘、论文复现和 ADR 把经验变成可复用知识。 | [8 性能分析、Benchmark 与容量建模](08-benchmark-capacity/index.md)、[9 可靠性、可观测性与故障复盘](09-reliability-observability/index.md)、[10 论文复现与系统案例](10-papers-cases/index.md)、[11 知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) |
 
@@ -342,6 +342,12 @@ updated: 2026-06-25
 - 基础概念：[AI 基础概念](02-ai-workloads/ai-fundamentals.md)
 - 模型原理：[Transformer 流程与原理](02-ai-workloads/transformer.md)
 - 任务流程：[训练过程与原理](02-ai-workloads/training-primer.md)、[推理过程与原理](02-ai-workloads/inference-primer.md)、[多模态原理](02-ai-workloads/multimodal-primer.md)
+
+### 硬件基础
+
+- NPU 入门：[NPU 基础概念](12-hardware-basics/npu-basics.md)
+- 昇腾平台：[昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列](12-hardware-basics/ascend-950-series.md)
+- 软件栈与 AI 输入：[CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)、[NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
 
 ### 3 推理系统与优化
 
@@ -368,12 +374,6 @@ updated: 2026-06-25
 - Kernel 编程：[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)
 - 编译栈与 IR：[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md)
 - 激进融合与自动生成：[MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md)
-
-### 硬件基础
-
-- NPU 入门：[NPU 基础概念](12-hardware-basics/npu-basics.md)
-- 昇腾平台：[昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列](12-hardware-basics/ascend-950-series.md)
-- 软件栈与 AI 输入：[CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)、[NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
 
 ### 6 AI 加速器与计算架构
 
@@ -440,10 +440,10 @@ updated: 2026-06-25
 | --- | --- | --- |
 | 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理 |
+| 硬件基础 | 2、5、6、8 | NPU 基础、昇腾型号映射、Ascend 910/950、CANN 软件栈、平台证据收集和 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
 | 4 训练系统与优化 | 2、5、6、7、8、硬件基础 | 数据、batch、loss、backward、并行策略、通信、显存、稳定性、优化器、后训练、checkpoint 和 benchmark |
 | 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化和自动调优 |
-| 硬件基础 | 2、5、6、8 | NPU 基础、昇腾型号映射、Ascend 910/950、CANN 软件栈、平台证据收集和 AI skill 样例 |
 | 6 AI 加速器与计算架构 | 2、5、8、硬件基础 | 计算、存储、互连、精度、功耗、体系结构取舍和 workload mapping |
 | 7 集群、网络、存储与调度 | 3、4、6、8 | 资源调度、拓扑、网络、存储、环境、隔离、容量治理和节点生命周期 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |
@@ -3422,6 +3422,568 @@ flowchart TD
 - 图片、音频、视频为什么要先变成向量。
 - 对齐层为什么必要。
 - 文生图、文生音频、文生视频为什么理论上可行。
+
+---
+
+# Document: 硬件基础
+
+Source: docs/12-hardware-basics/index.md
+URL: https://amoursec.github.io/12-hardware-basics/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# 硬件基础
+
+本章把“具体硬件平台怎么认识、怎么适配、怎么沉淀成 AI 可用经验”单独拿出来。它和 [AI 加速器与计算架构](../06-accelerators-architecture/index.md) 的关系是：
+
+- `AI 加速器与计算架构` 讲通用原理：算力、带宽、存储层次、互连、功耗、workload mapping。
+- `硬件基础` 讲具体平台：型号怎么叫、软件栈怎么识别硬件、算子和模型服务适配时该收集哪些证据、怎么把经验写成 skill。
+
+第一版聚焦 NPU 和昇腾 Ascend/CANN 生态，只围绕服务器、训练和推理加速场景组织内容，不展开端侧移动芯片线索。
+
+## 本章结构
+
+| 主题 | 解决的问题 |
+| --- | --- |
+| [NPU 基础概念](npu-basics.md) | NPU 是什么，为什么 AI 系统工程师需要理解 NPU 的执行模型和软件栈。 |
+| [昇腾 NPU 型号与架构映射](ascend-npu-models.md) | 产品名、芯片型号、SocVersion、NpuArch、编译宏之间是什么关系。 |
+| [Ascend 910 系列](ascend-910-series.md) | 910/910B/910_93 这类服务器训练和推理平台应该重点关注什么。 |
+| [Ascend 950 系列](ascend-950-series.md) | 950PR/950DT 这类新平台的公开线索、学习重点和验证边界。 |
+| [CANN 软件栈与开发入口](cann-stack.md) | CANN、Ascend C、torch_npu、算子开发、模型推理优化和 profiling 如何连接。 |
+| [NPU 相关 AI Skills 样例](ai-skills-sample.md) | 什么内容适合写成 AI skill，以及本仓库如何给后续工作打样。 |
+
+## 学习顺序
+
+1. 先读 [NPU 基础概念](npu-basics.md)，建立“硬件不是孤立芯片，而是硬件、runtime、compiler、framework 和 workload 的组合”的视角。
+2. 再读 [昇腾 NPU 型号与架构映射](ascend-npu-models.md)，理解为什么不能只说“910B”或“950”，而要同时记录 CANN 版本、SocVersion、NpuArch 和实际设备信息。
+3. 根据手头平台选择 [Ascend 910 系列](ascend-910-series.md) 或 [Ascend 950 系列](ascend-950-series.md)。
+4. 如果要做迁移、算子、性能优化或问题诊断，继续读 [CANN 软件栈与开发入口](cann-stack.md)。
+5. 如果要让 AI 以后能复用团队经验，读 [NPU 相关 AI Skills 样例](ai-skills-sample.md)，并参考 `skills/` 目录中的样例写法。
+
+## 写作边界
+
+硬件平台文档要谨慎区分三类信息：
+
+- `公开资料`：产品发布、路线图、媒体报道、开源仓库 README，适合做背景，不适合直接当作性能承诺。
+- `软件栈可验证信息`：CANN、driver、runtime、framework、platform config、profiling 输出，适合写入工程判断。
+- `本地实验结论`：benchmark、profiler、错误复现、调优记录，必须带上硬件、软件版本和 workload。
+
+后续如果补充内部实验或实际部署经验，建议先写成 benchmark report、failure case 或 ADR，再抽象成可被 AI 调用的 skill。
+
+---
+
+# Document: NPU 基础概念
+
+Source: docs/12-hardware-basics/npu-basics.md
+URL: https://amoursec.github.io/12-hardware-basics/npu-basics/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# NPU 基础概念
+
+NPU 可以先理解成“为神经网络计算设计的加速器”。它不是只会运行某一个模型的固定电路，而是通过软件栈把模型中的矩阵乘、Attention、归一化、激活函数、数据搬运和通信等操作，映射到专门的计算单元和存储层次上。
+
+对 AI Infra 来说，NPU 的关键不是名字，而是它能否把目标 workload 稳定、高效、正确地跑起来。
+
+## 一个最小视角
+
+```mermaid
+flowchart TB
+  A["模型或应用\nPyTorch / 推理引擎 / 训练框架"] --> B["图、算子或 Kernel\nMatMul / Attention / LayerNorm / AllReduce"]
+  B --> C["编译器与 Runtime\n图优化 / 算子选择 / 内存规划 / 调度"]
+  C --> D["NPU 执行\n计算单元 / 本地存储 / HBM / DMA / 通信"]
+  D --> E["系统指标\n吞吐 / 延迟 / 显存 / 能耗 / 正确性 / 稳定性"]
+```
+
+这条链路说明一件事：模型代码能不能快，不只取决于 NPU 峰值算力，还取决于编译器能不能生成合适的 kernel，runtime 能不能把内存和调度安排好，框架能不能把模型图落到硬件支持的路径上。
+
+## NPU 里常见的硬件概念
+
+| 概念 | 可以怎么理解 | 为什么重要 |
+| --- | --- | --- |
+| 计算单元 | 执行矩阵、向量、标量或专用 AI 指令的核心资源。 | 决定 MatMul、Attention、MLP、LayerNorm 等算子的计算上限。 |
+| 本地存储 | 靠近计算单元的小容量高速存储，如片上 buffer、cache 或专用 scratchpad。 | 决定数据能否被反复复用，影响算子 tiling 和 fusion。 |
+| HBM / 外部显存 | 存放模型权重、activation、KV Cache、临时 buffer 的大容量高带宽内存。 | 大模型经常受显存容量和带宽限制。 |
+| 数据搬运 | 在 HBM、片上存储和计算单元之间移动数据。 | 很多 kernel 慢不是因为算不动，而是数据没有及时送到。 |
+| 编译器 | 把图、算子或 DSL 降低到硬件可执行形式。 | 影响算子覆盖、fusion、layout、dynamic shape 和 fallback。 |
+| Runtime | 管理设备、stream、内存、执行队列和错误状态。 | 影响端到端稳定性、并发、profiling 和故障诊断。 |
+| 通信 | 多卡之间交换 tensor、梯度、KV、专家 token 或中间状态。 | 分布式训练、MoE、长上下文推理都会被通信放大。 |
+
+## NPU 与 GPU 的学习差异
+
+GPU 生态里很多工程经验围绕 CUDA、Tensor Core、NCCL、Triton、TensorRT 展开。NPU 生态里也有类似层次，但名字、工具、编译路径和最佳实践会不同。学习 NPU 时，不要直接把 GPU 经验逐字搬过去，而要抓住几个对应关系：
+
+| GPU 侧常见问题 | NPU 侧也要问的问题 |
+| --- | --- |
+| 这个算子有没有高效 kernel？ | 这个算子在 CANN/框架/推理引擎里是否有支持路径，是否发生 fallback。 |
+| kernel 是 compute-bound 还是 memory-bound？ | 片上 buffer、HBM、数据搬运和 tiling 是否匹配该算子的 shape。 |
+| 多卡通信是否拖慢训练？ | 对应通信库、拓扑、rank mapping、parallel strategy 是否适合该 NPU 平台。 |
+| profiler 看到的瓶颈在哪里？ | CANN / framework / system profiler 能否把图、算子、kernel、通信和 runtime 事件串起来。 |
+| 这个优化能否复现？ | 是否记录 CANN、driver、runtime、framework、芯片型号、SocVersion、NpuArch 和 workload。 |
+
+## 为什么 AI Infra 要理解 NPU
+
+做模型或算法时，可能只关心“能不能训练出更好的模型”。做 AI Infra 时，必须关心另一组问题：
+
+- 同一个模型，为什么在不同硬件上吞吐差很多？
+- 同一个 batch 和 sequence length，为什么某个平台显存先爆？
+- 为什么某个算子在 GPU 上快，在 NPU 上需要改写或融合？
+- 为什么模型迁移后精度对不上，或者运行到某个 shape 才报错？
+- 为什么 CANN、driver、framework 或推理引擎版本变化后性能回退？
+
+这些问题都不是“读芯片宣传页”能解决的，必须把硬件能力、软件栈路径和 workload 证据连起来。
+
+## 最小记录清单
+
+只要开始做 NPU 相关实验，建议每次记录：
+
+- 设备型号、数量、拓扑和 `npu-smi` 或等价工具输出。
+- CANN Toolkit / Runtime / Driver 版本。
+- 框架版本，例如 PyTorch、torch_npu、推理引擎版本。
+- SocVersion、NpuArch、编译目标和是否存在架构条件分支。
+- 模型、精度、batch、sequence length、并行策略、输入输出长度分布。
+- 是否启用图模式、融合、量化、KV Cache、通信重叠或自定义算子。
+- profiler、benchmark 和错误日志的原始文件路径。
+
+这些信息后续可以直接进入 benchmark report、failure case、ADR 或 AI skill。
+
+---
+
+# Document: 昇腾 NPU 型号与架构映射
+
+Source: docs/12-hardware-basics/ascend-npu-models.md
+URL: https://amoursec.github.io/12-hardware-basics/ascend-npu-models/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# 昇腾 NPU 型号与架构映射
+
+做昇腾平台适配时，最容易混淆的是“产品名、芯片型号、软件识别名、架构号、编译宏”这几层。工程上不能只写“910B”或“950”，因为同一代产品可能有多个子型号，同一个架构号也可能覆盖多个具体设备形态。
+
+## 五层命名
+
+| 层次 | 示例 | 作用 |
+| --- | --- | --- |
+| 产品或平台系列 | Atlas A2、Atlas A3、Atlas A5 | 面向产品和系统交付的名字，适合沟通硬件平台大类。 |
+| 芯片或 SKU 名 | Ascend910B、Ascend910_93、Ascend950PR、Ascend950DT | 面向实际设备、卡、服务器或平台配置的名字。 |
+| SocVersion | `ASCEND910B`、`ASCEND950` | 软件栈识别 SoC 版本时常见的枚举或字符串。 |
+| NpuArch | `DAV_2201`、`DAV_3510` | 更接近架构代际和指令/微架构能力的标识。 |
+| 编译宏或目录简写 | `__NPU_ARCH__=2201`、`arch22` | 用于条件编译、架构特化和算子工程目录组织。 |
+
+这几层不是一一对应关系。一个 NpuArch 可能对应多个芯片型号；一个产品系列也可能因为卡形态、内存、频率、核心数量不同而表现不同。
+
+## 当前重点映射
+
+下表是面向服务器训练、推理和 AI Infra 学习的简化映射。它用于建立方向感，不替代 CANN 文档、platform config、runtime API 和实际设备查询。
+
+| 平台线索 | 常见用途 | 软件识别重点 | 学习重点 |
+| --- | --- | --- | --- |
+| Ascend 910 | 早期训练平台 | `ASCEND910` / `DAV_1001` | 了解 910 系列历史和与后续 910B 的差异。 |
+| Ascend 910B | 训练、推理、集群实验 | `ASCEND910B` / `DAV_2201` | 重点掌握 CANN、torch_npu、分布式训练、推理服务和算子适配。 |
+| Ascend 910_93 | Atlas A3 相关训练/推理平台 | 通常仍要关注 `ASCEND910B` / `DAV_2201` 路径 | 不要只看营销型号，要确认 runtime 返回值和平台配置。 |
+| Ascend 950PR | 新一代推理侧平台线索 | `ASCEND950` / `DAV_3510` 线索 | 关注 Prefill、低精度、HBM、CANN 支持状态和实际可用工具链。 |
+| Ascend 950DT | 新一代训练/Decode 侧平台线索 | `ASCEND950` / `DAV_3510` 线索 | 关注 Decode、训练、通信、集群形态和 simulator/真实硬件差异。 |
+
+## 判断硬件能力不要硬编码
+
+硬件能力判断应该遵循这个顺序：
+
+1. 收集当前设备和软件栈信息：设备型号、CANN、driver、runtime、framework、推理引擎、编译目标。
+2. 通过 runtime 或平台接口确认 SocVersion、NpuArch、核心数、片上存储、内存等关键能力。
+3. 查阅对应版本的 CANN 文档、platform config 和 release notes。
+4. 检查代码里是否存在 `__NPU_ARCH__`、`archXX`、SocVersion 分支或硬编码参数。
+5. 用最小 workload 验证功能、精度和性能，再推广到真实模型。
+
+不能只根据设备名推断所有参数。原因很简单：同一架构下的子型号可能有不同核心数、内存容量、频率和系统形态；同一模型在框架图模式、算子融合、量化或自定义 kernel 路径上也可能走不同执行路径。
+
+## 适合写入实验记录的字段
+
+| 字段 | 示例写法 |
+| --- | --- |
+| 硬件平台 | `Atlas A2 / Ascend910B`，或实际集群资产名。 |
+| 设备查询 | 保存 `npu-smi info`、拓扑、设备数量和内存信息。 |
+| 软件栈 | CANN Toolkit、Runtime、Driver、torch_npu、PyTorch、推理引擎版本。 |
+| 架构识别 | SocVersion、NpuArch、编译宏、arch 目录。 |
+| Workload | 模型、精度、batch、sequence length、并行策略、输入输出长度分布。 |
+| 结论边界 | 该结论只对哪个硬件、CANN 版本、shape 和 workload 成立。 |
+
+## 与 AI skill 的关系
+
+型号映射非常适合写成 AI skill，因为它不是科普，而是一个可重复执行的判断流程：
+
+- 用户给出设备型号或日志。
+- AI 先识别平台命名层次。
+- AI 再要求补齐缺失的 CANN、driver、runtime、SocVersion、NpuArch 信息。
+- AI 检查是否存在错误的硬编码或错误的架构条件分支。
+- AI 输出“可判断结论、缺失证据、验证步骤、风险边界”。
+
+本仓库的 `skills/npu-arch-capability-check/SKILL.md` 就是这种打样。
+
+## 参考资料
+
+- [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 提供了面向 CANN 开发的 skill 组织方式。
+- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 展示了如何把 NpuArch、SocVersion、编译宏和架构差异组织成可调用知识。
+- [CANNBot NPU 硬件参数参考](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/references/npu-hardware-params.md) 给出了硬件映射和参数来源说明；本仓库只抽象组织方法，不复制其内部表格作为真源。
+
+---
+
+# Document: Ascend 910 系列
+
+Source: docs/12-hardware-basics/ascend-910-series.md
+URL: https://amoursec.github.io/12-hardware-basics/ascend-910-series/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# Ascend 910 系列
+
+Ascend 910 系列是学习服务器侧昇腾 AI 计算时最应该先掌握的一条线。对 AI Infra 来说，重点不是背型号参数，而是建立三件事：
+
+- 设备型号和软件栈识别之间的对应关系。
+- 训练、推理、算子和编译路径在该平台上分别怎么落地。
+- 每个性能或正确性结论依赖哪个 CANN、driver、framework、模型 shape 和并行策略。
+
+## 910、910B、910_93 怎么看
+
+| 名称 | 工程上更应该关注什么 |
+| --- | --- |
+| Ascend 910 | 早期训练平台。用于理解 910 系列历史、CANN 路径和与后续平台的差异。 |
+| Ascend 910B | 当前服务器训练、推理和平台适配中更常见的学习对象。需要重点记录 `ASCEND910B`、`DAV_2201`、CANN 和 framework 版本。 |
+| Ascend 910_93 | 常见于 Atlas A3 相关平台线索。工程判断时不要只看名字，要确认 runtime 和 CANN 返回的 SocVersion/NpuArch。 |
+
+同一个“910B 方向”的问题，可能发生在不同层：
+
+- 模型层：模型结构、精度、sequence length、batch、MoE 路由或 KV Cache 使用方式。
+- 框架层：PyTorch、torch_npu、图模式、fallback、算子覆盖、autograd 或 collective 路径。
+- 编译层：算子选择、fusion、tiling、动态 shape、架构条件编译。
+- Runtime 层：stream、内存、设备队列、通信、错误码、profiling 事件。
+- 集群层：节点拓扑、网络、rank mapping、调度、故障域。
+
+## 训练场景重点
+
+910 系列训练问题通常沿着下面几条线排查：
+
+1. `数据路径`：DataLoader、tokenization、packing、host 到 device 的搬运是否形成瓶颈。
+2. `显存结构`：parameters、gradients、optimizer states、activation、temporary buffer 哪一项占主导。
+3. `并行策略`：DP/FSDP/ZeRO/TP/PP/EP/CP 是否匹配设备数量、网络和模型结构。
+4. `通信成本`：AllReduce、ReduceScatter、AllGather、AllToAll 是否与计算重叠。
+5. `数值稳定`：混合精度、loss scaling、梯度裁剪、NaN/Inf、loss spike 是否被监控。
+6. `checkpoint`：保存、恢复、resharding、故障恢复是否可复现。
+
+这些内容已经分别放在 [训练系统与优化](../04-training-systems/index.md) 中。本页只强调：在 NPU 平台上做结论时必须加上硬件和 CANN 上下文。
+
+## 推理场景重点
+
+910 系列推理问题通常围绕：
+
+- Prefill 与 Decode 的资源形态不同。
+- KV Cache 占用显存，并影响并发、长上下文和调度。
+- Continuous batching、PagedAttention、Prefix Cache、Speculative Decoding 需要推理引擎和后端 kernel 支持。
+- MoE 推理会引入 expert placement、token dispatch/combine、EP size、AllToAll 和尾延迟问题。
+- 单机推理与多机分布式推理要分别看调度、通信、缓存和容错。
+
+如果问题是“某个模型迁移到 910B 后慢或报错”，不要直接进入 kernel 调优。更稳的顺序是：先建立功能基线和精度基线，再打开 profiling，看瓶颈是在框架 fallback、算子覆盖、kernel、通信、内存还是调度。
+
+## 算子与编译场景重点
+
+在 910 系列上做算子或编译优化，常见输入是：
+
+- 某个 PyTorch 算子没有高效路径。
+- 模型图里有大量小算子，launch、搬运或中间 tensor 成本过高。
+- Attention、LayerNorm、RMSNorm、RoPE、MLP、MoE dispatch 等热点需要融合。
+- 动态 shape 或特定 layout 导致图编译和 kernel 选择不稳定。
+- 自定义算子需要针对 NpuArch 做 tiling 和条件编译。
+
+这时应该把“设备型号”和“架构能力”作为设计约束，而不是事后补充说明。
+
+## 910 系列实验清单
+
+| 阶段 | 必要检查 |
+| --- | --- |
+| 建立基线 | 记录设备、CANN、driver、framework、模型、精度、shape、并行策略。 |
+| 功能验证 | 用小 batch、小输入、固定随机种子验证能否稳定运行。 |
+| 精度验证 | 对比 CPU/GPU/已知正确输出，记录误差口径和容忍范围。 |
+| 性能验证 | 分别记录 warmup、测量窗口、吞吐、延迟、显存、功耗和 profiler。 |
+| 瓶颈定位 | 区分 data、framework、compiler、kernel、memory、communication、scheduler。 |
+| 结论沉淀 | 形成 benchmark report、failure case、ADR 或 skill。 |
+
+## 参考资料
+
+- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 将昇腾相关 skill 分成算子开发、PyPTO、TileLang、Triton、NPU 模型推理优化、代码检视、torch.compile 等场景。
+- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 展示了 SocVersion、NpuArch、编译宏和架构差异的组织方式。
+
+---
+
+# Document: Ascend 950 系列
+
+Source: docs/12-hardware-basics/ascend-950-series.md
+URL: https://amoursec.github.io/12-hardware-basics/ascend-950-series/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# Ascend 950 系列
+
+Ascend 950 系列在公开资料和 CANNBot skill 中已经出现较多线索，但对工程知识库来说，第一原则是：把它当作“需要持续验证的新平台”，不要把媒体报道或规划信息直接写成最终硬件事实。
+
+本页只建立学习框架，后续应根据真实设备、CANN 版本、runtime API、platform config、benchmark 和 profiler 结果逐步补充。
+
+## 公开线索怎么读
+
+目前可见线索大致分成两类：
+
+- CANNBot 的 NPU 架构 skill 把 Ascend950PR、Ascend950DT 与 `ASCEND950`、`DAV_3510` 等软件识别线索关联起来，并把 950PR/950DT 放入新一代 Atlas A5 方向。
+- 媒体报道提到 Huawei Ascend 950PR/950DT、Atlas 950、HBM、低精度和大规模 SuperPoD / SuperCluster 等规划或发布信息。
+
+这两类信息用途不同。CANNBot 更适合启发“软件栈如何识别和适配架构”；媒体报道更适合了解产业背景、产品路线和系统形态。真正做工程结论时，仍然要以当前 CANN、driver、runtime、设备查询和实测结果为准。
+
+## 950PR 与 950DT 的学习切入点
+
+| 方向 | 重点问题 |
+| --- | --- |
+| Ascend950PR | 更关注 Prefill、低精度推理、长上下文、大显存和高吞吐推理场景。 |
+| Ascend950DT | 更关注 Decode、训练、通信、集群扩展和大规模系统形态。 |
+| `DAV_3510` | 更关注架构能力、片上存储、数据格式、编译宏、SIMT/Regbase 等软件可见特性。 |
+| Atlas 950 / A5 | 更关注系统级组合：卡、服务器、互连、机柜、集群和软件生态。 |
+
+这里的“更关注”不是严格功能边界，而是学习和实验优先级。真实部署时，一个平台最终能跑什么 workload，取决于硬件形态、CANN 支持、驱动、框架、推理引擎和模型适配状态。
+
+## 950 系列最该验证什么
+
+新平台上不要先问“理论峰值是多少”，而要先验证这些问题：
+
+1. `工具链可用性`：当前 CANN、compiler、simulator、profiler、torch_npu、推理引擎是否支持目标平台。
+2. `模型路径`：目标模型是否能从 eager、图模式、推理引擎或自定义算子路径稳定运行。
+3. `精度路径`：FP16、BF16、FP8、FP4 或量化路径是否可用，误差口径如何定义。
+4. `内存路径`：权重、activation、KV Cache、temporary buffer、通信 buffer 是否符合预期。
+5. `Prefill/Decode`：两阶段瓶颈是否不同，是否需要 PD 分离、异构部署或专门调度。
+6. `通信与扩展`：多卡、多机、MoE、TP/PP/EP/DP 组合是否被通信、拓扑或 runtime 限制。
+7. `profiling 证据`：是否能获得可解释的 kernel、runtime、memory、communication timeline。
+
+## 适合沉淀成 skill 的方向
+
+950 系列还处在快速演进阶段，最值得写成 skill 的不是“参数大全”，而是可重复执行的判断流程：
+
+- `架构能力判断`：从设备日志、CANN 版本和 NpuArch 判断能否启用某个代码路径。
+- `迁移基线建立`：把模型迁移到 950 系列时，先建立功能、精度、性能和回退路径。
+- `Prefill/Decode 资源判断`：判断一个 workload 是否适合按 Prefill/Decode 分离或异构部署。
+- `低精度验证`：判断 FP8/FP4/量化路径是否真的端到端生效。
+- `profiling 证据收集`：把工具链输出组织成 AI 能够继续诊断的证据包。
+
+## 最小实验模板
+
+```text
+hardware:
+  platform: Atlas / Ascend 950 系列实际设备名
+  device_count:
+  topology:
+software:
+  cann:
+  driver:
+  runtime:
+  framework:
+  engine:
+architecture:
+  soc_version:
+  npu_arch:
+  compile_target:
+workload:
+  model:
+  precision:
+  input_length_distribution:
+  output_length_distribution:
+  batch_or_concurrency:
+  parallel_strategy:
+results:
+  correctness:
+  ttft_or_step_time:
+  tpot_or_tokens_per_second:
+  memory:
+  profiler_artifacts:
+  known_limits:
+```
+
+## 参考资料
+
+- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 是了解 Ascend 架构识别、NpuArch、SocVersion 和条件编译组织方式的重要参考。
+- [Tom's Hardware: Huawei Ascend roadmap](https://www.tomshardware.com/tech-industry/semiconductors/huawei-unveils-ascend-roadmap-backed-by-in-house-hbm) 报道了 Ascend 950PR/950DT 和 Atlas 950 等公开路线图线索。
+- [TechRadar: Atlas 950 SuperPoD](https://www.techradar.com/pro/huawei-debuts-its-atlas-950-ai-superpod-at-mwc-2026-taking-the-ai-data-center-fight-to-nvidia-and-amd) 报道了 Atlas 950 系统形态、互连和大规模 AI 集群背景。
+
+---
+
+# Document: CANN 软件栈与开发入口
+
+Source: docs/12-hardware-basics/cann-stack.md
+URL: https://amoursec.github.io/12-hardware-basics/cann-stack/
+domain: hardware
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# CANN 软件栈与开发入口
+
+CANN 可以理解为昇腾平台的核心软件栈入口。对 AI Infra 来说，它连接了硬件、编译器、runtime、框架、算子开发、模型推理优化、profiling 和问题诊断。
+
+不要把 CANN 只看成一个安装包。更实用的视角是：所有“模型能不能跑、为什么慢、哪里不支持、怎么定位”的问题，最终都会落到 CANN 与上层框架、下层硬件之间的接口上。
+
+## 软件栈位置
+
+```mermaid
+flowchart TB
+  A["应用与模型\n训练脚本 / 推理服务 / RAG 或 Agent"] --> B["AI 框架\nPyTorch / torch_npu / 推理引擎"]
+  B --> C["CANN 图、算子、编译与 Runtime"]
+  C --> D["Ascend C / 自定义算子 / Kernel / Tiling"]
+  C --> E["Profiler / Debug / Simulator / Runtime Logs"]
+  D --> F["昇腾 NPU 硬件"]
+  E --> F
+```
+
+这张图说明：当模型慢或报错时，不能只看 Python 代码，也不能直接跳到硬件参数。要先判断问题落在哪一层。
+
+## CANN 相关入口
+
+| 入口 | 典型问题 |
+| --- | --- |
+| Toolkit / Runtime / Driver | 当前软件栈是否支持目标设备、模型和编译路径。 |
+| torch_npu | PyTorch 模型如何迁移到 NPU，哪些算子有支持路径，哪里发生 fallback。 |
+| 图模式 / torch.compile | 图捕获、编译、fusion、dynamic shape 和性能稳定性。 |
+| Ascend C | 自定义算子、tiling、片上存储、数据搬运和架构特化。 |
+| Profiling | kernel、runtime、通信、内存和 host/device 时间线。 |
+| Simulator | 无真实硬件或新架构验证时的功能、性能和流水线分析入口。 |
+| Model inference skills | 模型迁移、KV Cache、fusion、量化、graph mode、多流、prefetch、superkernel 等专项优化。 |
+
+## 从问题到入口
+
+| 现象 | 优先入口 |
+| --- | --- |
+| 模型不能启动或 import 失败 | 环境、driver、CANN、torch_npu 版本。 |
+| 某个算子不支持 | 框架算子覆盖、CANN 文档、自定义算子或替代实现。 |
+| 精度对不上 | dtype、layout、融合、近似实现、随机性、算子精度调试。 |
+| 推理 TTFT 慢 | Prefill kernel、batching、KV Cache、图模式、输入长度分布。 |
+| Decode TPOT 慢 | KV Cache、attention kernel、调度、显存带宽、低精度路径。 |
+| 训练 step 慢 | data pipeline、forward/backward kernel、collective 通信、overlap、显存和 checkpoint。 |
+| 多卡扩展差 | rank mapping、通信库、网络、parallel strategy、collective timeline。 |
+| 新平台适配 | NpuArch、SocVersion、CANN 支持矩阵、simulator、最小 workload。 |
+
+## CANNBot 给知识库的启发
+
+CANNBot Skills 仓库值得参考的不是某一篇具体文档，而是它的组织方法：
+
+- 把“科普知识”与“可执行任务流程”分开。
+- 对重复性工作写 skill，例如环境检查、算子设计、代码生成、性能调优、精度调试、模型迁移、KV Cache 优化。
+- 每个 skill 关注一个明确任务，给出触发条件、输入、步骤、输出模板和引用来源。
+- 对 CANN 路径、文档、工具和环境变量做封装，避免在多个 skill 中硬编码路径。
+- 把 NPU 架构判断、profiling、simulator、Triton、TileLang、Ascend C、模型推理优化分别拆成独立能力。
+
+本仓库目前不复制 CANNBot 的内容，而是借鉴它的“工作流化知识”思路。后续团队自己的硬件适配、性能分析和故障处理经验，也应该按这个方向沉淀。
+
+## AI 诊断前应补齐的信息
+
+当把 NPU 问题交给 AI 分析时，最少提供：
+
+- 目标任务：训练、推理、算子开发、编译、模型迁移、性能调优、精度调试还是故障处理。
+- 硬件信息：设备型号、设备数量、拓扑、SocVersion、NpuArch。
+- 软件栈：CANN、driver、runtime、torch_npu、PyTorch、推理引擎、容器镜像。
+- Workload：模型、输入输出长度、batch、并发、precision、并行策略。
+- 错误或现象：完整日志、错误码、慢在哪里、是否可稳定复现。
+- 证据文件：benchmark 输出、profiler timeline、配置文件、最小复现代码。
+
+缺少这些信息时，AI 应该先要求补证据，而不是直接给结论。
+
+## 参考资料
+
+- [CANNBot Skills 项目主页](https://gitcode.com/cann/cannbot-skills) 说明该仓库为 CANN 开发提供可复用 Skills 模块。
+- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 列出了 Ascend C、PyPTO、TileLang、Triton、NPU 模型推理优化、torch.compile 等多类 skill。
+
+---
+
+# Document: NPU 相关 AI Skills 样例
+
+Source: docs/12-hardware-basics/ai-skills-sample.md
+URL: https://amoursec.github.io/12-hardware-basics/ai-skills-sample/
+domain: knowledge-management
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-06-25
+
+# NPU 相关 AI Skills 样例
+
+不是每篇知识库文章都需要写成 skill。科普文章适合给人建立理解，也适合 AI 检索背景知识；skill 更适合沉淀“可重复执行的工作流程”。
+
+当前硬件基础章节先打一个样：`skills/npu-arch-capability-check/SKILL.md`。它不负责科普 NPU，而是指导 AI 在遇到昇腾 NPU 架构、型号、SocVersion、NpuArch、条件编译和能力判断问题时，按固定流程收集证据并输出结论。
+
+## 什么内容适合写成 skill
+
+满足下面条件的内容，适合从普通文档升级为 skill：
+
+- 这件事会反复发生，例如环境检查、模型迁移、性能剖析、精度调试、故障定位。
+- 它有稳定的输入，例如日志、配置、设备信息、benchmark、profiler、代码 diff。
+- 它有明确步骤，例如先判断版本，再查映射，再验证最小 workload。
+- 它有输出模板，例如“结论、证据、风险、下一步实验”。
+- 它需要 AI 在多个文档之间做选择，而不是只复述一段知识。
+
+不适合写成 skill 的内容：
+
+- 只解释概念的科普文章。
+- 尚未验证的个人猜想。
+- 只对一次临时问题有效的聊天记录。
+- 缺少输入、步骤和输出边界的经验片段。
+
+## skill 与普通文档的区别
+
+| 类型 | 面向谁 | 主要作用 |
+| --- | --- | --- |
+| 普通知识文档 | 人和 AI | 解释概念、流程、原理、背景和引用来源。 |
+| Benchmark report | 人和 AI | 保存实验设计、环境、原始数据、结果和结论边界。 |
+| ADR | 人和 AI | 保存技术选择、证据、取舍、回滚条件和复盘条件。 |
+| Failure case | 人和 AI | 保存故障现象、定位过程、证据链、修复和预防措施。 |
+| Skill | AI | 在特定任务中指导 AI 如何行动、追问、检查、输出。 |
+
+## 本仓库的样例结构
+
+```text
+skills/
+  README.md
+  npu-arch-capability-check/
+    SKILL.md
+```
+
+这个样例刻意保持很小，只覆盖一个任务：判断昇腾 NPU 架构能力和条件编译路径。后续可以继续扩展：
+
+- `npu-env-baseline`：收集 CANN、driver、runtime、torch_npu、设备和容器信息。
+- `npu-model-migration-baseline`：建立模型迁移的功能、精度、性能基线。
+- `npu-inference-profiling-pack`：组织推理压测、profiler、KV Cache、调度和内存证据。
+- `npu-operator-porting-review`：检查自定义算子的架构分支、tiling、片上存储和测试覆盖。
+- `npu-training-hang-triage`：整理分布式训练 hang、collective、rank、网络和 checkpoint 证据。
+
+## 程序员后续怎么补 skill
+
+1. 先用普通 Markdown 记录一次真实工作：背景、环境、现象、操作、证据、结论。
+2. 如果同类问题重复出现，把它抽象成 checklist。
+3. 如果 checklist 需要 AI 按步骤执行，就写成 `skills/<skill-name>/SKILL.md`。
+4. 在 skill 中写清楚触发条件、输入要求、流程、输出模板、风险边界和引用文档。
+5. 更新 `llms.txt` / `llms-full.txt`，让 AI 能看到新的 skill 入口。
+6. 用一个真实问题提示 AI，检查它是否会先补证据、再判断，而不是凭空给结论。
+
+## 参考资料
+
+- [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 是 CANN 生态 skill 化组织方式的参考。
+- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 展示了算子开发、模型推理优化、Triton、TileLang、profiling、simulator 等任务如何拆成多个 skill。
 
 ---
 
@@ -48891,568 +49453,6 @@ LLM 服务里 shape、batch、sequence、KV Cache 状态、MoE routing 都可能
 - [AutoMegaKernel: Automated Megakernel Generation for LLM Inference](https://arxiv.org/abs/2606.09682)
 - [AscendOptimizer: Automated Program Optimization for Ascend Kernels](https://arxiv.org/abs/2603.23566)
 - [AscendCraft: DSL-Guided LLM Generation of High-Performance CANN Kernels](https://arxiv.org/abs/2601.22760)
-
----
-
-# Document: 硬件基础
-
-Source: docs/12-hardware-basics/index.md
-URL: https://amoursec.github.io/12-hardware-basics/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# 硬件基础
-
-本章把“具体硬件平台怎么认识、怎么适配、怎么沉淀成 AI 可用经验”单独拿出来。它和 [AI 加速器与计算架构](../06-accelerators-architecture/index.md) 的关系是：
-
-- `AI 加速器与计算架构` 讲通用原理：算力、带宽、存储层次、互连、功耗、workload mapping。
-- `硬件基础` 讲具体平台：型号怎么叫、软件栈怎么识别硬件、算子和模型服务适配时该收集哪些证据、怎么把经验写成 skill。
-
-第一版聚焦 NPU 和昇腾 Ascend/CANN 生态，只围绕服务器、训练和推理加速场景组织内容，不展开端侧移动芯片线索。
-
-## 本章结构
-
-| 主题 | 解决的问题 |
-| --- | --- |
-| [NPU 基础概念](npu-basics.md) | NPU 是什么，为什么 AI 系统工程师需要理解 NPU 的执行模型和软件栈。 |
-| [昇腾 NPU 型号与架构映射](ascend-npu-models.md) | 产品名、芯片型号、SocVersion、NpuArch、编译宏之间是什么关系。 |
-| [Ascend 910 系列](ascend-910-series.md) | 910/910B/910_93 这类服务器训练和推理平台应该重点关注什么。 |
-| [Ascend 950 系列](ascend-950-series.md) | 950PR/950DT 这类新平台的公开线索、学习重点和验证边界。 |
-| [CANN 软件栈与开发入口](cann-stack.md) | CANN、Ascend C、torch_npu、算子开发、模型推理优化和 profiling 如何连接。 |
-| [NPU 相关 AI Skills 样例](ai-skills-sample.md) | 什么内容适合写成 AI skill，以及本仓库如何给后续工作打样。 |
-
-## 学习顺序
-
-1. 先读 [NPU 基础概念](npu-basics.md)，建立“硬件不是孤立芯片，而是硬件、runtime、compiler、framework 和 workload 的组合”的视角。
-2. 再读 [昇腾 NPU 型号与架构映射](ascend-npu-models.md)，理解为什么不能只说“910B”或“950”，而要同时记录 CANN 版本、SocVersion、NpuArch 和实际设备信息。
-3. 根据手头平台选择 [Ascend 910 系列](ascend-910-series.md) 或 [Ascend 950 系列](ascend-950-series.md)。
-4. 如果要做迁移、算子、性能优化或问题诊断，继续读 [CANN 软件栈与开发入口](cann-stack.md)。
-5. 如果要让 AI 以后能复用团队经验，读 [NPU 相关 AI Skills 样例](ai-skills-sample.md)，并参考 `skills/` 目录中的样例写法。
-
-## 写作边界
-
-硬件平台文档要谨慎区分三类信息：
-
-- `公开资料`：产品发布、路线图、媒体报道、开源仓库 README，适合做背景，不适合直接当作性能承诺。
-- `软件栈可验证信息`：CANN、driver、runtime、framework、platform config、profiling 输出，适合写入工程判断。
-- `本地实验结论`：benchmark、profiler、错误复现、调优记录，必须带上硬件、软件版本和 workload。
-
-后续如果补充内部实验或实际部署经验，建议先写成 benchmark report、failure case 或 ADR，再抽象成可被 AI 调用的 skill。
-
----
-
-# Document: NPU 基础概念
-
-Source: docs/12-hardware-basics/npu-basics.md
-URL: https://amoursec.github.io/12-hardware-basics/npu-basics/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# NPU 基础概念
-
-NPU 可以先理解成“为神经网络计算设计的加速器”。它不是只会运行某一个模型的固定电路，而是通过软件栈把模型中的矩阵乘、Attention、归一化、激活函数、数据搬运和通信等操作，映射到专门的计算单元和存储层次上。
-
-对 AI Infra 来说，NPU 的关键不是名字，而是它能否把目标 workload 稳定、高效、正确地跑起来。
-
-## 一个最小视角
-
-```mermaid
-flowchart TB
-  A["模型或应用\nPyTorch / 推理引擎 / 训练框架"] --> B["图、算子或 Kernel\nMatMul / Attention / LayerNorm / AllReduce"]
-  B --> C["编译器与 Runtime\n图优化 / 算子选择 / 内存规划 / 调度"]
-  C --> D["NPU 执行\n计算单元 / 本地存储 / HBM / DMA / 通信"]
-  D --> E["系统指标\n吞吐 / 延迟 / 显存 / 能耗 / 正确性 / 稳定性"]
-```
-
-这条链路说明一件事：模型代码能不能快，不只取决于 NPU 峰值算力，还取决于编译器能不能生成合适的 kernel，runtime 能不能把内存和调度安排好，框架能不能把模型图落到硬件支持的路径上。
-
-## NPU 里常见的硬件概念
-
-| 概念 | 可以怎么理解 | 为什么重要 |
-| --- | --- | --- |
-| 计算单元 | 执行矩阵、向量、标量或专用 AI 指令的核心资源。 | 决定 MatMul、Attention、MLP、LayerNorm 等算子的计算上限。 |
-| 本地存储 | 靠近计算单元的小容量高速存储，如片上 buffer、cache 或专用 scratchpad。 | 决定数据能否被反复复用，影响算子 tiling 和 fusion。 |
-| HBM / 外部显存 | 存放模型权重、activation、KV Cache、临时 buffer 的大容量高带宽内存。 | 大模型经常受显存容量和带宽限制。 |
-| 数据搬运 | 在 HBM、片上存储和计算单元之间移动数据。 | 很多 kernel 慢不是因为算不动，而是数据没有及时送到。 |
-| 编译器 | 把图、算子或 DSL 降低到硬件可执行形式。 | 影响算子覆盖、fusion、layout、dynamic shape 和 fallback。 |
-| Runtime | 管理设备、stream、内存、执行队列和错误状态。 | 影响端到端稳定性、并发、profiling 和故障诊断。 |
-| 通信 | 多卡之间交换 tensor、梯度、KV、专家 token 或中间状态。 | 分布式训练、MoE、长上下文推理都会被通信放大。 |
-
-## NPU 与 GPU 的学习差异
-
-GPU 生态里很多工程经验围绕 CUDA、Tensor Core、NCCL、Triton、TensorRT 展开。NPU 生态里也有类似层次，但名字、工具、编译路径和最佳实践会不同。学习 NPU 时，不要直接把 GPU 经验逐字搬过去，而要抓住几个对应关系：
-
-| GPU 侧常见问题 | NPU 侧也要问的问题 |
-| --- | --- |
-| 这个算子有没有高效 kernel？ | 这个算子在 CANN/框架/推理引擎里是否有支持路径，是否发生 fallback。 |
-| kernel 是 compute-bound 还是 memory-bound？ | 片上 buffer、HBM、数据搬运和 tiling 是否匹配该算子的 shape。 |
-| 多卡通信是否拖慢训练？ | 对应通信库、拓扑、rank mapping、parallel strategy 是否适合该 NPU 平台。 |
-| profiler 看到的瓶颈在哪里？ | CANN / framework / system profiler 能否把图、算子、kernel、通信和 runtime 事件串起来。 |
-| 这个优化能否复现？ | 是否记录 CANN、driver、runtime、framework、芯片型号、SocVersion、NpuArch 和 workload。 |
-
-## 为什么 AI Infra 要理解 NPU
-
-做模型或算法时，可能只关心“能不能训练出更好的模型”。做 AI Infra 时，必须关心另一组问题：
-
-- 同一个模型，为什么在不同硬件上吞吐差很多？
-- 同一个 batch 和 sequence length，为什么某个平台显存先爆？
-- 为什么某个算子在 GPU 上快，在 NPU 上需要改写或融合？
-- 为什么模型迁移后精度对不上，或者运行到某个 shape 才报错？
-- 为什么 CANN、driver、framework 或推理引擎版本变化后性能回退？
-
-这些问题都不是“读芯片宣传页”能解决的，必须把硬件能力、软件栈路径和 workload 证据连起来。
-
-## 最小记录清单
-
-只要开始做 NPU 相关实验，建议每次记录：
-
-- 设备型号、数量、拓扑和 `npu-smi` 或等价工具输出。
-- CANN Toolkit / Runtime / Driver 版本。
-- 框架版本，例如 PyTorch、torch_npu、推理引擎版本。
-- SocVersion、NpuArch、编译目标和是否存在架构条件分支。
-- 模型、精度、batch、sequence length、并行策略、输入输出长度分布。
-- 是否启用图模式、融合、量化、KV Cache、通信重叠或自定义算子。
-- profiler、benchmark 和错误日志的原始文件路径。
-
-这些信息后续可以直接进入 benchmark report、failure case、ADR 或 AI skill。
-
----
-
-# Document: 昇腾 NPU 型号与架构映射
-
-Source: docs/12-hardware-basics/ascend-npu-models.md
-URL: https://amoursec.github.io/12-hardware-basics/ascend-npu-models/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# 昇腾 NPU 型号与架构映射
-
-做昇腾平台适配时，最容易混淆的是“产品名、芯片型号、软件识别名、架构号、编译宏”这几层。工程上不能只写“910B”或“950”，因为同一代产品可能有多个子型号，同一个架构号也可能覆盖多个具体设备形态。
-
-## 五层命名
-
-| 层次 | 示例 | 作用 |
-| --- | --- | --- |
-| 产品或平台系列 | Atlas A2、Atlas A3、Atlas A5 | 面向产品和系统交付的名字，适合沟通硬件平台大类。 |
-| 芯片或 SKU 名 | Ascend910B、Ascend910_93、Ascend950PR、Ascend950DT | 面向实际设备、卡、服务器或平台配置的名字。 |
-| SocVersion | `ASCEND910B`、`ASCEND950` | 软件栈识别 SoC 版本时常见的枚举或字符串。 |
-| NpuArch | `DAV_2201`、`DAV_3510` | 更接近架构代际和指令/微架构能力的标识。 |
-| 编译宏或目录简写 | `__NPU_ARCH__=2201`、`arch22` | 用于条件编译、架构特化和算子工程目录组织。 |
-
-这几层不是一一对应关系。一个 NpuArch 可能对应多个芯片型号；一个产品系列也可能因为卡形态、内存、频率、核心数量不同而表现不同。
-
-## 当前重点映射
-
-下表是面向服务器训练、推理和 AI Infra 学习的简化映射。它用于建立方向感，不替代 CANN 文档、platform config、runtime API 和实际设备查询。
-
-| 平台线索 | 常见用途 | 软件识别重点 | 学习重点 |
-| --- | --- | --- | --- |
-| Ascend 910 | 早期训练平台 | `ASCEND910` / `DAV_1001` | 了解 910 系列历史和与后续 910B 的差异。 |
-| Ascend 910B | 训练、推理、集群实验 | `ASCEND910B` / `DAV_2201` | 重点掌握 CANN、torch_npu、分布式训练、推理服务和算子适配。 |
-| Ascend 910_93 | Atlas A3 相关训练/推理平台 | 通常仍要关注 `ASCEND910B` / `DAV_2201` 路径 | 不要只看营销型号，要确认 runtime 返回值和平台配置。 |
-| Ascend 950PR | 新一代推理侧平台线索 | `ASCEND950` / `DAV_3510` 线索 | 关注 Prefill、低精度、HBM、CANN 支持状态和实际可用工具链。 |
-| Ascend 950DT | 新一代训练/Decode 侧平台线索 | `ASCEND950` / `DAV_3510` 线索 | 关注 Decode、训练、通信、集群形态和 simulator/真实硬件差异。 |
-
-## 判断硬件能力不要硬编码
-
-硬件能力判断应该遵循这个顺序：
-
-1. 收集当前设备和软件栈信息：设备型号、CANN、driver、runtime、framework、推理引擎、编译目标。
-2. 通过 runtime 或平台接口确认 SocVersion、NpuArch、核心数、片上存储、内存等关键能力。
-3. 查阅对应版本的 CANN 文档、platform config 和 release notes。
-4. 检查代码里是否存在 `__NPU_ARCH__`、`archXX`、SocVersion 分支或硬编码参数。
-5. 用最小 workload 验证功能、精度和性能，再推广到真实模型。
-
-不能只根据设备名推断所有参数。原因很简单：同一架构下的子型号可能有不同核心数、内存容量、频率和系统形态；同一模型在框架图模式、算子融合、量化或自定义 kernel 路径上也可能走不同执行路径。
-
-## 适合写入实验记录的字段
-
-| 字段 | 示例写法 |
-| --- | --- |
-| 硬件平台 | `Atlas A2 / Ascend910B`，或实际集群资产名。 |
-| 设备查询 | 保存 `npu-smi info`、拓扑、设备数量和内存信息。 |
-| 软件栈 | CANN Toolkit、Runtime、Driver、torch_npu、PyTorch、推理引擎版本。 |
-| 架构识别 | SocVersion、NpuArch、编译宏、arch 目录。 |
-| Workload | 模型、精度、batch、sequence length、并行策略、输入输出长度分布。 |
-| 结论边界 | 该结论只对哪个硬件、CANN 版本、shape 和 workload 成立。 |
-
-## 与 AI skill 的关系
-
-型号映射非常适合写成 AI skill，因为它不是科普，而是一个可重复执行的判断流程：
-
-- 用户给出设备型号或日志。
-- AI 先识别平台命名层次。
-- AI 再要求补齐缺失的 CANN、driver、runtime、SocVersion、NpuArch 信息。
-- AI 检查是否存在错误的硬编码或错误的架构条件分支。
-- AI 输出“可判断结论、缺失证据、验证步骤、风险边界”。
-
-本仓库的 `skills/npu-arch-capability-check/SKILL.md` 就是这种打样。
-
-## 参考资料
-
-- [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 提供了面向 CANN 开发的 skill 组织方式。
-- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 展示了如何把 NpuArch、SocVersion、编译宏和架构差异组织成可调用知识。
-- [CANNBot NPU 硬件参数参考](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/references/npu-hardware-params.md) 给出了硬件映射和参数来源说明；本仓库只抽象组织方法，不复制其内部表格作为真源。
-
----
-
-# Document: Ascend 910 系列
-
-Source: docs/12-hardware-basics/ascend-910-series.md
-URL: https://amoursec.github.io/12-hardware-basics/ascend-910-series/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# Ascend 910 系列
-
-Ascend 910 系列是学习服务器侧昇腾 AI 计算时最应该先掌握的一条线。对 AI Infra 来说，重点不是背型号参数，而是建立三件事：
-
-- 设备型号和软件栈识别之间的对应关系。
-- 训练、推理、算子和编译路径在该平台上分别怎么落地。
-- 每个性能或正确性结论依赖哪个 CANN、driver、framework、模型 shape 和并行策略。
-
-## 910、910B、910_93 怎么看
-
-| 名称 | 工程上更应该关注什么 |
-| --- | --- |
-| Ascend 910 | 早期训练平台。用于理解 910 系列历史、CANN 路径和与后续平台的差异。 |
-| Ascend 910B | 当前服务器训练、推理和平台适配中更常见的学习对象。需要重点记录 `ASCEND910B`、`DAV_2201`、CANN 和 framework 版本。 |
-| Ascend 910_93 | 常见于 Atlas A3 相关平台线索。工程判断时不要只看名字，要确认 runtime 和 CANN 返回的 SocVersion/NpuArch。 |
-
-同一个“910B 方向”的问题，可能发生在不同层：
-
-- 模型层：模型结构、精度、sequence length、batch、MoE 路由或 KV Cache 使用方式。
-- 框架层：PyTorch、torch_npu、图模式、fallback、算子覆盖、autograd 或 collective 路径。
-- 编译层：算子选择、fusion、tiling、动态 shape、架构条件编译。
-- Runtime 层：stream、内存、设备队列、通信、错误码、profiling 事件。
-- 集群层：节点拓扑、网络、rank mapping、调度、故障域。
-
-## 训练场景重点
-
-910 系列训练问题通常沿着下面几条线排查：
-
-1. `数据路径`：DataLoader、tokenization、packing、host 到 device 的搬运是否形成瓶颈。
-2. `显存结构`：parameters、gradients、optimizer states、activation、temporary buffer 哪一项占主导。
-3. `并行策略`：DP/FSDP/ZeRO/TP/PP/EP/CP 是否匹配设备数量、网络和模型结构。
-4. `通信成本`：AllReduce、ReduceScatter、AllGather、AllToAll 是否与计算重叠。
-5. `数值稳定`：混合精度、loss scaling、梯度裁剪、NaN/Inf、loss spike 是否被监控。
-6. `checkpoint`：保存、恢复、resharding、故障恢复是否可复现。
-
-这些内容已经分别放在 [训练系统与优化](../04-training-systems/index.md) 中。本页只强调：在 NPU 平台上做结论时必须加上硬件和 CANN 上下文。
-
-## 推理场景重点
-
-910 系列推理问题通常围绕：
-
-- Prefill 与 Decode 的资源形态不同。
-- KV Cache 占用显存，并影响并发、长上下文和调度。
-- Continuous batching、PagedAttention、Prefix Cache、Speculative Decoding 需要推理引擎和后端 kernel 支持。
-- MoE 推理会引入 expert placement、token dispatch/combine、EP size、AllToAll 和尾延迟问题。
-- 单机推理与多机分布式推理要分别看调度、通信、缓存和容错。
-
-如果问题是“某个模型迁移到 910B 后慢或报错”，不要直接进入 kernel 调优。更稳的顺序是：先建立功能基线和精度基线，再打开 profiling，看瓶颈是在框架 fallback、算子覆盖、kernel、通信、内存还是调度。
-
-## 算子与编译场景重点
-
-在 910 系列上做算子或编译优化，常见输入是：
-
-- 某个 PyTorch 算子没有高效路径。
-- 模型图里有大量小算子，launch、搬运或中间 tensor 成本过高。
-- Attention、LayerNorm、RMSNorm、RoPE、MLP、MoE dispatch 等热点需要融合。
-- 动态 shape 或特定 layout 导致图编译和 kernel 选择不稳定。
-- 自定义算子需要针对 NpuArch 做 tiling 和条件编译。
-
-这时应该把“设备型号”和“架构能力”作为设计约束，而不是事后补充说明。
-
-## 910 系列实验清单
-
-| 阶段 | 必要检查 |
-| --- | --- |
-| 建立基线 | 记录设备、CANN、driver、framework、模型、精度、shape、并行策略。 |
-| 功能验证 | 用小 batch、小输入、固定随机种子验证能否稳定运行。 |
-| 精度验证 | 对比 CPU/GPU/已知正确输出，记录误差口径和容忍范围。 |
-| 性能验证 | 分别记录 warmup、测量窗口、吞吐、延迟、显存、功耗和 profiler。 |
-| 瓶颈定位 | 区分 data、framework、compiler、kernel、memory、communication、scheduler。 |
-| 结论沉淀 | 形成 benchmark report、failure case、ADR 或 skill。 |
-
-## 参考资料
-
-- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 将昇腾相关 skill 分成算子开发、PyPTO、TileLang、Triton、NPU 模型推理优化、代码检视、torch.compile 等场景。
-- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 展示了 SocVersion、NpuArch、编译宏和架构差异的组织方式。
-
----
-
-# Document: Ascend 950 系列
-
-Source: docs/12-hardware-basics/ascend-950-series.md
-URL: https://amoursec.github.io/12-hardware-basics/ascend-950-series/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# Ascend 950 系列
-
-Ascend 950 系列在公开资料和 CANNBot skill 中已经出现较多线索，但对工程知识库来说，第一原则是：把它当作“需要持续验证的新平台”，不要把媒体报道或规划信息直接写成最终硬件事实。
-
-本页只建立学习框架，后续应根据真实设备、CANN 版本、runtime API、platform config、benchmark 和 profiler 结果逐步补充。
-
-## 公开线索怎么读
-
-目前可见线索大致分成两类：
-
-- CANNBot 的 NPU 架构 skill 把 Ascend950PR、Ascend950DT 与 `ASCEND950`、`DAV_3510` 等软件识别线索关联起来，并把 950PR/950DT 放入新一代 Atlas A5 方向。
-- 媒体报道提到 Huawei Ascend 950PR/950DT、Atlas 950、HBM、低精度和大规模 SuperPoD / SuperCluster 等规划或发布信息。
-
-这两类信息用途不同。CANNBot 更适合启发“软件栈如何识别和适配架构”；媒体报道更适合了解产业背景、产品路线和系统形态。真正做工程结论时，仍然要以当前 CANN、driver、runtime、设备查询和实测结果为准。
-
-## 950PR 与 950DT 的学习切入点
-
-| 方向 | 重点问题 |
-| --- | --- |
-| Ascend950PR | 更关注 Prefill、低精度推理、长上下文、大显存和高吞吐推理场景。 |
-| Ascend950DT | 更关注 Decode、训练、通信、集群扩展和大规模系统形态。 |
-| `DAV_3510` | 更关注架构能力、片上存储、数据格式、编译宏、SIMT/Regbase 等软件可见特性。 |
-| Atlas 950 / A5 | 更关注系统级组合：卡、服务器、互连、机柜、集群和软件生态。 |
-
-这里的“更关注”不是严格功能边界，而是学习和实验优先级。真实部署时，一个平台最终能跑什么 workload，取决于硬件形态、CANN 支持、驱动、框架、推理引擎和模型适配状态。
-
-## 950 系列最该验证什么
-
-新平台上不要先问“理论峰值是多少”，而要先验证这些问题：
-
-1. `工具链可用性`：当前 CANN、compiler、simulator、profiler、torch_npu、推理引擎是否支持目标平台。
-2. `模型路径`：目标模型是否能从 eager、图模式、推理引擎或自定义算子路径稳定运行。
-3. `精度路径`：FP16、BF16、FP8、FP4 或量化路径是否可用，误差口径如何定义。
-4. `内存路径`：权重、activation、KV Cache、temporary buffer、通信 buffer 是否符合预期。
-5. `Prefill/Decode`：两阶段瓶颈是否不同，是否需要 PD 分离、异构部署或专门调度。
-6. `通信与扩展`：多卡、多机、MoE、TP/PP/EP/DP 组合是否被通信、拓扑或 runtime 限制。
-7. `profiling 证据`：是否能获得可解释的 kernel、runtime、memory、communication timeline。
-
-## 适合沉淀成 skill 的方向
-
-950 系列还处在快速演进阶段，最值得写成 skill 的不是“参数大全”，而是可重复执行的判断流程：
-
-- `架构能力判断`：从设备日志、CANN 版本和 NpuArch 判断能否启用某个代码路径。
-- `迁移基线建立`：把模型迁移到 950 系列时，先建立功能、精度、性能和回退路径。
-- `Prefill/Decode 资源判断`：判断一个 workload 是否适合按 Prefill/Decode 分离或异构部署。
-- `低精度验证`：判断 FP8/FP4/量化路径是否真的端到端生效。
-- `profiling 证据收集`：把工具链输出组织成 AI 能够继续诊断的证据包。
-
-## 最小实验模板
-
-```text
-hardware:
-  platform: Atlas / Ascend 950 系列实际设备名
-  device_count:
-  topology:
-software:
-  cann:
-  driver:
-  runtime:
-  framework:
-  engine:
-architecture:
-  soc_version:
-  npu_arch:
-  compile_target:
-workload:
-  model:
-  precision:
-  input_length_distribution:
-  output_length_distribution:
-  batch_or_concurrency:
-  parallel_strategy:
-results:
-  correctness:
-  ttft_or_step_time:
-  tpot_or_tokens_per_second:
-  memory:
-  profiler_artifacts:
-  known_limits:
-```
-
-## 参考资料
-
-- [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 是了解 Ascend 架构识别、NpuArch、SocVersion 和条件编译组织方式的重要参考。
-- [Tom's Hardware: Huawei Ascend roadmap](https://www.tomshardware.com/tech-industry/semiconductors/huawei-unveils-ascend-roadmap-backed-by-in-house-hbm) 报道了 Ascend 950PR/950DT 和 Atlas 950 等公开路线图线索。
-- [TechRadar: Atlas 950 SuperPoD](https://www.techradar.com/pro/huawei-debuts-its-atlas-950-ai-superpod-at-mwc-2026-taking-the-ai-data-center-fight-to-nvidia-and-amd) 报道了 Atlas 950 系统形态、互连和大规模 AI 集群背景。
-
----
-
-# Document: CANN 软件栈与开发入口
-
-Source: docs/12-hardware-basics/cann-stack.md
-URL: https://amoursec.github.io/12-hardware-basics/cann-stack/
-domain: hardware
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# CANN 软件栈与开发入口
-
-CANN 可以理解为昇腾平台的核心软件栈入口。对 AI Infra 来说，它连接了硬件、编译器、runtime、框架、算子开发、模型推理优化、profiling 和问题诊断。
-
-不要把 CANN 只看成一个安装包。更实用的视角是：所有“模型能不能跑、为什么慢、哪里不支持、怎么定位”的问题，最终都会落到 CANN 与上层框架、下层硬件之间的接口上。
-
-## 软件栈位置
-
-```mermaid
-flowchart TB
-  A["应用与模型\n训练脚本 / 推理服务 / RAG 或 Agent"] --> B["AI 框架\nPyTorch / torch_npu / 推理引擎"]
-  B --> C["CANN 图、算子、编译与 Runtime"]
-  C --> D["Ascend C / 自定义算子 / Kernel / Tiling"]
-  C --> E["Profiler / Debug / Simulator / Runtime Logs"]
-  D --> F["昇腾 NPU 硬件"]
-  E --> F
-```
-
-这张图说明：当模型慢或报错时，不能只看 Python 代码，也不能直接跳到硬件参数。要先判断问题落在哪一层。
-
-## CANN 相关入口
-
-| 入口 | 典型问题 |
-| --- | --- |
-| Toolkit / Runtime / Driver | 当前软件栈是否支持目标设备、模型和编译路径。 |
-| torch_npu | PyTorch 模型如何迁移到 NPU，哪些算子有支持路径，哪里发生 fallback。 |
-| 图模式 / torch.compile | 图捕获、编译、fusion、dynamic shape 和性能稳定性。 |
-| Ascend C | 自定义算子、tiling、片上存储、数据搬运和架构特化。 |
-| Profiling | kernel、runtime、通信、内存和 host/device 时间线。 |
-| Simulator | 无真实硬件或新架构验证时的功能、性能和流水线分析入口。 |
-| Model inference skills | 模型迁移、KV Cache、fusion、量化、graph mode、多流、prefetch、superkernel 等专项优化。 |
-
-## 从问题到入口
-
-| 现象 | 优先入口 |
-| --- | --- |
-| 模型不能启动或 import 失败 | 环境、driver、CANN、torch_npu 版本。 |
-| 某个算子不支持 | 框架算子覆盖、CANN 文档、自定义算子或替代实现。 |
-| 精度对不上 | dtype、layout、融合、近似实现、随机性、算子精度调试。 |
-| 推理 TTFT 慢 | Prefill kernel、batching、KV Cache、图模式、输入长度分布。 |
-| Decode TPOT 慢 | KV Cache、attention kernel、调度、显存带宽、低精度路径。 |
-| 训练 step 慢 | data pipeline、forward/backward kernel、collective 通信、overlap、显存和 checkpoint。 |
-| 多卡扩展差 | rank mapping、通信库、网络、parallel strategy、collective timeline。 |
-| 新平台适配 | NpuArch、SocVersion、CANN 支持矩阵、simulator、最小 workload。 |
-
-## CANNBot 给知识库的启发
-
-CANNBot Skills 仓库值得参考的不是某一篇具体文档，而是它的组织方法：
-
-- 把“科普知识”与“可执行任务流程”分开。
-- 对重复性工作写 skill，例如环境检查、算子设计、代码生成、性能调优、精度调试、模型迁移、KV Cache 优化。
-- 每个 skill 关注一个明确任务，给出触发条件、输入、步骤、输出模板和引用来源。
-- 对 CANN 路径、文档、工具和环境变量做封装，避免在多个 skill 中硬编码路径。
-- 把 NPU 架构判断、profiling、simulator、Triton、TileLang、Ascend C、模型推理优化分别拆成独立能力。
-
-本仓库目前不复制 CANNBot 的内容，而是借鉴它的“工作流化知识”思路。后续团队自己的硬件适配、性能分析和故障处理经验，也应该按这个方向沉淀。
-
-## AI 诊断前应补齐的信息
-
-当把 NPU 问题交给 AI 分析时，最少提供：
-
-- 目标任务：训练、推理、算子开发、编译、模型迁移、性能调优、精度调试还是故障处理。
-- 硬件信息：设备型号、设备数量、拓扑、SocVersion、NpuArch。
-- 软件栈：CANN、driver、runtime、torch_npu、PyTorch、推理引擎、容器镜像。
-- Workload：模型、输入输出长度、batch、并发、precision、并行策略。
-- 错误或现象：完整日志、错误码、慢在哪里、是否可稳定复现。
-- 证据文件：benchmark 输出、profiler timeline、配置文件、最小复现代码。
-
-缺少这些信息时，AI 应该先要求补证据，而不是直接给结论。
-
-## 参考资料
-
-- [CANNBot Skills 项目主页](https://gitcode.com/cann/cannbot-skills) 说明该仓库为 CANN 开发提供可复用 Skills 模块。
-- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 列出了 Ascend C、PyPTO、TileLang、Triton、NPU 模型推理优化、torch.compile 等多类 skill。
-
----
-
-# Document: NPU 相关 AI Skills 样例
-
-Source: docs/12-hardware-basics/ai-skills-sample.md
-URL: https://amoursec.github.io/12-hardware-basics/ai-skills-sample/
-domain: knowledge-management
-status: draft
-owner: maintainers
-license: CC-BY-4.0
-updated: 2026-06-25
-
-# NPU 相关 AI Skills 样例
-
-不是每篇知识库文章都需要写成 skill。科普文章适合给人建立理解，也适合 AI 检索背景知识；skill 更适合沉淀“可重复执行的工作流程”。
-
-当前硬件基础章节先打一个样：`skills/npu-arch-capability-check/SKILL.md`。它不负责科普 NPU，而是指导 AI 在遇到昇腾 NPU 架构、型号、SocVersion、NpuArch、条件编译和能力判断问题时，按固定流程收集证据并输出结论。
-
-## 什么内容适合写成 skill
-
-满足下面条件的内容，适合从普通文档升级为 skill：
-
-- 这件事会反复发生，例如环境检查、模型迁移、性能剖析、精度调试、故障定位。
-- 它有稳定的输入，例如日志、配置、设备信息、benchmark、profiler、代码 diff。
-- 它有明确步骤，例如先判断版本，再查映射，再验证最小 workload。
-- 它有输出模板，例如“结论、证据、风险、下一步实验”。
-- 它需要 AI 在多个文档之间做选择，而不是只复述一段知识。
-
-不适合写成 skill 的内容：
-
-- 只解释概念的科普文章。
-- 尚未验证的个人猜想。
-- 只对一次临时问题有效的聊天记录。
-- 缺少输入、步骤和输出边界的经验片段。
-
-## skill 与普通文档的区别
-
-| 类型 | 面向谁 | 主要作用 |
-| --- | --- | --- |
-| 普通知识文档 | 人和 AI | 解释概念、流程、原理、背景和引用来源。 |
-| Benchmark report | 人和 AI | 保存实验设计、环境、原始数据、结果和结论边界。 |
-| ADR | 人和 AI | 保存技术选择、证据、取舍、回滚条件和复盘条件。 |
-| Failure case | 人和 AI | 保存故障现象、定位过程、证据链、修复和预防措施。 |
-| Skill | AI | 在特定任务中指导 AI 如何行动、追问、检查、输出。 |
-
-## 本仓库的样例结构
-
-```text
-skills/
-  README.md
-  npu-arch-capability-check/
-    SKILL.md
-```
-
-这个样例刻意保持很小，只覆盖一个任务：判断昇腾 NPU 架构能力和条件编译路径。后续可以继续扩展：
-
-- `npu-env-baseline`：收集 CANN、driver、runtime、torch_npu、设备和容器信息。
-- `npu-model-migration-baseline`：建立模型迁移的功能、精度、性能基线。
-- `npu-inference-profiling-pack`：组织推理压测、profiler、KV Cache、调度和内存证据。
-- `npu-operator-porting-review`：检查自定义算子的架构分支、tiling、片上存储和测试覆盖。
-- `npu-training-hang-triage`：整理分布式训练 hang、collective、rank、网络和 checkpoint 证据。
-
-## 程序员后续怎么补 skill
-
-1. 先用普通 Markdown 记录一次真实工作：背景、环境、现象、操作、证据、结论。
-2. 如果同类问题重复出现，把它抽象成 checklist。
-3. 如果 checklist 需要 AI 按步骤执行，就写成 `skills/<skill-name>/SKILL.md`。
-4. 在 skill 中写清楚触发条件、输入要求、流程、输出模板、风险边界和引用文档。
-5. 更新 `llms.txt` / `llms-full.txt`，让 AI 能看到新的 skill 入口。
-6. 用一个真实问题提示 AI，检查它是否会先补证据、再判断，而不是凭空给结论。
-
-## 参考资料
-
-- [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 是 CANN 生态 skill 化组织方式的参考。
-- [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 展示了算子开发、模型推理优化、Triton、TileLang、profiling、simulator 等任务如何拆成多个 skill。
 
 ---
 

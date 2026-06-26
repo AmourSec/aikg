@@ -15,7 +15,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 
 1. Start with `首页` and `知识地图` to understand the scope and structure.
 2. Read `AI 基础概念`, `Transformer 流程与原理`, `训练过程与原理`, `推理过程与原理`, and `多模态原理` for baseline AI workload understanding.
-3. For efficient computing, move to `推理系统与优化`, `Kernel、算子与编译优化`, `硬件基础`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
+3. For efficient computing, move to `硬件基础`, `推理系统与优化`, `Kernel、算子与编译优化`, `AI 加速器与计算架构`, and `性能分析、Benchmark 与容量建模`.
 4. For long-term knowledge capture, use `论文复现与系统案例`, `知识组织、模板与 AI 可读索引`, the templates, and task-oriented skill samples.
 
 ## Primary Documents
@@ -29,6 +29,13 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [训练过程与原理](https://amoursec.github.io/02-ai-workloads/training-primer/): 训练过程与原理面向新手解释大语言模型训练的最小闭环，覆盖 next-token prediction、shifted labels、batch、step、epoch、forward、logits、cross entropy loss、有效 token loss 汇总、backward、autograd graph、梯度、optimizer step、learning rate、zero_grad、mini-batch 估计、validation/test、pretraining、finetuning、post-training、checkpoint、模型权重产物，以及训练和推理的区别。
 - [推理过程与原理](https://amoursec.github.io/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [多模态原理](https://amoursec.github.io/02-ai-workloads/multimodal-primer/): 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。
+- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，聚焦 NPU、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
+- [NPU 基础概念](https://amoursec.github.io/12-hardware-basics/npu-basics/): NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。
+- [昇腾 NPU 型号与架构映射](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): 昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
+- [Ascend 910 系列](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
+- [Ascend 950 系列](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
+- [CANN 软件栈与开发入口](https://amoursec.github.io/12-hardware-basics/cann-stack/): CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
+- [NPU 相关 AI Skills 样例](https://amoursec.github.io/12-hardware-basics/ai-skills-sample/): NPU 相关 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
 - [推理系统与优化](https://amoursec.github.io/03-inference-systems/): 推理系统与优化主题入口。
 - [推理请求生命周期](https://amoursec.github.io/03-inference-systems/request-lifecycle/): 推理请求从 API 接入到 Decode、流式返回和资源释放的端到端生命周期。
 - [Prefill 与 Decode](https://amoursec.github.io/03-inference-systems/prefill-decode/): Prefill 与 Decode 两阶段的计算形态、指标关系和系统瓶颈。
@@ -37,6 +44,9 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [KV Cache](https://amoursec.github.io/03-inference-systems/kv-cache/): KV Cache 在 Decode 中复用历史上下文，并影响显存、并发、长上下文和调度。
 - [PagedAttention](https://amoursec.github.io/03-inference-systems/paged-attention/): PagedAttention 用 block table 和块式 KV Cache 管理减少显存碎片与预留浪费。
 - [Prefix Cache](https://amoursec.github.io/03-inference-systems/prefix-cache/): Prefix Cache 复用相同 prompt 前缀的 KV Cache，降低重复 Prefill 和 TTFT。
+
+## Optional Documents
+
 - [调度策略](https://amoursec.github.io/03-inference-systems/scheduling/): 推理调度策略如何在队列、优先级、SLO、缓存、准入控制和公平性之间取舍。
 - [量化推理](https://amoursec.github.io/03-inference-systems/quantization/): 量化推理用低精度权重、激活或 KV Cache 降低显存、带宽和推理成本。
 - [Speculative Decoding](https://amoursec.github.io/03-inference-systems/speculative-decoding/): Speculative Decoding 用 draft 和 verify 减少目标模型逐 token Decode 等待。
@@ -44,9 +54,6 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [MoE 模型推理优化](https://amoursec.github.io/03-inference-systems/moe-inference-optimization/): MoE 推理优化关注专家路由、dispatch/combine、负载不均、通信和专家权重放置。
 - [EP Size 与大 EP / 小 EP](https://amoursec.github.io/03-inference-systems/ep-size-large-small-ep/): EP Size 与大 EP / 小 EP 说明 MoE 专家并行大小如何影响每卡专家显存、all-to-all 通信范围、DP 副本、Prefill/Decode 和尾延迟。
 - [单机推理服务架构](https://amoursec.github.io/03-inference-systems/single-node-serving-architecture/): 单机推理服务架构梳理 API、tokenizer、scheduler、GPU executor、KV Cache、streaming 和可观测性。
-
-## Optional Documents
-
 - [多机分布式推理](https://amoursec.github.io/03-inference-systems/distributed-inference/): 多机分布式推理关注 data/tensor/pipeline/expert parallel、通信、路由、KV Cache 状态和故障恢复。
 - [缓存体系](https://amoursec.github.io/03-inference-systems/cache-system/): 缓存体系统一梳理 query、embedding、retrieval、prefix、KV、tool result、response 和 model artifact cache。
 - [Benchmark 方法](https://amoursec.github.io/03-inference-systems/benchmark-methodology/): Benchmark 方法说明如何设计可复现的推理压测 workload、指标、SLO 和实验记录。
@@ -94,13 +101,6 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [MLIR 与 AI 编译 IR](https://amoursec.github.io/05-kernels-compilers/mlir-ai-compiler-ir/): MLIR 与 AI 编译 IR 解释为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、loop/tile/vector/GPU 层级、MLIR 与 Triton/TorchInductor/TileLang/MegaKernel 的关系、IR 能解决和不能解决的问题、读 IR 的方法、常见误区和工程检查清单。
 - [TileLang：面向 AI Kernel 的 Tile 编程模型](https://amoursec.github.io/05-kernels-compilers/tilelang/): TileLang：面向 AI Kernel 的 Tile 编程模型解释 tile-oriented DSL 在 AI kernel 中的位置，覆盖 tile、dataflow、schedule、layout、thread binding、pipeline、tensorization、autotuning、OpenTileIR/open tile IR 方向、与 Triton/TVM/MLIR 的关系、适用场景、benchmark 方法和工程检查清单。
 - [MegaKernel、Persistent Kernel 与自动生成](https://amoursec.github.io/05-kernels-compilers/megakernel-persistent-automatic-generation/): MegaKernel / mega kernel / mega-kernel、Persistent Kernel 与自动生成解释普通 fusion、CUDA Graph、persistent kernel、MegaKernel 的区别，覆盖 LLM 推理为何关注 persistent kernel、Triton MegaKernel、Ascend C MegaKernel-style 实现、自动生成 pipeline、任务图/Event/IR-based 方向、收益来源、风险、benchmark 方法和设计决策表。
-- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，聚焦 NPU、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
-- [NPU 基础概念](https://amoursec.github.io/12-hardware-basics/npu-basics/): NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。
-- [昇腾 NPU 型号与架构映射](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): 昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
-- [Ascend 910 系列](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
-- [Ascend 950 系列](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
-- [CANN 软件栈与开发入口](https://amoursec.github.io/12-hardware-basics/cann-stack/): CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
-- [NPU 相关 AI Skills 样例](https://amoursec.github.io/12-hardware-basics/ai-skills-sample/): NPU 相关 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
 - [AI 加速器与计算架构](https://amoursec.github.io/06-accelerators-architecture/): AI 加速器与计算架构主题入口，关注 GPU、NPU、TPU、ASIC、FPGA 的计算、存储、互连、能效和可编程性。
 - [AI 加速器性能模型：算力、带宽与 Roofline](https://amoursec.github.io/06-accelerators-architecture/performance-model-roofline/): AI 加速器性能模型用 arithmetic intensity、ridge point、多重 Roofline、compute/memory/network/energy roof、FLOPs/bytes 口径、compute-bound、memory-bound、launch-bound、HBM、片上存储、矩阵单元、低精度、Prefill/Decode、训练、MoE、互连、能效、硬件选型和 benchmark 分析硬件真实性能上限。
 - [计算单元：SIMT、Tensor Core 与矩阵引擎](https://amoursec.github.io/06-accelerators-architecture/compute-units-simt-tensorcore/): 计算单元：SIMT、Tensor Core 与矩阵引擎解释 SIMD/SIMT、masked execution、warp、warp scheduler、SM、occupancy、register/shared memory、Tensor Core tile/fragment/accumulator、Matrix Core、systolic array、NPU/ASIC 取舍、vector/scalar/load-store/SFU、稀疏、不规则访存、动态控制流、Transformer/MoE/Prefill/Decode 映射、并行切分、kernel fusion、profiler 指标和真实矩阵单元利用率。
@@ -163,6 +163,13 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [02-ai-workloads/training-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/training-primer.md)
 - [02-ai-workloads/inference-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/inference-primer.md)
 - [02-ai-workloads/multimodal-primer.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/02-ai-workloads/multimodal-primer.md)
+- [12-hardware-basics/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/index.md)
+- [12-hardware-basics/npu-basics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/npu-basics.md)
+- [12-hardware-basics/ascend-npu-models.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-npu-models.md)
+- [12-hardware-basics/ascend-910-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-910-series.md)
+- [12-hardware-basics/ascend-950-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-950-series.md)
+- [12-hardware-basics/cann-stack.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/cann-stack.md)
+- [12-hardware-basics/ai-skills-sample.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ai-skills-sample.md)
 - [03-inference-systems/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/index.md)
 - [03-inference-systems/request-lifecycle.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/request-lifecycle.md)
 - [03-inference-systems/prefill-decode.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/03-inference-systems/prefill-decode.md)
@@ -225,13 +232,6 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [05-kernels-compilers/mlir-ai-compiler-ir.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/mlir-ai-compiler-ir.md)
 - [05-kernels-compilers/tilelang.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/tilelang.md)
 - [05-kernels-compilers/megakernel-persistent-automatic-generation.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/05-kernels-compilers/megakernel-persistent-automatic-generation.md)
-- [12-hardware-basics/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/index.md)
-- [12-hardware-basics/npu-basics.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/npu-basics.md)
-- [12-hardware-basics/ascend-npu-models.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-npu-models.md)
-- [12-hardware-basics/ascend-910-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-910-series.md)
-- [12-hardware-basics/ascend-950-series.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ascend-950-series.md)
-- [12-hardware-basics/cann-stack.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/cann-stack.md)
-- [12-hardware-basics/ai-skills-sample.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/12-hardware-basics/ai-skills-sample.md)
 - [06-accelerators-architecture/index.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/index.md)
 - [06-accelerators-architecture/performance-model-roofline.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/performance-model-roofline.md)
 - [06-accelerators-architecture/compute-units-simt-tensorcore.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/06-accelerators-architecture/compute-units-simt-tensorcore.md)
