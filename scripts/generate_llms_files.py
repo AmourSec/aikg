@@ -218,7 +218,7 @@ DESCRIPTIONS = {
     "05-kernels-compilers/tilelang.md": "TileLang：面向 AI Kernel 的 Tile 编程模型解释 tile-oriented DSL 在 AI kernel 中的位置，覆盖 tile、dataflow、schedule、layout、thread binding、pipeline、tensorization、autotuning、OpenTileIR/open tile IR 方向、与 Triton/TVM/MLIR 的关系、适用场景、benchmark 方法和工程检查清单。",
     "05-kernels-compilers/megakernel-persistent-automatic-generation.md": "MegaKernel / mega kernel / mega-kernel、Persistent Kernel 与自动生成解释普通 fusion、CUDA Graph、persistent kernel、MegaKernel 的区别，覆盖 LLM 推理为何关注 persistent kernel、Triton MegaKernel、Ascend C MegaKernel-style 实现、自动生成 pipeline、任务图/Event/IR-based 方向、收益来源、风险、benchmark 方法和设计决策表。",
     "12-hardware-basics/index.md": "硬件基础章节入口，聚焦 GPU 架构、NPU 基础、GPU/NPU 对比、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。",
-    "12-hardware-basics/gpu-architecture-basics.md": "GPU 架构基础解释 GPU 为什么适合 AI 计算，覆盖 host、kernel、grid/block/thread、SM、warp、SIMT、Tensor Core、register、shared memory、L2、HBM、interconnect、AI 算子映射、内存层次、常见性能瓶颈、优化方向、profiling 和最小实验记录清单。",
+    "12-hardware-basics/gpu-architecture-basics.md": "GPU 架构基础结合 NVIDIA 官方架构图解释 GPU 为什么适合 AI 计算，覆盖官方图谱阅读顺序、host/device、kernel launch、grid/block/thread、SM、warp、SIMT、Tensor Core、register、shared memory、L2、HBM、interconnect、GEMM/Attention 数据流、关键硬件单元用法、常见操作、性能瓶颈、优化方向、profiling 和最小实验记录清单。",
     "12-hardware-basics/npu-basics.md": "NPU 基础概念解释 NPU 执行模型、计算单元、片上存储、HBM、数据搬运、compiler、runtime、profiling，以及 AI Infra 为什么要把硬件、软件栈和 workload 证据连起来。",
     "12-hardware-basics/gpu-npu-comparison.md": "GPU 与 NPU 异同点从执行模型、编程模型、内存与数据搬运、算子覆盖、模型迁移、推理、训练、常见误区、选型和迁移检查清单比较 GPU/NPU，强调用 benchmark、profiler 和 workload manifest 做工程判断。",
     "12-hardware-basics/ascend-npu-models.md": "昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。",

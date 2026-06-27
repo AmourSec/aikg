@@ -26,7 +26,7 @@ sources:
 
 | 主题 | 解决的问题 |
 | --- | --- |
-| [GPU 架构基础](gpu-architecture-basics.md) | GPU 为什么适合 AI 计算，SM、warp、SIMT、Tensor Core、显存层次和 kernel 执行是什么关系。 |
+| [GPU 架构基础](gpu-architecture-basics.md) | 结合 NVIDIA 官方架构图理解 GPU、host/device、grid/block/thread、SM、warp、Tensor Core、显存层次和常见操作。 |
 | [NPU 基础概念](npu-basics.md) | NPU 是什么，为什么 AI 系统工程师需要理解 NPU 的执行模型和软件栈。 |
 | [GPU 与 NPU 异同点](gpu-npu-comparison.md) | GPU/NPU 在执行模型、软件栈、内存、算子覆盖、训练推理和迁移适配上有什么相同和不同。 |
 | [昇腾 NPU 型号与架构映射](ascend-npu-models.md) | 产品名、芯片型号、SocVersion、NpuArch、编译宏之间是什么关系。 |
