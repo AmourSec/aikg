@@ -44,7 +44,7 @@ updated: 2026-06-26
       <ul>
         <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：GPU / NPU / 昇腾平台</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/gpu-architecture-basics/">GPU 架构基础</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 基础概念</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 架构基础</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/gpu-npu-comparison/">GPU 与 NPU 异同点</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">昇腾 NPU 型号与架构映射</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列</a></li>
@@ -169,7 +169,7 @@ updated: 2026-06-26
 ### 硬件基础
 
 - GPU 入门：[GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md)
-- NPU 入门：[NPU 基础概念](12-hardware-basics/npu-basics.md)
+- NPU 入门：[NPU 架构基础](12-hardware-basics/npu-basics.md)
 - GPU/NPU 对比：[GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md)
 - 昇腾平台：[昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列](12-hardware-basics/ascend-950-series.md)
 - 软件栈与 AI 输入：[CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)、[NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
@@ -252,8 +252,8 @@ updated: 2026-06-26
 | 想降低训练显存和提升稳定性 | [显存组成与优化总览](04-training-systems/memory-composition-optimization.md) -> [Activation Checkpointing](04-training-systems/activation-checkpointing.md) -> [混合精度训练](04-training-systems/mixed-precision-training.md) -> [训练稳定性与数值异常](04-training-systems/training-stability-numerical-debugging.md) |
 | 想做 Kernel 或编译优化 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) |
 | 想研究 MegaKernel / Persistent Kernel | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) |
-| 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md) -> [CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
-| 想做 AI 加速器或硬件架构 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) -> [NPU 基础概念](12-hardware-basics/npu-basics.md) -> [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
+| 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md) -> [CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
+| 想做 AI 加速器或硬件架构 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
 | 想建设稳定集群或实验平台 | [AI 集群架构总览](07-cluster-infra/ai-cluster-architecture-overview.md) -> [调度系统与资源队列](07-cluster-infra/scheduling-queues-resource-management.md) -> [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md) -> [RDMA 网络与 NCCL 拓扑](07-cluster-infra/rdma-network-nccl-topology-congestion.md) -> [存储、数据缓存与 Checkpoint](07-cluster-infra/storage-data-cache-checkpoint.md) |
 | 想做 Benchmark 和容量规划 | [性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md) -> [Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md) -> [推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md) -> [训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md) -> [成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md) |
 | 想做可靠性和事故复盘 | [AI 系统可观测性总览](09-reliability-observability/observability-overview-signals.md) -> [SLO、SLI、错误预算与告警策略](09-reliability-observability/slo-sli-error-budget-alerting.md) -> [AI 系统故障模式](09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage.md) -> [Incident Response、Runbook 与故障复盘](09-reliability-observability/incident-response-runbook-postmortem.md) |

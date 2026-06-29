@@ -1,5 +1,5 @@
 ---
-title: NPU 基础概念
+title: NPU 架构基础
 domain: hardware
 doc_type: knowledge
 status: draft
@@ -14,7 +14,7 @@ sources:
   - https://www.hiascend.com/cann/document
 ---
 
-# NPU 基础概念
+# NPU 架构基础
 
 NPU 可以先理解成“为神经网络计算设计的 AI 加速器”。它不是只会运行某一个模型的固定电路，而是通过软件栈把模型里的矩阵乘、Attention、归一化、激活函数、数据搬运和通信，映射到专门的计算单元、片上存储和外部显存上。
 

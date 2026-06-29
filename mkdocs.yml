@@ -68,7 +68,7 @@ nav:
   - 硬件基础:
       - 概览: 12-hardware-basics/index.md
       - GPU 架构基础: 12-hardware-basics/gpu-architecture-basics.md
-      - NPU 基础概念: 12-hardware-basics/npu-basics.md
+      - NPU 架构基础: 12-hardware-basics/npu-basics.md
       - GPU 与 NPU 异同点: 12-hardware-basics/gpu-npu-comparison.md
       - 昇腾 NPU 型号与架构映射: 12-hardware-basics/ascend-npu-models.md
       - Ascend 910 系列: 12-hardware-basics/ascend-910-series.md
