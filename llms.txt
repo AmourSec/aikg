@@ -34,8 +34,8 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [NPU 架构基础](https://amoursec.github.io/12-hardware-basics/npu-basics/): NPU 架构基础结合 Ascend/CANN 官方与准官方架构图解释 NPU 执行模型、AI Core、Cube、Vector、Scalar、MTE/DataCopy、Local Memory、Global Memory/HBM、UB、L1、L0A/L0B/L0C、Cube 计算单元、UB 存储结构、Tiling、TPipe/TQue、GlobalTensor/LocalTensor、SIMD/SIMT/RegBase、compiler、runtime、profiling、AI workload 映射和 NPU 实验最小记录清单。
 - [GPU 与 NPU 异同点](https://amoursec.github.io/12-hardware-basics/gpu-npu-comparison/): GPU 与 NPU 异同点从执行模型、编程模型、内存与数据搬运、算子覆盖、模型迁移、推理、训练、常见误区、选型和迁移检查清单比较 GPU/NPU，强调用 benchmark、profiler 和 workload manifest 做工程判断。
 - [Ascend 型号、SocVersion 与 NpuArch](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): Ascend 型号、SocVersion 与 NpuArch 解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
-- [Ascend 910 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列平台要点说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
-- [Ascend 950 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列平台要点说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
+- [Ascend 910 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列平台要点结合 CANN/asc-devkit 官方或准官方架构图解释 910B/910_93、DAV_2201、Atlas A2/A3、AIC/AIV 分离、Cube、Vector、Scalar、MTE/DataCopy、UB、L1、L0A/L0B/L0C、Fixpipe、分形格式、训练/推理/算子场景、平台能力查询、Vector Add 骨架和按架构选择 2201 路径的代码样例。
+- [Ascend 950 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列平台要点结合 CANN/asc-devkit 官方或准官方架构图解释 950PR、950DT、DAV_3510、SIMT、SIMD-Regbase、L0C->UB、UB->L1、SSBuffer、ND-DMA、FP8/MX/HiF8、Cube、UB、L0C、HCCL 通信、2201 到 3510 迁移差异、平台能力查询、MatMul epilogue 和 SIMT gather 代码骨架。
 - [Ascend/CANN 软件栈与开发入口](https://amoursec.github.io/12-hardware-basics/cann-stack/): Ascend/CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
 - [硬件适配 AI Skills 样例](https://amoursec.github.io/12-hardware-basics/ai-skills-sample/): 硬件适配 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
 - [推理系统与优化](https://amoursec.github.io/03-inference-systems/): 推理系统与优化主题入口。
@@ -147,6 +147,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [知识点模板：从概念解释到 AI 可读卡片](https://amoursec.github.io/99-templates/knowledge-note/): 知识点模板说明如何撰写 AI Infra 普通知识点文章，覆盖适用场景、最小模板、完整推荐模板、front matter、domain/doc_type/status/workload/system_layer/metrics/sources 字段、系统对象、成本模型、指标体系、适用范围、相关技术、Benchmark 方法、证据来源、AI-readable knowledge card、写作规则、常见误区和模板质量门禁。
 - [技术决策模板：从问题、证据到可追溯决策](https://amoursec.github.io/99-templates/adr/): 技术决策模板说明如何撰写 AI Infra ADR，覆盖使用场景、文件命名、状态流转、最小模板、完整推荐模板、decision question、context、workload contract、system scope、decision drivers、options、evidence matrix、benchmark evidence、evidence level、decision、consequences、cost model、reliability impact、implementation plan、rollout、rollback、confirmation、revisit condition、AI-readable ADR card、字段说明、写作规则、常见误区、质量门禁以及与知识点、Benchmark、Failure Case、Runbook 和 Paper Note 的关系。
 - [基准实验报告模板：从问题设计到可复现实验](https://amoursec.github.io/99-templates/benchmark-report/): 基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。
+- [Ascend architecture image assets](https://amoursec.github.io/assets/images/ascend/README/): 补充文档或模板。
 
 ## AI Skill Samples
 
@@ -280,6 +281,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [99-templates/knowledge-note.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/knowledge-note.md)
 - [99-templates/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/adr.md)
 - [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/99-templates/benchmark-report.md)
+- [assets/images/ascend/README.md](https://raw.githubusercontent.com/AmourSec/aikg/main/docs/assets/images/ascend/README.md)
 - [skills/npu-arch-capability-check/SKILL.md](https://raw.githubusercontent.com/AmourSec/aikg/main/skills/npu-arch-capability-check/SKILL.md)
 
 ## AI Usage Notes

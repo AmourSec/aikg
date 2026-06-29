@@ -1,0 +1,11 @@
+Ascend architecture image assets
+
+This directory contains local copies of architecture figures used by the hardware basics pages.
+
+Source:
+
+- CANN asc-devkit: https://gitcode.com/cann/asc-devkit
+
+The image assets are copied from CANN asc-devkit only to make the published documentation render reliably on GitHub Pages. Their copyright and license terms remain with the original project and rights holder. Do not treat these images as original CC-BY-4.0 content from this repository.
+
+The surrounding documentation text remains under this repository's stated documentation license unless a page says otherwise.
