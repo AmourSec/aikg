@@ -29,15 +29,15 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [训练过程与原理](https://amoursec.github.io/02-ai-workloads/training-primer/): 训练过程与原理面向新手解释大语言模型训练的最小闭环，覆盖 next-token prediction、shifted labels、batch、step、epoch、forward、logits、cross entropy loss、有效 token loss 汇总、backward、autograd graph、梯度、optimizer step、learning rate、zero_grad、mini-batch 估计、validation/test、pretraining、finetuning、post-training、checkpoint、模型权重产物，以及训练和推理的区别。
 - [推理过程与原理](https://amoursec.github.io/02-ai-workloads/inference-primer/): 推理如何读取 prompt，并逐 token 生成回答。
 - [多模态原理](https://amoursec.github.io/02-ai-workloads/multimodal-primer/): 多模态理解如何读懂图片、音频、视频，多模态生成如何生成新内容。
-- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，聚焦 GPU 架构、NPU 基础、GPU/NPU 对比、昇腾 Ascend/CANN 平台、型号映射、软件栈和 AI skill 样例。
+- [硬件基础](https://amoursec.github.io/12-hardware-basics/): 硬件基础章节入口，按通用硬件架构、昇腾平台与 CANN、硬件知识沉淀三组组织 GPU 架构、NPU 架构、GPU/NPU 对比、Ascend 型号、SocVersion、NpuArch、Ascend 910/950、CANN 软件栈和硬件适配 AI skill 样例。
 - [GPU 架构基础](https://amoursec.github.io/12-hardware-basics/gpu-architecture-basics/): GPU 架构基础结合 NVIDIA 官方架构图解释 GPU 为什么适合 AI 计算，覆盖官方图谱阅读顺序、host/device、kernel launch、grid/block/thread、SM、warp、SIMT、Tensor Core、register、shared memory、L2、HBM、interconnect、GEMM/Attention 数据流、关键硬件单元用法、常见操作、性能瓶颈、优化方向、profiling 和最小实验记录清单。
 - [NPU 架构基础](https://amoursec.github.io/12-hardware-basics/npu-basics/): NPU 架构基础结合 Ascend/CANN 官方与准官方架构图解释 NPU 执行模型、AI Core、Cube、Vector、Scalar、MTE/DataCopy、Local Memory、Global Memory/HBM、UB、L1、L0A/L0B/L0C、Cube 计算单元、UB 存储结构、Tiling、TPipe/TQue、GlobalTensor/LocalTensor、SIMD/SIMT/RegBase、compiler、runtime、profiling、AI workload 映射和 NPU 实验最小记录清单。
 - [GPU 与 NPU 异同点](https://amoursec.github.io/12-hardware-basics/gpu-npu-comparison/): GPU 与 NPU 异同点从执行模型、编程模型、内存与数据搬运、算子覆盖、模型迁移、推理、训练、常见误区、选型和迁移检查清单比较 GPU/NPU，强调用 benchmark、profiler 和 workload manifest 做工程判断。
-- [昇腾 NPU 型号与架构映射](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): 昇腾 NPU 型号与架构映射解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
-- [Ascend 910 系列](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
-- [Ascend 950 系列](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
-- [CANN 软件栈与开发入口](https://amoursec.github.io/12-hardware-basics/cann-stack/): CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
-- [NPU 相关 AI Skills 样例](https://amoursec.github.io/12-hardware-basics/ai-skills-sample/): NPU 相关 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
+- [Ascend 型号、SocVersion 与 NpuArch](https://amoursec.github.io/12-hardware-basics/ascend-npu-models/): Ascend 型号、SocVersion 与 NpuArch 解释产品系列、芯片型号、SocVersion、NpuArch、__NPU_ARCH__、archXX 的关系，并给出 Ascend 910B、910_93、950PR、950DT 的工程判断边界。
+- [Ascend 910 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-910-series/): Ascend 910 系列平台要点说明 910、910B、910_93 在服务器训练、推理、算子和编译优化中的学习重点、实验清单和 CANN 上下文记录方式。
+- [Ascend 950 系列平台要点](https://amoursec.github.io/12-hardware-basics/ascend-950-series/): Ascend 950 系列平台要点说明 950PR、950DT、DAV_3510、Atlas 950/A5 的公开线索、验证边界、Prefill/Decode、低精度、通信扩展和 skill 沉淀方向。
+- [Ascend/CANN 软件栈与开发入口](https://amoursec.github.io/12-hardware-basics/cann-stack/): Ascend/CANN 软件栈与开发入口解释 Toolkit、Runtime、Driver、torch_npu、图模式、Ascend C、profiling、simulator、模型推理优化和 AI 诊断证据收集。
+- [硬件适配 AI Skills 样例](https://amoursec.github.io/12-hardware-basics/ai-skills-sample/): 硬件适配 AI Skills 样例解释普通文档、benchmark、ADR、failure case 与 skill 的区别，并给出 NPU 架构能力判断 skill 的组织方式。
 - [推理系统与优化](https://amoursec.github.io/03-inference-systems/): 推理系统与优化主题入口。
 - [推理请求生命周期](https://amoursec.github.io/03-inference-systems/request-lifecycle/): 推理请求从 API 接入到 Decode、流式返回和资源释放的端到端生命周期。
 - [Prefill 与 Decode](https://amoursec.github.io/03-inference-systems/prefill-decode/): Prefill 与 Decode 两阶段的计算形态、指标关系和系统瓶颈。

@@ -67,14 +67,17 @@ nav:
       - 多模态原理: 02-ai-workloads/multimodal-primer.md
   - 硬件基础:
       - 概览: 12-hardware-basics/index.md
-      - GPU 架构基础: 12-hardware-basics/gpu-architecture-basics.md
-      - NPU 架构基础: 12-hardware-basics/npu-basics.md
-      - GPU 与 NPU 异同点: 12-hardware-basics/gpu-npu-comparison.md
-      - 昇腾 NPU 型号与架构映射: 12-hardware-basics/ascend-npu-models.md
-      - Ascend 910 系列: 12-hardware-basics/ascend-910-series.md
-      - Ascend 950 系列: 12-hardware-basics/ascend-950-series.md
-      - CANN 软件栈与开发入口: 12-hardware-basics/cann-stack.md
-      - NPU 相关 AI Skills 样例: 12-hardware-basics/ai-skills-sample.md
+      - 通用硬件架构:
+          - GPU 架构基础: 12-hardware-basics/gpu-architecture-basics.md
+          - NPU 架构基础: 12-hardware-basics/npu-basics.md
+          - GPU 与 NPU 异同点: 12-hardware-basics/gpu-npu-comparison.md
+      - 昇腾平台与 CANN:
+          - Ascend 型号、SocVersion 与 NpuArch: 12-hardware-basics/ascend-npu-models.md
+          - Ascend 910 系列平台要点: 12-hardware-basics/ascend-910-series.md
+          - Ascend 950 系列平台要点: 12-hardware-basics/ascend-950-series.md
+          - Ascend/CANN 软件栈与开发入口: 12-hardware-basics/cann-stack.md
+      - 硬件知识沉淀:
+          - 硬件适配 AI Skills 样例: 12-hardware-basics/ai-skills-sample.md
   - 推理系统与优化:
       - 概览: 03-inference-systems/index.md
       - 推理请求生命周期: 03-inference-systems/request-lifecycle.md

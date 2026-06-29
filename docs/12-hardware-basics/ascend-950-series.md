@@ -1,18 +1,18 @@
 ---
-title: Ascend 950 系列
+title: Ascend 950 系列平台要点
 domain: hardware
 doc_type: knowledge
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-06-29
 sources:
   - https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md
   - https://www.tomshardware.com/tech-industry/semiconductors/huawei-unveils-ascend-roadmap-backed-by-in-house-hbm
   - https://www.techradar.com/pro/huawei-debuts-its-atlas-950-ai-superpod-at-mwc-2026-taking-the-ai-data-center-fight-to-nvidia-and-amd
 ---
 
-# Ascend 950 系列
+# Ascend 950 系列平台要点
 
 Ascend 950 系列在公开资料和 CANNBot skill 中已经出现较多线索，但对工程知识库来说，第一原则是：把它当作“需要持续验证的新平台”，不要把媒体报道或规划信息直接写成最终硬件事实。
 

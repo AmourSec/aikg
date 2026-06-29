@@ -42,15 +42,18 @@ updated: 2026-06-26
     <section class="kg-mindmap-branch">
       <a class="kg-branch-title" href="../12-hardware-basics/">硬件基础</a>
       <ul>
-        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：GPU / NPU / 昇腾平台</a></li>
+        <li class="kg-node-main"><a href="../12-hardware-basics/">硬件基础：架构 / 平台 / 知识沉淀</a></li>
+        <li class="kg-node-note"><span>通用硬件架构</span></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/gpu-architecture-basics/">GPU 架构基础</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/npu-basics/">NPU 架构基础</a></li>
         <li class="kg-node-child"><a href="../12-hardware-basics/gpu-npu-comparison/">GPU 与 NPU 异同点</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">昇腾 NPU 型号与架构映射</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-950-series/">Ascend 950 系列</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/cann-stack/">CANN 软件栈与开发入口</a></li>
-        <li class="kg-node-child"><a href="../12-hardware-basics/ai-skills-sample/">NPU 相关 AI Skills 样例</a></li>
+        <li class="kg-node-note"><span>昇腾平台与 CANN</span></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-npu-models/">Ascend 型号、SocVersion 与 NpuArch</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-910-series/">Ascend 910 系列平台要点</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ascend-950-series/">Ascend 950 系列平台要点</a></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/cann-stack/">Ascend/CANN 软件栈与开发入口</a></li>
+        <li class="kg-node-note"><span>硬件知识沉淀</span></li>
+        <li class="kg-node-child"><a href="../12-hardware-basics/ai-skills-sample/">硬件适配 AI Skills 样例</a></li>
         <li class="kg-node-note"><span>关键词：GPU / SM / warp / Tensor Core / NPU / Ascend / Atlas / CANN / SocVersion / NpuArch / __NPU_ARCH__ / skills</span></li>
       </ul>
     </section>
@@ -147,7 +150,7 @@ updated: 2026-06-26
 | --- | --- | --- |
 | 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载基础 | 只做入门科普：讲清 AI 基础概念、Transformer、训练、推理和多模态原理。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) |
-| 具体硬件平台 | 研究 GPU/NPU 执行模型、GPU 与 NPU 差异、昇腾型号映射、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
+| 具体硬件平台 | 研究 GPU/NPU 架构基础、GPU 与 NPU 差异、Ascend 型号与 NpuArch、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
 | 推理系统 | 从请求生命周期出发，理解 Prefill/Decode、指标、batching、KV Cache、调度、部署架构、推理引擎和 RAG/Agent 负载。 | [3 推理系统与优化](03-inference-systems/index.md) |
 | 训练系统 | 从训练 step 出发，理解数据、batch、loss、backward、分布式通信、并行策略、显存、稳定性、优化器、后训练和 benchmark。 | [4 训练系统与优化](04-training-systems/index.md) |
 | 单机执行与编译 | 研究 Attention、Triton、TorchInductor、MLIR、TileLang、MegaKernel 如何决定 kernel 级性能和自动生成能力。 | [5 Kernel、算子与编译优化](05-kernels-compilers/index.md) |
@@ -168,11 +171,9 @@ updated: 2026-06-26
 
 ### 硬件基础
 
-- GPU 入门：[GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md)
-- NPU 入门：[NPU 架构基础](12-hardware-basics/npu-basics.md)
-- GPU/NPU 对比：[GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md)
-- 昇腾平台：[昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列](12-hardware-basics/ascend-950-series.md)
-- 软件栈与 AI 输入：[CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)、[NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
+- 通用硬件架构：[GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md)、[NPU 架构基础](12-hardware-basics/npu-basics.md)、[GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md)
+- 昇腾平台与 CANN：[Ascend 型号、SocVersion 与 NpuArch](12-hardware-basics/ascend-npu-models.md)、[Ascend 910 系列平台要点](12-hardware-basics/ascend-910-series.md)、[Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md)、[Ascend/CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md)
+- 硬件知识沉淀：[硬件适配 AI Skills 样例](12-hardware-basics/ai-skills-sample.md)
 
 ### 3 推理系统与优化
 
@@ -252,7 +253,7 @@ updated: 2026-06-26
 | 想降低训练显存和提升稳定性 | [显存组成与优化总览](04-training-systems/memory-composition-optimization.md) -> [Activation Checkpointing](04-training-systems/activation-checkpointing.md) -> [混合精度训练](04-training-systems/mixed-precision-training.md) -> [训练稳定性与数值异常](04-training-systems/training-stability-numerical-debugging.md) |
 | 想做 Kernel 或编译优化 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) |
 | 想研究 MegaKernel / Persistent Kernel | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) |
-| 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [昇腾 NPU 型号与架构映射](12-hardware-basics/ascend-npu-models.md) -> [CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [NPU 相关 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
+| 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [Ascend 型号、SocVersion 与 NpuArch](12-hardware-basics/ascend-npu-models.md) -> [Ascend/CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [硬件适配 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
 | 想做 AI 加速器或硬件架构 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
 | 想建设稳定集群或实验平台 | [AI 集群架构总览](07-cluster-infra/ai-cluster-architecture-overview.md) -> [调度系统与资源队列](07-cluster-infra/scheduling-queues-resource-management.md) -> [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md) -> [RDMA 网络与 NCCL 拓扑](07-cluster-infra/rdma-network-nccl-topology-congestion.md) -> [存储、数据缓存与 Checkpoint](07-cluster-infra/storage-data-cache-checkpoint.md) |
 | 想做 Benchmark 和容量规划 | [性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md) -> [Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md) -> [推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md) -> [训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md) -> [成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md) |
@@ -265,7 +266,7 @@ updated: 2026-06-26
 | --- | --- | --- |
 | 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理 |
-| 硬件基础 | 2、5、6、8 | GPU 架构、NPU 基础、GPU/NPU 对比、昇腾型号映射、Ascend 910/950、CANN 软件栈、平台证据收集和 AI skill 样例 |
+| 硬件基础 | 2、5、6、8 | GPU/NPU 架构基础、GPU/NPU 对比、Ascend 型号与 NpuArch、Ascend 910/950、CANN 软件栈、平台证据收集和硬件适配 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
 | 4 训练系统与优化 | 2、5、6、7、8、硬件基础 | 数据、batch、loss、backward、并行策略、通信、显存、稳定性、优化器、后训练、checkpoint 和 benchmark |
 | 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化和自动调优 |

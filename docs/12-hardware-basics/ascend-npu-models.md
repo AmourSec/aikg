@@ -1,17 +1,17 @@
 ---
-title: 昇腾 NPU 型号与架构映射
+title: Ascend 型号、SocVersion 与 NpuArch
 domain: hardware
 doc_type: knowledge
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-06-29
 sources:
   - https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md
   - https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/references/npu-hardware-params.md
 ---
 
-# 昇腾 NPU 型号与架构映射
+# Ascend 型号、SocVersion 与 NpuArch
 
 做昇腾平台适配时，最容易混淆的是“产品名、芯片型号、软件识别名、架构号、编译宏”这几层。工程上不能只写“910B”或“950”，因为同一代产品可能有多个子型号，同一个架构号也可能覆盖多个具体设备形态。
 
@@ -79,4 +79,3 @@ sources:
 - [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 提供了面向 CANN 开发的 skill 组织方式。
 - [CANNBot npu-arch skill](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/SKILL.md) 展示了如何把 NpuArch、SocVersion、编译宏和架构差异组织成可调用知识。
 - [CANNBot NPU 硬件参数参考](https://gitcode.com/cann/cannbot-skills/blob/master/ops/npu-arch/references/npu-hardware-params.md) 给出了硬件映射和参数来源说明；本仓库只抽象组织方法，不复制其内部表格作为真源。
-

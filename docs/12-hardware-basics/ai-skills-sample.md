@@ -1,17 +1,17 @@
 ---
-title: NPU 相关 AI Skills 样例
+title: 硬件适配 AI Skills 样例
 domain: knowledge-management
 doc_type: guide
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-06-29
 sources:
   - https://gitcode.com/cann/cannbot-skills
   - https://gitcode.com/cann/cannbot-skills/blob/master/README.md
 ---
 
-# NPU 相关 AI Skills 样例
+# 硬件适配 AI Skills 样例
 
 不是每篇知识库文章都需要写成 skill。科普文章适合给人建立理解，也适合 AI 检索背景知识；skill 更适合沉淀“可重复执行的工作流程”。
 
@@ -74,4 +74,3 @@ skills/
 
 - [CANNBot Skills 项目](https://gitcode.com/cann/cannbot-skills) 是 CANN 生态 skill 化组织方式的参考。
 - [CANNBot README](https://gitcode.com/cann/cannbot-skills/blob/master/README.md) 展示了算子开发、模型推理优化、Triton、TileLang、profiling、simulator 等任务如何拆成多个 skill。
-
