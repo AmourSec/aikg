@@ -132,7 +132,6 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 99-templates/knowledge-note.md - 知识点模板：从概念解释到 AI 可读卡片
 - 99-templates/adr.md - 技术决策模板：从问题、证据到可追溯决策
 - 99-templates/benchmark-report.md - 基准实验报告模板：从问题设计到可复现实验
-- assets/images/ascend/README.md - Ascend architecture image assets
 
 ## Skill Index
 
@@ -83598,7 +83597,7 @@ trend regression:
 
 baseline 可以是：
 
-- main branch 最新通过结果。
+- master branch 最新通过结果。
 - 最近 N 次运行中位数。
 - 固定 release 版本。
 - 同硬件同环境的 golden result。
@@ -86726,7 +86725,7 @@ Benchmark 数据治理必须管理 baseline。
 Baseline 可能是：
 
 - release 版本。
-- main branch 最近稳定结果。
+- master branch 最近稳定结果。
 - 某硬件的 golden run。
 - 某 workload 的标准结果。
 - 某论文复现结果。
@@ -100604,29 +100603,10 @@ Benchmark report 不应该替代 ADR。
 
 ---
 
-# Document: Ascend architecture image assets
-
-Source: docs/assets/images/ascend/README.md
-URL: https://amoursec.github.io/assets/images/ascend/README/
-
-# Ascend architecture image assets
-
-This directory contains local copies of architecture figures used by the hardware basics pages.
-
-Source:
-
-- CANN asc-devkit: https://gitcode.com/cann/asc-devkit
-
-The image assets are copied from CANN asc-devkit only to make the published documentation render reliably on GitHub Pages. Their copyright and license terms remain with the original project and rights holder. Do not treat these images as original CC-BY-4.0 content from this repository.
-
-The surrounding documentation text remains under this repository's stated documentation license unless a page says otherwise.
-
----
-
 # Skill: npu-arch-capability-check
 
 Source: skills/npu-arch-capability-check/SKILL.md
-Raw URL: https://raw.githubusercontent.com/AmourSec/aikg/main/skills/npu-arch-capability-check/SKILL.md
+Raw URL: https://raw.githubusercontent.com/AmourSec/aikg/master/skills/npu-arch-capability-check/SKILL.md
 name: npu-arch-capability-check
 description: Use when asked to judge Ascend NPU model, SocVersion, NpuArch, architecture capability, architecture-specific code branches, or whether a CANN/Ascend C/model path can run on a target NPU. This skill is for evidence-based capability checks, not general NPU education.
 

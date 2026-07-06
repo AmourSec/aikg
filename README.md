@@ -56,13 +56,13 @@ python scripts/generate_llms_files.py
 
 ## Publishing
 
-This repository is designed for GitHub Pages. After GitHub Pages is enabled, every push to `main` builds the documentation site automatically.
+This repository is designed for GitHub Pages. After GitHub Pages is enabled, every push to `master` builds the documentation site automatically.
 
 Recommended GitHub repository settings:
 
 - Visibility: `Public`
 - License: skip GitHub's license wizard if you are pushing this repository; the license files are already included
-- Default branch: `main`
+- Default branch: `master`
 - Pages source: `GitHub Actions`
 
 After creating the empty GitHub repository:
@@ -70,9 +70,9 @@ After creating the empty GitHub repository:
 ```bash
 git add .
 git commit -m "Initialize AI knowledge base"
-git branch -M main
+git branch -M master
 git remote add origin git@github.com:AmourSec/aikg.git
-git push -u origin main
+git push -u origin master
 ```
 
 ## License

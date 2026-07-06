@@ -995,7 +995,7 @@ Benchmark 数据治理必须管理 baseline。
 Baseline 可能是：
 
 - release 版本。
-- main branch 最近稳定结果。
+- master branch 最近稳定结果。
 - 某硬件的 golden run。
 - 某 workload 的标准结果。
 - 某论文复现结果。

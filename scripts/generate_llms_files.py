@@ -12,7 +12,7 @@ DOCS = ROOT / "docs"
 SKILLS = ROOT / "skills"
 SITE_URL = "https://amoursec.github.io/"
 REPO_URL = "https://github.com/AmourSec/aikg"
-RAW_URL = "https://raw.githubusercontent.com/AmourSec/aikg/main"
+RAW_URL = "https://raw.githubusercontent.com/AmourSec/aikg/master"
 
 PRIORITY_SKILLS = [
     "skills/npu-arch-capability-check/SKILL.md",

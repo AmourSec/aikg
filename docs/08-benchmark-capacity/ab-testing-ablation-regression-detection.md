@@ -1164,7 +1164,7 @@ trend regression:
 
 baseline 可以是：
 
-- main branch 最新通过结果。
+- master branch 最新通过结果。
 - 最近 N 次运行中位数。
 - 固定 release 版本。
 - 同硬件同环境的 golden result。
