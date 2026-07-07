@@ -3,7 +3,7 @@ title: AI 知识地图
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-26
+updated: 2026-07-07
 ---
 
 # AI 知识地图
@@ -137,6 +137,7 @@ updated: 2026-06-26
       <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
       <ul>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
+        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
         <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
         <li class="kg-node-note"><span>关键词：metadata / provenance / llms.txt / vector index / knowledge graph / ADR / benchmark report / AI-readable skills</span></li>
       </ul>
@@ -237,6 +238,7 @@ updated: 2026-06-26
 ### 11 知识组织、模板与 AI 可读索引
 
 - 知识组织：[知识组织、模板与 AI 可读索引](11-knowledge-index/index.md)
+- AI 可执行工作流：[AI Skills 编写指南](11-knowledge-index/skills-authoring-guide.md)
 - 模板：[知识点模板](99-templates/knowledge-note.md)、[技术决策模板](99-templates/adr.md)、[基准实验报告模板](99-templates/benchmark-report.md)
 
 ## 按目标导航
@@ -254,6 +256,7 @@ updated: 2026-06-26
 | 想做 Kernel 或编译优化 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md) |
 | 想研究 MegaKernel / Persistent Kernel | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) -> [Triton Kernel 编程](05-kernels-compilers/triton.md) -> [MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md) -> [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) |
 | 想做 NPU 或昇腾平台适配 | [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [Ascend 型号、SocVersion 与 NpuArch](12-hardware-basics/ascend-npu-models.md) -> [Ascend/CANN 软件栈与开发入口](12-hardware-basics/cann-stack.md) -> [硬件适配 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
+| 想让 AI 复用团队工作流程 | [知识组织、模板与 AI 可读索引](11-knowledge-index/index.md) -> [AI Skills 编写指南](11-knowledge-index/skills-authoring-guide.md) -> [硬件适配 AI Skills 样例](12-hardware-basics/ai-skills-sample.md) |
 | 想做 AI 加速器或硬件架构 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) -> [NPU 架构基础](12-hardware-basics/npu-basics.md) -> [GPU 与 NPU 异同点](12-hardware-basics/gpu-npu-comparison.md) -> [AI 加速器性能模型](06-accelerators-architecture/performance-model-roofline.md) -> [计算单元](06-accelerators-architecture/compute-units-simt-tensorcore.md) -> [存储层次](06-accelerators-architecture/memory-hierarchy-data-reuse.md) -> [互连与通信架构](06-accelerators-architecture/interconnect-communication-architecture.md) -> [Workload Mapping](06-accelerators-architecture/workload-mapping-compiler-runtime-interface.md) |
 | 想建设稳定集群或实验平台 | [AI 集群架构总览](07-cluster-infra/ai-cluster-architecture-overview.md) -> [调度系统与资源队列](07-cluster-infra/scheduling-queues-resource-management.md) -> [GPU 拓扑、NUMA、MIG/MPS 与资源隔离](07-cluster-infra/gpu-topology-numa-mig-mps-isolation.md) -> [RDMA 网络与 NCCL 拓扑](07-cluster-infra/rdma-network-nccl-topology-congestion.md) -> [存储、数据缓存与 Checkpoint](07-cluster-infra/storage-data-cache-checkpoint.md) |
 | 想做 Benchmark 和容量规划 | [性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md) -> [Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md) -> [推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md) -> [训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md) -> [成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md) |
@@ -275,4 +278,4 @@ updated: 2026-06-26
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、故障模式、事故响应、runbook 和复盘 |
 | 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、ADR、failure case 和 evidence pack |
-| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱和 AI skills |
+| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱、AI Skills 编写指南和 AI skills 样例 |

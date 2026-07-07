@@ -4,7 +4,7 @@ domain: knowledge-index
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-12
+updated: 2026-07-07
 ---
 
 # 知识组织、模板与 AI 可读索引
@@ -1405,6 +1405,8 @@ AI 引用模板里的示例数据。
 - 例如 benchmark 设计 skill、ADR 评审 skill、failure case 编写 skill；
 - 每个 skill 引用知识库文档；
 - skill 输出必须带验证步骤。
+
+具体编写方法见 [AI Skills 编写指南](skills-authoring-guide.md)。
 
 不要一开始就追 v5。
 
