@@ -23,6 +23,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [首页](https://amoursec.github.io/): 知识库首页，说明目标、写作原则和推荐阅读路径。
 - [AI 知识地图](https://amoursec.github.io/knowledge-map/): 面向人和 AI 的总览知识地图，适合先建立全局结构。
 - [入门导读](https://amoursec.github.io/01-getting-started/): 新读者入口，说明如何使用知识库。
+- [AI Skills 编写指南](https://amoursec.github.io/11-knowledge-index/skills-authoring-guide/): AI Skills 编写指南说明如何把重复工作流程沉淀为 AI 可执行 skill，覆盖适用边界、skills/ 放置位置、SKILL.md front matter 与正文结构、references/scripts/assets 组织、从真实工作记录到 checklist 再到 skill 的抽象流程、llms.txt 更新、质量检查清单、常见错误、推荐起步方向和最小提交流程。
 - [AI 计算工作负载基础](https://amoursec.github.io/02-ai-workloads/): AI 计算工作负载基础目录。
 - [AI 基础概念](https://amoursec.github.io/02-ai-workloads/ai-fundamentals/): AI 基础概念面向刚入门读者解释 AI、机器学习、深度学习、模型、参数、数据、样本、特征、标签、token、tokenizer、embedding、tensor、logits、概率、loss、梯度、训练、推理、评估、prompt、上下文、batch、并发、吞吐、模型知识边界、模型能力与系统能力的区别，以及这些概念如何连接到 Transformer、训练系统、推理系统、Benchmark 和 AI Infra 成本。
 - [Transformer 流程与原理](https://amoursec.github.io/02-ai-workloads/transformer/): Transformer 流程与原理面向新手解释 decoder-only 大语言模型的数据流，覆盖文本到 token、tokenizer 词表与切分规则、token id、模型权重中的 embedding table、position information 的数字表示方式、self-attention、Q/K/V 参数矩阵来源、attention weights、scaled dot-product attention 直觉、causal mask、multi-head attention、MLP、残差连接、归一化、Transformer block、hidden states、LM Head、logits、训练时的 next-token prediction、推理时的自回归生成、KV Cache 直觉、encoder-only/decoder-only/encoder-decoder 区别、Transformer 的并行性和系统成本来源。
@@ -43,10 +44,10 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [Prefill 与 Decode](https://amoursec.github.io/03-inference-systems/prefill-decode/): Prefill 与 Decode 两阶段的计算形态、指标关系和系统瓶颈。
 - [指标体系](https://amoursec.github.io/03-inference-systems/metrics/): 推理系统的 TTFT、TPOT、吞吐、尾延迟、资源、成本和稳定性指标体系。
 - [Batching](https://amoursec.github.io/03-inference-systems/batching/): 推理系统中 static、dynamic、continuous batching 的原理、收益和延迟取舍。
-- [KV Cache](https://amoursec.github.io/03-inference-systems/kv-cache/): KV Cache 在 Decode 中复用历史上下文，并影响显存、并发、长上下文和调度。
 
 ## Optional Documents
 
+- [KV Cache](https://amoursec.github.io/03-inference-systems/kv-cache/): KV Cache 在 Decode 中复用历史上下文，并影响显存、并发、长上下文和调度。
 - [PagedAttention](https://amoursec.github.io/03-inference-systems/paged-attention/): PagedAttention 用 block table 和块式 KV Cache 管理减少显存碎片与预留浪费。
 - [Prefix Cache](https://amoursec.github.io/03-inference-systems/prefix-cache/): Prefix Cache 复用相同 prompt 前缀的 KV Cache，降低重复 Prefill 和 TTFT。
 - [调度策略](https://amoursec.github.io/03-inference-systems/scheduling/): 推理调度策略如何在队列、优先级、SLO、缓存、准入控制和公平性之间取舍。
@@ -144,7 +145,6 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [技术决策记录：从 Benchmark 证据到可追溯选择](https://amoursec.github.io/10-papers-cases/adr/): 技术决策记录解释 AI Infra 中如何用 ADR 保存关键技术选择的工程判断，覆盖 decision question、scope、workload contract、decision drivers、guardrail metrics、候选方案、证据等级、benchmark/profiler/trace/incident evidence、decision status、rollout、rollback、confirmation、revisit condition、evidence pack、decision readiness/done、ADR review、与 benchmark/论文复现/SLO/error budget/成本模型的关系、AI-readable ADR card、文件组织、常见误区和检查清单。
 - [故障案例库：从失败复现到系统改进](https://amoursec.github.io/10-papers-cases/failure-cases/): 故障案例库解释如何把 AI Infra 的线上事故、压测失败、论文复现失败、性能回归、训练异常、NCCL hang、checkpoint 恢复失败、kernel/compiler 回归和成本异常沉淀为 failure case，覆盖 case/postmortem/incident 区分、案例分类法、failure case card、workload contract、symptom/evidence 分离、分层定位、contributing factors、复现等级、evidence pack、从案例到 benchmark/test/runbook/ADR/可观测性、AI-readable case card、case registry、案例评审、脱敏、常见误区和检查清单。
 - [知识组织、模板与 AI 可读索引](https://amoursec.github.io/11-knowledge-index/): 知识组织、模板与 AI 可读索引解释如何把 AI Infra Markdown 知识库组织成同时适合人类学习和 AI 检索的系统，覆盖文档类型、Diataxis 视角、front matter、domain/doc_type/status/workload/system_layer/hardware/software/metrics/sources 元数据、证据等级、文档状态流转、文档关系、人类导航、knowledge-map、llms.txt、llms-full.txt、AI 引用策略、向量索引、知识图谱、source of truth、provenance、FAIR、文件命名、链接规范、模板体系、写作规范、质量门禁、维护节奏、public/internal 分层、安全隐私、AI Agent 使用协议、AI 检索失败模式和演进路线。
-- [AI Skills 编写指南](https://amoursec.github.io/11-knowledge-index/skills-authoring-guide/): AI Skills 编写指南说明如何把重复工作流程沉淀为 AI 可执行 skill，覆盖适用边界、skills/ 放置位置、SKILL.md front matter 与正文结构、references/scripts/assets 组织、从真实工作记录到 checklist 再到 skill 的抽象流程、llms.txt 更新、质量检查清单、常见错误、推荐起步方向和最小提交流程。
 - [知识点模板：从概念解释到 AI 可读卡片](https://amoursec.github.io/99-templates/knowledge-note/): 知识点模板说明如何撰写 AI Infra 普通知识点文章，覆盖适用场景、最小模板、完整推荐模板、front matter、domain/doc_type/status/workload/system_layer/metrics/sources 字段、系统对象、成本模型、指标体系、适用范围、相关技术、Benchmark 方法、证据来源、AI-readable knowledge card、写作规则、常见误区和模板质量门禁。
 - [技术决策模板：从问题、证据到可追溯决策](https://amoursec.github.io/99-templates/adr/): 技术决策模板说明如何撰写 AI Infra ADR，覆盖使用场景、文件命名、状态流转、最小模板、完整推荐模板、decision question、context、workload contract、system scope、decision drivers、options、evidence matrix、benchmark evidence、evidence level、decision、consequences、cost model、reliability impact、implementation plan、rollout、rollback、confirmation、revisit condition、AI-readable ADR card、字段说明、写作规则、常见误区、质量门禁以及与知识点、Benchmark、Failure Case、Runbook 和 Paper Note 的关系。
 - [基准实验报告模板：从问题设计到可复现实验](https://amoursec.github.io/99-templates/benchmark-report/): 基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。
@@ -160,6 +160,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [index.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/index.md)
 - [knowledge-map.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/knowledge-map.md)
 - [01-getting-started/index.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/01-getting-started/index.md)
+- [11-knowledge-index/skills-authoring-guide.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/11-knowledge-index/skills-authoring-guide.md)
 - [02-ai-workloads/index.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/02-ai-workloads/index.md)
 - [02-ai-workloads/ai-fundamentals.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/02-ai-workloads/ai-fundamentals.md)
 - [02-ai-workloads/transformer.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/02-ai-workloads/transformer.md)
@@ -278,7 +279,6 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [10-papers-cases/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/10-papers-cases/adr.md)
 - [10-papers-cases/failure-cases.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/10-papers-cases/failure-cases.md)
 - [11-knowledge-index/index.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/11-knowledge-index/index.md)
-- [11-knowledge-index/skills-authoring-guide.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/11-knowledge-index/skills-authoring-guide.md)
 - [99-templates/knowledge-note.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/knowledge-note.md)
 - [99-templates/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/adr.md)
 - [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/benchmark-report.md)

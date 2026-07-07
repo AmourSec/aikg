@@ -58,6 +58,7 @@ nav:
   - 知识地图: knowledge-map.md
   - 入门导读:
       - 概览: 01-getting-started/index.md
+      - AI Skills 编写指南: 11-knowledge-index/skills-authoring-guide.md
   - AI 计算工作负载基础:
       - 概览: 02-ai-workloads/index.md
       - AI 基础概念: 02-ai-workloads/ai-fundamentals.md
@@ -190,7 +191,6 @@ nav:
       - 故障案例库：从失败复现到系统改进: 10-papers-cases/failure-cases.md
   - 知识组织、模板与 AI 可读索引:
       - 概览: 11-knowledge-index/index.md
-      - AI Skills 编写指南: 11-knowledge-index/skills-authoring-guide.md
   - 模板:
       - 知识点模板：从概念解释到 AI 可读卡片: 99-templates/knowledge-note.md
       - 技术决策模板：从问题、证据到可追溯决策: 99-templates/adr.md

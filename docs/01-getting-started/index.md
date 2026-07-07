@@ -4,7 +4,7 @@ domain: getting-started
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-07-07
 ---
 
 # 入门导读
@@ -31,6 +31,7 @@ updated: 2026-05-30
 7. 用 `Kernel、算子与编译优化` 理解单个算子如何被做快。
 8. 用 `AI 加速器与计算架构` 理解硬件如何约束上层系统。
 9. 用 `性能分析、Benchmark 与容量建模` 验证任何优化是否真实有效。
+10. 用 `AI Skills 编写指南` 学会把重复工作流程沉淀成 AI 可执行 skill。
 
 ## 写作要求
 
