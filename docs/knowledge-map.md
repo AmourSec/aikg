@@ -24,8 +24,7 @@ updated: 2026-07-07
       <a class="kg-branch-title" href="../01-getting-started/">学习入口</a>
       <ul>
         <li class="kg-node-main"><a href="../01-getting-started/">1 入门导读</a></li>
-        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
-        <li class="kg-node-note"><span>关键词：问题意识 / 阅读方法 / 实验纪律 / AI skills</span></li>
+        <li class="kg-node-note"><span>关键词：问题意识 / 阅读方法 / 实验纪律</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -138,6 +137,7 @@ updated: 2026-07-07
       <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
       <ul>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
+        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
         <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
         <li class="kg-node-note"><span>关键词：metadata / provenance / llms.txt / vector index / knowledge graph / ADR / benchmark report / AI-readable skills</span></li>
       </ul>
@@ -149,7 +149,7 @@ updated: 2026-07-07
 
 | 主线 | 组织逻辑 | 对应模块 |
 | --- | --- | --- |
-| 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律，并掌握如何把可重复工作沉淀为 AI Skills。 | [1 入门导读](01-getting-started/index.md)、[AI Skills 编写指南](11-knowledge-index/skills-authoring-guide.md) |
+| 学习入口 | 先建立 AI Infra 的问题意识、阅读方法和实验纪律。 | [1 入门导读](01-getting-started/index.md) |
 | 工作负载基础 | 只做入门科普：讲清 AI 基础概念、Transformer、训练、推理和多模态原理。 | [2 AI 计算工作负载基础](02-ai-workloads/index.md) |
 | 具体硬件平台 | 研究 GPU/NPU 架构基础、GPU 与 NPU 差异、Ascend 型号与 NpuArch、CANN 软件栈、平台证据收集，以及如何把硬件适配经验沉淀成 AI skill。 | [硬件基础](12-hardware-basics/index.md) |
 | 推理系统 | 从请求生命周期出发，理解 Prefill/Decode、指标、batching、KV Cache、调度、部署架构、推理引擎和 RAG/Agent 负载。 | [3 推理系统与优化](03-inference-systems/index.md) |
@@ -163,7 +163,6 @@ updated: 2026-07-07
 ### 1 入门导读
 
 - [入门导读](01-getting-started/index.md)：学习路线、术语约定、实验纪律和贡献方法。
-- AI 协作基础：[AI Skills 编写指南](11-knowledge-index/skills-authoring-guide.md)：如何把重复工作流程沉淀成 AI 可执行 skill。
 
 ### 2 AI 计算工作负载基础
 
@@ -239,6 +238,7 @@ updated: 2026-07-07
 ### 11 知识组织、模板与 AI 可读索引
 
 - 知识组织：[知识组织、模板与 AI 可读索引](11-knowledge-index/index.md)
+- AI 可执行工作流：[AI Skills 编写指南](11-knowledge-index/skills-authoring-guide.md)
 - 模板：[知识点模板](99-templates/knowledge-note.md)、[技术决策模板](99-templates/adr.md)、[基准实验报告模板](99-templates/benchmark-report.md)
 
 ## 按目标导航
@@ -267,7 +267,7 @@ updated: 2026-07-07
 
 | 模块 | 上游依赖 | 主要产出 |
 | --- | --- | --- |
-| 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法和 AI Skills 编写指南 |
+| 1 入门导读 | 无 | 学习路线、术语约定、实验纪律、贡献方法 |
 | 2 AI 计算工作负载基础 | 1 | AI 基础概念、Transformer、训练流程、推理流程和多模态原理 |
 | 硬件基础 | 2、5、6、8 | GPU/NPU 架构基础、GPU/NPU 对比、Ascend 型号与 NpuArch、Ascend 910/950、CANN 软件栈、平台证据收集和硬件适配 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
@@ -278,4 +278,4 @@ updated: 2026-07-07
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、故障模式、事故响应、runbook 和复盘 |
 | 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、ADR、failure case 和 evidence pack |
-| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱和 AI skills 样例 |
+| 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱、AI Skills 编写指南和 AI skills 样例 |
