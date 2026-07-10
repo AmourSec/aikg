@@ -6,6 +6,7 @@ An open AI infrastructure and efficient computing knowledge base for systems-ori
 
 - `docs/`: Markdown source documents.
 - `docs/99-templates/`: Templates for reusable knowledge records.
+- `AI_CONTINUATION_GUIDE.md`: Maintenance and handoff guide for future AI-assisted continuation.
 - `llms.txt`: AI-readable entry index for the repository and documentation site.
 - `llms-full.txt`: Aggregated Markdown context for AI ingestion.
 - `scripts/generate_llms_files.py`: Generator for AI-readable index files.
@@ -29,7 +30,11 @@ python -m pip install -r requirements.txt
 mkdocs serve
 ```
 
-Then open `http://127.0.0.1:8801/aikg/`.
+Then open `http://127.0.0.1:8801/`.
+
+## AI-assisted Continuation
+
+For future AI-assisted maintenance, start with `AI_CONTINUATION_GUIDE.md`. It records the project intent, information architecture, writing rules, AI Skills policy, verification commands, and publishing workflow.
 
 ## AI-readable Index
 
@@ -37,9 +42,9 @@ When giving this knowledge base to an AI assistant, provide both the repository 
 
 ```text
 GitHub: https://github.com/AmourSec/aikg
-Docs: https://amoursec.github.io/aikg/
-LLM index: https://amoursec.github.io/aikg/llms.txt
-Full context: https://amoursec.github.io/aikg/llms-full.txt
+Docs: https://amoursec.github.io/
+LLM index: https://amoursec.github.io/llms.txt
+Full context: https://amoursec.github.io/llms-full.txt
 ```
 
 Recommended instruction:
