@@ -128,7 +128,9 @@ Source Registry 读取 `skill-system/sources.yaml`，提供所有来源的声明
 - 来源优先级；
 - 可选 canonical 来源关系。
 
-解析后的不可变提交写入 `sources.lock.json`。构建和运行使用 lock 中的版本，而不是每次隐式追踪浮动分支。
+Git 来源还可以声明是否递归初始化 submodule。对于 `Ascend/agent-skills` 这类聚合仓库，Source Registry 必须同时锁定父仓提交与每个实际初始化的 submodule 路径、URL 和提交；只锁父仓分支名或只克隆父仓而不物化 submodule 都不算完成同步。
+
+解析后的不可变提交先写入 staging 中的候选 lock。构建和运行使用 lock 中的版本，而不是每次隐式追踪浮动分支。仓库根部的 `sources.lock.json` 是 active 版本的公开镜像，只有完整构建通过并切换 active 后才更新；同步或构建失败不得提前覆盖它。
 
 ### 8.2 Catalog Builder
 
@@ -230,6 +232,7 @@ sources:
     type: git
     location: https://gitcode.com/Ascend/agent-skills.git
     revision: master
+    submodules: recursive
     enabled: true
     priority: 50
     exclude:
@@ -242,7 +245,7 @@ sources:
     priority: 80
 ```
 
-同时登记两个仓库时，从聚合仓库排除 `official/CANNBot/**`，以直接 CANNBot 仓库为 canonical 来源。这个关系存在于配置中，不进入路由代码。如果只登记 `agent-skills`，则可以不排除其 CANNBot 子目录。
+同时登记两个仓库时，从聚合仓库排除 `official/CANNBot/**`，以直接 CANNBot 仓库为 canonical 来源。这个关系存在于配置中，不进入路由代码。如果只登记 `agent-skills`，则可以不排除其 CANNBot 子目录。聚合仓库通过 submodule 提供内容时，lock 必须记录父仓与实际 submodule 提交，Catalog Entry 同时保留父仓 revision 以及所属 submodule 路径和 revision。
 
 凭证不得写入来源文件。私有来源的鉴权由外部环境提供。
 
@@ -256,13 +259,17 @@ sources:
   "skill_id": "cannbot:ops/ascendc-env-check",
   "name": "ascendc-env-check",
   "description": "...",
+  "scope_summary": "...",
   "source_id": "cannbot",
   "source_revision": "immutable-commit",
+  "submodule_path": null,
+  "submodule_revision": null,
   "relative_path": "ops/ascendc-env-check/SKILL.md",
   "content_hash": "sha256:...",
   "bundle_hash": "sha256:...",
   "status": "enabled",
   "activation_policy": "notify",
+  "repeatable": false,
   "aliases": [],
   "tags": [],
   "dependencies": [],
@@ -272,7 +279,7 @@ sources:
 }
 ```
 
-`skill_id` 使用 `source_id` 与相对目录组合，保证同名 Skill 可共存。`name` 保留上游名称，用于向用户披露。`content_hash` 只覆盖规范化后的 `SKILL.md`；`bundle_hash` 覆盖 `SKILL.md` 与全部已解析显式引用的路径、内容和顺序，用于完整加载校验与 exact duplicate 判断。
+`skill_id` 使用 `source_id` 与相对目录组合，保证同名 Skill 可共存。`name` 保留上游名称，用于向用户披露。`source_revision` 是父来源不可变提交；Skill 位于 submodule 时同时记录 `submodule_path` 与 `submodule_revision`。`content_hash` 只覆盖规范化后的 `SKILL.md`；`bundle_hash` 覆盖 `SKILL.md` 与全部已解析显式引用相对于 Skill bundle 的路径、内容和顺序，用于完整加载校验与跨聚合路径的 exact duplicate 判断。用于实际加载的 source-relative 路径另行保留，不能混入 bundle-relative 去重哈希。
 
 ### 10.3 Override
 
@@ -282,6 +289,7 @@ Override 只用于：
 - 显式声明依赖、冲突或 canonical 关系；
 - 禁用已知损坏或不适用 Skill；
 - 设置 `activation_policy`；
+- 在有明确证据时声明同一路由链中是否允许重复调用，默认不允许；
 - 在不修改上游的情况下修正可验证的元数据错误。
 
 自动生成的模型推断不得直接成为生效 Override。任何会改变选择、依赖、冲突、启用状态或确认策略的 Override 必须作为版本化文件提交。
@@ -301,7 +309,7 @@ Activation Policy 有且只有两种：
 
 1. 校验 `sources.yaml` 和 Override Schema；
 2. 将所有来源同步到独立 staging 目录；
-3. 把浮动 revision 解析为不可变提交；
+3. 把浮动 revision 以及启用的 submodule 解析为不可变提交，生成 staging 候选 lock；
 4. 递归发现 `SKILL.md`；
 5. 解析、标准化并校验每个 Skill；
 6. 验证显式引用、路径边界和循环；
@@ -311,10 +319,10 @@ Activation Policy 有且只有两种：
 10. 构建关键词与语义索引；
 11. 运行契约测试和路由回归评测；
 12. 检查生成差异与退化报告；
-13. 所有门禁通过后原子发布新版本；
+13. 所有目录发布门禁通过后原子发布包含 lock、Catalog 和索引的完整版本；
 14. 保存上一版可回滚快照。
 
-任一步失败都不得修改当前 active Catalog 和索引。
+任一步失败都不得修改当前 active lock、Catalog 和索引。单独执行 source sync 只生成候选 lock，不改变根部 active lock 镜像。
 
 ## 12. 路由运行流程
 
@@ -399,6 +407,8 @@ Selector 必须遵守：
 
 多 Skill 时按 `order` 列出。用户只负责知情或批准，不需要从目录中选择。
 
+Disclosure 记录必须绑定当前 session、任务、按顺序排列的 Skill ID、选择哈希和实际展示文案哈希，不能跨任务复用。`notify` 只有在调用方已把原文展示给用户后才能记为 `notified`；`confirm` 的 `confirmed` 或 `rejected` 必须来自调用方捕获的明确用户决定。核心协议不假装能够观察某个 UI，但 Loader 必须拒绝缺失、错序、哈希不符或跨 session 的记录。
+
 若用户拒绝：
 
 1. 将被拒绝 Skill 加入本次任务排除集；
@@ -441,6 +451,8 @@ Handoff Bundle 至少包含：
   "handoff_status": "ready"
 }
 ```
+
+上例只展示控制字段。实际 Handoff 还必须包含每个已选 Skill 经哈希校验的完整 `SKILL.md` 文本，以及已加载显式资源的稳定路径、内容哈希、媒体类型、编码和内容，保证接手模型不依赖未声明的本地文件读取。任一资源失败时不得交付部分 Bundle。
 
 确认型 Skill 的 `disclosure.status` 必须为 `confirmed`。Loader 不得接受 `pending`、`rejected` 或缺失状态。
 
@@ -657,7 +669,7 @@ Runbook 必须覆盖：
 
 ## 18. 质量门槛
 
-首期发布必须达到：
+首期完整生产资格必须达到：
 
 - enabled Skill 目录解析成功率 100%；
 - Selected Skill 完整加载成功率 100%；
@@ -670,6 +682,13 @@ Runbook 必须覆盖：
 - 相同输入生成结果字节一致；
 - 门禁失败时 active 版本保持不变。
 
+门禁分为两个明确层级：
+
+- `catalog` 发布门禁：校验来源、解析、引用、Disclosure/Loader 契约、确定性和 Recall@10。该层通过后可以发布可用的 active 目录与索引；
+- `production` 模型资格门禁：在具体部署所用模型或 Selector adapter 的已捕获结果上，额外校验最终 Top-1、无匹配误选、禁止选择和多 Skill 顺序。
+
+核心系统不绑定模型 API，因此没有部署模型结果时，模型相关指标必须记录为 `not_run`，不能伪装为通过。此时可以说明“目录已发布”，但不得说明“模型选择效果已通过生产资格”。一旦声明某个模型或 adapter 用于生产，就必须提供其评测结果并通过 `production` 门禁。
+
 本地新增或实质修改 Skill 时，必须增加正向和负向路由样例。批量同步外部来源时，至少为发生变化且可能与现有能力重叠的 Skill 增加回归样例。
 
 ## 19. 发布与回滚
@@ -679,10 +698,10 @@ Runbook 必须覆盖：
 1. 在 staging 中生成完整候选版本；
 2. 运行全部测试和评测；
 3. 生成差异、来源版本和指标报告；
-4. 门禁通过后切换 active；
+4. `catalog` 门禁通过后切换 active；若要声明生产可用，还必须同时满足 `production` 模型资格门禁；
 5. 保留上一版 lock、Catalog 和索引用于回滚。
 
-回滚恢复上一版完整集合，不允许只回滚索引或手工修改缓存。回滚后必须运行 active 版本一致性检查。
+active 指针指向包含 lock、Catalog、索引和报告的完整版本目录，该目录是运行时一致性的唯一事实来源；根部 `sources.lock.json` 和 `generated/` 是可由 active 版本重建的公开镜像。回滚恢复上一版完整集合，不允许只回滚索引或手工修改缓存。回滚后必须运行 active 版本一致性检查并重建公开镜像。
 
 ## 20. 构建报告
 
