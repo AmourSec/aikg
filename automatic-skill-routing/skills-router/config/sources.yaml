@@ -1,0 +1,43 @@
+# Skills Router Sources
+#
+# 维护者手动维护。这是 Skill 来源的唯一真相。
+# 新增来源只需在 sources 下追加一条，无需修改路由代码。
+# 字段说明见 AUTOMATIC_SKILL_ROUTING_DESIGN.md 第 4 节。
+
+sources:
+  - name: local
+    type: local
+    root: skills
+    description: 本仓库内置 skills
+
+  # 以下两个 GitCode 仓库已预留配置。本轮不实际同步，避免网络依赖。
+  # 启用方式: 取消注释并运行 python3 skills-router/scripts/build_catalog.py
+  # 两个仓库使用同一种 type=git 机制接入，无专用代码分支。
+
+  - name: ascend-agent-skills
+    type: git
+    url: https://gitcode.com/Ascend/agent-skills
+    branch: master
+    root: ""
+    description: 昇腾 agent-skills 仓库
+    sync_dir: .skills-cache/ascend-agent-skills
+    enabled: true
+
+  - name: cannbot-skills
+    type: git
+    url: https://gitcode.com/cann/cannbot-skills
+    branch: master
+    root: ""
+    description: CANN cannbot-skills 仓库
+    sync_dir: .skills-cache/cannbot-skills
+    enabled: true
+
+# 全局默认策略
+defaults:
+  confirm_policy: notify        # notify | confirm
+  confirm_tags:                 # 命中任一 tag 的 skill 默认升级为 confirm
+    - destructive
+    - write-fs
+    - network
+    - exec-shell
+  description_min_chars: 20     # description 最小长度，过短则记 error
