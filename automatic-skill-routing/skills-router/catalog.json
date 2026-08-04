@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated_at": "2026-08-04T01:20:34.410088+00:00",
+  "generated_at": "2026-08-04T01:54:25.187153+00:00",
   "sources": [
     {
       "name": "local",
@@ -10,13 +10,19 @@
     {
       "name": "ascend-agent-skills",
       "type": "git",
-      "synced_at": "2026-08-04T01:20:33.610255+00:00",
+      "synced_at": "2026-08-04T01:54:06.997037+00:00",
       "root": ""
     },
     {
       "name": "cannbot-skills",
       "type": "git",
-      "synced_at": "2026-08-04T01:20:34.328931+00:00",
+      "synced_at": "2026-08-04T01:54:08.141809+00:00",
+      "root": ""
+    },
+    {
+      "name": "boostkit-skills",
+      "type": "git",
+      "synced_at": "2026-08-04T01:54:25.032442+00:00",
       "root": ""
     }
   ],
@@ -3410,6 +3416,1318 @@
       "confirm": false
     },
     {
+      "name": "arm64-arch-reference",
+      "description": "查阅 ARM A-profile（AArch64/A64）架构特性与指令的权威速查表。每当涉及 ARM64/AArch64/A64 的架构特性（FEAT_*，如 FEAT_SVE/FEAT_LSE/FEAT_MTE/FEAT_BF16）、某特性的引入版本或可选/强制状态、 指令的助记符/汇编模板/编码（Encoding）、或某指令受哪个特性门控时，都应使用本 skill。 尤其在做 ARM64 编译器/代码生成（codegen）优化、判断目标指令在哪个架构版本可用、为某指令选择 feature gate、或核对 SVE/SVE2/SME/SME2、NEON/AdvSIMD、原子(LSE)、PAC/BTI/MTE 等扩展时—— 即使用户没有明说\"查手册\"，只要在讨论 ARM64 指令或架构特性的细节，也请主动查阅本 skill， 不要凭记忆作答。数据来自 ARM 官方机器可读规范（AARCHMRS），对应手册版本 M.b（Arm ARM, DDI 0487 M.b）、 架构 v9Ap6-A（Armv9.6）/ 2026-03_rel。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/arm64-arch-reference/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "arm",
+        "a-profile",
+        "aarch64",
+        "a64",
+        "arm64",
+        "feat_",
+        "feat_sve",
+        "feat_lse",
+        "feat_mte",
+        "feat_bf16",
+        "encoding",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "check-arm-64k",
+      "description": "判断当前进程是否运行在 ARM 64K 页大小的 Linux 内核上。当用户询问 ARM 64K 内核检测、页大小检查、或需要确认运行环境是否为 ARM 64K 时调用此 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/rocksdb-64k-opt-check/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "arm",
+        "linux",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "check-arm-crc32",
+      "description": "检查进程的二进制是否使用了 ARM CRC32 指令加速。当用户询问 RocksDB 或其他进程是否启用了 ARM CRC32 硬件加速、或需要确认二进制中是否包含 CRC32 指令时调用此 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/rocksdb-crc32-opt-check/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "arm",
+        "crc32",
+        "rocksdb",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "check-kraio-optimization",
+      "description": "检查Redis进程是否引用了libkraio.so库，确认Redis是否进行了鲲鹏网络异步优化(KRAIO)。当用户询问 Redis 是否启用了网络异步优化、KRAIO/KBAIO 加速是否生效时调用此 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/redis-kraio-opt-check/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "redis",
+        "libkraio",
+        "kraio",
+        "kbaio",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "check-net-multipath",
+      "description": "检查当前是否使能了鲲鹏网络多路径(NMO)特性。当用户询问 Redis/MySQL 是否启用了网络多路径加速、或需要确认 NMO 特性使能状态时调用此 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/redis-net-multipath-opt-check/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "nmo",
+        "redis",
+        "mysql",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "colocation-interference-analysis",
+      "description": "用于分析离在线混部后的在线业务性能劣化、混部干扰、微架构计数器、PMU/topdown 指标、缓存压力、内存带宽、IPC 下降、纯在线基线与混部阶段对比等场景；单纯在线性能优化、无混部对比、只做通用 perf 调优时不要触发。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/virt/colocation-interference-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "pmu",
+        "topdown",
+        "ipc",
+        "perf"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "dev-container-manager",
+      "description": "Manage Docker-based dev containers on remote Linux servers. Use this skill whenever the user wants to create, query, or delete a dev container on a remote host, or mentions phrases like \"create a dev container\", \"setup a development environment on server X\", \"I need a container with N cores and M gigs of memory on IP\", \"check my dev containers\", \"list containers on server\", \"show resources on the remote box\", \"delete my dev container\". This skill handles the full lifecycle: resource detection, NUMA-aware CPU allocation, authentication configuration (password, key, or both), container creation with OpenEuler, and multi-user coexistence on shared servers. Trigger even if the user does not say \"container\" explicitly but describes allocating isolated CPU/memory on a remote Linux machine for development work.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/dev-container-manager/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "manage",
+        "docker-based",
+        "dev",
+        "containers",
+        "remote",
+        "linux",
+        "servers",
+        "skill",
+        "whenever",
+        "user",
+        "wants",
+        "create"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "devkit-perf",
+      "description": "Use the devkit tuner tool to run top-down performance analysis on benchmarks, identify CPU microarchitectural bottlenecks, and compare performance between implementations. Use this skill whenever the user mentions devkit, top-down analysis, CPU performance profiling, microarchitectural bottlenecks, or wants to understand where a program is stalling (Frontend/Core/Memory bound).",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/devkit-perf/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "devkit",
+        "tuner",
+        "tool",
+        "run",
+        "top-down",
+        "performance",
+        "analysis",
+        "benchmarks",
+        "identify",
+        "cpu",
+        "microarchitectural",
+        "bottlenecks"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "docker-management",
+      "description": "Manage Docker containers, images, volumes, networks, and Compose stacks — lifecycle ops, debugging, cleanup, and Dockerfile optimization.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/docker-management/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "manage",
+        "docker",
+        "containers",
+        "images",
+        "volumes",
+        "networks",
+        "compose",
+        "stacks",
+        "lifecycle",
+        "ops",
+        "debugging",
+        "cleanup"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "drawio-diagrams",
+      "description": "使用 Draw.io MCP 创建、编辑和导出架构图、流程图、时序关系图、算法原理图及 .drawio 文件。用户提到 draw.io、drawio、流程图、架构图、原理图、拓扑图，或要求修改现有图表时使用。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/Drawio/skill/drawio-diagrams/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "draw",
+        "mcp",
+        "drawio"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "e2e-auto-optimize",
+      "description": "End-to-end autonomous performance optimization for C/C++, system software, and foundational libraries. Use this skill whenever the user wants to optimize a codebase with perf/topdown evidence, remote SSH execution, configured build commands, UT/functest plus perftest comparison, iterative acceptance by an improvement threshold, optimization reports, or local Git commits. This skill should be used for prompts mentioning compilation, build commands, perf, topdown, bottleneck analysis, remote servers, benchmark regressions, perftest, iterative optimization, or automatic performance tuning, even if the user does not explicitly say \"skill\".",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/e2e-auto-optimize/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "end-to-end",
+        "autonomous",
+        "performance",
+        "optimization",
+        "system",
+        "software",
+        "foundational",
+        "libraries",
+        "skill",
+        "whenever",
+        "user",
+        "wants"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "env-deploy",
+      "description": "Minimal framework-neutral guidance for deploying a local, cloned, or SSH-remote Linux code project's runtime environment. Use when an agent needs lightweight project detection, dependency planning, safe dry-run-first setup guidance, explicit confirmation gates, and reproducible deployment notes without platform-specific tooling.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/skills/env-deploy/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "minimal",
+        "framework-neutral",
+        "guidance",
+        "deploying",
+        "local",
+        "cloned",
+        "ssh-remote",
+        "linux",
+        "code",
+        "project",
+        "runtime",
+        "environment"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "extract-spark-ui-metrics",
+      "description": "Extracts Spark History Server JSON (details=true) into the mandatory metrics document structure—HashAgg input/output rows via edges, CTE execution count/reuse, full SQL appendix. Use for \"根据 xxx.sql 和 xxx.json 提取文档\", q23a-zx.json-style API, HashAgg tables, or CTE reuse. Do not substitute a narrative-only physical plan for this structured output.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/extract-spark-ui-metrics/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "extracts",
+        "spark",
+        "history",
+        "server",
+        "json",
+        "details",
+        "true",
+        "mandatory",
+        "metrics",
+        "document",
+        "structure",
+        "hashagg"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "feature-design-doc",
+      "description": "阅读某个性能/优化特性的源码,产出一份图文并茂、可交付的设计文档(Markdown + Word/docx),支持中文、英文或中英双语。适用场景:用户说\"读一下 XX 特性/优化的代码并写一份设计文档\"\"为这个 PR/commit 写设计文档\"\"生成含框架图、原理图、时序图、用例图的设计说明\"\"把这个特性整理成 docx 设计文档\"\"再出一份对应英文版的文档和图片\"\"做成中英双语\"等。无论用户是否点名\"设计文档\",只要意图是\"理解一段特性代码并系统化产出含架构图/原理图/验证数据/用例的说明文档\",都应使用本技能;要英文/双语版时同样用它(图内文字也会译成英文)。它固化了章节骨架、结构图用 SVG 矢量、行为图用 PlantUML 的图示策略、严格的 docx 排版(中文宋体五号/英文 Times New Roman 五号/全黑无斜体/单倍行距段后6磅)、英文版正文全 Times New Roman、以及\"图片与文档同级归档、同次提交\"的工程规范。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/feature-design-doc/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "markdown",
+        "word",
+        "docx",
+        "commit",
+        "svg",
+        "plantuml",
+        "times",
+        "new",
+        "roman"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "generate-sql-testcases",
+      "description": "为Spark表达式生成测试SQL用例。读取包含Spark函数信息的CSV文件，为每个函数生成19种数据类型的测试SQL并输出到新CSV。使用场景：用户需要为Spark函数生成测试SQL、处理CSV中的表达式列表、批量生成SQL测试用例、或涉及OmniOperator/gluten-velox表达式兼容性测试。触发关键词包括但不限于：生成测试SQL、表达式测试、SQL测试用例、Spark函数测试、批量生成SQL、数据类型测试、Spark表达式CSV、OmniOperator测试、gluten-velox测试。即使用户没有明确提到\"skill\"或\"脚本\"，只要涉及从CSV中的函数列表生成SQL测试，就应使用此skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/generate-sql-testcases/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "spark",
+        "sql",
+        "csv",
+        "omnioperator",
+        "gluten-velox",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "gitcode-review",
+      "description": "GitCode 平台的 Pull Request 代码审查专家。当用户需要审查 GitCode 上的 PR 时使用，包括：(1) 查看 PR 列表，(2) 分析代码变更，(3) 提供中文代码审查报告，(4) 可选地将审查结果提交到 PR 评论区。支持通过 /review 命令或直接提示词触发。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/gitcode-review/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "gitcode",
+        "pull",
+        "request",
+        "review"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "governance-content-scanner",
+      "description": "Scans web content for open source governance elements (CLA, SIG, Code of Conduct, etc.). Invoke when user requests governance check, CLA/SIG detection, or open source compliance review for web pages.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/security/governance-content-scanner/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "scans",
+        "web",
+        "content",
+        "open",
+        "source",
+        "governance",
+        "elements",
+        "cla",
+        "sig",
+        "code",
+        "conduct",
+        "etc"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "humanize-check",
+      "description": "对已完成的胶片 / 文档 / 网页 / 月刊周报做「人性化 · 易读」独立复检门禁——检查用词是否像人话、内容是否完整、每节是否结论先行、目录与标题是否对应、标点是否跟随文种、术语前后是否一致、中文断行是否正确,给出 before→after 修改并直接调整。当用户说「人性化复检」「易读性检查」「帮我把这份稿子改得像人话」「定稿前复检一遍」或执行 humanize-check 时触发。也是各类产物型 skill 的**通用收尾门禁**:pptx-pro、月刊 / 周报 / 简报、博客文稿、设计文档等 skill 都可以在收尾时起一个独立 agent 调用它,把人性化表达的标准统一在一处维护。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/humanize-check/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "before",
+        "after",
+        "humanize-check",
+        "skill",
+        "pptx-pro",
+        "agent"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "hyperscan-dev",
+      "description": "Hyperscan ARM (Kunpeng) 平台的开发、编译和验证工作流。当你需要编译 Hyperscan、运行 hsbench 测试验证、修改代码架构、调试 ARM NEON 适配问题时使用此技能。覆盖 cmake/make 构建、hsbench 性能/功能验证、config.txt 配置组合测试、以及 Rose/Lily/ 等核心引擎的开发指导。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/hyperscan-dev/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "hyperscan",
+        "arm",
+        "kunpeng",
+        "hsbench",
+        "neon",
+        "cmake",
+        "make",
+        "config",
+        "txt",
+        "rose",
+        "lily"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "inference-timeline-analyzer",
+      "description": "Analyze inference framework timeline JSON files (ONNXRuntime, TensorFlow, PyTorch, etc.) to identify performance bottlenecks in operator execution and thread scheduling. Use when the user provides timeline/profiling JSON files in Chrome Trace Event format, asks about inference performance, or mentions model optimization.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/SRASkills/inference-timeline-analyzer/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "analyze",
+        "inference",
+        "framework",
+        "timeline",
+        "json",
+        "files",
+        "onnxruntime",
+        "tensorflow",
+        "pytorch",
+        "etc",
+        "identify",
+        "performance"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "kdnn-thread-through",
+      "description": "Design, implement, review, or explain KDNN-to-TensorFlow CPU thread-through operators. Use when bridging TensorFlow CPU kernels to KDNN primitives, preserving fallback behavior, reusing TensorFlow thread pools, and validating correctness with reusable operator patterns such as binary cwise, unary activation, dedicated-kernel, and KDNN-core extension cases.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/SRASkills/thread_flow/kdnn-thread-through/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "design",
+        "implement",
+        "review",
+        "explain",
+        "kdnn-to-tensorflow",
+        "cpu",
+        "thread-through",
+        "operators",
+        "bridging",
+        "tensorflow",
+        "kernels",
+        "kdnn"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "kernel-patch",
+      "description": "内核补丁迁移与冲突解决工作流。用于导出 Git 提交为 patch、检查补丁是否已存在、分析 .rej 冲突、按顺序批量合入 patch_sets，并在每个补丁合入后执行确定性 post-apply 门禁校验与自动复检循环。适用于 Linux 内核补丁迁移、config 文件映射同步、顺序合入多个补丁集、补丁边界漂移检查和补丁合入质量校验。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/CloudSkills/patch_skill/kernel-patch/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "git",
+        "patch",
+        "rej",
+        "patch_sets",
+        "post-apply",
+        "linux",
+        "config"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "knowledge-base",
+      "description": "知识卡片管理 — 创建、搜索、索引、列出。用于将问答、分析、技术调研归档为结构化知识卡片并维护可检索索引。当用户说\"整理成知识卡片\"、\"写一张卡片\"、\"搜索知识库\"、\"重建索引\"，或使用 kb/knowledge-base create/search/index/list 等命令时触发。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/knowledge-base/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "knowledge-base",
+        "create",
+        "search",
+        "index",
+        "list"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "kunpeng-cpu-opt-guide",
+      "description": "鲲鹏处理器（TSV110/HIP09/HIP12）微架构优化参考，覆盖指令延迟、流水线端口、性能陷阱。 当需要了解目标 CPU 微架构特性来优化 C/C++ 代码、选择指令序列、调优编译选项或分析性能瓶颈时使用。 其他性能优化 Skill（如 e2e-auto-optimize、gcc-profile-auto-tune）可在优化推理时引用本 Skill 获取 CPU 特定的端口分配和指令延迟数据。\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/kunpeng-cpu-opt-guide/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "tsv110",
+        "hip09",
+        "hip12",
+        "cpu",
+        "skill",
+        "e2e-auto-optimize",
+        "gcc-profile-auto-tune"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "kunpeng-library-opportunity",
+      "description": "分析运行中的 Linux C/C++ 服务、RPC 服务、数据库和大数据组件，识别动态库、疑似静态链接库、ELF 与 proc 证据，结合 perf-hotspot 采样结果判断鲲鹏 BoostKit/BoostCore 库使能机会，例如 KAE、KUAF、zlib、zstd、lz4、snappy、kpglibc、protobuf、sonic-cpp、KQMalloc、ISA-L、SPDK 和 AVX2KI。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/kunpeng-library-opportunity/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "linux",
+        "rpc",
+        "elf",
+        "proc",
+        "perf-hotspot",
+        "boostkit",
+        "boostcore",
+        "kae",
+        "kuaf",
+        "zlib",
+        "zstd",
+        "lz4"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "kunpeng-mysql-optimize",
+      "description": "Select Kunpeng ARM/AArch64 MySQL, Percona Server, or mysqld performance tuning strategies. Use when an AI agent, coding agent, or automated tuning assistant needs to analyze perf top output, flamegraphs, POC benchmark symptoms, MySQL 5.7 or 8.0+ version differences, hikunpeng MySQL optimization docs, and bundled Kunpeng patches, then recommend compute-path, binlog, network multipath, fine-grained locking, lock-free/ReadView, NUMA, CRC32, text huge page, thread pool, plan cache, ARM build, or container-aware optimizations.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/kunpeng-mysql-optimize/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "select",
+        "kunpeng",
+        "arm",
+        "aarch64",
+        "mysql",
+        "percona",
+        "server",
+        "mysqld",
+        "performance",
+        "tuning",
+        "strategies",
+        "agent"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "legal-compliance-checker",
+      "description": "Checks legal compliance for open source projects: LICENSE file presence, license type validation, license conflict detection, and CC BY 4.0 or CC BY-SA 4.0 for documentation. Invoke when user requests legal compliance check, license audit, or open source compliance review.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/security/legal-compliance-checker/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "checks",
+        "legal",
+        "compliance",
+        "open",
+        "source",
+        "projects",
+        "license",
+        "file",
+        "presence",
+        "type",
+        "validation",
+        "conflict"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "magazine-collect",
+      "description": "月刊收集 / 任意技术领域近 N 月动态汇总 skill。当用户要求按\"月刊收集规则\"产出某个技术领域（编译器、推荐系统、搜索、广告、数据库、操作系统、安全、AI、大数据、Web3 等任意领域均可）近 1~3 个月的中文要闻速览、月报、季报、digest 时使用。也包括用户提供一份月刊收集规则 md（含信息源、筛选类别、特别关注点）并要求\"按规则跑一遍收集\"、\"做一份月刊\"、\"出一份 digest\"、\"汇总近几个月动态\"的所有场景。即使用户没有显式说\"月刊\"、\"digest\"，只要意图是\"按一组信息源 + 筛选规则汇总技术领域近期动态\"，都应优先触发本 skill。本 skill 与领域解耦——领域特定的信息源、筛选关键词、特别关注点都由用户提供的规则文件指定，skill 主体不绑定任何具体技术领域。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/magazine-collect/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "skill",
+        "web3",
+        "digest"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "mysql-patch-multi-version-adaptation",
+      "description": "当用户要求将 MySQL 或 Percona Server 补丁从一个版本移植到另一个版本，并要求实际完成 patch 分析、版本差异比对、代码适配、编译、安装、启动验证、功能验证、patch 生成或提交时使用。适用于多版本 MySQL 内核补丁适配、兼容性修复、MTR 或 sysbench 验证，以及将补丁移植过程标准化为低人工参与流水线。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/mysql-patch-multi-version-adaptation/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "mysql",
+        "percona",
+        "server",
+        "patch",
+        "mtr",
+        "sysbench"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "ograc-docs-review",
+      "description": "检视并修复 oGRAC 官方中文文档（docs/zh）的低级错误：错别字、产品命名不一致、中英文混排空格、行内代码缺失、SQL 关键字大小写、Markdown 格式、口语化表述、Shell 代码块可复制性、弯引号等。 当用户提到「检视/审校/修复/规范化 docs/zh 文档」「文档低级错误」「文档格式检查」「清理口语化」「PR 文档自检」「同步官方文档前批量检查」或任何涉及 oGRAC 中文文档质量批处理的任务时，必须优先调用本 skill。 即使请求中没有出现「skill」「自动化」等字样，只要与 oGRAC 中文文档的批量质量修复相关，就使用本 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/ograc-docs-review/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "ograc",
+        "docs",
+        "sql",
+        "markdown",
+        "shell",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omni-flamegraph-operator-analysis",
+      "description": "Two-level async-profiler flame graph analysis for OmniOperator: first discovers the hottest operators (op::*Operator / *Writer / *Reader naming), then drills into each operator's hottest functions. Outputs structured CSVs to a per-run artifact directory.\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omni-flamegraph-operator-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "two-level",
+        "async-profiler",
+        "flame",
+        "graph",
+        "analysis",
+        "omnioperator",
+        "first",
+        "discovers",
+        "hottest",
+        "operators",
+        "operator",
+        "writer"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omni-sql-perf-improvement",
+      "description": "Use when optimizing a specific SQL query's full execution chain on the Omni engine — covers build/deploy, baseline, profiling, bottleneck analysis across all operators and stages, research-driven optimization, and gated correctness-before-performance validation with per-iteration tracking documents.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omni-sql-perf-improvement/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "optimizing",
+        "specific",
+        "sql",
+        "query",
+        "full",
+        "execution",
+        "chain",
+        "omni",
+        "engine",
+        "covers",
+        "build",
+        "deploy"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omnioperator-debugger",
+      "description": "OmniOperator 列式算子调试专家。Use when Codex needs to 做 Omni 与 Spark 结果对比、关闭或开启列式算子定位问题、分析物理计划、处理 Coredump、排查数据不一致、或阅读 Omni 调试工作流。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omnioperator-debugger/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "omnioperator",
+        "codex",
+        "needs",
+        "omni",
+        "spark",
+        "coredump"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omnioperator-expression-analysis",
+      "description": "Full-repo scan of Velox / Spark SQL / OmniOperator expression support status, generating an ecosystem benchmark report. Triggers: expression coverage research, competitive analysis, Omni missing expression inventory, type matrix analysis.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omnioperator-expression-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "full-repo",
+        "scan",
+        "velox",
+        "spark",
+        "sql",
+        "omnioperator",
+        "expression",
+        "support",
+        "status",
+        "generating",
+        "ecosystem",
+        "benchmark"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omnioperator-expression-dev",
+      "description": "Use for OmniOperator expression development. Trigger when implementing new vectorized expressions, functions, or operators in OmniOperator framework. This includes scalar functions, aggregate functions, window functions, variadic functions, bitwise operations, math functions, string functions (like concat, split, substring), or any SQL function implementation. Also trigger when asked to \"implement function\", \"add expression\", \"create vectorized function\", \"实现函数\", \"添加表达式\", \"编写函数\", when working with Register*.cpp registration files, or when user mentions \"OmniOperator\" with \"function/expression/implementation\" or \"函数/表达式/实现\" and specifies function signature, arguments, return type, NULL handling, or vector encoding support.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omnioperator-expression-dev/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "omnioperator",
+        "expression",
+        "development",
+        "trigger",
+        "implementing",
+        "new",
+        "vectorized",
+        "expressions",
+        "functions",
+        "operators",
+        "framework",
+        "includes"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omnioperator-remote-build",
+      "description": "将本地代码同步到远程服务器，编译并运行单元测试。当用户想要同步代码、编译或运行远程服务器上的单元测试时调用。Triggers on: sync, build, compile, run tests, remote execute, deploy to server, push code to remote, rsync, 远程编译, 同步代码, 单元测试, UT, 编译. Also use when the user mentions running commands on a remote machine or asks about the status of a remote build.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omnioperator-remote-build/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "triggers",
+        "sync",
+        "build",
+        "compile",
+        "run",
+        "tests",
+        "remote",
+        "execute",
+        "deploy",
+        "server",
+        "push",
+        "code"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "omnioperator-status-analysis",
+      "description": "Full-repo scan of Spark SQL / Gluten / OmniOperator / Velox physical operator support status, generating an ecosystem benchmark report. Triggers: operator coverage research, Omni missing operator inventory, Spark physical operator pushdown status, Gluten fallback analysis, Substrait Rel to Omni PlanNode mapping matrix, operator type/config support matrix, competitive analysis vs Velox. Use this skill when the user asks \"which operators are currently supported\", \"which operators are missing\", \"operator status analysis\", \"operator coverage\", \"fallback inventory\".",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/omnioperator-status-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "full-repo",
+        "scan",
+        "spark",
+        "sql",
+        "gluten",
+        "omnioperator",
+        "velox",
+        "physical",
+        "operator",
+        "support",
+        "status",
+        "generating"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "opengauss-install-config-advisor",
+      "description": "Guide ordinary users through openGauss single-node or lightweight installation and configuration, including analysis of locally redacted offline collector reports. Use when an agent needs to help check a user's Linux/container environment, choose between container installation and simplified package installation, provide staged install commands, configure local or remote access safely, troubleshoot startup or connection failures, or generate conservative resource-aware openGauss tuning suggestions based on CPU, memory, disk, storage, and runtime limits.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/opengauss-install-config-advisor/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "guide",
+        "ordinary",
+        "users",
+        "through",
+        "opengauss",
+        "single-node",
+        "lightweight",
+        "installation",
+        "configuration",
+        "including",
+        "analysis",
+        "locally"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "opengauss-pr-review",
+      "description": "Use when the user gives an openGauss gitcode PR number/URL and asks to review and post findings to the PR.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/openGauss-code-review-skill/opengauss-pr-review/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "user",
+        "gives",
+        "opengauss",
+        "gitcode",
+        "number",
+        "url",
+        "asks",
+        "review",
+        "post",
+        "findings"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "paper-digest",
+      "description": "按\"方向 + 时间窗\"自动产出论文检索归档：纯 LLM-driven 流水线——Phase 0/0.5 由 LLM 抽核心关键词 + 同义扩展（30-60 短语）+ 推 arxiv_categories；Phase 1A 由 LLM 提议候选会议、DBLP 验证、metadata 补 CCF/CORE/h5；Phase 1B 由 LLM 同时推 arXiv 与 lab/researcher/blog/RFC 外部源；Phase 2/3 LLM 分类与 4 段量化摘要。输出 S/A/B 分档 + 4 段摘要 + 反虚构守门 + 双年/Best Paper 标注的中文 Markdown 归档。无需任何 YAML profile 或方向特定配置——任何方向（内存 / 安全 / 数据库 / ML / ...）直接传 `--direction \"...\"` 即用。LLM 后端默认走本地 agent CLI（Claude Code / Gemini / Codex 任意，订阅 OAuth、无需 key）；可选切到 DeepSeek 等 OpenAI 协议 endpoint。当用户说\"扫一下最近 N 个月的 X 方向论文\" / \"出一份 X 论文综述\" / \"X 方向这一年有什么新工作\" 等需求时触发。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/paper-digest/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "llm-driven",
+        "phase",
+        "llm",
+        "arxiv_categories",
+        "dblp",
+        "metadata",
+        "ccf",
+        "core",
+        "arxiv",
+        "lab",
+        "researcher",
+        "blog"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "patch-validator",
+      "description": "校验 git format-patch 格式的补丁文件与目标 git 仓库的合入情况。支持两种模式：(1) 应用校验，逐个分析每个补丁的每个 hunk 是否可以应用到目标分支；(2) 已合入差异校验，将本地补丁与目标仓库中已合入提交的 diff 做逐行比较，识别缺失行、额外行和删除侧不一致，并生成详细的 Markdown 格式报告。当用户需要验证补丁是否可以应用到目标仓库、检查本地补丁与上游已合入补丁是否完全一致、或生成补丁状态报告时使用此技能。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/CloudSkills/patch_skill/patch-validator/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "git",
+        "format-patch",
+        "hunk",
+        "diff",
+        "markdown"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "path-traversal-scanner",
+      "description": "Detects path traversal vulnerabilities and generates PoC for verification. Invoke when user requests path traversal check, directory traversal scan, file path security review, or repository-wide vulnerability scan.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/security/path-traversal-scanner/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "detects",
+        "path",
+        "traversal",
+        "vulnerabilities",
+        "generates",
+        "poc",
+        "verification",
+        "invoke",
+        "user",
+        "requests",
+        "check",
+        "directory"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "perf-hotspot",
+      "description": "Comprehensive CPU performance analysis using Linux perf and ARM SPE. Covers, quick pipeline health check (perf stat), function/instruction hotspot (perf record/report/annotate), targeted PMU event sampling (L1D refill, branch mispredict, etc.), multi-level cache profiling, ARM SPE instruction-level pipeline analysis (per-instruction latency, cache source, TLB, load-to-use stall), HiSilicon DDRC/L3C bandwidth monitoring, and cross-validation with devkit top-down. Use this skill whenever the user mentions perf, hotspot analysis, instruction profiling, SPE, PMU events, cache profiling, or CPU performance diagnosis.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/perf-hotspot/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "comprehensive",
+        "cpu",
+        "performance",
+        "analysis",
+        "using",
+        "linux",
+        "perf",
+        "arm",
+        "spe",
+        "covers",
+        "quick",
+        "pipeline"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "perf-kvcl-analyzer-offline",
+      "description": "Reads an existing perf.data file, extracts Top 50 hotspots, and maps them to KVCL optimized operators for replacement analysis. Invoke when user wants to analyze a pre-existing perf.data file without re-running encoding.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/media/perf-kvcl-analyzer/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "reads",
+        "existing",
+        "perf",
+        "data",
+        "file",
+        "extracts",
+        "top",
+        "hotspots",
+        "maps",
+        "kvcl",
+        "optimized",
+        "operators"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "perf-topdown",
+      "description": "Combine devkit top-down and perf annotate data to diagnose CPU performance bottlenecks. Cross-validate \"where\" (perf annotate, which instructions stall) with \"why\" (top-down, which pipeline stage is blocked). Use this skill whenever the user wants to understand why a program doesn't reach theoretical peak performance, needs combined top-down + perf hotspot analysis, or asks about multi-level bottleneck diagnosis. All perf-level analysis methods (record, annotate, SPE, PMU events, DDRC bandwidth) are covered by the perf-hotspot skill.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/perf-topdown/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "combine",
+        "devkit",
+        "top-down",
+        "perf",
+        "annotate",
+        "data",
+        "diagnose",
+        "cpu",
+        "performance",
+        "bottlenecks",
+        "cross-validate",
+        "instructions"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "pptx-pro",
+      "description": "制作 / 编辑任何 .pptx 幻灯片、决策胶片、pitch deck、汇报页时优先用本 skill。它承载一套经多轮真实交付打磨的 PPT 制作规范与硬性红线(配色 / 版式 / 内容结论 / 渲染核对 / 版本策略),并复用 Agent 平台官方 `pptx` skill 的读取、缩略图、pptxgenjs、模板编辑等底层能力。任何 deck / slides / presentation / .pptx 任务优先加载本 skill;纯粹只读提取文本可直接用官方 pptx。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/pptx-pro/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "pptx",
+        "pitch",
+        "deck",
+        "skill",
+        "ppt",
+        "agent",
+        "pptxgenjs",
+        "slides",
+        "presentation"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "prompt-archive",
+      "description": "提取并归档本机 Claude Code 所有历史会话中\"用户真人发出的 prompt\"，生成每会话 md + 主索引 + 质量分析报告，支持增量更新。当用户说\"归档我的 session prompt\"\"提取历史 prompt\"\"统计我问过的问题\"\"prompt 质量分析\"\"/prompt-archive\"时触发。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/prompt-archive/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "claude",
+        "code",
+        "prompt",
+        "session",
+        "prompt-archive"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "remote-vm-builder",
+      "description": "Create and manage Linux cloud-image virtual machines on remote SSH-accessible libvirt/KVM hosts. Use when users ask to list supported OS images, inspect remote VM host capabilities, create remote VMs with configurable CPU/memory/disk/network/storage, use custom cloud image URLs, SSH/exec into VMs, or start/stop/destroy remote VMs.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/remote-vm-builder/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "create",
+        "manage",
+        "linux",
+        "cloud-image",
+        "virtual",
+        "machines",
+        "remote",
+        "ssh-accessible",
+        "libvirt",
+        "kvm",
+        "hosts",
+        "users"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "requesting-code-review",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/openGauss-code-review-skill/requesting-code-review/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "completing",
+        "tasks",
+        "implementing",
+        "major",
+        "features",
+        "before",
+        "merging",
+        "verify",
+        "work",
+        "meets",
+        "requirements"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "secure-compile-checker",
+      "description": "Checks C/C++ code for secure compile options compliance based on BoostKit SecureCompile standards. Invoke when user requests secure compile check, build security review, or hardening verification.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/security/secure-compile-checker/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "checks",
+        "code",
+        "secure",
+        "compile",
+        "options",
+        "compliance",
+        "based",
+        "boostkit",
+        "securecompile",
+        "standards",
+        "invoke",
+        "user"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "sensitive-info-scanner",
+      "description": "Scans code for sensitive information leaks (API keys, passwords, tokens, enterprise data). Invoke when user requests sensitive data detection or credential scan.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/security/sensitive-info-scanner/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "scans",
+        "code",
+        "sensitive",
+        "information",
+        "leaks",
+        "api",
+        "keys",
+        "passwords",
+        "tokens",
+        "enterprise",
+        "data",
+        "invoke"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "skill-codex",
+      "description": "Implement, review, or explain KDNN-to-TensorFlow CPU thread-through operators in this repository. Use when adding a new fast path, extending `kdnn_adapter.h`, wiring TensorFlow cwise or dedicated kernels, or validating fallback and threadpool behavior against the in-repo `Add`, `FloorMod`, `Concat`, `Softmax`, and `Sigmoid` cases.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/SRASkills/thread_flow/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "implement",
+        "review",
+        "explain",
+        "kdnn-to-tensorflow",
+        "cpu",
+        "thread-through",
+        "operators",
+        "repository",
+        "adding",
+        "new",
+        "fast",
+        "path"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-case-generator",
+      "description": "当用户需要为Spark OMNI优化算子生成测试用例JSON文件时触发。必须首先检查测试设计文档是否存在；如不存在，提示用户指定文档路径或引导用户使用spark-omnioperator-test-design-generator skill生成。\n覆盖内容：用例标题预览确认、批量生成4字段标准JSON用例、名称-实现一致性强制自检、最终交付报告。\n触发关键词：算子测试用例生成、Spark算子用例JSON、测试用例生成、OMNI算子用例、生成xxx算子测试用例、TableWrite/Filter/HashAggregate/Sort/HashJoin/Window算子测试用例。\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-case-generator/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "spark",
+        "omni",
+        "json",
+        "spark-omnioperator-test-design-generator",
+        "skill",
+        "xxx",
+        "tablewrite",
+        "filter",
+        "hashaggregate",
+        "sort",
+        "hashjoin",
+        "window"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-design-generator",
+      "description": "为Spark OMNI优化算子生成标准化测试设计文档。触发关键词：OMNI算子测试设计、OMNI算子测试、OMNI测试设计文档、omnioperator test design、omni TableWrite/TableRead/Filter/HashAggregate/Sort/HashJoin/Window算子测试设计",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-design-generator/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "spark",
+        "omni",
+        "omnioperator",
+        "test",
+        "design",
+        "tablewrite",
+        "tableread",
+        "filter",
+        "hashaggregate",
+        "sort",
+        "hashjoin",
+        "window"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-devdoc-review",
+      "description": "Review Spark OMNI operator developer design documents to verify they contain enough information for downstream test-design agents. Checks functional completeness (constraints, data types, switches, observed operators, design flow, SQL examples), behavioral testability (null/boundary/exception/concurrent), SQL diversity, and OS/JDK/Spark/storage compatibility.\nTrigger when user wants to review/check/validate/evaluate a design document, 检视/检查/评审/审查 设计文档, 需求设计文档检视, or asks whether a design doc is ready for test case generation.\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-devdoc-review/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "review",
+        "spark",
+        "omni",
+        "operator",
+        "developer",
+        "design",
+        "documents",
+        "verify",
+        "contain",
+        "enough",
+        "information",
+        "downstream"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-report-generator",
+      "description": "Generate crash-proof HTML test report for Spark OmniOperator testing from pytest-json-report results. Creates expandable/collapsible report with filtering, ERROR red coloring, shows ALL cases (tested + not_tested). Works even if pytest crashed. Trigger when user mentions 'generate report', 'HTML report', 'test report', 'visualization' in the context of Spark OmniOperator. Do NOT trigger for other business scenarios or for script generation/execution.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-report-generator/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "generate",
+        "crash-proof",
+        "html",
+        "test",
+        "report",
+        "spark",
+        "omnioperator",
+        "testing",
+        "pytest-json-report",
+        "results",
+        "creates",
+        "expandable"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-runner",
+      "description": "Execute pytest test scripts via SSH with connection pool. Runs S1 (Native vs Omni comparison) and E2 (execution plan verification) patterns. Sets up core modules, SSH pool, logger, and handles timeout calculation. Use this skill when user mentions 'run tests', 'execute pytest', 'SSH test execution', 'S1 comparison', 'E2 verification'. Trigger ONLY for execution phase, NOT for script generation or reporting.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-runner/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "execute",
+        "pytest",
+        "test",
+        "scripts",
+        "via",
+        "ssh",
+        "connection",
+        "pool",
+        "runs",
+        "native",
+        "omni",
+        "comparison"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "spark-omnioperator-test-script-generator",
+      "description": "Generate pytest test scripts for Spark OmniOperator testing. Reads test_cases.json and creates tests/test_*.py files with 1:1 mapping for pytest-xdist parallel execution. Trigger when user mentions '生成测试脚本', 'generate test scripts', 'create test files' in the context of Spark OmniOperator. Do NOT trigger for other business scenarios or for test execution/reporting.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/spark-omnioperator-test-script-generator/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "generate",
+        "pytest",
+        "test",
+        "scripts",
+        "spark",
+        "omnioperator",
+        "testing",
+        "reads",
+        "test_cases",
+        "json",
+        "creates",
+        "tests"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "tech-daily-brief",
+      "description": "每日动态简报 skill。把你配置的一组「类型」（如 GCC / LLVM / Go / Java / AI 编译 / 内存库）当作**一个关注集**，每天产出**一份**中文《每日简报》md——里面按类型平铺，每个类型各带「📄 论文 / 📰 资讯 / 💻 上游代码」三维度，让你一份文件看全所有关心的方向、可挑可跳。时间窗默认近 1 天（可调，低频维度自动放宽）。每个「类型×维度」的最佳信息源由 LLM 自动发现并缓存为「源画像」，每日复用、增量去重。产物双归档到公开仓库（分享）+ 私有归档仓库（分享外的备份）。当用户说\"出一份每日动态/简报\"\"跟踪我这几个类型今天有什么新东西\"\"每天汇总下 arXiv + 资讯 + 上游 commit\"\"盯一下 编译器/内存库 的最新进展\"等需求时使用——即使没明说\"简报\"二字，只要意图是\"按一组类型 + 时间窗汇总论文/资讯/上游代码的近期动态成一份报告\"，都应优先触发本 skill。区别于 magazine-collect（近 3 月月刊）、paper-digest（只论文深摘要）、upstream-tech-radar（单仓库月报）：本 skill 是**按天、一份 md 看全、类型×三维度**的轻量动态简报。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/tech-daily-brief/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "skill",
+        "gcc",
+        "llvm",
+        "java",
+        "llm",
+        "arxiv",
+        "commit",
+        "magazine-collect",
+        "paper-digest",
+        "upstream-tech-radar"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "theory-driven-pipeline-optimization",
+      "description": "当需要为计算密集型算法建立理论性能上限时使用：先识别核心指令和依赖链，编写微基准脚本测量这些指令的时延、吞吐和混合执行成本，再根据算法的指令计数、依赖图和数据移动推算每个处理单位需要多少 cycles，得到理论 cycles 下界和吞吐上限。适用于 C/C++、汇编、SIMD、加密、压缩、字符串处理、数学库等 kernel 的理论性能建模、headroom 判断和优化方向选择。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/theory-driven-pipeline-optimization/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "cycles",
+        "simd",
+        "kernel",
+        "headroom"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "token-usage-sync",
+      "description": "统计每周 AI 编码工具(Claude Code / Codex CLI)的 token 用量,并同步到腾讯文档在线表格的团队周汇总表时使用——初次接入授权、指定写入位置(文档 / 子表 / 成员列)、手动补跑某周、排查 token 过期或列缺失、装定时任务。当用户提到「token 统计同步」「AI token 周报」「接入周报表格」「腾讯文档 token 周汇总」「给某成员接上 token 统计」「补跑本周 token」「token 同步报错 / 排查」时触发。只想看本机用量不写表时,也可以只跑统计部分。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/token-usage-sync/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "claude",
+        "code",
+        "codex",
+        "cli",
+        "token"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "upstream-pr-analysis",
+      "description": "分析上游仓库相对某个基线发布版本（release tag/commit）后合入的 PR，聚焦性能优化方向，产出技术报告。当用户说\"分析上游 PR\"\"看看升级有哪些性能优化\"\"从 vX.X 到 main 改了什么性能相关的代码\"\"升级到新版本需关注哪些 PR\"时使用。支持任意语言/任意仓库。支持双平台数据获取：GitHub（通过 gh CLI / Search API）与 GitCode（通过 gitcode MCP + 本地 git merge commit 发现）。按热点函数/文件筛选性能优化 PR，分析修改内容和预期收益，给出升级重点关注清单。执行时会先统计总 PR 数，然后询问用户选择梳理范围（全量分析所有 PR / 补充 perf 热点函数 / 限定时间或领域范围），再据此执行后续分析。平台按 upstream_repo 的 URL host 自动探测（github.com→gh，gitcode.com→gitcode MCP）。\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/upstream-pr-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "release",
+        "tag",
+        "commit",
+        "main",
+        "github",
+        "cli",
+        "search",
+        "api",
+        "gitcode",
+        "mcp",
+        "git",
+        "merge"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "upstream-tech-radar",
+      "description": "Use when an Arm high-performance engineer needs upstream GitHub signals, peer-repository comparisons, or monthly technology radar reports to guide performance, portability, and optimization decisions.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/BoostCoreSkills/skills/upstream-tech-radar/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "arm",
+        "high-performance",
+        "engineer",
+        "needs",
+        "upstream",
+        "github",
+        "signals",
+        "peer-repository",
+        "comparisons",
+        "monthly",
+        "technology",
+        "radar"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "velox-flamegraph-analyzer-skill",
+      "description": "Analyze async-profiler flame graph HTML files to identify Java, Velox C++, and kernel bottlenecks, map hotspots to Velox modules, provide ARM/aarch64 optimization insights, and generate an interactive HTML report with links to original flame graphs.\n",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/velox-flamegraph-analyzer-skill/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "analyze",
+        "async-profiler",
+        "flame",
+        "graph",
+        "html",
+        "files",
+        "identify",
+        "java",
+        "velox",
+        "kernel",
+        "bottlenecks",
+        "map"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "velox-x86-arm-webui-analysis",
+      "description": "对比分析 Gluten+Velox 在 x86 和 ARM(鲲鹏) 上的 Spark WebUI 性能差异，识别 ARM 落后的算子和计算过程,定位可能缺失 NEON/SVE 向量化的代码路径,并生成可视化 HTML 对比报告。使用场景:用户提供 x86 和 ARM 的 Spark Application ID 或 WebUI URL,要求对比性能、找出 ARM 慢的原因、分析 Gluten 代码中架构特定优化缺失点,并生成可视化 HTML 报告.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/velox-x86-arm-webui-analysis/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "gluten",
+        "velox",
+        "x86",
+        "arm",
+        "spark",
+        "webui",
+        "neon",
+        "sve",
+        "html",
+        "application",
+        "url"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "velox-x86-to-sve256",
+      "description": "Use when modifying velox or gluten-velox C++ files containing x86 SIMD intrinsics (_mm_*, _mm256_*, __m128i, __m256i, immintrin headers) to port them to ARM SVE with fixed 256-bit vector length (AWS Graviton3 or similar). Performs closed-loop verification via remote MCP build + e2e SQL diff against baseline, with up to 5 auto-fix iterations.",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/bigdata/OmniSkills/velox-x86-to-sve256/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "modifying",
+        "velox",
+        "gluten-velox",
+        "files",
+        "containing",
+        "x86",
+        "simd",
+        "intrinsics",
+        "mm_",
+        "mm256_",
+        "m128i",
+        "m256i"
+      ],
+      "confirm": false
+    },
+    {
+      "name": "ycsb-rocksdb-benchmark",
+      "description": "使用 YCSB 对 RocksDB 进行性能测试，遍历不同并发数和 workload a-f 场景。当用户需要对 RocksDB 执行 YCSB 基准测试、对比不同并发或负载下的性能时调用此 skill。",
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/database/rocksdb-ycsb-benchmark/SKILL.md",
+      "tags": [],
+      "triggers": [
+        "ycsb",
+        "rocksdb",
+        "workload",
+        "a-f",
+        "skill"
+      ],
+      "confirm": false
+    },
+    {
       "name": "aiss-tiling-solver",
       "description": "使用 AISS-TilingSolver 工具自动求解 Ascend C 算子（MatMul / Vector）的最优 Tiling 参数，包括下载安装、构造 JSON 输入、运行求解、结果解读与故障排查。触发：当用户使用 TilingSolver 工具求解时。",
       "source": "cannbot-skills",
@@ -3656,19 +4974,21 @@
     },
     {
       "name": "ascendc-blaze-best-practice",
-      "description": "Blaze/tensor_api 路径的 Matmul 类算子开发指南（Ascend 950 / DAV_3510）。覆盖框架认知、模板目录、开发指南和扩展开发。触发：在 A5 平台开发 matmul 类算子（普通 matmul、MX 量化 matmul、Grouped matmul）及 C+V 模式融合算子（上述三类 matmul + vector epilogue）时。不适用于纯 Vector 算子和 A2/A3 平台。",
+      "description": "在 Ascend 950 / DAV_3510 平台上，基于 Blaze/tensor_api 开发 Basic、Batch、Grouped、Quantized、MX 等 MatMul 类算子或相关的融合算子时使用。不适用于纯 Vector 算子或 A2/A3 平台。",
       "source": "cannbot-skills",
       "path": ".skills-cache/cannbot-skills/ops/ascendc-blaze-best-practice/SKILL.md",
       "tags": [],
       "triggers": [
-        "blaze",
-        "tensor_api",
-        "matmul",
         "ascend",
         "dav_3510",
+        "blaze",
+        "tensor_api",
+        "basic",
+        "batch",
         "grouped",
-        "vector",
-        "epilogue"
+        "quantized",
+        "matmul",
+        "vector"
       ],
       "confirm": false
     },
@@ -6092,7 +7412,7 @@
     },
     {
       "name": "tilelang2ascend-tilelang-designer",
-      "description": "TileLang kernel 设计与实现专家 Skill。为 PyTorch Model 设计并实现自定义 TileLang kernel： 完成 block-level 设计、tile-level 设计，并生成 model_new_tilelang.py 调用自定义 TileLang kernel。 当需要为复杂算子设计 TileLang kernel 时，使用此 skill。\n",
+      "description": "TileLang kernel 设计调度 Skill。协调 tilelang-op-design（设计方法论）和 tilelang-op-develop（编码规范）， 完成 block-level 设计、tile-level 设计和 model_new_tilelang.py 生成， 并通过步骤 4（tilelang-perf-optimization 本体）完成测量驱动的性能迭代。 产物对接下游 AscendC translator 算子生成流程。 触发：当需要为复杂算子（Attention、MatMul 变体、Norm 变体、Sort、多输入融合）生成 TileLang kernel 设计时使用。\n",
       "source": "cannbot-skills",
       "path": ".skills-cache/cannbot-skills/plugins-community/tilelang2ascendc-ops-generator/skills/tilelang2ascend-tilelang-designer/SKILL.md",
       "tags": [],
@@ -6100,11 +7420,15 @@
         "tilelang",
         "kernel",
         "skill",
-        "pytorch",
-        "model",
+        "tilelang-op-design",
+        "tilelang-op-develop",
         "block-level",
         "tile-level",
-        "model_new_tilelang"
+        "model_new_tilelang",
+        "tilelang-perf-optimization",
+        "ascendc",
+        "translator",
+        "attention"
       ],
       "confirm": false
     },
@@ -6731,6 +8055,27 @@
         ".skills-cache/ascend-agent-skills/official/PyTorch/torch-npu-issue-pipeline-core/tools/npu-op-integration/SKILL.md",
         ".skills-cache/ascend-agent-skills/official/PyTorch/torch-npu-issue-pipeline-distributed/skills/tools/npu-op-integration/SKILL.md"
       ]
+    },
+    {
+      "name": "env-deploy-for-cc",
+      "paths": [
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/.claude-plugin/skill/env-deploy-for-cc/SKILL.md",
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/skills/env-deploy-for-cc/SKILL.md"
+      ]
+    },
+    {
+      "name": "env-deploy-for-codex",
+      "paths": [
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/.codex/skill/env-deploy-for-codex/SKILL.md",
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/skills/env-deploy-for-codex/SKILL.md"
+      ]
+    },
+    {
+      "name": "env-deploy-for-trae",
+      "paths": [
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/.trae/skill/env-deploy-for-trae/SKILL.md",
+        ".skills-cache/boostkit-skills/BoostCoreSkills/skills/env-deploy/skills/env-deploy-for-trae/SKILL.md"
+      ]
     }
   ],
   "errors": [
@@ -6778,6 +8123,11 @@
       "source": "cannbot-skills",
       "path": ".skills-cache/cannbot-skills/plugins-official/ops-registry-invoke/workflow/SKILL.md",
       "reason": "description too short (<20 chars)"
+    },
+    {
+      "source": "boostkit-skills",
+      "path": ".skills-cache/boostkit-skills/skills/domain/SRASkills/faiss-pr-rebase/SKILL.md",
+      "reason": "missing frontmatter delimiters"
     }
   ]
 }

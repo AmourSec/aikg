@@ -32,6 +32,15 @@ sources:
     sync_dir: .skills-cache/cannbot-skills
     enabled: true
 
+  - name: boostkit-skills
+    type: git
+    url: https://gitcode.com/boostkit/skills
+    branch: master
+    root: ""
+    description: boostkit skills 仓库
+    sync_dir: .skills-cache/boostkit-skills
+    enabled: true
+
 # 全局默认策略
 defaults:
   confirm_policy: notify        # notify | confirm
