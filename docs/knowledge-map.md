@@ -122,24 +122,24 @@ updated: 2026-07-07
       </ul>
     </section>
     <section class="kg-mindmap-branch">
-      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与可靠性</a>
+      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与沉淀</a>
       <ul>
         <li class="kg-node-main"><a href="../08-benchmark-capacity/">8 性能分析、Benchmark 与容量建模</a></li>
         <li class="kg-node-main"><a href="../09-reliability-observability/">9 可靠性、可观测性与故障复盘</a></li>
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
+        <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li class="kg-node-child"><a href="../08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/">Profiler 工具链</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/observability-overview-signals/">可观测性信号</a></li>
         <li class="kg-node-child"><a href="../10-papers-cases/ai-system-architecture/">系统论文与架构分析</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR</span></li>
+        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
-      <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
+      <a class="kg-branch-title" href="../99-templates/knowledge-note/">模板与资源</a>
       <ul>
-        <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
-        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
         <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
-        <li class="kg-node-note"><span>关键词：metadata / provenance / llms.txt / vector index / knowledge graph / ADR / benchmark report / AI-readable skills</span></li>
+        <li class="kg-node-note"><span>关键词：knowledge note / ADR / benchmark report / AI-readable skills</span></li>
       </ul>
     </section>
   </div>

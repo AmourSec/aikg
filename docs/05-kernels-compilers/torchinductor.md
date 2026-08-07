@@ -171,7 +171,7 @@ model.block = torch.compile(model.block)
 - 与 GPU 计算无关的控制流。
 - 很复杂的分布式协调逻辑。
 
-PyTorch 还提供 `torch.compiler.disable` 之类的逃生口，可以显式禁止某些函数被编译。较新的 API 也包括 `nested_compile_region`，用于标记可重复复用的嵌套编译区域。工程上要把这些工具当成“切分边界”的手段，而不是最后才用的补丁。
+PyTorch 还提供 `torch.compiler.disable` 之类的逃生口，可以显式禁止某些函数被编译。部分版本在 `torch._dynamo` 内部提供类似 `nested_compile_region` 的实验性接口，用于标记可重复复用的嵌套编译区域，但它不一定是稳定公开 API，使用前应核对当前 PyTorch 版本的 `torch.compiler` 命名空间文档。工程上要把这些工具当成“切分边界”的手段，而不是最后才用的补丁。
 
 一个实用原则：
 
@@ -992,7 +992,7 @@ tlparse /tmp/tracedir
 | `torch.compiler.assume_constant_result` | 标记函数结果可视为常量 |
 | `torch.compiler.list_backends` | 查看可用 backend |
 | `torch.compiler.cudagraph_mark_step_begin` | 标记新的训练/推理 iteration |
-| `torch.compiler.nested_compile_region` | 标记可复用的嵌套编译区域 |
+| `torch._dynamo` 实验性嵌套编译区域接口 | 标记可复用的嵌套编译区域（非稳定公开 API，需核对版本） |
 
 这些 API 能帮助切边界、定位问题、控制编译行为。但带有 `unsafe` 的 guard 相关工具要非常谨慎：它们可能提高缓存复用，但也可能让错误输入复用不该复用的编译结果。
 

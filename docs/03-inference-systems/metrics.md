@@ -35,7 +35,7 @@ flowchart LR
     A -.-> I["queue time"]
     D -.-> J["prefill time"]
     A -.-> K["TTFT"]
-    E -.-> L["TPOT / inter-token latency"]
+    E -.-> L["TPOT（均值）/ inter-token latency（逐次间隔）"]
     A -.-> M["end-to-end latency"]
 ```
 

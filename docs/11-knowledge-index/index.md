@@ -255,6 +255,7 @@ domain:
   - reliability-observability
   - papers-cases
   - knowledge-index
+  - template
 ```
 
 不要每篇随手创造新 domain。
@@ -269,12 +270,14 @@ doc_type:
   - concept
   - system-guide
   - benchmark-guide
+  - benchmark-report
   - tool-case
   - paper-note
   - experiment-report
   - adr
   - failure-case
   - runbook
+  - guide
   - template
   - index
 ```

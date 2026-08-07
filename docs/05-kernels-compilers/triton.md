@@ -1140,7 +1140,7 @@ Triton 提供：
 
 限制也要记住：
 
-- 不支持 `bfloat16` 操作，需要 cast 到 `float32`。
+- 某些版本不支持 `bfloat16` 操作（interpreter 后端依赖 numpy/PyTorch 的 CPU bfloat16 支持），如遇问题可 cast 到 `float32`。
 - 不支持某些 indirect memory access pattern。
 - 性能没有参考意义。
 

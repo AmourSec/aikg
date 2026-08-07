@@ -48,6 +48,7 @@ flowchart TB
     Diagnose["Diagnose<br/>scope / timeline / hypotheses / evidence"]
     Mitigate["Mitigate<br/>rollback / drain / throttle / reschedule / fallback"]
     Recover["Recover<br/>SLO normal / jobs progressing / capacity restored"]
+    Close["Close<br/>impact ended / evidence sealed / postmortem owner assigned"]
     Review["Postmortem<br/>timeline / impact / causes / action items"]
     Improve["Improve<br/>runbook / alert / benchmark / tests / architecture"]
 
@@ -56,7 +57,8 @@ flowchart TB
     Stabilize --> Diagnose
     Diagnose --> Mitigate
     Mitigate --> Recover
-    Recover --> Review
+    Recover --> Close
+    Close --> Review
     Review --> Improve
     Improve --> Detect
 ```

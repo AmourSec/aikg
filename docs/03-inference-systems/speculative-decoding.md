@@ -296,6 +296,14 @@ N-gram speculation 不一定需要神经网络 draft。它可以从 prompt、已
 
 优点是便宜、简单；缺点是适用场景有限，遇到开放式生成时接受率可能不高。
 
+### Lookahead Decoding
+
+Lookahead Decoding 不依赖独立 draft model，而是利用 Jacobi 迭代的特性：把自回归 decode 当成可以并行猜测多步的固定点迭代，一次性并行推测后续若干 token，再由目标模型验证。
+
+直观上，它通过构造一个 N-gram 候选池并随 decode 不断扩展和验证，在不引入额外模型的前提下获得 speculative 的并行收益。
+
+优点是无需额外模型、无需额外训练；缺点是并行度和接受率受 Jacobi 收敛特性影响，对实现要求较高。
+
 ## 哪些场景更适合
 
 Speculative Decoding 更适合以下场景：

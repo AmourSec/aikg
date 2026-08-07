@@ -520,7 +520,7 @@ Object Store / Data Lake
 - Slurm：HPC 和大规模训练常见，适合 batch job、队列、分区、fairshare。
 - Kubernetes：云原生生态强，适合服务化、容器、控制器、推理平台和混合 workload。
 - Ray：适合分布式 Python、RL、数据处理、训练/推理任务编排。
-- Volcano / Kueue：面向 Kubernetes 上的 batch、queue、gang scheduling、quota 等能力。
+- Volcano / Kueue：面向 Kubernetes 上的 batch、queue、quota 等能力；Volcano 侧重调度层的 gang scheduling 与调度插件，Kueue 侧重准入层的队列治理与资源借用（详见调度系统章节）。
 
 它们不是简单替代关系。很多组织会组合使用：
 

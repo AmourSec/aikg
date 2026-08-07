@@ -483,15 +483,16 @@ benchmark:
 
 ### Evidence Level
 
-建议使用证据等级。
+建议使用证据等级（与 `docs/11-knowledge-index/index.md` 中的权威定义保持一致）。
 
 | 等级 | 含义 |
 | --- | --- |
-| E0 | 直觉、经验判断或未验证假设 |
-| E1 | 文档、论文、公开 benchmark 或专家判断 |
-| E2 | 本地可复现实验，有 workload、baseline、metrics 和环境记录 |
-| E3 | 多场景 sweep、profiler、稳定性和成本证据完整 |
-| E4 | 线上灰度或生产数据验证，并有回滚和监控闭环 |
+| E0 | 经验、观点、博客、口头判断 |
+| E1 | 论文、官方文档、源码说明 |
+| E2 | 小规模本地实验 |
+| E3 | 可复现 benchmark + raw data + manifest |
+| E4 | production trace replay、shadow、canary |
+| E5 | 线上长期运行数据、SLO、incident 和成本闭环 |
 
 ADR 可以在 E1 阶段被 proposed。
 
@@ -1087,7 +1088,7 @@ ADR 不应该吞掉这些文档。
 ## 参考资料
 
 - [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
-- [Markdown Architectural Decision Records](https://github.com/adr/madr)
+- [Markdown Architectural Decision Records](https://adr.github.io/madr/)
 - [Architecture decision record examples and templates](https://github.com/architecture-decision-record/architecture-decision-record)
 - [One Size Fits All? An Empirical Comparison of ADR Templates regarding Comprehension, Usability, and Ease of Adoption](https://arxiv.org/abs/2604.27333)
 - [Context Matters: Evaluating Context Strategies for Automated ADR Generation Using LLMs](https://arxiv.org/abs/2604.03826)

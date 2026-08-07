@@ -91,7 +91,7 @@ flowchart TB
 | AIC / Cube | 执行矩阵乘、卷积等 dense 计算。 | MatMul、QKV projection、MLP、Attention score、训练 backward GEMM。 | Transformer 主要 FLOPs 在这里，Cube 利用率非常关键。 |
 | AIV / Vector | 执行向量、逐元素、归一化、类型转换等计算。 | Add、Mul、Cast、RMSNorm、Softmax 局部步骤、量化/反量化。 | 小算子过多或 UB 组织不好会拖慢端到端。 |
 | Scalar | 做地址、循环、分支、mask 和同步控制。 | offset 计算、尾块处理、flag/event、条件逻辑。 | 动态 shape 和复杂控制流会增加开销。 |
-| MTE / DataCopy | 在 HBM 和片上 buffer 间搬数据。 | GM 到 UB/L1，L1 到 L0A/L0B，L0C 经 Fixpipe 搬出。 | 数据供不上，Cube/Vector 就会等待。 |
+| MTE / DataCopy | 在 HBM 和片上 buffer 间搬数据。 | GM 到 UB/L1、UB/L1 到 GM。 | 数据供不上，Cube/Vector 就会等待。 |
 | UB | AIV 的主要片上工作区。 | 向量输入输出、临时结果、双缓冲、分块处理。 | UB 容量、32B 对齐和 bank conflict 影响向量性能。 |
 | L1 | AIC 侧靠近 Cube 的缓存和重排空间。 | 缓存矩阵 tile，再搬到 L0A/L0B。 | 影响矩阵 tile 复用和格式转换成本。 |
 | L0A / L0B | Cube 左右输入操作数 buffer。 | L0A 放左矩阵 tile，L0B 放右矩阵 tile。 | 对齐、分形格式和 tile shape 决定 Cube 喂数效率。 |

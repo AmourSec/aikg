@@ -116,11 +116,15 @@ SLO 是 Service Level Objective。
 例如：
 
 ```text
-30 天滚动窗口内，99.5% 的交互式请求满足：
+30 天滚动窗口内，99.5% 的交互式请求满足（per-request 条件）：
   success == true
   TTFT <= 500 ms
-  TPOT p99 <= 50 ms
+
+同时另设一个 aggregate SLO：
+  TPOT p99 <= 50 ms（对窗口内所有请求的逐 token 延迟取 p99）
 ```
+
+注意 `success == true`、`TTFT` 是每条请求都能判定的 per-request 属性，可以直接参与"99.5% 的请求满足…"的计数；而 `TPOT p99` 是对一批请求统计出的聚合分位数，不是单条请求的属性，不能放进 per-request 的好事件定义。应把 per-request SLO 和 aggregate SLO 分开声明，避免把跨请求统计量当成单请求条件。
 
 SLO 的重点是“有时间窗口、有目标、有测量口径”。
 

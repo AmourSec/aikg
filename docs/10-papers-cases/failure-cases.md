@@ -1,6 +1,6 @@
 ---
 title: 故障案例库：从失败复现到系统改进
-domain: failure-cases
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
