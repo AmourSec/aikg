@@ -6,8 +6,3 @@ site/
 __pycache__/
 *.pyc
 .skills-cache/
-
-# Local review/fix reports (not for git)
-fix-changelog-2026-08-06.md
-review-report-2026-08-06.md
-review-report-verification-2026-08-06.md
