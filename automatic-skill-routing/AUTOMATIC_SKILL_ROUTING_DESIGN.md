@@ -1,9 +1,9 @@
 # 自动发现、选择并使用 Skills：设计方案
 
-**状态：** 设计完成，待评审后落地原型
-**对应需求：** [AUTOMATIC_SKILL_ROUTING_TASK.md](AUTOMATIC_SKILL_ROUTING_TASK.md)
+**状态：** 已落地并通过离线单元测试
+**需求来源：** 用户提出的原始需求文件未纳入仓库；本文件与 `skills-router/ROUTING_PROTOCOL.md` 是当前唯一设计权威（`docs/superpowers/` 下的历史设计已标注被取代）
 
-本文件回答“怎么做”，需求文档回答“要做什么”。两者保持对应，需求变更先改 TASK，设计变更先改本文件。
+本文件回答“怎么做”。需求变更先与本文件对齐，设计变更先改本文件。
 
 ---
 
@@ -72,11 +72,38 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
+上图为**构建期 + 协议**视角：Sources 与 Catalog 由本地扫描生成（Skill 数量以 `catalog.json` 当前生成为准），协议步骤在大模型内执行，本身不产生网络请求。运行期另有可选的**远程提供方**链路，与构建期目录相互独立：
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ 运行时协调层（runtime/coordinator.py）                        │
+│   本地候选（来自构建期 catalog） + 远程候选（来自提供方）     │
+│   两道同意门：网络同意（每任务一次）/ 激活确认（远程加载前）  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ 仅在同意授予后
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 远程提供方层（runtime/ascend_kg.py，Ascend KG / ascend.wiki）│
+│   search: POST /search（载荷仅 query/top_k/with_neighbors）  │
+│   load:   GET /skill/<id>（仅激活同意后）                    │
+│   出站请求有界：10 秒超时、响应字节上限、仅 429 限次退避      │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 执行目标层（runtime/contracts.py ExecutionTarget）           │
+│   NativeLocalTarget / LocalPathTarget / InlineRemoteTarget  │
+│   远程内容是不可信文本：无策略权威、不落盘、不加载额外资源   │
+└─────────────────────────────────────────────────────────────┘
+```
+
 **关键不变量：**
 
 - Catalog 层始终是轻量元数据，正文按需加载；
 - 路由代码只认 Catalog schema，不认具体 Skill 名称；
-- sources.yaml 是唯一来源真相，build_catalog.py 是通用扫描器。
+- sources.yaml 是唯一来源真相，build_catalog.py 是通用扫描器；
+- 运行时远程访问必须先获得用户逐任务的网络同意，加载远程内容前必须再获得单独的激活确认；
+- 远程内容永远不可信：无策略权威、不持久化、不加载额外资源；
+- 远程链路的任何失败（无密钥、被拒、无匹配、含糊、401/403/429/503、超时、非法、超限）都回退为仅用本地 catalog，不中断任务。
 
 ---
 
@@ -300,43 +327,165 @@ Step 5  EXECUTE
 
 协议本身平台无关。具体平台只需实现一个“工具”把上述步骤暴露给大模型：
 
-- **opencode**：可用 `skill` 工具加载，用 `question` 工具实现 confirm；catalog 作为系统提示注入。参考实现见 `skills-router/README.md` 的“opencode 适配”一节。
+- **opencode**：可用 `skill` 工具加载本地已安装 skill，用 `question` 工具实现 confirm；catalog 作为系统提示注入。参考实现见 `skills-router/opencode-adapter.md`。
 - **OpenAI Function Calling**：定义 `recall_skills`、`select_skills`、`load_skill` 三个函数。
 - **纯 Prompt Agent**：把 catalog 和协议步骤写进 system prompt，让模型直接输出 JSON。
 
+运行时远程提供方（第 7 节）的平台映射同理：两道同意门用平台问答工具实现，远程内容只做定界内联注入。
+
 ---
 
-## 7. Notify / Confirm 机制
+## 7. 运行时远程提供方（Ascend KG）
 
-### 7.1 两种策略
+`skills-router/runtime/` 在协议之外实现可选的运行时远程检索：经用户同意后访问 Ascend KG（`https://ascend.wiki`），把远程 Skill 纳入候选。该链路与构建期 Sources/Catalog 完全独立：catalog 仍是本地扫描产物，不因远程检索而改变。
+
+### 7.1 模块组成
+
+| 模块 | 职责 |
+| --- | --- |
+| `runtime/contracts.py` | 类型与协议契约：同意枚举（NetworkConsent / ActivationConsent）、结果类型（Candidates / NoMatch / Ambiguous / Unavailable / InvalidResponse）、执行目标（NativeLocalTarget / LocalPathTarget / InlineRemoteTarget）、传输契约、规范检索字节（PreparedSearch / prepare_search） |
+| `runtime/coordinator.py` | 协调状态机：网络同意 → 远程检索 → 选择 → 激活确认 → 加载；任何远程失败降级为本地 |
+| `runtime/ascend_kg.py` | Ascend KG 提供方：请求构造、同意校验、429 退避重试 |
+| `runtime/ascend_kg_parsing.py` | Ascend KG 边界解析：候选 JSON 与远程 SKILL.md 校验 |
+| `runtime/http_transport.py` | urllib 传输层：拒绝重定向、按字节上限读取响应 |
+| `runtime/local_catalog.py` | 本地候选加载：按 catalog 与工作区根过滤可加载条目，缓存缺失/路径越界以类型化降级报告 |
+| `runtime/token_registry.py` | 任务级响应令牌注册表：外部不透明句柄 ↔ 进程内身份令牌，任务结束即撤销 |
+| `runtime/rendering.py` | 远程正文定界渲染：固定包络、定界冲突拒绝 |
+| `runtime/facade.py` + `runtime/wire.py` + `runtime/facade_*.py` | 生产门面 RouterTask 与外部契约：生命周期状态机、令牌映射、选择校验、降级汇总 |
+| `runtime/ndjson.py` + `runtime/ndjson_output.py` + `runtime/__main__.py` | 可执行 NDJSON 入口（`python3 -m runtime`），见第 7.8 节 |
+
+### 7.2 一次远程调用的状态机
+
+```text
+start
+  ├─ 未启用远程 → LocalOnlyReady，仅本地候选
+  └─ 询问网络/隐私同意（每任务一次）
+       ├─ 拒绝 / 未询问 → LocalOnlyReady（本地回退）
+       └─ 同意 → provider.search(当前任务文本)
+            ├─ Candidates → 本地 + 远程候选一起进入选择
+            ├─ NoMatch / Ambiguous → 本地回退
+            └─ Unavailable / InvalidResponse → 本地回退（记录降级原因）
+选择结果含远程候选时
+  └─ 询问激活确认（与网络同意分开的第二次确认）
+       ├─ 拒绝 → 只保留本地目标
+       └─ 同意 → 逐个 provider.load_skill(候选 id)
+            ├─ 成功 → InlineRemoteTarget（定界内联内容）
+            └─ 失败 → 移除该项并记入降级列表，本地目标不受影响
+```
+
+### 7.3 出站请求契约
+
+| 项 | 值 |
+| --- | --- |
+| API 密钥 | 环境变量 `ASCEND_KG_API_KEY`，空白视为未配置，非可打印 ASCII 视为配置错误；两种情况都不发起网络请求 |
+| 检索 | `POST https://ascend.wiki/search`，请求头 `X-API-Key` / `Accept: application/json` / `Content-Type: application/json` |
+| 检索载荷 | JSON，仅三个字段：`query`（当前任务文本）、`top_k: 10`、`with_neighbors: false` |
+| 加载 | `GET https://ascend.wiki/skill/<候选 id 百分号编码>`，请求头 `X-API-Key` / `Accept: text/markdown`，body 为空 |
+| 超时 | 10 秒（检索与加载相同） |
+| 字节上限 | 检索响应 1 MiB（1,048,576 字节）；Skill 内容 256 KiB（262,144 字节） |
+| 重试 | 仅 HTTP 429，退避 0.5s / 1.0s / 2.0s，连同首次最多 4 次尝试；其余失败不重试 |
+
+`query` 只承载当前任务文本，不携带会话历史、catalog 内容或其他上下文（数据最小化）。
+
+检索载荷在征求网络同意**之前**一次性序列化为规范 UTF-8 字节（`ensure_ascii=False`、紧凑分隔符），向用户逐字披露的请求体与实际发送字节来自同一个 `PreparedSearch` 对象，不存在二次序列化或转义差异。
+
+Provider 生命周期按任务隔离：每个路由任务创建独立的 `Coordinator` 与 `AscendKgProvider`，响应令牌仅在该任务的一次检索、选择和加载链路内有效，不跨任务共享。
+
+### 7.4 响应解析与类型化失败
+
+- 检索响应必须是 JSON 对象，顶层恰含 `results` 或 `data` 之一；列表至多 10 条；每条须有非空 `id`（兼容旧字段 `node_id`，两者同现且不等即拒绝）、`source_repo`、`source_file`，`score` 可选；
+- 候选 id 重复、条目超量、结构不符记为 `invalid_schema`；非 JSON 记为 `invalid_json`；超过字节上限记为 `oversized`；空结果记为 `no_match`；
+- Skill 内容必须是 UTF-8 Markdown 且带合法 frontmatter（首行 `---`、存在闭合 `---`、`name` 与 `description` 非空、正文非空），否则记为 `invalid_schema`；
+- HTTP 401/403 记为 `configuration`（密钥问题），429 记为 `rate_limited`，503 及其他非 200 状态记为 `service`，超时记为 `timeout`；
+- 加载前做成员校验：候选 id 必须在检索响应令牌内，否则记为 `candidate_membership`。
+
+所有失败都是类型化结果，不抛异常逃逸，均可安全降级为本地。
+
+### 7.5 信任与隐私模型
+
+- **不可信内容**：远程 Markdown 在类型上标记 `untrusted_external`，`policy_authority=False`。内容中的指令不构成策略依据，不能授权 confirm、联网或任何敏感操作；
+- **不可信候选元数据**：远程 ID、来源、展示名和 score 在激活前也保持 `untrusted_external` / `policy_authority=False`，只允许转义展示；解析器拒绝控制字符、首尾空白和超限字段；
+- **无额外资源**：远程 Skill 引用的链接、`references/`、`scripts/`、`assets/` 一律不抓取，不产生二次网络请求；
+- **不持久化**：远程候选与内容不写入 catalog.json、不落盘、不进缓存，仅存在于当前会话；
+- **不上传**：出站数据仅第 7.3 节的检索载荷，别无其他；
+- **不比较分数**：提供方 score 是不透明字符串，不持久化、不与本地候选比较；本地与远程的取舍由大模型结合任务判断；
+- **来源可追溯**：远程候选携带 provider id（`ascend-kg`）、`source_repo`、`source_file`，展示时保留。
+
+### 7.6 执行目标与平台映射
+
+| 目标类型 | 语义 | opencode 映射 |
+| --- | --- | --- |
+| NativeLocalTarget | 已安装的本地 skill | 调用原生 `skill(name=...)` 工具 |
+| LocalPathTarget | 未安装的本地 skill | 按 catalog 中经过校验的 path 用 `read` 工具读取 |
+| InlineRemoteTarget | 激活后的远程 skill | 仅以带定界符的内联内容注入对话；绝不调用原生 skill 工具，绝不安装、复制或软链到本地 |
+
+平台适配细节见 `skills-router/opencode-adapter.md` 第 5 至 6 节。
+
+### 7.7 与上游 kg-tools 的关系
+
+Ascend KG 的上游参考工具为 kg-tools。本系统与它的关系：
+
+- 仅作设计参照：上游仓库为 [`agent0/kg-tools`](https://gitcode.com/agent0/kg-tools)，固定参照 commit 为 [`5568d8eedc70eebf155cd4e2728aee93ea02962d`](https://gitcode.com/agent0/kg-tools/commit/5568d8eedc70eebf155cd4e2728aee93ea02962d)；
+- kg-tools 的编排引擎未集成进本系统；
+- 未 vendor（复制）任何上游代码，`runtime/` 全部为本仓库按第 7.1 节契约独立实现；
+- 行为验证来自 `skills-router/tests/` 的单元测试（假传输层，不联网），不声称对线上 API 做过实测。
+
+### 7.8 生产门面与可执行入口
+
+组件层（7.1–7.7）只提供可组合的类型与状态机；对外只有一个生产调用方：`runtime/facade.py` 的 `RouterTask`。它按任务组装全新依赖（UrllibTransport、ProductionSleeper、AscendKgProvider、Coordinator、ResponseTokenRegistry），任何对象都不跨任务共享。
+
+门面职责严格受限：加载并过滤本地候选、驱动同意转移、把外部选择映射为内部 `Selection` 并交给 `Coordinator` 校验、在激活后加载并渲染远程内容、汇总类型化降级。**语义选择始终属于协议/大模型**——门面不选 Skill。
+
+关键外部契约（`runtime/wire.py`）：
+
+- 外部世界只见**不透明响应令牌字符串**（`secrets.token_urlsafe(24)`），进程内身份令牌不外泄；伪造、过期、跨任务句柄在选择与加载前被类型化拒绝，任务结束即撤销；
+- 本地执行模式由本地目录与原生注册表判定，调用方提交的模式若与判定不符即拒绝（防篡改）；
+- 重复本地名或远程 ID 在门面与 `Coordinator` 双层拒绝，先于任何加载发生；
+- 远程正文只经 `rendering.py` 的固定包络进入对话：
+
+```text
+<<<REMOTE_SKILL_CONTENT>>>
+<远程 SKILL.md 原文>
+<<<END_REMOTE_SKILL_CONTENT>>>
+```
+
+包络规则：起始定界符顶格、正文原样、仅在缺尾换行时补一个分隔换行、结束定界符独占一行；正文任意位置出现任一定界符（包括行中子串）即判冲突，只移除该远程项，本地目标保留。子串级拒绝确保不可信内容无法在包络内伪造提前终止的定界符。
+
+可执行入口 `python3 -m runtime`（NDJSON、一进程一任务）：宿主适配器以子进程驱动 `RouterTask` 的完整生命周期（start → network_decision → selection → activation_decision → cancel/终态），每条输入恰好对应一条输出；畸形输入只产生 `wire_invalid`，不触发检索或加载。进程模型刻意为一次性：身份令牌不可持久化，任务状态不跨进程恢复。用法见 `skills-router/opencode-adapter.md` 第 6.9 节。
+
+---
+
+## 8. Notify / Confirm 机制
+
+### 8.1 两种策略
 
 | 策略 | 行为 | 适用 |
 | --- | --- | --- |
 | `notify` | 展示 Skill 名称与用途后可继续 | 只读、低风险 skill |
 | `confirm` | 必须等待用户明确同意 | 写文件、执行命令、网络请求等 |
 
-### 7.2 confirm 触发条件（任一满足）
+### 8.2 confirm 触发条件（任一满足）
 
 1. Skill frontmatter 显式声明 `confirm: true`；
 2. Skill `tags` 命中 `sources.yaml` 的 `defaults.confirm_tags`；
 3. 来源仓库策略要求（可在 sources.yaml 单个 source 上加 `default_confirm: true`）。
 
-### 7.3 整组等待原则
+### 8.3 整组等待原则
 
 多个 Skills 同时使用时，任一要求 confirm，整组都等待（满足需求第 4.2 节）。用户同意后，后续同组 Skills 不再重复 confirm。
 
-### 7.4 用户拒绝时的行为
+### 8.4 用户拒绝时的行为
 
 - 用户拒绝某个 confirm Skill：该 Skill 不加载，路由协议重新评估剩余 selected 是否仍可完成任务；
 - 若剩余 Skill 无法独立完成任务：向用户说明缺哪个 Skill 会阻塞哪一步，并询问是否调整任务范围。
 
-### 7.5 confirm 不依赖平台原生机制
+### 8.5 confirm 不依赖平台原生机制
 
 平台无关实现：协议规定“模型输出 confirm 消息后必须停止生成，等待下一轮用户输入”。任何 Agent 平台只要支持“模型停止 → 用户输入 → 模型继续”的回合，就能实现 confirm。
 
 ---
 
-## 8. 文件布局
+## 9. 文件布局
 
 ```text
 automatic-skill-routing/
@@ -348,12 +497,24 @@ automatic-skill-routing/
     ROUTING_PROTOCOL.md              # 平台无关路由协议
     opencode-adapter.md              # opencode 平台适配参考
     config/
-      sources.yaml                   # 维护者维护，来源真相
+      sources.yaml                   # 维护者维护，来源真相（构建期）
     scripts/
       build_catalog.py               # 通用扫描器，生成 catalog.json
       validate_catalog.py            # 校验 catalog 完整性与一致性
       generate_router_context.py     # 生成可注入的 router-context.md
       test_routing.py                # 回归测试
+    runtime/                         # 运行时远程提供方（与构建期独立）
+      contracts.py                   # 类型与协议契约
+      coordinator.py                 # 同意门与降级协调
+      ascend_kg.py                   # Ascend KG 提供方
+      ascend_kg_parsing.py           # 远程响应边界解析
+      http_transport.py              # urllib 传输层
+      local_catalog.py               # 本地候选加载与类型化降级
+      token_registry.py              # 任务级不透明响应令牌
+      rendering.py                   # 远程正文定界渲染
+      facade.py / wire.py / facade_*.py  # 生产门面与外部契约
+      ndjson.py / ndjson_output.py / __main__.py  # 可执行 NDJSON 入口
+    tests/                           # 运行时单元测试（假传输层 + 套件级 socket 封禁，不联网）
     catalog.json                     # 自动生成，git 可跟踪以便审计
     router-context.md                # 自动生成，注入模型上下文用
 ```
@@ -364,13 +525,13 @@ automatic-skill-routing/
 | --- | --- | --- |
 | `config/sources.yaml` | 是 | — |
 | `catalog.json` / `router-context.md` | — | 是（build_catalog.py / generate_router_context.py） |
-| `README.md` / `ROUTING_PROTOCOL.md` | 是 | — |
+| `README.md` / `ROUTING_PROTOCOL.md` / `opencode-adapter.md` | 是 | — |
 | 各 source 的 `SKILL.md` | 是（Skill 作者） | — |
-| `scripts/*.py` | 是（本系统维护者） | — |
+| `scripts/*.py` / `runtime/*.py` / `tests/*.py` | 是（本系统维护者） | — |
 
 ---
 
-## 9. 扩展性验证（对应需求第 6 节）
+## 10. 扩展性验证（对应需求第 6 节）
 
 | 需求 | 本设计如何满足 |
 | --- | --- |
@@ -383,7 +544,7 @@ automatic-skill-routing/
 
 ---
 
-## 10. 验收标准对应（对应需求第 9 节）
+## 11. 验收标准对应（对应需求第 9 节）
 
 | # | 验收项 | 设计落点 |
 | --- | --- | --- |
@@ -400,27 +561,34 @@ automatic-skill-routing/
 
 ---
 
-## 11. 落地状态
+## 12. 落地状态
 
 本轮已**端到端落地**，包括：
 
 - 实际同步两个 GitCode 仓库（`Ascend/agent-skills` 196 skills、`cann/cannbot-skills` 189 skills）；
-- 生成完整 catalog（386 skills，284 KB）；
-- 生成可注入路由上下文 `router-context.md`（165 KB）；
+- 生成完整 catalog（当前 Skill 数量与来源数以 `catalog.json` 为准）；
+- 生成可注入路由上下文 `router-context.md`；
 - 回归测试 6 项全部通过；
 - 平台无关，大模型自适应执行协议。
 
-5 个同名冲突和 9 个格式错误来自远程仓库内部，系统已正确识别并排除，不影响可用 Skills。
+同名冲突与格式错误来自远程仓库内部，系统已正确识别并排除，不影响可用 Skills（当前数量以 `catalog.json` 的 `conflicts` / `errors` 数组为准）。
+
+**运行时远程提供方（Ascend KG）已落地**，作为独立增量：
+
+- `skills-router/runtime/` 五个模块（契约、协调、提供方、边界解析、传输）按第 7 节设计实现；
+- `skills-router/tests/` 单元测试覆盖同意门、出站载荷、类型化失败、降级回退、不可信内容等行为（假传输层，不联网），全部通过；
+- 上游 kg-tools 仅作设计参照（commit `5568d8eedc70eebf155cd4e2728aee93ea02962d`），编排引擎未集成，未 vendor 任何上游代码；
+- 未对线上 API 做过实测，不声称已验证。
 
 不包含（边界外）：
 
-- 不引入向量数据库（召回阶段用关键词 + 大模型语义，386 skills 规模下有效）；
-- 不建设通用工作流编排平台（边界见需求第 3 节）；
+- 不引入向量数据库（召回阶段用关键词 + 大模型语义，当前规模下有效）；
+- 不建设通用工作流编排平台（边界见需求第 3 节；kg-tools 编排引擎亦不在集成范围）；
 - 不绑定特定 Agent 平台（协议平台无关，大模型自适应）。
 
 ---
 
-## 12. 决策点确认结果
+## 13. 决策点确认结果
 
 以下决策点已由用户确认并落地：
 

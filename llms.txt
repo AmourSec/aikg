@@ -148,6 +148,8 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [知识点模板：从概念解释到 AI 可读卡片](https://amoursec.github.io/99-templates/knowledge-note/): 知识点模板说明如何撰写 AI Infra 普通知识点文章，覆盖适用场景、最小模板、完整推荐模板、front matter、domain/doc_type/status/workload/system_layer/metrics/sources 字段、系统对象、成本模型、指标体系、适用范围、相关技术、Benchmark 方法、证据来源、AI-readable knowledge card、写作规则、常见误区和模板质量门禁。
 - [技术决策模板：从问题、证据到可追溯决策](https://amoursec.github.io/99-templates/adr/): 技术决策模板说明如何撰写 AI Infra ADR，覆盖使用场景、文件命名、状态流转、最小模板、完整推荐模板、decision question、context、workload contract、system scope、decision drivers、options、evidence matrix、benchmark evidence、evidence level、decision、consequences、cost model、reliability impact、implementation plan、rollout、rollback、confirmation、revisit condition、AI-readable ADR card、字段说明、写作规则、常见误区、质量门禁以及与知识点、Benchmark、Failure Case、Runbook 和 Paper Note 的关系。
 - [基准实验报告模板：从问题设计到可复现实验](https://amoursec.github.io/99-templates/benchmark-report/): 基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。
+- [Automatic Skill Routing Implementation Plan](https://amoursec.github.io/superpowers/plans/2026-08-03-automatic-skill-routing/): 补充文档或模板。
+- [自动 Skill 发现、选择与按需加载系统设计](https://amoursec.github.io/superpowers/specs/2026-08-03-automatic-skill-routing-design/): 补充文档或模板。
 
 ## AI Skill Samples
 
@@ -282,6 +284,8 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [99-templates/knowledge-note.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/knowledge-note.md)
 - [99-templates/adr.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/adr.md)
 - [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/benchmark-report.md)
+- [superpowers/plans/2026-08-03-automatic-skill-routing.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/superpowers/plans/2026-08-03-automatic-skill-routing.md)
+- [superpowers/specs/2026-08-03-automatic-skill-routing-design.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/superpowers/specs/2026-08-03-automatic-skill-routing-design.md)
 - [skills/npu-arch-capability-check/SKILL.md](https://raw.githubusercontent.com/AmourSec/aikg/master/skills/npu-arch-capability-check/SKILL.md)
 
 ## AI Usage Notes
