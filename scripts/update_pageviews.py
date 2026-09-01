@@ -20,24 +20,25 @@ import os
 import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final, TypeAlias
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-API_ROOT: Final = "https://api.umami.is/v1"
-PAGE_SIZE: Final = 500
+API_ROOT: Final = "https://{site_code}.goatcounter.com/api/v0"
+PAGE_SIZE: Final = 100
+ALL_TIME_START: Final = "1970-01-01T00:00:00Z"
 SNAPSHOT_PATH: Final = Path("docs/assets/data/pageviews.json")
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
-QueryValue: TypeAlias = str | int
+QueryValue: TypeAlias = str | int | tuple[int, ...]
 JsonRequester: TypeAlias = Callable[[str, dict[str, QueryValue], str], JsonValue]
 
 
 @dataclass(frozen=True, slots=True)
-class UmamiDataError(Exception):
+class GoatCounterDataError(Exception):
     reason: str
 
     def __str__(self) -> str:
@@ -54,14 +55,14 @@ def normalize_path(value: str) -> str:
 
 
 def request_json(
-    path: str,
+    url: str,
     params: dict[str, QueryValue],
     api_key: str,
 ) -> JsonValue:
-    query = urlencode(params)
+    query = urlencode(params, doseq=True)
     suffix = f"?{query}" if query else ""
     request = Request(
-        f"{API_ROOT}{path}{suffix}",
+        f"{url}{suffix}",
         headers={
             "Accept": "application/json",
             "Authorization": f"Bearer {api_key}",
@@ -71,59 +72,72 @@ def request_json(
         return json.load(response)
 
 
-def _millisecond_timestamp(value: JsonValue, field: str) -> int:
-    if not isinstance(value, str):
-        raise UmamiDataError(f"Umami date range field {field!r} must be a string")
-    try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as error:
-        raise UmamiDataError(f"Umami date range field {field!r} is invalid") from error
-    return int(parsed.timestamp() * 1000)
+def _utc_hour(value: datetime) -> str:
+    rounded = value.astimezone(UTC).replace(minute=0, second=0, microsecond=0)
+    return rounded.isoformat().replace("+00:00", "Z")
 
 
 def fetch_pageviews(
     api_key: str,
-    website_id: str,
+    site_code: str,
     request_json: JsonRequester = request_json,
     page_size: int = PAGE_SIZE,
+    now: datetime | None = None,
 ) -> dict[str, int]:
-    if page_size <= 0:
-        raise UmamiDataError("Umami page size must be positive")
-
-    date_range = request_json(f"/websites/{website_id}/daterange", {}, api_key)
-    if not isinstance(date_range, dict):
-        raise UmamiDataError("Umami date range must be an object")
-    start_at = _millisecond_timestamp(date_range.get("startDate"), "startDate")
-    end_at = _millisecond_timestamp(date_range.get("endDate"), "endDate")
+    if page_size <= 0 or page_size > 100:
+        raise GoatCounterDataError("GoatCounter page size must be between 1 and 100")
 
     pages: dict[str, int] = {}
-    offset = 0
+    excluded_path_ids: list[int] = []
+    endpoint = f"{API_ROOT.format(site_code=site_code)}/stats/hits"
+    end_at = _utc_hour(now or datetime.now(UTC))
     while True:
-        metrics = request_json(
-            f"/websites/{website_id}/metrics/expanded",
-            {
-                "startAt": start_at,
-                "endAt": end_at,
-                "type": "path",
-                "limit": page_size,
-                "offset": offset,
-            },
-            api_key,
-        )
-        if not isinstance(metrics, list):
-            raise UmamiDataError("Umami metrics must be a list")
-        for metric in metrics:
-            if not isinstance(metric, dict):
-                raise UmamiDataError("Umami metric must be an object")
-            name = metric.get("name")
-            count = metric.get("pageviews")
-            if not isinstance(name, str) or type(count) is not int or count < 0:
-                raise UmamiDataError("Umami path metric is invalid")
-            path = normalize_path(name)
+        params: dict[str, QueryValue] = {
+            "start": ALL_TIME_START,
+            "end": end_at,
+            "limit": page_size,
+        }
+        if excluded_path_ids:
+            params["exclude_paths"] = tuple(excluded_path_ids)
+        response = request_json(endpoint, params, api_key)
+        if not isinstance(response, dict):
+            raise GoatCounterDataError("GoatCounter hits response must be an object")
+        hits = response.get("hits")
+        more = response.get("more")
+        if not isinstance(hits, list) or type(more) is not bool:
+            raise GoatCounterDataError("GoatCounter hits response is invalid")
+
+        new_path_ids = 0
+        for hit in hits:
+            if not isinstance(hit, dict):
+                raise GoatCounterDataError("GoatCounter hit must be an object")
+            path_id = hit.get("path_id")
+            path_name = hit.get("path")
+            count = hit.get("count")
+            event = hit.get("event")
+            if (
+                type(path_id) is not int
+                or path_id < 0
+                or not isinstance(path_name, str)
+                or type(count) is not int
+                or count < 0
+                or type(event) is not bool
+                or path_id in excluded_path_ids
+            ):
+                raise GoatCounterDataError("GoatCounter hit is invalid")
+            excluded_path_ids.append(path_id)
+            new_path_ids += 1
+            if event:
+                continue
+            path = normalize_path(path_name)
             pages[path] = pages.get(path, 0) + count
-        if len(metrics) < page_size:
+
+        if not more:
             return dict(sorted(pages.items()))
-        offset += page_size
+        if new_path_ids == 0:
+            raise GoatCounterDataError(
+                "GoatCounter pagination returned no new path IDs",
+            )
 
 
 def write_snapshot(
@@ -160,12 +174,28 @@ def write_snapshot(
     return True
 
 
+def sync_snapshot(
+    target: Path,
+    api_key: str,
+    site_code: str,
+    request_json: JsonRequester = request_json,
+) -> bool:
+    pages = fetch_pageviews(
+        api_key,
+        site_code,
+        request_json=request_json,
+    )
+    return write_snapshot(target, pages)
+
+
 def main() -> int:
-    api_key = os.environ.get("UMAMI_API_KEY")
-    website_id = os.environ.get("UMAMI_WEBSITE_ID")
-    if not api_key or not website_id:
-        raise SystemExit("UMAMI_API_KEY and UMAMI_WEBSITE_ID are required")
-    changed = write_snapshot(SNAPSHOT_PATH, fetch_pageviews(api_key, website_id))
+    api_key = os.environ.get("GOATCOUNTER_API_KEY")
+    site_code = os.environ.get("GOATCOUNTER_SITE_CODE")
+    if not api_key or not site_code:
+        raise SystemExit(
+            "GOATCOUNTER_API_KEY and GOATCOUNTER_SITE_CODE are required",
+        )
+    changed = sync_snapshot(SNAPSHOT_PATH, api_key, site_code)
     print("Pageview snapshot updated" if changed else "Pageview snapshot unchanged")
     return 0
 

@@ -38,8 +38,8 @@ jobs:
       - name: Update page-view snapshot
         if: github.event_name != 'push'
         env:
-          UMAMI_API_KEY: ${{ secrets.UMAMI_API_KEY }}
-          UMAMI_WEBSITE_ID: e6bcb0cd-aee7-4383-8557-9cf7564c86a0
+          GOATCOUNTER_API_KEY: ${{ secrets.GOATCOUNTER_API_KEY }}
+          GOATCOUNTER_SITE_CODE: amoursec
         run: python scripts/update_pageviews.py
 
       - name: Commit page-view snapshot
