@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -22,39 +22,90 @@ class UpdatePageviewsTests(unittest.TestCase):
         self.assertEqual(normalized, ("/", "/docs/", "/docs/"))
 
     def test_fetch_pageviews_paginates_and_merges_paths(self) -> None:
-        # Given two Umami pages containing two spellings of one article path
-        calls: list[tuple[str, dict[str, str | int]]] = []
+        # Given two GoatCounter pages containing two spellings of one article path
+        calls: list[tuple[str, dict[str, update_pageviews.QueryValue]]] = []
 
         def fake_request(
-            path: str,
-            params: dict[str, str | int],
+            url: str,
+            params: dict[str, update_pageviews.QueryValue],
             api_key: str,
         ) -> update_pageviews.JsonValue:
             del api_key
-            calls.append((path, params))
-            if path.endswith("/daterange"):
+            calls.append((url, params))
+            if "exclude_paths" not in params:
                 return {
-                    "startDate": "2026-08-01T00:00:00Z",
-                    "endDate": "2026-09-01T00:00:00Z",
+                    "hits": [
+                        {
+                            "count": 2,
+                            "path_id": 11,
+                            "path": "/article",
+                            "event": False,
+                            "title": "Article",
+                            "max": 2,
+                            "stats": [],
+                        },
+                        {
+                            "count": 99,
+                            "path_id": 12,
+                            "path": "download",
+                            "event": True,
+                            "title": "Download",
+                            "max": 99,
+                            "stats": [],
+                        },
+                    ],
+                    "total": 101,
+                    "more": True,
                 }
-            if params["offset"] == 0:
-                return [
-                    {"name": "/article", "pageviews": 2},
-                    {"name": "/article/", "pageviews": 3},
-                ]
-            return []
+            return {
+                "hits": [
+                    {
+                        "count": 3,
+                        "path_id": 13,
+                        "path": "/article/",
+                        "event": False,
+                        "title": "Article",
+                        "max": 3,
+                        "stats": [],
+                    }
+                ],
+                "total": 3,
+                "more": False,
+            }
 
         # When all pages are fetched
         pages = update_pageviews.fetch_pageviews(
             "secret",
-            "e6bcb0cd-aee7-4383-8557-9cf7564c86a0",
+            "amoursec",
             request_json=fake_request,
-            page_size=2,
+            page_size=100,
+            now=datetime(2026, 9, 1, 7, 42, tzinfo=UTC),
         )
 
-        # Then aliases are merged and pagination advances by the requested size
+        # Then aliases are merged, events are ignored, and returned IDs paginate
         self.assertEqual(pages, {"/article/": 5})
-        self.assertEqual([call[1]["offset"] for call in calls[1:]], [0, 2])
+        self.assertEqual(
+            calls,
+            [
+                (
+                    "https://amoursec.goatcounter.com/api/v0/stats/hits",
+                    {
+                        "start": "1970-01-01T00:00:00Z",
+                        "end": "2026-09-01T07:00:00Z",
+                        "limit": 100,
+                    },
+                ),
+                (
+                    "https://amoursec.goatcounter.com/api/v0/stats/hits",
+                    {
+                        "start": "1970-01-01T00:00:00Z",
+                        "end": "2026-09-01T07:00:00Z",
+                        "limit": 100,
+                        "exclude_paths": (11, 12),
+                    },
+                ),
+            ],
+        )
 
     def test_write_snapshot_keeps_timestamp_when_counts_do_not_change(self) -> None:
         # Given an existing snapshot with unchanged counts
@@ -78,7 +129,7 @@ class UpdatePageviewsTests(unittest.TestCase):
             self.assertIn("2026-09-01T23:17:00+08:00", target.read_text())
 
     def test_invalid_pageview_does_not_replace_snapshot(self) -> None:
-        # Given an existing snapshot and an invalid Umami metric
+        # Given an existing snapshot and an invalid GoatCounter hit
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "pageviews.json"
             target.write_text(
@@ -87,30 +138,59 @@ class UpdatePageviewsTests(unittest.TestCase):
             )
 
             def fake_request(
-                path: str,
-                params: dict[str, str | int],
+                url: str,
+                params: dict[str, update_pageviews.QueryValue],
                 api_key: str,
             ) -> update_pageviews.JsonValue:
-                del params, api_key
-                if path.endswith("/daterange"):
-                    return {
-                        "startDate": "2026-08-01T00:00:00Z",
-                        "endDate": "2026-09-01T00:00:00Z",
-                    }
-                return [{"name": "/article/", "pageviews": "five"}]
+                del url, params, api_key
+                return {
+                    "hits": [
+                        {
+                            "count": "five",
+                            "path_id": 11,
+                            "path": "/article/",
+                            "event": False,
+                            "title": "Article",
+                            "max": 5,
+                            "stats": [],
+                        }
+                    ],
+                    "total": 5,
+                    "more": False,
+                }
 
             before = target.read_bytes()
 
-            # When the invalid response is fetched
-            with self.assertRaises(update_pageviews.UmamiDataError):
-                update_pageviews.fetch_pageviews(
+            # When a snapshot sync receives the invalid response
+            # Then the sync fails without replacing the existing snapshot
+            with self.assertRaises(update_pageviews.GoatCounterDataError):
+                update_pageviews.sync_snapshot(
+                    target,
                     "secret",
-                    "e6bcb0cd-aee7-4383-8557-9cf7564c86a0",
+                    "amoursec",
                     request_json=fake_request,
                 )
 
-            # Then the existing snapshot remains byte-for-byte unchanged
             self.assertEqual(target.read_bytes(), before)
+
+    def test_pagination_rejects_more_without_new_path_ids(self) -> None:
+        # Given a GoatCounter response claiming another page without any hits
+        def fake_request(
+            url: str,
+            params: dict[str, update_pageviews.QueryValue],
+            api_key: str,
+        ) -> update_pageviews.JsonValue:
+            del url, params, api_key
+            return {"hits": [], "total": 0, "more": True}
+
+        # When the inconsistent response is fetched
+        # Then fetching stops instead of looping forever
+        with self.assertRaises(update_pageviews.GoatCounterDataError):
+            update_pageviews.fetch_pageviews(
+                "secret",
+                "amoursec",
+                request_json=fake_request,
+            )
 
     def test_write_snapshot_uses_stable_schema_and_sorted_paths(self) -> None:
         # Given counts arriving in a non-deterministic order
