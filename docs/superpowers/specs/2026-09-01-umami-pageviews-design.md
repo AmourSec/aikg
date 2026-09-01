@@ -1,10 +1,10 @@
-# Umami Cloud 文章浏览量设计
+# GoatCounter 文章浏览量设计
 
 ## 背景
 
 AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages 的纯静态站点。GitHub Pages 不提供可供站点使用的逐页面访问日志，也不能在请求期间写入数据库，因此文章浏览量需要由外部统计服务采集，再转换成站点可读取的静态快照。
 
-本设计使用 Umami Cloud 采集页面访问，由 GitHub Actions 每晚把累计浏览量同步到仓库，并在文章标题下展示最近一次成功同步的结果。整个流程不依赖用户电脑常驻运行。
+本设计使用 GoatCounter Cloud 采集页面访问，由 GitHub Actions 每晚把累计浏览量同步到仓库，并在文章标题下展示最近一次成功同步的结果。整个流程不依赖用户电脑常驻运行。本文件最初记录 Umami Cloud 方案；由于其 API 需要 Pro 套餐，现已由本方案取代。
 
 ## 目标
 
@@ -21,22 +21,22 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 - 不实现实时更新的公开计数器；公开数字最多滞后一天。
 - 不修改每篇 Markdown 的正文或 front matter。
 - 不在仓库中保存访客级事件、IP、User-Agent 或会话信息。
-- 不构建自定义统计后台；详细分析继续使用 Umami Cloud 控制台。
+- 不构建自定义统计后台；详细分析继续使用 GoatCounter 控制台。
 - 不迁移文章 URL 之间的历史数据；URL 改名时需另行维护别名映射。
 
 ## 架构
 
 系统包含三个相互独立的部分：
 
-1. **浏览器采集**：所有生成页面加载 Umami Cloud 提供的跟踪脚本，并使用公开的 Website ID 上报页面访问。Website ID 不是密钥，可以出现在生成的 HTML 中。
-2. **每日同步**：GitHub Actions 使用私密 API Key 调用 Umami Cloud API，将逐路径累计 pageview 转换为稳定、排序后的 JSON 快照。
+1. **浏览器采集**：线上生成页面加载 GoatCounter 的 `count.js`，并使用公开站点代码 `amoursec` 上报页面访问。站点代码不是密钥，可以出现在生成的 HTML 中。
+2. **每日同步**：GitHub Actions 使用私密 API Key 调用 GoatCounter API，将逐路径累计 pageview 转换为稳定、排序后的 JSON 快照。
 3. **页面展示**：本地 JavaScript 读取随站点一起部署的 JSON，根据当前规范化路径查找并渲染浏览量。
 
 数据流：
 
 ```text
 访客浏览文章
-  -> Umami Cloud 记录访问
+  -> GoatCounter Cloud 记录访问
   -> GitHub Actions 每晚读取逐路径累计 pageview
   -> 更新 docs/assets/data/pageviews.json
   -> 同一次工作流构建并部署 GitHub Pages
@@ -47,28 +47,29 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 
 ### `mkdocs.yml`
 
-- 注册 Umami 跟踪脚本和页面浏览量展示脚本。
+- 注册 GoatCounter 跟踪脚本和页面浏览量展示脚本。
 - 继续使用现有 Material 主题和构建配置。
 - 不包含 API Key。
 
 ### `docs/assets/javascripts/analytics.js`
 
-- 配置或加载 Umami Cloud 官方跟踪脚本。
-- 使用用户创建站点后获得的公开 Website ID。
+- 仅在 `amoursec.github.io` 加载 GoatCounter 官方跟踪脚本，本地预览不发送统计请求。
+- 使用公开站点代码 `amoursec`，上报端点为 `https://amoursec.goatcounter.com/count`。
 - 每次完整页面加载只上报一次。
 - 当前站点未启用 `navigation.instant`；如果未来启用，需要改为监听 Material 的导航 observable，避免漏报或重复上报。
 
 ### `scripts/update_pageviews.py`
 
-- 从环境变量读取 `UMAMI_API_KEY` 和 `UMAMI_WEBSITE_ID`。
-- 先调用 Umami 的 date-range API 获得当前可用统计区间。
-- 调用 expanded metrics API，以 `path` 为维度获取 `pageviews`，每页最多 500 条，并处理 `offset` 分页。
+- 从环境变量读取 `GOATCOUNTER_API_KEY` 和 `GOATCOUNTER_SITE_CODE`。
+- 调用 `/api/v0/stats/hits` 获取从 1970-01-01 到当前 UTC 整点的累计统计，每页最多 100 条。
+- 当响应的 `more` 为真时，把已返回的 `path_id` 作为 `exclude_paths` 继续请求，直到读取全部路径。
+- 忽略 GoatCounter 事件记录；GoatCounter 已关闭 Sessions，因此每次页面加载计为一次浏览量。
 - 规范化路径、过滤非页面记录、按路径排序。
 - 先在内存中验证完整响应，再以确定性格式写入目标文件。
 - 网络、鉴权、JSON 结构或分页异常时以非零状态退出，不覆盖旧快照。
 - 日志不得输出 API Key 或完整请求头。
 
-使用的 Umami Cloud API 根地址为 `https://api.umami.is/v1`。统计接口以 Umami 官方 Cloud API Key 认证，使用 Bearer header。
+使用的 GoatCounter API 根地址为 `https://amoursec.goatcounter.com/api/v0`。统计接口使用 Bearer API Key 认证。
 
 ### `docs/assets/data/pageviews.json`
 
@@ -87,11 +88,11 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 
 - `updated_at` 只在页面计数发生变化时更新，因此无访问变化时不会制造空提交。
 - `pages` 的键为规范化后的站内绝对路径，值为非负整数 pageview。
-- 初始文件使用 `{"schema_version": 1, "updated_at": null, "pages": {}}`，使首次部署不依赖 Umami 已有数据。
+- 初始文件使用 `{"schema_version": 1, "updated_at": null, "pages": {}}`，使首次部署不依赖 GoatCounter 已有数据。
 
 ### `docs/assets/javascripts/pageviews.js`
 
-- 使用 `fetch` 读取站内 `assets/data/pageviews.json`，不直接调用 Umami API。
+- 使用 `fetch` 读取站内 `assets/data/pageviews.json`，不直接调用 GoatCounter API。
 - 从 `location.pathname` 移除查询字符串和片段，并统一目录尾部 `/`。
 - 找到 `.md-content__inner > h1` 后插入浏览量文本。
 - 没有对应计数、JSON 不可用或 DOM 结构不匹配时静默隐藏，不影响正文。
@@ -106,7 +107,7 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 ### `.github/workflows/deploy-pages.yml`
 
 - 保留现有 `push` 和 `workflow_dispatch` 入口，增加每天 23:17、`Asia/Taipei` 的 `schedule`。
-- `schedule` 和手动运行在构建前同步浏览量；普通内容 push 不访问 Umami API。
+- `schedule` 和手动运行在构建前同步浏览量；普通内容 push 不访问 GoatCounter API。
 - 将 `contents` 权限调整为 `write`，保留 `pages: write` 和 `id-token: write`。
 - 快照变化时，以 `github-actions[bot]` 身份提交唯一生成文件。
 - 无变化时跳过提交。
@@ -119,20 +120,20 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 - 空路径规范化为 `/`。
 - 非根目录路径统一以 `/` 结尾，与 MkDocs 默认目录 URL 对齐。
 - 同一个页面的 `/path` 与 `/path/` 合并到 `/path/`。
-- 第一版同步所有 Umami 返回的路径，不增加一次预构建来过滤 sitemap。已删除页面的历史键可能继续存在于 JSON 中，但没有页面会读取它们，不影响显示；未来仅在文件规模成为实际问题时再增加清理策略。
+- 第一版同步所有 GoatCounter 返回的非事件路径，不增加一次预构建来过滤 sitemap。已删除页面的历史键可能继续存在于 JSON 中，但没有页面会读取它们，不影响显示；未来仅在文件规模成为实际问题时再增加清理策略。
 
 ## 安全与隐私
 
-- `UMAMI_API_KEY` 存放在 GitHub Repository Actions Secret。
-- `UMAMI_WEBSITE_ID` 是公开标识，可放在配置中；为保持工作流配置一致，也可以作为 Repository Variable 保存。
+- `GOATCOUNTER_API_KEY` 存放在 GitHub Repository Actions Secret。
+- `GOATCOUNTER_SITE_CODE` 是公开标识，工作流固定为 `amoursec`。
 - Action 权限遵循最小化原则：仅需要仓库内容写入、Pages 部署和 OIDC。
-- 浏览器永远不获得 Umami API Key。
+- 浏览器永远不获得 GoatCounter API Key。
 - 仓库只保存聚合后的路径与数字，不保存用户级记录。
 - 所有外部请求必须使用 HTTPS，并设置有限超时。
 
 ## 失败处理
 
-- Umami API 返回非 2xx：同步脚本失败，旧快照不变。
+- GoatCounter API 返回非 2xx：同步脚本失败，旧快照不变。
 - API 返回未知结构或非整数 pageview：同步脚本失败，不发布部分数据。
 - 分页中途失败：整次同步失败，不写入目标文件。
 - Git 提交或推送失败：工作流失败，不部署未被仓库记录的快照。
@@ -151,13 +152,13 @@ AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages
 
 1. 本地启动 MkDocs，确认文章页在空快照下正常显示且无控制台错误。
 2. 使用测试快照确认标题下显示正确的格式化数字，并验证不存在路径时静默隐藏。
-3. 在 GitHub 手动运行部署工作流，确认 Umami API 拉取成功并只修改快照文件。
-4. 访问线上文章产生页面浏览，再次手动同步，确认 Umami、仓库 JSON 和页面显示形成完整闭环。
+3. 在 GitHub 手动运行部署工作流，确认 GoatCounter API 拉取成功并只修改快照文件。
+4. 访问线上文章产生页面浏览，再次手动同步，确认 GoatCounter、仓库 JSON 和页面显示形成完整闭环。
 5. 临时使用无效凭据运行受控测试，确认旧快照未被覆盖且线上站点不受影响。
 
 ## 验收标准
 
-- Umami Cloud 控制台能看到线上文章访问。
+- GoatCounter 控制台能看到线上文章访问。
 - 每晚定时工作流能在无本地电脑参与的情况下执行。
 - 有浏览量变化时，仅生成预期的快照提交并完成 Pages 部署。
 - 没有变化时不生成提交。
