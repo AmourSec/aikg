@@ -4,13 +4,41 @@ import json
 import tempfile
 import unittest
 from datetime import UTC, datetime
+from io import BytesIO
 from pathlib import Path
+from unittest.mock import patch
+from urllib.error import HTTPError
 from zoneinfo import ZoneInfo
 
 from scripts import update_pageviews
 
 
 class UpdatePageviewsTests(unittest.TestCase):
+    def test_request_json_exposes_goatcounter_http_error_details(self) -> None:
+        # Given GoatCounter returns a structured HTTP error
+        response = HTTPError(
+            "https://amoursec.goatcounter.com/api/v0/stats/hits",
+            404,
+            "Not Found",
+            {},
+            BytesIO(b'{"error":"site not found"}'),
+        )
+
+        # When the API request is made
+        # Then the failure retains the status and safe response detail
+        with (
+            patch.object(update_pageviews, "urlopen", side_effect=response),
+            self.assertRaises(update_pageviews.GoatCounterHttpError) as caught,
+        ):
+            update_pageviews.request_json(
+                "https://amoursec.goatcounter.com/api/v0/stats/hits",
+                {},
+                "secret",
+            )
+
+        self.assertEqual(caught.exception.status_code, 404)
+        self.assertEqual(caught.exception.detail, "site not found")
+
     def test_normalize_path_merges_clean_urls(self) -> None:
         # Given equivalent clean and decorated article paths
         values = ("", "/docs", "/docs/?q=1#x")

@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final, TypeAlias
+from urllib.error import HTTPError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
@@ -43,6 +44,15 @@ class GoatCounterDataError(Exception):
 
     def __str__(self) -> str:
         return self.reason
+
+
+@dataclass(frozen=True, slots=True)
+class GoatCounterHttpError(Exception):
+    status_code: int
+    detail: str
+
+    def __str__(self) -> str:
+        return f"GoatCounter API returned HTTP {self.status_code}: {self.detail}"
 
 
 def normalize_path(value: str) -> str:
@@ -68,8 +78,19 @@ def request_json(
             "Authorization": f"Bearer {api_key}",
         },
     )
-    with urlopen(request, timeout=20) as response:
-        return json.load(response)
+    try:
+        with urlopen(request, timeout=20) as response:
+            return json.load(response)
+    except HTTPError as error:
+        body = error.read().decode("utf-8", errors="replace").strip()
+        detail = body or str(error.reason)
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            payload = None
+        if isinstance(payload, dict) and isinstance(payload.get("error"), str):
+            detail = payload["error"]
+        raise GoatCounterHttpError(error.code, detail[:500]) from error
 
 
 def _utc_hour(value: datetime) -> str:
