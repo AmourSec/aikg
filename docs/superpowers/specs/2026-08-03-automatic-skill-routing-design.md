@@ -1,12 +1,15 @@
 ---
 title: 自动 Skill 发现、选择与按需加载系统设计
-status: approved-design
+status: superseded
 owner: maintainers
 created: 2026-08-03
 updated: 2026-08-03
+superseded_by: automatic-skill-routing/AUTOMATIC_SKILL_ROUTING_DESIGN.md
 ---
 
 # 自动 Skill 发现、选择与按需加载系统设计
+
+> **[已取代 / SUPERSEDED]** 本设计描述的 `skill-system/` 大型架构（语义索引、事务化发布、模型质量门等）从未实现，也不在本项目计划内。当前唯一有效的 Skill 路由设计是 `automatic-skill-routing/AUTOMATIC_SKILL_ROUTING_DESIGN.md` 与 `automatic-skill-routing/skills-router/ROUTING_PROTOCOL.md`（仓库根相对路径，非本目录内链接）。本文仅作历史记录保留，勿据此实施。
 
 ## 1. 摘要
 

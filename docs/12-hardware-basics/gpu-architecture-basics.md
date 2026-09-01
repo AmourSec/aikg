@@ -268,7 +268,7 @@ FlashAttention、fused MLP、fused norm、TensorRT engine、Triton kernel、Mega
 | 使用 CUDA Graph | Host、runtime、kernel launch | 减少重复 launch 和 CPU 调度开销。 |
 | 使用 Triton 写 kernel | SM、warp、shared memory、Tensor Core | 直接控制 tile、num warps、访存和 fusion。 |
 | 使用 TensorRT-LLM | Tensor Core、kernel fusion、runtime | 用 engine 和 fused kernel 固化推理图。 |
-| 做 NCCL rank mapping | NVLink、PCIe、NIC、SM copy engine | 让通信路径匹配硬件拓扑。 |
+| 做 NCCL rank mapping | NVLink、PCIe、NIC、Copy Engine、SM | 让通信路径匹配硬件拓扑。 |
 | 做 profiler | SM、Tensor Core、HBM、L2、runtime | 用证据判断瓶颈，而不是只看利用率。 |
 
 ## GPU 适合什么，不适合什么

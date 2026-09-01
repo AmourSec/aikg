@@ -100,10 +100,12 @@ O: [B, Hq, S_q, Dv]
 核心计算是：
 
 ```text
-scores = Q @ K^T
+scores = (Q @ K^T) / sqrt(D)
 prob   = softmax(scores + mask)
 O      = prob @ V
 ```
+
+其中 `/ sqrt(D)` 是缩放因子，用于控制点积随维度增长导致的数值发散，是 softmax 数值稳定性的关键。
 
 如果是 dense attention，粗略计算量主要来自两次矩阵乘：
 
@@ -363,6 +365,7 @@ Attention pattern 之外，还有 head 结构问题。
 | MHA, Multi-Head Attention | `Hk = Hq` | 每个 query head 有独立 K/V |
 | MQA, Multi-Query Attention | `Hk = 1` | 所有 query head 共享一组 K/V |
 | GQA, Grouped-Query Attention | `1 < Hk < Hq` | 多个 query head 共享一组 K/V |
+| MLA, Multi-head Latent Attention | K/V 被压成低秩 latent 向量 | 把 K/V 压缩为低维 latent 存入 KV Cache，运行时再上投影恢复 |
 
 MHA 表达灵活，但 KV Cache 大。
 
@@ -374,7 +377,9 @@ MQA/GQA 会减少 K/V head 数，从而减少：
 
 代价是 K/V 表达能力减少，模型质量和训练 recipe 需要验证。
 
-从 kernel 角度看，GQA/MQA 会改变 Q/K/V 的 shape 和广播方式。一个 attention kernel 如果只按 MHA 假设实现，可能不能高效支持 GQA/MQA。
+MLA（DeepSeek-V2/V3 所用）走另一条路：不减少 head 数，而是把 K/V 压缩为一个低秩 latent 向量（维度 `d_c << Hk * d`）存进 KV Cache，decode 时再通过上投影矩阵恢复成完整 K/V。好处是 KV Cache 显存和 decode 带权带宽大幅下降；代价是引入额外上投影 GEMM 计算，且 kernel 实现更复杂。面向 decode 的 `FlashMLA` kernel 即针对该路径优化。
+
+从 kernel 角度看，GQA/MQA 会改变 Q/K/V 的 shape 和广播方式。一个 attention kernel 如果只按 MHA 假设实现，可能不能高效支持 GQA/MQA；MLA 则需要额外的上投影计算和 latent 读写路径。
 
 ## FlashAttention：不是 Sparse Attention
 
@@ -467,6 +472,17 @@ FlashAttention-2 继续优化的是并行度和工作划分。
 - Tensor Core 是否充分利用。
 - 非 matmul 部分是否成为瓶颈。
 - 不同 sequence length 和 head dim 是否都高效。
+
+### FlashAttention-3 的方向
+
+FlashAttention-3（面向 Hopper 架构，如 H100）继续在硬件亲和层面优化：
+
+- 用 TMA（Tensor Memory Accelerator）做异步数据搬运，减少 SM 直接参与搬数的压力。
+- 用 WGMMA（Warpgroup MMA）指令让大块矩阵乘更高效地喂给 Tensor Core。
+- 引入 warpgroup specialization，把"搬数据"和"算矩阵乘"分配给不同 warpgroup 形成异步流水。
+- 支持 FP8（E4M3/E5M2）路径，进一步利用低精度算力。
+
+FA-3 相比 FA-2 在 Hopper 上可获得显著加速，但它依赖 Hopper 特有硬件能力，在非 Hopper 架构上不适用。这说明 attention kernel 的代际演进越来越绑定具体硬件特性。
 
 ## FlashAttention、Dense、Sparse 的关系
 
@@ -866,8 +882,9 @@ Dense Attention、Sparse Attention 和 FlashAttention 是理解高效 Transforme
 
 - [FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135)
 - [FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning](https://arxiv.org/abs/2307.08691)
+- [FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-Precision](https://arxiv.org/abs/2407.08608)
 - [Generating Long Sequences with Sparse Transformers](https://arxiv.org/abs/1904.10509)
 - [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150)
 - [Big Bird: Transformers for Longer Sequences](https://arxiv.org/abs/2007.14062)
-- [vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
-- [PyTorch: scaled_dot_product_attention](https://docs.pytorch.org/docs/2.12/generated/torch.nn.functional.scaled_dot_product_attention.html)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention (vLLM, SOSP 2023)](https://arxiv.org/abs/2309.06180)
+- [PyTorch: scaled_dot_product_attention](https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html)

@@ -1,5 +1,7 @@
 # Automatic Skill Routing Implementation Plan
 
+> **[SUPERSEDED / 已取代]** 本计划对应的 `skill-system/` 架构从未实现。当前唯一有效的实现是 `automatic-skill-routing/skills-router/`（含生产门面 `python3 -m runtime` 与完整离线测试套件），设计权威为 `automatic-skill-routing/AUTOMATIC_SKILL_ROUTING_DESIGN.md`（仓库根相对路径，非本目录内链接）。本文仅作历史记录保留，勿据此实施。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a platform-independent system that discovers Skills from configured sources, retrieves and validates the best candidates for a user task, discloses the chosen Skill names before activation, and lazily loads the selected workflows without hardcoded Skill names.

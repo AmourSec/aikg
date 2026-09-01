@@ -1073,10 +1073,10 @@ KV Cache 量化要按端到端推理指标评估，而不是只看显存下降�
 
 ## 参考资料
 
-- [PyTorch: Automatic Mixed Precision package](https://docs.pytorch.org/docs/2.12/amp.html)
+- [PyTorch: Automatic Mixed Precision package](https://pytorch.org/docs/stable/amp.html)
 - [NVIDIA Transformer Engine Documentation](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/index.html)
 - [NVIDIA: Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)
-- [PyTorch: Quantization](https://docs.pytorch.org/docs/2.12/quantization.html)
+- [PyTorch: Quantization](https://pytorch.org/docs/stable/quantization.html)
 - [FP8 Formats for Deep Learning](https://arxiv.org/abs/2209.05433)
 - [FP8-LM: Training FP8 Large Language Models](https://arxiv.org/abs/2310.18313)
 - [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314)

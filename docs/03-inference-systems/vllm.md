@@ -278,7 +278,7 @@ Speculative Decoding 的目标是减少目标模型严格逐 token 生成带来�
 
 ## 分布式推理
 
-当模型太大或吞吐要求太高时，单张 GPU 不够。vLLM 可以作为多 GPU、多节点推理的一部分，使用 tensor parallel、pipeline parallel 等方式扩展执行。
+当模型太大或吞吐要求太高时，单张 GPU 不够。vLLM 可以作为多 GPU、多节点推理的一部分，主要使用 tensor parallel 扩展执行，也有实验性的 pipeline parallel 支持，但 TP 是其成熟且有代表性的并行方式。
 
 从学习角度看，分布式 vLLM 需要关注三个问题。
 

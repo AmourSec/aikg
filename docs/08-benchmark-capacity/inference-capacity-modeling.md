@@ -242,8 +242,10 @@ TPOT 是 time per output token，常用于衡量 decode 阶段持续生成速度
 端到端延迟可以粗略拆成：
 
 ```text
-E2E ~= queue_time + TTFT_compute + output_tokens * TPOT + postprocess_time
+E2E ~= queue_time + TTFT_compute + (output_tokens - 1) * TPOT + postprocess_time
 ```
+
+因为 TTFT 已覆盖到首 token 为止的全部时间（含 queue、prefill、首步 decode），后续 token 才按 TPOT 计，所以对 `output_tokens` 减 1。等价地写成 `E2E = TTFT + (output_tokens - 1) * TPOT + postprocess_time`。
 
 更细一点：
 
@@ -687,7 +689,7 @@ one node failure loses 2 replicas
 
 ```text
 base_replicas = ceil(120 / 18) = 7
-headroom_replicas = ceil(7 * 1.3) = 10
+headroom_replicas = ceil(7 / (1 - 0.3)) = ceil(7 / 0.7) = 10
 failure_aware_replicas = 10 + 2 = 12
 ```
 

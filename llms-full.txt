@@ -133,6 +133,8 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 99-templates/knowledge-note.md - 知识点模板：从概念解释到 AI 可读卡片
 - 99-templates/adr.md - 技术决策模板：从问题、证据到可追溯决策
 - 99-templates/benchmark-report.md - 基准实验报告模板：从问题设计到可复现实验
+- superpowers/plans/2026-08-03-automatic-skill-routing.md - Automatic Skill Routing Implementation Plan
+- superpowers/specs/2026-08-03-automatic-skill-routing-design.md - 自动 Skill 发现、选择与按需加载系统设计
 
 ## Skill Index
 
@@ -304,24 +306,24 @@ updated: 2026-07-07
       </ul>
     </section>
     <section class="kg-mindmap-branch">
-      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与可靠性</a>
+      <a class="kg-branch-title" href="../08-benchmark-capacity/">度量与沉淀</a>
       <ul>
         <li class="kg-node-main"><a href="../08-benchmark-capacity/">8 性能分析、Benchmark 与容量建模</a></li>
         <li class="kg-node-main"><a href="../09-reliability-observability/">9 可靠性、可观测性与故障复盘</a></li>
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
+        <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li class="kg-node-child"><a href="../08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/">Profiler 工具链</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/observability-overview-signals/">可观测性信号</a></li>
         <li class="kg-node-child"><a href="../10-papers-cases/ai-system-architecture/">系统论文与架构分析</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR</span></li>
+        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
-      <a class="kg-branch-title" href="../11-knowledge-index/">知识沉淀</a>
+      <a class="kg-branch-title" href="../99-templates/knowledge-note/">模板与资源</a>
       <ul>
-        <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
-        <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
         <li class="kg-node-main"><a href="../99-templates/knowledge-note/">99 模板与资源</a></li>
-        <li class="kg-node-note"><span>关键词：metadata / provenance / llms.txt / vector index / knowledge graph / ADR / benchmark report / AI-readable skills</span></li>
+        <li class="kg-node-note"><span>关键词：knowledge note / ADR / benchmark report / AI-readable skills</span></li>
       </ul>
     </section>
   </div>
@@ -1004,29 +1006,29 @@ loss 只是在某个数据和目标函数上衡量错误。
 
 训练还要知道：
 
-> 哪些参数应该往哪个方向改，才能让 loss 更小？
+> 如果稍微改变某个参数，loss 会变大还是变小？往哪个方向变？
 
-这个方向信息叫梯度。
+这个方向信息叫梯度。严格来说，梯度指向 loss 增加最快的方向；要让 loss 变小，参数要沿梯度的反方向更新（这一点在训练章节会用更新公式写清楚）。
 
 可以用非常简单的直觉理解：
 
 ```text
 loss 告诉你错得多严重
-gradient 告诉你参数应该往哪里调
-optimizer 真正更新参数
+gradient 告诉你参数与 loss 之间的变化关系
+optimizer 沿着让 loss 下降的方向真正更新参数
 ```
 
 如果把参数想象成旋钮：
 
 - loss 告诉你当前声音很刺耳；
-- 梯度告诉你哪个旋钮应该往左还是往右；
-- 优化器决定每次拧多大。
+- 梯度告诉你每个旋钮往哪边拧会让声音更刺耳（也就是告诉你往哪边拧会更轻）；
+- 优化器决定每次拧多大，并且朝让声音变轻的方向拧。
 
 后面的训练章节会继续解释反向传播和优化器。
 
 本页只需要先记住：
 
-> 梯度是训练时用于调整参数的方向信息。
+> 梯度是训练时用于调整参数的方向信息，优化器沿梯度的反方向更新参数来降低 loss。
 
 ## 训练、推理和评估
 
@@ -3766,7 +3768,7 @@ FlashAttention、fused MLP、fused norm、TensorRT engine、Triton kernel、Mega
 | 使用 CUDA Graph | Host、runtime、kernel launch | 减少重复 launch 和 CPU 调度开销。 |
 | 使用 Triton 写 kernel | SM、warp、shared memory、Tensor Core | 直接控制 tile、num warps、访存和 fusion。 |
 | 使用 TensorRT-LLM | Tensor Core、kernel fusion、runtime | 用 engine 和 fused kernel 固化推理图。 |
-| 做 NCCL rank mapping | NVLink、PCIe、NIC、SM copy engine | 让通信路径匹配硬件拓扑。 |
+| 做 NCCL rank mapping | NVLink、PCIe、NIC、Copy Engine、SM | 让通信路径匹配硬件拓扑。 |
 | 做 profiler | SM、Tensor Core、HBM、L2、runtime | 用证据判断瓶颈，而不是只看利用率。 |
 
 ## GPU 适合什么，不适合什么
@@ -3914,7 +3916,7 @@ flowchart TB
 | Cube Core | 面向矩阵乘、卷积等 dense tensor 计算的专用矩阵单元。 | MatMul、Conv、MLP、QKV projection、Attention score。 | Transformer 主要 FLOPs 都来自矩阵乘，Cube 利用率直接影响吞吐。 |
 | Vector Core | 面向逐元素、归一化、激活、类型转换、部分 reduction 的向量单元。 | Add、Mul、Cast、RMSNorm、Softmax 局部步骤、量化/反量化。 | 很多算子不是算不动，而是 Vector 和数据搬运没有跟 Cube 配好。 |
 | Scalar / 控制单元 | 处理控制、地址、循环、同步和少量标量逻辑。 | 分支、offset 计算、mask、flag、pipeline 控制。 | 动态 shape、尾块、mask 和同步会增加控制成本。 |
-| MTE / DataCopy | 负责在 Global Memory 和片上 Local Memory 之间搬数据。 | `DataCopy`、GM 到 UB/L1、L1 到 L0、L0C 写回。 | 数据供不上，Cube/Vector 就会等待。 |
+| MTE / DataCopy | 负责在 Global Memory 和片上 Local Memory 之间搬数据。 | `DataCopy`、GM 到 UB、GM 到 L1、UB/L1 到 GM。 | 数据供不上，Cube/Vector 就会等待。 |
 | Local Memory | 靠近计算单元的片上工作区，包含 UB、L1、L0A/L0B/L0C 等具体层次。 | tiling、双缓冲、缓存输入 tile、保存中间结果。 | 片上容量小但快，决定数据复用和 fusion 能做到什么程度。 |
 | Global Memory / HBM | 设备侧大容量内存。 | 存权重、activation、KV Cache、optimizer state、输入输出。 | 大模型经常受 HBM 容量和带宽限制。 |
 | L2 / 片上缓存 | 多 core 共享或靠近 device 的缓存层。 | 跨 core 复用、缓存权重或中间数据。 | 影响长上下文、权重读取、KV 读取和多核访存效率。 |
@@ -3932,7 +3934,7 @@ flowchart TB
 
 可以把 AI Core 内部理解成几条并行工作线：
 
-- `MTE` 负责搬数据：从 Global Memory 搬到 UB/L1/L0，或把结果搬回 Global Memory。
+- `MTE` 负责搬数据：从 Global Memory 搬到 UB/L1，或把 UB/L1 中的结果搬回 Global Memory；L1 到 L0A/L0B 由 Cube 内部 LoadData 完成，L0C 写回由 Fixpipe 完成，都不属于 MTE。
 - `Cube` 负责大块矩阵乘：例如 GEMM、Conv、QKV projection、MLP。
 - `Vector` 负责向量计算：例如 elementwise、Cast、Norm、Softmax、量化/反量化。
 - `Scalar` 负责控制：例如循环、地址、mask、同步和分支。
@@ -3940,17 +3942,19 @@ flowchart TB
 
 这也是为什么 NPU 文档里经常出现“流水”“Tiling”“搬入、计算、搬出”“双缓冲”“bank conflict”。它们都在解决同一个问题：不要让昂贵的计算单元等数据，也不要把中间结果频繁写回 HBM。
 
-一个典型矩阵算子的简化数据流如下：
+一个典型矩阵算子的简化数据流如下（2201 架构下 Vector 后处理需经 GM 中转，3510 架构新增 L0C→UB 直达通路）：
 
 ```mermaid
 flowchart LR
   A["Global Memory / HBM\n输入、权重、输出"] --> B["MTE / DataCopy\n搬入 tile"]
-  B --> C["L1 / UB\n片上缓存与工作区"]
+  B --> C["L1\nCube 输入缓存"]
   C --> D["L0A / L0B\nCube 输入操作数"]
   D --> E["Cube Core\n矩阵乘累加"]
   E --> F["L0C\n累加结果"]
-  F --> G["Vector / FixPipe\n后处理、格式转换、搬出准备"]
+  F --> G["FixPipe\nAIC 侧后处理、格式转换、搬出"]
   G --> H["Global Memory / HBM\n写回输出或中间结果"]
+  H -.可经 GM 中转.-> I["UB / Vector\n向量后处理（2201）"]
+  F -.3510 直达.-> I
 ```
 
 一个典型向量算子的简化数据流则更像：
@@ -4051,7 +4055,7 @@ flowchart TB
 | --- | --- | --- |
 | `GlobalTensor` | 指向 Global Memory 中的数据。 | 读输入、权重、KV，写输出。 |
 | `LocalTensor` | 指向 Local Memory 中的数据。 | 在 UB/L1/L0 等片上空间里计算。 |
-| `DataCopy` | 触发数据搬运，通常对应 MTE/DMA 能力。 | GM 到 UB、GM 到 L1、L0C 到 GM 等。 |
+| `DataCopy` | 触发数据搬运，通常对应 MTE/DMA 能力。 | GM 到 UB、GM 到 L1、UB 到 GM、L1 到 GM。 |
 | `TPipe` | 管理 kernel 内的流水资源。 | 初始化队列、buffer 和异步流水。 |
 | `TQue` | 管理输入、输出或临时 tensor 队列。 | 双缓冲、多 stage pipeline。 |
 | `TBuf` | 管理一块临时 buffer。 | 临时工作区、scratch buffer。 |
@@ -4500,7 +4504,7 @@ flowchart TB
 | AIC / Cube | 执行矩阵乘、卷积等 dense 计算。 | MatMul、QKV projection、MLP、Attention score、训练 backward GEMM。 | Transformer 主要 FLOPs 在这里，Cube 利用率非常关键。 |
 | AIV / Vector | 执行向量、逐元素、归一化、类型转换等计算。 | Add、Mul、Cast、RMSNorm、Softmax 局部步骤、量化/反量化。 | 小算子过多或 UB 组织不好会拖慢端到端。 |
 | Scalar | 做地址、循环、分支、mask 和同步控制。 | offset 计算、尾块处理、flag/event、条件逻辑。 | 动态 shape 和复杂控制流会增加开销。 |
-| MTE / DataCopy | 在 HBM 和片上 buffer 间搬数据。 | GM 到 UB/L1，L1 到 L0A/L0B，L0C 经 Fixpipe 搬出。 | 数据供不上，Cube/Vector 就会等待。 |
+| MTE / DataCopy | 在 HBM 和片上 buffer 间搬数据。 | GM 到 UB/L1、UB/L1 到 GM。 | 数据供不上，Cube/Vector 就会等待。 |
 | UB | AIV 的主要片上工作区。 | 向量输入输出、临时结果、双缓冲、分块处理。 | UB 容量、32B 对齐和 bank conflict 影响向量性能。 |
 | L1 | AIC 侧靠近 Cube 的缓存和重排空间。 | 缓存矩阵 tile，再搬到 L0A/L0B。 | 影响矩阵 tile 复用和格式转换成本。 |
 | L0A / L0B | Cube 左右输入操作数 buffer。 | L0A 放左矩阵 tile，L0B 放右矩阵 tile。 | 对齐、分形格式和 tile shape 决定 Cube 喂数效率。 |
@@ -4888,7 +4892,7 @@ flowchart TB
 
 - `AIC` 主要负责 Cube 矩阵计算。
 - `AIV` 主要负责 Vector 和新增 SIMT/SIMD-Regbase 相关路径。
-- AIC 与 AIV 常见配比仍可按 `1:2` 理解。
+- AIC 与 AIV 常见配比仍可按 `1:2` 理解；3510 的实际配比以 `GetCoreNumAic()` / `GetCoreNumAiv()` 返回值为准，不要硬编码。
 - 每个核仍有 Scalar 控制能力。
 
 但 3510 相对 2201 的关键变化在于：它补了很多“让数据少绕路”的能力，也增加了更接近通用线程模型的 SIMT 能力。
@@ -4920,7 +4924,7 @@ flowchart TB
 | L1 | AIC 侧矩阵路径的重要缓存层。 | GM/UB 数据进入 L1，再供给 L0A/L0B。 | 3510 删除 GM->L0A/L0B 后，L1 更像必经入口。 |
 | L0A / L0B | Cube 输入操作数 buffer。 | L0A 放左矩阵 tile，L0B 放右矩阵 tile。 | 3510 中 L0A 推荐 `FRACTAL_NZ`，与 2201 不同。 |
 | L0C | Cube 累加结果 buffer。 | 保存 GEMM 输出，可经 Fixpipe 到 GM/L1/UB。 | L0C->UB 让 MatMul epilogue 有更强融合空间。 |
-| Fixpipe | Cube 结果搬出和随路后处理。 | 量化、反量化、激活、NZ2ND/NZ2DN、L0C 搬出。 | 低精度和 epilogue 融合路径更关键。 |
+| Fixpipe | Cube 结果搬出和随路后处理。 | 量化、反量化、激活、NZ2ND/ND2NZ、L0C 搬出。 | 低精度和 epilogue 融合路径更关键。 |
 | SSBuffer | AIC/AIV 核间通信相关存储路径。 | CV 通信、UB->L1 等硬通道场景。 | 减少 GM 中转，降低融合算子通信成本。 |
 | HCCL / 通信 | 多 NPU 通信。 | AllReduce、AllToAll、ReduceScatter、通信任务下发。 | 训练扩展、MoE 和分布式推理仍可能被通信主导。 |
 
@@ -5003,8 +5007,8 @@ flowchart TB
 | AIC/AIV 通信 | 常见数据交换依赖 GM 中转。 | 增加 SSBuffer 等通信能力。 | CV 融合不必总按 GM 中转设计。 |
 | L0C 到 UB | 通常需要通过 GM 或其他绕行路径给 AIV。 | 增加 L0C->UB 通路。 | MatMul epilogue 后接 Vector 后处理更有优化空间。 |
 | UB 到 L1 | 不是主路径。 | 增加 UB->L1 硬通道。 | AIV 预处理后进入 Cube 路径更灵活。 |
-| GM 到 L0A/L0B | 可作为部分搬运路径考虑。 | 删除 GM->L0A/L0B 直达路径。 | 要先 GM->L1，再 L1->L0A/L0B。 |
-| L1 到 GM | 可作为部分搬运路径考虑。 | 删除 L1->GM 通路。 | 迁移旧算子时要改搬出路径。 |
+| GM 到 L0A/L0B | 2201 标准路径为 GM→L1→L0A/L0B，无 GM 直达 L0 的常规通路。 | 删除 GM->L0A/L0B 直达路径。 | 3510 统一走 GM→L1→L0A/L0B。 |
+| L1 到 GM | 2201 中 L1 数据不直接写回 GM，需经 L0C/Fixpipe 间接搬出。 | 删除 L1->GM 通路。 | 迁移旧算子时要改搬出路径。 |
 | L0A 分形 | 2201 推荐 `FRACTAL_ZZ`。 | 3510 推荐 `FRACTAL_NZ`。 | 矩阵搬入和 layout 迁移要重查。 |
 | Vector 中间结果 | 更偏 MemBase，UB 往返更常见。 | Regbase 支持寄存器中间结果。 | 一串向量操作可减少 UB 写回。 |
 | SIMT | 不是主线能力。 | 增加 SIMT 硬件单元。 | 离散类算子可考虑更接近线程级的写法。 |
@@ -5982,7 +5986,7 @@ flowchart LR
     A -.-> I["queue time"]
     D -.-> J["prefill time"]
     A -.-> K["TTFT"]
-    E -.-> L["TPOT / inter-token latency"]
+    E -.-> L["TPOT（均值）/ inter-token latency（逐次间隔）"]
     A -.-> M["end-to-end latency"]
 ```
 
@@ -6540,7 +6544,7 @@ KV Cache 保存的是模型中间状态，不是原始文本。它的大小和�
 | batch size / 并发请求数 | 同时服务的请求越多，总 KV Cache 越大 |
 | sequence length | 输入越长、输出越长，每个请求缓存越大 |
 | 模型层数 | 每层都要保存 K 和 V，层数越多越大 |
-| hidden size / attention heads | 每个 token 的 K/V 向量越大，缓存越大 |
+| num_kv_heads × head_dim | 每个 token 每层的 K/V 向量大小；GQA/MQA 模型 num_kv_heads 小于 num_attention_heads，KV Cache 显著缩小 |
 | precision | FP16、BF16、FP8、INT8 等精度会影响每个元素占用 |
 
 一个直观估算是：
@@ -6549,10 +6553,12 @@ KV Cache 保存的是模型中间状态，不是原始文本。它的大小和�
 KV Cache 大小
   约等于 batch 中的总 token 数
   × 模型层数
-  × 每层 K/V 的向量大小
+  × num_kv_heads × head_dim    （每层 K 或 V 的向量大小）
   × 2（K 和 V）
   × 每个元素的字节数
 ```
+
+写成完整公式即 `2 × num_layers × num_kv_heads × head_dim × seq_len × batch × dtype_bytes`。注意 MHA 模型 `num_kv_heads == num_attention_heads`，此时 `num_kv_heads × head_dim == hidden_size`；但 Llama 2/3、Mixtral、Qwen2 等主流模型使用 GQA，`num_kv_heads` 远小于 `num_attention_heads`，直接用 hidden size 估算会高估 4-8 倍。
 
 这个估算不需要死记，重要的是理解增长方向：**并发越高、上下文越长、模型越大，KV Cache 越容易成为显存瓶颈。**
 
@@ -8787,6 +8793,14 @@ N-gram speculation 不一定需要神经网络 draft。它可以从 prompt、已
 它在代码、模板、日志、表格、重复文本中可能有效。
 
 优点是便宜、简单；缺点是适用场景有限，遇到开放式生成时接受率可能不高。
+
+### Lookahead Decoding
+
+Lookahead Decoding 不依赖独立 draft model，而是利用 Jacobi 迭代的特性：把自回归 decode 当成可以并行猜测多步的固定点迭代，一次性并行推测后续若干 token，再由目标模型验证。
+
+直观上，它通过构造一个 N-gram 候选池并随 decode 不断扩展和验证，在不引入额外模型的前提下获得 speculative 的并行收益。
+
+优点是无需额外模型、无需额外训练；缺点是并行度和接受率受 Jacobi 收敛特性影响，对实现要求较高。
 
 ## 哪些场景更适合
 
@@ -12850,7 +12864,7 @@ Speculative Decoding 的目标是减少目标模型严格逐 token 生成带来�
 
 ## 分布式推理
 
-当模型太大或吞吐要求太高时，单张 GPU 不够。vLLM 可以作为多 GPU、多节点推理的一部分，使用 tensor parallel、pipeline parallel 等方式扩展执行。
+当模型太大或吞吐要求太高时，单张 GPU 不够。vLLM 可以作为多 GPU、多节点推理的一部分，主要使用 tensor parallel 扩展执行，也有实验性的 pipeline parallel 支持，但 TP 是其成熟且有代表性的并行方式。
 
 从学习角度看，分布式 vLLM 需要关注三个问题。
 
@@ -45852,7 +45866,7 @@ updated: 2026-06-25
 
 ## 专题入口
 
-- [Attention 机制与计算模式](attention-computation-patterns.md)：区分 attention pattern、exact/approx、kernel 实现和 KV Cache 管理，理解 Dense/Sparse/Flash/PagedAttention、MHA/MQA/GQA、Prefill/Decode、长上下文、显存 IO 和 benchmark 方法。
+- [Attention 机制与计算模式](attention-computation-patterns.md)：区分 attention pattern、exact/approx、kernel 实现和 KV Cache 管理，理解 Dense/Sparse/Flash/PagedAttention、MHA/MQA/GQA/MLA、Prefill/Decode、长上下文、显存 IO 和 benchmark 方法。
 - [Triton Kernel 编程](triton.md)：面向 AI workload 的手写 Kernel，覆盖 block program、Triton 编译器、Triton AI 算子生成、JIT specialization、launch grid、tiling、资源模型、数值、autotune、PyTorch/Inductor 集成和端到端 benchmark。
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
 - [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：理解为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、vector/GPU 后端，以及它和 Triton、TorchInductor、TileLang、MegaKernel 的关系。
@@ -45964,10 +45978,12 @@ O: [B, Hq, S_q, Dv]
 核心计算是：
 
 ```text
-scores = Q @ K^T
+scores = (Q @ K^T) / sqrt(D)
 prob   = softmax(scores + mask)
 O      = prob @ V
 ```
+
+其中 `/ sqrt(D)` 是缩放因子，用于控制点积随维度增长导致的数值发散，是 softmax 数值稳定性的关键。
 
 如果是 dense attention，粗略计算量主要来自两次矩阵乘：
 
@@ -46227,6 +46243,7 @@ Attention pattern 之外，还有 head 结构问题。
 | MHA, Multi-Head Attention | `Hk = Hq` | 每个 query head 有独立 K/V |
 | MQA, Multi-Query Attention | `Hk = 1` | 所有 query head 共享一组 K/V |
 | GQA, Grouped-Query Attention | `1 < Hk < Hq` | 多个 query head 共享一组 K/V |
+| MLA, Multi-head Latent Attention | K/V 被压成低秩 latent 向量 | 把 K/V 压缩为低维 latent 存入 KV Cache，运行时再上投影恢复 |
 
 MHA 表达灵活，但 KV Cache 大。
 
@@ -46238,7 +46255,9 @@ MQA/GQA 会减少 K/V head 数，从而减少：
 
 代价是 K/V 表达能力减少，模型质量和训练 recipe 需要验证。
 
-从 kernel 角度看，GQA/MQA 会改变 Q/K/V 的 shape 和广播方式。一个 attention kernel 如果只按 MHA 假设实现，可能不能高效支持 GQA/MQA。
+MLA（DeepSeek-V2/V3 所用）走另一条路：不减少 head 数，而是把 K/V 压缩为一个低秩 latent 向量（维度 `d_c << Hk * d`）存进 KV Cache，decode 时再通过上投影矩阵恢复成完整 K/V。好处是 KV Cache 显存和 decode 带权带宽大幅下降；代价是引入额外上投影 GEMM 计算，且 kernel 实现更复杂。面向 decode 的 `FlashMLA` kernel 即针对该路径优化。
+
+从 kernel 角度看，GQA/MQA 会改变 Q/K/V 的 shape 和广播方式。一个 attention kernel 如果只按 MHA 假设实现，可能不能高效支持 GQA/MQA；MLA 则需要额外的上投影计算和 latent 读写路径。
 
 ## FlashAttention：不是 Sparse Attention
 
@@ -46331,6 +46350,17 @@ FlashAttention-2 继续优化的是并行度和工作划分。
 - Tensor Core 是否充分利用。
 - 非 matmul 部分是否成为瓶颈。
 - 不同 sequence length 和 head dim 是否都高效。
+
+### FlashAttention-3 的方向
+
+FlashAttention-3（面向 Hopper 架构，如 H100）继续在硬件亲和层面优化：
+
+- 用 TMA（Tensor Memory Accelerator）做异步数据搬运，减少 SM 直接参与搬数的压力。
+- 用 WGMMA（Warpgroup MMA）指令让大块矩阵乘更高效地喂给 Tensor Core。
+- 引入 warpgroup specialization，把"搬数据"和"算矩阵乘"分配给不同 warpgroup 形成异步流水。
+- 支持 FP8（E4M3/E5M2）路径，进一步利用低精度算力。
+
+FA-3 相比 FA-2 在 Hopper 上可获得显著加速，但它依赖 Hopper 特有硬件能力，在非 Hopper 架构上不适用。这说明 attention kernel 的代际演进越来越绑定具体硬件特性。
 
 ## FlashAttention、Dense、Sparse 的关系
 
@@ -46730,11 +46760,12 @@ Dense Attention、Sparse Attention 和 FlashAttention 是理解高效 Transforme
 
 - [FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135)
 - [FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning](https://arxiv.org/abs/2307.08691)
+- [FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-Precision](https://arxiv.org/abs/2407.08608)
 - [Generating Long Sequences with Sparse Transformers](https://arxiv.org/abs/1904.10509)
 - [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150)
 - [Big Bird: Transformers for Longer Sequences](https://arxiv.org/abs/2007.14062)
-- [vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
-- [PyTorch: scaled_dot_product_attention](https://docs.pytorch.org/docs/2.12/generated/torch.nn.functional.scaled_dot_product_attention.html)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention (vLLM, SOSP 2023)](https://arxiv.org/abs/2309.06180)
+- [PyTorch: scaled_dot_product_attention](https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html)
 
 ---
 
@@ -47881,7 +47912,7 @@ Triton 提供：
 
 限制也要记住：
 
-- 不支持 `bfloat16` 操作，需要 cast 到 `float32`。
+- 某些版本不支持 `bfloat16` 操作（interpreter 后端依赖 numpy/PyTorch 的 CPU bfloat16 支持），如遇问题可 cast 到 `float32`。
 - 不支持某些 indirect memory access pattern。
 - 性能没有参考意义。
 
@@ -48367,7 +48398,7 @@ model.block = torch.compile(model.block)
 - 与 GPU 计算无关的控制流。
 - 很复杂的分布式协调逻辑。
 
-PyTorch 还提供 `torch.compiler.disable` 之类的逃生口，可以显式禁止某些函数被编译。较新的 API 也包括 `nested_compile_region`，用于标记可重复复用的嵌套编译区域。工程上要把这些工具当成“切分边界”的手段，而不是最后才用的补丁。
+PyTorch 还提供 `torch.compiler.disable` 之类的逃生口，可以显式禁止某些函数被编译。部分版本在 `torch._dynamo` 内部提供类似 `nested_compile_region` 的实验性接口，用于标记可重复复用的嵌套编译区域，但它不一定是稳定公开 API，使用前应核对当前 PyTorch 版本的 `torch.compiler` 命名空间文档。工程上要把这些工具当成“切分边界”的手段，而不是最后才用的补丁。
 
 一个实用原则：
 
@@ -49188,7 +49219,7 @@ tlparse /tmp/tracedir
 | `torch.compiler.assume_constant_result` | 标记函数结果可视为常量 |
 | `torch.compiler.list_backends` | 查看可用 backend |
 | `torch.compiler.cudagraph_mark_step_begin` | 标记新的训练/推理 iteration |
-| `torch.compiler.nested_compile_region` | 标记可复用的嵌套编译区域 |
+| `torch._dynamo` 实验性嵌套编译区域接口 | 标记可复用的嵌套编译区域（非稳定公开 API，需核对版本） |
 
 这些 API 能帮助切边界、定位问题、控制编译行为。但带有 `unsafe` 的 guard 相关工具要非常谨慎：它们可能提高缓存复用，但也可能让错误输入复用不该复用的编译结果。
 
@@ -55828,10 +55859,10 @@ KV Cache 量化要按端到端推理指标评估，而不是只看显存下降�
 
 ## 参考资料
 
-- [PyTorch: Automatic Mixed Precision package](https://docs.pytorch.org/docs/2.12/amp.html)
+- [PyTorch: Automatic Mixed Precision package](https://pytorch.org/docs/stable/amp.html)
 - [NVIDIA Transformer Engine Documentation](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/index.html)
 - [NVIDIA: Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)
-- [PyTorch: Quantization](https://docs.pytorch.org/docs/2.12/quantization.html)
+- [PyTorch: Quantization](https://pytorch.org/docs/stable/quantization.html)
 - [FP8 Formats for Deep Learning](https://arxiv.org/abs/2209.05433)
 - [FP8-LM: Training FP8 Large Language Models](https://arxiv.org/abs/2310.18313)
 - [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314)
@@ -60762,7 +60793,7 @@ Object Store / Data Lake
 - Slurm：HPC 和大规模训练常见，适合 batch job、队列、分区、fairshare。
 - Kubernetes：云原生生态强，适合服务化、容器、控制器、推理平台和混合 workload。
 - Ray：适合分布式 Python、RL、数据处理、训练/推理任务编排。
-- Volcano / Kueue：面向 Kubernetes 上的 batch、queue、gang scheduling、quota 等能力。
+- Volcano / Kueue：面向 Kubernetes 上的 batch、queue、quota 等能力；Volcano 侧重调度层的 gang scheduling 与调度插件，Kueue 侧重准入层的队列治理与资源借用（详见调度系统章节）。
 
 它们不是简单替代关系。很多组织会组合使用：
 
@@ -71723,8 +71754,10 @@ TPOT 是 time per output token，常用于衡量 decode 阶段持续生成速度
 端到端延迟可以粗略拆成：
 
 ```text
-E2E ~= queue_time + TTFT_compute + output_tokens * TPOT + postprocess_time
+E2E ~= queue_time + TTFT_compute + (output_tokens - 1) * TPOT + postprocess_time
 ```
+
+因为 TTFT 已覆盖到首 token 为止的全部时间（含 queue、prefill、首步 decode），后续 token 才按 TPOT 计，所以对 `output_tokens` 减 1。等价地写成 `E2E = TTFT + (output_tokens - 1) * TPOT + postprocess_time`。
 
 更细一点：
 
@@ -72168,7 +72201,7 @@ one node failure loses 2 replicas
 
 ```text
 base_replicas = ceil(120 / 18) = 7
-headroom_replicas = ceil(7 * 1.3) = 10
+headroom_replicas = ceil(7 / (1 - 0.3)) = ceil(7 / 0.7) = 10
 failure_aware_replicas = 10 + 2 = 12
 ```
 
@@ -88443,11 +88476,15 @@ SLO 是 Service Level Objective。
 例如：
 
 ```text
-30 天滚动窗口内，99.5% 的交互式请求满足：
+30 天滚动窗口内，99.5% 的交互式请求满足（per-request 条件）：
   success == true
   TTFT <= 500 ms
-  TPOT p99 <= 50 ms
+
+同时另设一个 aggregate SLO：
+  TPOT p99 <= 50 ms（对窗口内所有请求的逐 token 延迟取 p99）
 ```
+
+注意 `success == true`、`TTFT` 是每条请求都能判定的 per-request 属性，可以直接参与"99.5% 的请求满足…"的计数；而 `TPOT p99` 是对一批请求统计出的聚合分位数，不是单条请求的属性，不能放进 per-request 的好事件定义。应把 per-request SLO 和 aggregate SLO 分开声明，避免把跨请求统计量当成单请求条件。
 
 SLO 的重点是“有时间窗口、有目标、有测量口径”。
 
@@ -90852,6 +90889,7 @@ flowchart TB
     Diagnose["Diagnose<br/>scope / timeline / hypotheses / evidence"]
     Mitigate["Mitigate<br/>rollback / drain / throttle / reschedule / fallback"]
     Recover["Recover<br/>SLO normal / jobs progressing / capacity restored"]
+    Close["Close<br/>impact ended / evidence sealed / postmortem owner assigned"]
     Review["Postmortem<br/>timeline / impact / causes / action items"]
     Improve["Improve<br/>runbook / alert / benchmark / tests / architecture"]
 
@@ -90860,7 +90898,8 @@ flowchart TB
     Stabilize --> Diagnose
     Diagnose --> Mitigate
     Mitigate --> Recover
-    Recover --> Review
+    Recover --> Close
+    Close --> Review
     Review --> Improve
     Improve --> Detect
 ```
@@ -91992,7 +92031,7 @@ updated: 2026-06-12
 
 Source: docs/10-papers-cases/ai-system-architecture.md
 URL: https://amoursec.github.io/10-papers-cases/ai-system-architecture/
-domain: ai-system-papers
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
@@ -93104,7 +93143,7 @@ AI 系统论文的价值不在于“又知道一个新方法”，而在于把�
 
 Source: docs/10-papers-cases/adr.md
 URL: https://amoursec.github.io/10-papers-cases/adr/
-domain: technical-decision-records
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
@@ -93339,12 +93378,15 @@ ADR 不是一次性文档。
 
 | 状态 | 含义 |
 | --- | --- |
-| Proposed | 已提出，等待评审 |
-| Accepted | 已接受，成为当前决策 |
-| Rejected | 已拒绝，但保留拒绝原因 |
-| Superseded | 被新的 ADR 替代 |
-| Deprecated | 不再推荐，但历史系统可能仍使用 |
-| Revisit Required | 触发复审条件，等待重新评估 |
+| proposed | 已提出，等待评审 |
+| accepted | 已接受，成为当前决策 |
+| rejected | 已拒绝，但保留拒绝原因 |
+| deferred | 暂缓，等待更多证据或条件成熟（含触发复审等待重新评估） |
+| superseded | 被新的 ADR 替代 |
+| deprecated | 不再推荐，但历史系统可能仍使用 |
+| abandoned | 决策未完成，且不再推进 |
+
+状态枚举与 `docs/99-templates/adr.md` 保持一致，统一使用小写形式。
 
 建议使用不可变原则：
 
@@ -94417,7 +94459,7 @@ ADR 不是论文。
 
 Source: docs/10-papers-cases/failure-cases.md
 URL: https://amoursec.github.io/10-papers-cases/failure-cases/
-domain: failure-cases
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
@@ -95968,6 +96010,7 @@ domain:
   - reliability-observability
   - papers-cases
   - knowledge-index
+  - template
 ```
 
 不要每篇随手创造新 domain。
@@ -95982,12 +96025,14 @@ doc_type:
   - concept
   - system-guide
   - benchmark-guide
+  - benchmark-report
   - tool-case
   - paper-note
   - experiment-report
   - adr
   - failure-case
   - runbook
+  - guide
   - template
   - index
 ```
@@ -99267,15 +99312,16 @@ benchmark:
 
 ### Evidence Level
 
-建议使用证据等级。
+建议使用证据等级（与 `docs/11-knowledge-index/index.md` 中的权威定义保持一致）。
 
 | 等级 | 含义 |
 | --- | --- |
-| E0 | 直觉、经验判断或未验证假设 |
-| E1 | 文档、论文、公开 benchmark 或专家判断 |
-| E2 | 本地可复现实验，有 workload、baseline、metrics 和环境记录 |
-| E3 | 多场景 sweep、profiler、稳定性和成本证据完整 |
-| E4 | 线上灰度或生产数据验证，并有回滚和监控闭环 |
+| E0 | 经验、观点、博客、口头判断 |
+| E1 | 论文、官方文档、源码说明 |
+| E2 | 小规模本地实验 |
+| E3 | 可复现 benchmark + raw data + manifest |
+| E4 | production trace replay、shadow、canary |
+| E5 | 线上长期运行数据、SLO、incident 和成本闭环 |
 
 ADR 可以在 E1 阶段被 proposed。
 
@@ -99871,7 +99917,7 @@ ADR 不应该吞掉这些文档。
 ## 参考资料
 
 - [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
-- [Markdown Architectural Decision Records](https://github.com/adr/madr)
+- [Markdown Architectural Decision Records](https://adr.github.io/madr/)
 - [Architecture decision record examples and templates](https://github.com/architecture-decision-record/architecture-decision-record)
 - [One Size Fits All? An Empirical Comparison of ADR Templates regarding Comprehension, Usability, and Ease of Adoption](https://arxiv.org/abs/2604.27333)
 - [Context Matters: Evaluating Context Strategies for Automated ADR Generation Using LLMs](https://arxiv.org/abs/2604.03826)
@@ -99986,15 +100032,16 @@ AI Infra 里的 benchmark 很容易误导人。
 
 ## 结果可信度
 
-建议给 benchmark report 标注证据等级。
+建议给 benchmark report 标注证据等级（与 `docs/11-knowledge-index/index.md` 中的权威定义保持一致）。
 
 | 等级 | 含义 |
 | --- | --- |
-| E0 | 手动临时观察，没有可复现记录 |
-| E1 | 有命令和摘要结果，但缺少 raw data、manifest 或重复实验 |
-| E2 | 有 workload、baseline、metrics、环境、raw data 和 run manifest |
-| E3 | 有多次重复、sweep、profiler、误差分析和 guardrail metrics |
-| E4 | 有生产灰度、真实 trace replay、SLO 和成本闭环验证 |
+| E0 | 经验、观点、博客、口头判断 |
+| E1 | 论文、官方文档、源码说明 |
+| E2 | 小规模本地实验 |
+| E3 | 可复现 benchmark + raw data + manifest |
+| E4 | production trace replay、shadow、canary |
+| E5 | 线上长期运行数据、SLO、incident 和成本闭环 |
 
 知识库中的 benchmark report 至少应达到 E2。
 
@@ -101253,6 +101300,2123 @@ Benchmark report 不应该替代 ADR。
 - [TensorRT-LLM Benchmarking](https://nvidia.github.io/TensorRT-LLM/performance/perf-benchmarking.html)
 - [PyTorch Profiler](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html)
 - [NVIDIA Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html)
+
+---
+
+# Document: Automatic Skill Routing Implementation Plan
+
+Source: docs/superpowers/plans/2026-08-03-automatic-skill-routing.md
+URL: https://amoursec.github.io/superpowers/plans/2026-08-03-automatic-skill-routing/
+
+# Automatic Skill Routing Implementation Plan
+
+> **[SUPERSEDED / 已取代]** 本计划对应的 `skill-system/` 架构从未实现。当前唯一有效的实现是 `automatic-skill-routing/skills-router/`（含生产门面 `python3 -m runtime` 与完整离线测试套件），设计权威为 `automatic-skill-routing/AUTOMATIC_SKILL_ROUTING_DESIGN.md`（仓库根相对路径，非本目录内链接）。本文仅作历史记录保留，勿据此实施。
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build a platform-independent system that discovers Skills from configured sources, retrieves and validates the best candidates for a user task, discloses the chosen Skill names before activation, and lazily loads the selected workflows without hardcoded Skill names.
+
+**Architecture:** A Python package builds a normalized, versioned Skill catalog from local and Git sources, then exposes hybrid retrieval, model-facing selection contracts, disclosure state, and lazy loading through stable data models and CLI commands. Runtime selection uses three disclosure levels: catalog recall, `SKILL.md` inspection, and post-disclosure activation; generated artifacts are published transactionally and guarded by deterministic tests and routing evaluations.
+
+**Tech Stack:** Python 3.11+, standard library, PyYAML 6.x, jsonschema 4.x, `unittest`, Git CLI, Markdown, MkDocs Material.
+
+**Authoritative Design:** `docs/superpowers/specs/2026-08-03-automatic-skill-routing-design.md`. If implementation evidence requires changing a contract, update the design, this plan, Schemas, tests, Runbook, and generated AI indexes in the same reviewed change; do not silently diverge.
+
+## Global Constraints
+
+- Never hardcode a business Skill name in routing logic; Skill-specific examples belong only in fixtures, configuration, documentation, and evaluations.
+- Adding a valid `SKILL.md` under an enabled source must not require Router code changes.
+- Adding a source must require only `skill-system/sources.yaml`, an updated lock, and normal validation artifacts.
+- Default activation policy is `notify`; `confirm` Skills cannot activate until explicit user approval is recorded.
+- Every selected Skill must be disclosed by public name and one-sentence purpose before activation.
+- Candidate inspection may read only `SKILL.md`; referenced files load only after the Disclosure Gate passes.
+- Generated files and caches are never edited manually.
+- Source builds are transactional; a failed build leaves the active catalog and index unchanged.
+- Enabled Skill parse rate, selected Skill load rate, and Disclosure Gate completion rate must each be 100%.
+- Routing Gold Set Recall@10 must be at least 95% for catalog publication. A production-qualified model adapter additionally requires final Top-1 accuracy at least 90% and no-match false selection rate at most 5%; missing adapter evidence is `not_run`, never pass.
+- External sources, including initialized Git submodules, resolve to immutable commits in `skill-system/sources.lock.json`; credentials never enter repository configuration.
+- `skill-system/sources.lock.json` is the published active lock snapshot. `sync` writes only a candidate lock under ignored staging state; failed build or publication must not change the active lock snapshot.
+- Preserve the untracked `sanitize-for-intranet.patch`; do not stage, edit, or delete it.
+- Run tests before every task commit and run the complete verification suite before claiming implementation completion.
+
+---
+
+## File and Responsibility Map
+
+### Python package
+
+- `skill_router/models.py`: enums and immutable data contracts shared by every component.
+- `skill_router/errors.py`: stable error codes and structured exceptions.
+- `skill_router/schema_validation.py`: YAML/JSON loading and Draft 2020-12 Schema validation.
+- `skill_router/source_registry.py`: source configuration, immutable revision and submodule resolution, local/Git materialization, and lock writing.
+- `skill_router/discovery.py`: `SKILL.md` discovery, Front Matter parsing, and initial validation.
+- `skill_router/references.py`: explicit reference parsing, boundary checks, deterministic content and bundle hashes.
+- `skill_router/overrides.py`: reviewed metadata overrides and Quarantine acknowledgements.
+- `skill_router/catalog.py`: normalized entries, canonicalization, exact duplicate folding, same-name preservation, and reports.
+- `skill_router/publishing.py`: staged builds, active-version pointer, deterministic export, and rollback.
+- `skill_router/index.py`: lexical BM25-like retrieval, semantic-provider protocol, and reciprocal-rank fusion.
+- `skill_router/selector.py`: model-facing selection request, prompt, response validation, and selection rules.
+- `skill_router/disclosure.py`: `notify`/`confirm` user messages and activation state machine.
+- `skill_router/loader.py`: `inspect` and `activate` modes plus Handoff Bundle creation.
+- `skill_router/router.py`: end-to-end routing state, rejected-Skill exclusion, and bounded subtask rerouting.
+- `skill_router/evaluation.py`: routing metrics, regression comparison, and release thresholds.
+- `skill_router/cli.py`, `skill_router/__main__.py`: maintenance and model-facing command-line interface.
+
+### Configuration and generated artifacts
+
+- `skill-system/sources.yaml`: editable source declarations.
+- `skill-system/sources.lock.json`: generated immutable source resolutions.
+- `skill-system/router-instructions.md`: platform-neutral instructions that make the model use the routing protocol.
+- `skill-system/schemas/*.json`: machine-readable contracts.
+- `skill-system/overrides/<source-id>/*.yaml`: reviewed local metadata and Quarantine acknowledgements.
+- `skill-system/evals/routing-cases.yaml`: gold routing and no-match cases.
+- `skill-system/generated/`: deterministic public catalog, summary, report, and quarantine export.
+- `skill-system/state/`: ignored runtime version snapshots and active pointer.
+- `skill-system/cache/`: ignored source mirrors and staging directories.
+
+### Tests and documentation
+
+- `tests/skill_router/`: one focused `unittest` module per component.
+- `tests/fixtures/skill_router/`: local and Git fixtures, valid and invalid Skills, overrides, and gold cases.
+- `docs/11-knowledge-index/skill-routing-system.md`: user-facing architecture and use protocol.
+- `docs/11-knowledge-index/skill-maintenance-runbook.md`: precise newcomer/AI maintenance procedures.
+- `README.md`, `skills/README.md`, `AI_CONTINUATION_GUIDE.md`, `docs/knowledge-map.md`, `mkdocs.yml`: entry-point integration.
+- `scripts/generate_llms_files.py`: dynamic catalog and routing-protocol integration.
+
+---
+
+### Task 1: Core Models, Errors, and Schema Validation
+
+**Files:**
+- Modify: `requirements.txt`
+- Create: `skill_router/__init__.py`
+- Create: `skill_router/models.py`
+- Create: `skill_router/errors.py`
+- Create: `skill_router/schema_validation.py`
+- Create: `skill-system/schemas/sources.schema.json`
+- Create: `skill-system/schemas/source-lock.schema.json`
+- Create: `skill-system/schemas/override.schema.json`
+- Create: `skill-system/schemas/quarantine-ack.schema.json`
+- Create: `skill-system/schemas/catalog-entry.schema.json`
+- Create: `skill-system/schemas/selection-request.schema.json`
+- Create: `skill-system/schemas/selection-response.schema.json`
+- Create: `skill-system/schemas/disclosure-record.schema.json`
+- Create: `skill-system/schemas/handoff.schema.json`
+- Create: `skill-system/schemas/routing-session.schema.json`
+- Create: `skill-system/schemas/routing-case.schema.json`
+- Create: `skill-system/examples/sources.valid.yaml`
+- Create: `skill-system/examples/sources.invalid.yaml`
+- Create: `skill-system/examples/override.valid.yaml`
+- Create: `skill-system/examples/quarantine-ack.valid.yaml`
+- Create: `tests/__init__.py`
+- Create: `tests/skill_router/__init__.py`
+- Create: `tests/skill_router/test_schema_validation.py`
+- Create: `tests/skill_router/test_models.py`
+
+**Interfaces:**
+- Produces enums: `SourceType`, `SubmoduleMode`, `SkillStatus`, `ActivationPolicy`, `RoutingDecision`, `DisclosureStatus`, `SelectionRole`.
+- Produces dataclasses: `SourceSpec`, `SubmoduleLockEntry`, `SourceLockEntry`, `ResolvedSource`, `ReferenceItem`, `CatalogEntry`, `QuarantineItem`, `CandidateScore`, `SearchResult`, `SelectionItem`, `SelectionResult`, `DisclosureRecord`, `LoadedResource`, `LoadedSkill`, `HandoffBundle`, `RoutingSession`.
+- Produces `load_yaml(path: Path) -> dict[str, object]`.
+- Produces `load_json(path: Path) -> dict[str, object]`.
+- Produces `validate_document(document: Mapping[str, object], schema_name: str, schema_dir: Path) -> None`.
+- Produces `SkillRouterError(code: str, message: str, path: Path | None)` and subclasses `SchemaValidationError`, `SourceResolutionError`, `SkillValidationError`, `SelectionValidationError`, `DisclosureError`, `PublishError`.
+
+- [ ] **Step 1: Write failing model and Schema tests**
+
+```python
+from pathlib import Path
+from unittest import TestCase
+
+from skill_router.models import ActivationPolicy, SourceSpec, SourceType, SubmoduleMode
+from skill_router.schema_validation import load_yaml, validate_document
+
+
+class SchemaValidationTests(TestCase):
+    def test_valid_source_example_passes_schema(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        document = load_yaml(root / "skill-system/examples/sources.valid.yaml")
+        validate_document(document, "sources.schema.json", root / "skill-system/schemas")
+
+    def test_invalid_source_example_reports_field_path(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        document = load_yaml(root / "skill-system/examples/sources.invalid.yaml")
+        with self.assertRaisesRegex(Exception, "sources.0.source_id"):
+            validate_document(document, "sources.schema.json", root / "skill-system/schemas")
+
+
+class ModelTests(TestCase):
+    def test_source_spec_uses_immutable_collections(self) -> None:
+        source = SourceSpec(
+            source_id="local-aikg",
+            type=SourceType.LOCAL,
+            location="skills",
+            revision=None,
+            enabled=True,
+            priority=100,
+            include=("**/SKILL.md",),
+            exclude=(),
+            submodules=SubmoduleMode.NONE,
+        )
+        self.assertEqual(source.type, SourceType.LOCAL)
+        self.assertEqual(ActivationPolicy.NOTIFY.value, "notify")
+```
+
+- [ ] **Step 2: Run the tests and verify the package is missing**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_models tests.skill_router.test_schema_validation -v`
+
+Expected: FAIL with `ModuleNotFoundError: No module named 'skill_router'`.
+
+- [ ] **Step 3: Add explicit runtime dependencies**
+
+Append to `requirements.txt`:
+
+```text
+PyYAML>=6.0,<7
+jsonschema>=4.23,<5
+```
+
+Run: `.venv/bin/python -m pip install -r requirements.txt`
+
+Expected: installation succeeds and `.venv/bin/python -c "import yaml, jsonschema"` exits 0.
+
+- [ ] **Step 4: Implement stable errors, enums, and dataclasses**
+
+Use frozen, slotted dataclasses. Define `CatalogEntry` with exactly these routing fields:
+
+```python
+@dataclass(frozen=True, slots=True)
+class CatalogEntry:
+    schema_version: int
+    skill_id: str
+    name: str
+    description: str
+    scope_summary: str
+    source_id: str
+    source_revision: str
+    submodule_path: str | None
+    submodule_revision: str | None
+    relative_path: str
+    content_hash: str
+    bundle_hash: str
+    status: SkillStatus
+    activation_policy: ActivationPolicy
+    repeatable: bool
+    aliases: tuple[str, ...]
+    tags: tuple[str, ...]
+    dependencies: tuple[str, ...]
+    conflicts: tuple[str, ...]
+    references: tuple[ReferenceItem, ...]
+    canonical_skill_id: str
+```
+
+Define `ReferenceItem` with `source_relative_path`, `bundle_relative_path`, `sha256`, `size_bytes`, and `media_type`. The source-relative path is used to load from the locked source; the bundle-relative path is used for source-independent duplicate hashing. Define `CandidateScore` with `skill_id`, lexical/semantic/fused scores, rank, and evidence terms. Define `SearchResult` with ordered candidates, active retrieval modes, degraded flag, and stable diagnostics.
+
+`DisclosureRecord` must bind `session_id`, the ordered selected Skill IDs, `selection_hash`, `message_hash`, effective policy, status, and actor. `LoadedResource` must carry paths, hash, media type, encoding (`utf-8` or `base64`), and content. `LoadedSkill` must carry the verified full `SKILL.md` text and ordered loaded resources so a Handoff is self-contained rather than dependent on an unstated filesystem lookup.
+
+`SourceSpec` contains source ID/type/location/requested revision, enabled flag, priority, include/exclude tuples, and submodule mode. `SourceLockEntry` contains requested and resolved parent revisions, a credential-free canonical location, source content fingerprint, and sorted `SubmoduleLockEntry` values. `ResolvedSource` contains the locked materialized root plus the same revision data. `QuarantineItem` contains source ID, parent revision, optional owning submodule path/commit, stable Skill path, error code, sanitized message, and acknowledgement status. `RoutingSession` contains a random non-secret session ID, original task, current subtask, status, ordered candidate/selected/completed/rejected IDs, disclosure record when present, visited state hashes, depth, and maximum depth. Persisted session and disclosure records must validate against their Schemas before use.
+
+Implement `as_dict()` and `from_dict()` methods for each persisted dataclass. Reject unknown enum values with a `SchemaValidationError` carrying a stable code such as `schema.invalid_enum`.
+
+- [ ] **Step 5: Implement Schema loading and deterministic validation errors**
+
+```python
+def validate_document(
+    document: Mapping[str, object], schema_name: str, schema_dir: Path
+) -> None:
+    schema = load_json(schema_dir / schema_name)
+    validator = Draft202012Validator(schema)
+    errors = sorted(validator.iter_errors(document), key=lambda item: list(item.absolute_path))
+    if errors:
+        first = errors[0]
+        field = ".".join(str(part) for part in first.absolute_path) or "$"
+        raise SchemaValidationError("schema.invalid", f"{field}: {first.message}")
+```
+
+Write every Schema with `additionalProperties: false`, explicit `schema_version: 1`, required keys from the design, and enum values copied from the Python enums.
+
+- [ ] **Step 6: Run focused and complete tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_models tests.skill_router.test_schema_validation -v`
+
+Expected: all Task 1 tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: the complete suite PASSes with zero failures.
+
+- [ ] **Step 7: Commit Task 1**
+
+```bash
+git add requirements.txt skill_router skill-system/schemas skill-system/examples tests
+git commit -m "feat: add skill routing data contracts"
+```
+
+---
+
+### Task 2: Source Registry, Git Resolution, and Lock File
+
+**Files:**
+- Create: `skill_router/source_registry.py`
+- Create: `skill-system/sources.yaml`
+- Create: `tests/skill_router/test_source_registry.py`
+- Create: `tests/fixtures/skill_router/local-source/skills/sample/SKILL.md`
+
+**Interfaces:**
+- Consumes: `SourceSpec`, `SubmoduleLockEntry`, `SourceLockEntry`, `ResolvedSource`, `SourceResolutionError`, Schema utilities.
+- Produces `load_source_specs(config_path: Path, schema_dir: Path) -> tuple[SourceSpec, ...]`.
+- Produces `resolve_sources(specs: Sequence[SourceSpec], workspace_root: Path, cache_root: Path, staging_root: Path, runner: CommandRunner = run_command) -> tuple[ResolvedSource, ...]`.
+- Produces `write_source_lock(entries: Sequence[SourceLockEntry], path: Path) -> None`.
+- `CommandRunner` signature: `Callable[[Sequence[str], Path | None], subprocess.CompletedProcess[str]]`.
+
+- [ ] **Step 1: Write failing local-source and local-Git tests**
+
+```python
+class SourceRegistryTests(TestCase):
+    def test_local_source_resolves_inside_workspace(self) -> None:
+        resolved = resolve_sources(
+            specs=(self.local_spec,),
+            workspace_root=self.root,
+            cache_root=self.temp / "cache",
+            staging_root=self.temp / "staging",
+        )
+        self.assertRegex(resolved[0].resolved_revision, r"^local-sha256:[0-9a-f]{64}$")
+        self.assertTrue(resolved[0].root.is_dir())
+
+    def test_git_source_resolves_requested_ref_to_commit(self) -> None:
+        resolved = resolve_sources(
+            specs=(self.git_fixture_spec,),
+            workspace_root=self.root,
+            cache_root=self.temp / "cache",
+            staging_root=self.temp / "staging",
+        )
+        self.assertRegex(resolved[0].resolved_revision, r"^[0-9a-f]{40,64}$")
+        self.assertTrue((resolved[0].root / "skills/sample/SKILL.md").is_file())
+
+    def test_recursive_submodules_are_materialized_and_locked(self) -> None:
+        resolved = resolve_sources(
+            specs=(self.git_fixture_with_submodule_spec,),
+            workspace_root=self.root,
+            cache_root=self.temp / "cache",
+            staging_root=self.temp / "staging",
+        )
+        self.assertTrue((resolved[0].root / "official/child/skills/sample/SKILL.md").is_file())
+        self.assertEqual(resolved[0].submodules[0].path, "official/child")
+        self.assertRegex(resolved[0].submodules[0].commit, r"^[0-9a-f]{40,64}$")
+```
+
+Create the parent Git repository and a child submodule during `setUp()` using only local `git init`, `git add`, `git -c user.name=Fixture -c user.email=fixture@example.invalid commit`, and `git -c protocol.file.allow=always submodule add`; do not depend on the maintainer's global Git identity or network access.
+
+- [ ] **Step 2: Run tests and verify missing source registry failure**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_source_registry -v`
+
+Expected: FAIL because `skill_router.source_registry` does not exist.
+
+- [ ] **Step 3: Implement source parsing and path safety**
+
+Reject duplicate `source_id`, local paths outside `workspace_root`, disabled sources during resolution, empty locations, Git sources without a revision, and remote URLs containing userinfo or embedded credentials. Resolve local paths with `Path.resolve()` and compare with `is_relative_to(workspace_root.resolve())`. Default `include` to `("**/SKILL.md",)`, `exclude` to empty, and `submodules` to `none`. For a local source, compute `resolved_revision` from every sorted regular-file relative path and bytes under the source root after exclude rules (including Skill references, scripts, and assets), rejecting escaping symlinks, so any bundle change invalidates the candidate lock and produces a different deterministic build ID.
+
+- [ ] **Step 4: Implement deterministic Git materialization**
+
+Use argument lists, never `shell=True`:
+
+```python
+def run_command(args: Sequence[str], cwd: Path | None) -> CompletedProcess[str]:
+    return subprocess.run(
+        list(args), cwd=cwd, text=True, capture_output=True, check=True
+    )
+```
+
+For each Git source, maintain a mirror at `cache/git/<source-id>.git`, resolve `<revision>^{commit}`, clone the mirror into the task staging directory with `--shared --no-checkout`, and check out the resolved commit in detached mode. When `submodules: recursive` is configured, run `git submodule sync --recursive` and `git submodule update --init --recursive` in the isolated checkout, then record every initialized submodule's POSIX path, URL, and checked-out commit in sorted order. The local-only test runner may inject `-c protocol.file.allow=always` for its fixture; production resolution must retain Git's default protocol restrictions. Store the parent resolved commit, upstream URL, and submodule locks in `SourceLockEntry`.
+
+- [ ] **Step 5: Implement canonical lock serialization**
+
+Write UTF-8 JSON with sorted source entries and submodule entries, sorted keys, two-space indentation, and a final newline. Validate the result against `source-lock.schema.json` before replacing the destination with `os.replace()`. Treat the destination as caller-selected: Task 11 writes candidate locks under staging; only publication copies a validated version lock to the active public snapshot.
+
+- [ ] **Step 6: Run source tests and full suite**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_source_registry -v`
+
+Expected: all source tests PASS, including deterministic local fingerprints, local Git commit resolution, recursive submodule materialization, and submodule lock capture.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 7: Commit Task 2**
+
+```bash
+git add skill_router/source_registry.py skill-system/sources.yaml tests/skill_router/test_source_registry.py tests/fixtures/skill_router/local-source
+git commit -m "feat: resolve versioned skill sources"
+```
+
+---
+
+### Task 3: Skill Discovery, Reference Safety, and Hashing
+
+**Files:**
+- Create: `skill_router/discovery.py`
+- Create: `skill_router/references.py`
+- Create: `tests/skill_router/test_discovery.py`
+- Create: `tests/skill_router/test_references.py`
+- Create: `tests/fixtures/skill_router/discovery-source/valid/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/valid/references/checklist.md`
+- Create: `tests/fixtures/skill_router/discovery-source/malformed/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/broken-reference/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/escape-reference/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/cyclic/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/cyclic/references/a.md`
+- Create: `tests/fixtures/skill_router/discovery-source/cyclic/references/b.md`
+- Create: `tests/fixtures/skill_router/discovery-source/oversized/SKILL.md`
+- Create: `tests/fixtures/skill_router/discovery-source/oversized/assets/payload.bin`
+
+**Interfaces:**
+- Consumes: `ResolvedSource`, `ReferenceItem`, `QuarantineItem`, `SkillValidationError`.
+- Produces `ParsedSkill` with parent source revision, optional owning submodule path/revision, path, name, description, deterministic `scope_summary`, body, metadata, content hash, bundle hash, and references.
+- Produces `DiscoveryBatch` with `skills: tuple[ParsedSkill, ...]` and `quarantine: tuple[QuarantineItem, ...]`.
+- Produces `discover_skills(source: ResolvedSource) -> DiscoveryBatch`.
+- Produces `resolve_references(skill_file: Path, source_root: Path, max_files: int = 64, max_bytes: int = 2_000_000) -> tuple[ReferenceItem, ...]`.
+- Produces `content_hash(text: str) -> str` and `bundle_hash(skill_file: Path, references: Sequence[ReferenceItem]) -> str`.
+
+- [ ] **Step 1: Write failing discovery and boundary tests**
+
+```python
+class DiscoveryTests(TestCase):
+    def test_discovers_only_exact_skill_filename(self) -> None:
+        batch = discover_skills(self.resolved_source)
+        self.assertEqual([skill.name for skill in batch.skills], ["valid-skill"])
+        self.assertIn("skill.front_matter_invalid", {item.error_code for item in batch.quarantine})
+
+    def test_normalizes_crlf_before_content_hash(self) -> None:
+        self.assertEqual(content_hash("a\r\nb\r\n"), content_hash("a\nb\n"))
+
+
+class ReferenceTests(TestCase):
+    def test_resolves_explicit_relative_reference(self) -> None:
+        items = resolve_references(self.skill_file, self.source_root)
+        self.assertEqual(items[0].source_relative_path, "valid/references/checklist.md")
+        self.assertEqual(items[0].bundle_relative_path, "references/checklist.md")
+
+    def test_rejects_reference_outside_source(self) -> None:
+        with self.assertRaisesRegex(SkillValidationError, "reference.path_escape"):
+            resolve_references(self.escape_skill, self.source_root)
+```
+
+- [ ] **Step 2: Run tests and verify missing modules**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_discovery tests.skill_router.test_references -v`
+
+Expected: FAIL because discovery and reference modules do not exist.
+
+- [ ] **Step 3: Implement strict Front Matter parsing**
+
+Require a leading `---` block, UTF-8 decoding, scalar `name`, scalar `description`, exact `SKILL.md` filename, and a directory name compatible with the declared name. Preserve all extra Front Matter fields as read-only metadata. Derive `scope_summary` from a scalar Front Matter `scope` when present, otherwise from a `Scope`, `When to use`, or `适用范围` section, otherwise use an empty string; never ask a model to invent it during catalog build. Capture per-Skill validation failures as `QuarantineItem` records so one malformed upstream Skill does not erase valid siblings.
+
+- [ ] **Step 4: Implement include/exclude discovery**
+
+Sort candidate paths by POSIX relative path before parsing. Apply Source exclude rules before include rules and never follow symlinks outside the resolved source root. For each path, assign the longest matching initialized submodule path from `ResolvedSource`; retain both parent and effective submodule revisions in `ParsedSkill` and quarantine evidence.
+
+- [ ] **Step 5: Implement explicit reference parsing and limits**
+
+Recognize a Front Matter `resources` list, relative Markdown link/image targets, and backtick-delimited path-like tokens that resolve to an existing source-local file or directory. Strip URL fragments, reject absolute paths and URL schemes, do not infer paths from prose, expand explicitly referenced directories in sorted order, enforce `max_files` and `max_bytes`, and detect cycles by resolved path. Resolve symlinks before boundary checks and reject any target outside the locked source root.
+
+- [ ] **Step 6: Implement deterministic content and bundle hashes**
+
+Use `sha256:<lowercase-hex>` with normalized LF text for `content_hash`. Compute `bundle_hash` over the ordered sequence `bundle_relative_path + NUL + normalized_or_raw_file_bytes`; include normalized `SKILL.md` under bundle path `SKILL.md` as the first item. Do not use the source-relative prefix in the bundle hash, so an identical bundle nested under an aggregate repository and in its direct canonical repository can be recognized as an exact duplicate. Keep source-relative paths separately for locked loading.
+
+- [ ] **Step 7: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_discovery tests.skill_router.test_references -v`
+
+Expected: valid Skill passes; malformed, broken, cyclic, oversized, and escaping references fail with stable error codes.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 8: Commit Task 3**
+
+```bash
+git add skill_router/discovery.py skill_router/references.py tests/skill_router tests/fixtures/skill_router/discovery-source
+git commit -m "feat: discover and validate skill bundles"
+```
+
+---
+
+### Task 4: Overrides, Quarantine Acknowledgements, and Catalog Deduplication
+
+**Files:**
+- Create: `skill_router/overrides.py`
+- Create: `skill_router/catalog.py`
+- Create: `tests/skill_router/test_overrides.py`
+- Create: `tests/skill_router/test_catalog.py`
+- Create: `tests/fixtures/skill_router/overrides/cannbot/metadata.yaml`
+- Create: `tests/fixtures/skill_router/overrides/cannbot/quarantine-ack.yaml`
+
+**Interfaces:**
+- Consumes: `ParsedSkill`, `CatalogEntry`, `QuarantineItem`, Schema utilities.
+- Produces `OverrideRecord`, `QuarantineAcknowledgement`, `CatalogBuild`; `CatalogBuild` contains sorted enabled/disabled entries, exact-duplicate provenance, acknowledged and unacknowledged quarantine items, and deterministic count/diff inputs for the build report.
+- Produces `load_overrides(root: Path, schema_dir: Path) -> tuple[OverrideRecord, ...]`.
+- Produces `load_quarantine_acknowledgements(root: Path, schema_dir: Path) -> tuple[QuarantineAcknowledgement, ...]`.
+- Produces `build_catalog(skills: Sequence[ParsedSkill], quarantine: Sequence[QuarantineItem], overrides: Sequence[OverrideRecord], acknowledgements: Sequence[QuarantineAcknowledgement], source_priorities: Mapping[str, int]) -> CatalogBuild`.
+
+- [ ] **Step 1: Write failing override and deduplication tests**
+
+```python
+class CatalogTests(TestCase):
+    def test_exact_duplicate_uses_higher_priority_canonical_entry(self) -> None:
+        result = build_catalog(
+            skills=(self.aggregate_copy, self.direct_copy),
+            quarantine=(),
+            overrides=(),
+            acknowledgements=(),
+            source_priorities={"aggregate": 50, "direct": 80},
+        )
+        self.assertEqual(len(result.entries), 1)
+        self.assertEqual(result.entries[0].source_id, "direct")
+        self.assertEqual(result.duplicate_sources[result.entries[0].skill_id], ("aggregate", "direct"))
+
+    def test_same_name_different_bundle_is_preserved(self) -> None:
+        result = build_catalog(
+            skills=(self.first_version, self.second_version),
+            quarantine=(),
+            overrides=(),
+            acknowledgements=(),
+            source_priorities={"first": 50, "second": 50},
+        )
+        self.assertEqual(len(result.entries), 2)
+```
+
+- [ ] **Step 2: Run tests and verify missing modules**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_overrides tests.skill_router.test_catalog -v`
+
+Expected: FAIL because override and catalog modules do not exist.
+
+- [ ] **Step 3: Implement reviewed Override application**
+
+Allow only `aliases`, `tags`, `dependencies`, `conflicts`, `status`, `activation_policy`, `repeatable`, `canonical_skill_id`, and `corrections`. A correction may target only `name`, `description`, or `scope_summary` and must contain the replacement value, evidence path/URL, reason, and review date. Default `repeatable` to false; setting it true requires evidence that repeating the workflow in one route chain is safe and meaningful. Reject unknown Skill IDs, duplicate override fields, unqualified dependency IDs, corrections without evidence, and auto-generated changes without a committed Override file.
+
+- [ ] **Step 4: Implement Quarantine acknowledgement matching**
+
+For Schema v1, match only `source_id`, stable relative Skill path, exact error code, exact immutable parent source revision, and—when the path belongs to a submodule—exact submodule path and commit. Do not support wildcards, revision prefixes, open-ended ranges, or branch names in v1. An acknowledgement for a different path, code, parent revision, or submodule revision must not suppress a new error; broader revision semantics require a future Schema version and migration.
+
+- [ ] **Step 5: Implement catalog construction and canonicalization**
+
+Generate `skill_id` as `<source_id>:<POSIX-directory-containing-SKILL.md>` (`<source_id>:.` for a source-root Skill); never derive identity from the public `name`. Create one `CatalogEntry` per valid Skill, retain disabled entries for reporting but exclude them from retrieval, fold equal `bundle_hash` enabled entries, select explicit canonical entries first and then highest source priority, and preserve all same-name/different-bundle entries. Reject missing or cyclic canonical targets and any explicit canonical relation whose bundle hashes differ. Sort all outputs by stable ID/path. Unacknowledged quarantine items make the candidate build ineligible for publication; exact acknowledgements retain the quarantine evidence and change only gate status.
+
+- [ ] **Step 6: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_overrides tests.skill_router.test_catalog -v`
+
+Expected: Override, acknowledgement, duplicate, same-name, disabled, and canonical tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 7: Commit Task 4**
+
+```bash
+git add skill_router/overrides.py skill_router/catalog.py tests/skill_router tests/fixtures/skill_router/overrides
+git commit -m "feat: normalize and deduplicate skill catalog"
+```
+
+---
+
+### Task 5: Transactional Build, Public Export, and Rollback
+
+**Files:**
+- Create: `skill_router/publishing.py`
+- Create: `skill-system/schemas/active-pointer.schema.json`
+- Create: `skill-system/schemas/build-report.schema.json`
+- Create: `tests/skill_router/test_publishing.py`
+- Modify: `.gitignore`
+- Create: `skill-system/generated/.gitkeep`
+- Create: `skill-system/state/.gitkeep`
+- Create: `skill-system/cache/.gitkeep`
+
+**Interfaces:**
+- Consumes: `CatalogBuild`, a complete candidate source lock, deterministic generator/Schema versions, and optional already-built extra artifacts. High-level source/discovery/index orchestration is intentionally deferred to Task 11.
+- Produces `BuildReport`, `StagedVersion`, and `PublishedVersion`.
+- Produces `stage_version(catalog: CatalogBuild, source_lock: Sequence[SourceLockEntry], system_root: Path, extra_artifacts: Mapping[str, bytes] | None = None, required_artifacts: Sequence[str] = ()) -> StagedVersion`.
+- Produces `publish_version(version: StagedVersion, system_root: Path) -> PublishedVersion`.
+- Produces `rollback(version_id: str, system_root: Path) -> None`.
+- Active pointer format: `skill-system/state/active.json` with `build_id`, `version_path`, `catalog_hash`, and non-reproducible `activated_at`; readers treat the pointed version directory as the only coherent active lock/catalog/index set.
+
+- [ ] **Step 1: Write failing transactional publishing tests**
+
+```python
+class PublishingTests(TestCase):
+    def test_failed_candidate_does_not_replace_active_pointer(self) -> None:
+        publish_version(self.good_version, self.system_root)
+        before = (self.system_root / "state/active.json").read_bytes()
+        with self.assertRaises(PublishError):
+            publish_version(self.invalid_version, self.system_root)
+        self.assertEqual((self.system_root / "state/active.json").read_bytes(), before)
+
+    def test_rollback_restores_complete_previous_version(self) -> None:
+        publish_version(self.first_version, self.system_root)
+        publish_version(self.second_version, self.system_root)
+        rollback(self.first_version.build_id, self.system_root)
+        active = json.loads((self.system_root / "state/active.json").read_text())
+        self.assertEqual(active["build_id"], self.first_version.build_id)
+```
+
+- [ ] **Step 2: Run test and verify missing publisher**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_publishing -v`
+
+Expected: FAIL because `skill_router.publishing` does not exist.
+
+- [ ] **Step 3: Implement deterministic version artifacts**
+
+Build first under a unique staging directory, then move a validated candidate to `skill-system/state/versions/<build-id>/`. Write `sources.lock.json`, `catalog.jsonl`, `catalog-summary.md`, `quarantine.json`, `build-report.json`, a manifest of relative artifact paths/hashes/required flags, and supplied extra artifacts with canonical ordering and final newlines. Reject absolute or escaping extra-artifact paths. Validate the machine-readable report against `build-report.schema.json`. Derive `build-id` from source lock hash, catalog hash, quarantine/Override inputs, manifest/artifact hashes, generator version, and Schema version rather than wall-clock time. No version artifact may contain a current timestamp; identical inputs must produce byte-identical version artifacts. Task 6 supplies serialized index artifacts and Task 11 requires them when composing the complete version.
+
+- [ ] **Step 4: Implement active pointer and rollback**
+
+Validate every candidate artifact, required-artifact presence, and cross-file hash before writing an active pointer that passes `active-pointer.schema.json` to `active.json.tmp`, flush and `fsync` the file, use `os.replace()` for the active pointer, and `fsync` its parent directory where supported. Rollback must point only to an existing validated complete version and then regenerate every public export, including `sources.lock.json`, from that version. A failure before pointer replacement leaves the previous active version untouched; a post-pointer export interruption is reported as `public_export_stale` and repaired deterministically from the active version.
+
+- [ ] **Step 5: Implement deterministic public export**
+
+Export current human- and AI-readable artifacts to `skill-system/generated/` and copy the active version lock to `skill-system/sources.lock.json` using sibling temp files and `os.replace()`. Add a header to text exports containing generator version, build ID, source-lock hash, and `DO NOT EDIT: generated file`. Public exports are mirrors; runtime readers always resolve `state/active.json` and verify the pointed version.
+
+- [ ] **Step 6: Update ignore rules**
+
+Add:
+
+```gitignore
+skill-system/cache/**
+!skill-system/cache/.gitkeep
+skill-system/state/**
+!skill-system/state/.gitkeep
+skill-system/generated/index/**
+```
+
+Keep public JSON/Markdown exports and `sources.lock.json` versioned.
+
+- [ ] **Step 7: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_publishing -v`
+
+Expected: failure, success, byte-identical repeat-build, active-pointer, stale-public-export repair, complete lock/catalog rollback, and rollback tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 8: Commit Task 5**
+
+```bash
+git add .gitignore skill_router/publishing.py skill-system/schemas/active-pointer.schema.json skill-system/schemas/build-report.schema.json skill-system/generated/.gitkeep skill-system/state/.gitkeep skill-system/cache/.gitkeep tests/skill_router/test_publishing.py
+git commit -m "feat: publish skill catalogs transactionally"
+```
+
+---
+
+### Task 6: Lexical, Semantic, and Hybrid Retrieval
+
+**Files:**
+- Create: `skill_router/index.py`
+- Create: `skill-system/schemas/index.schema.json`
+- Create: `tests/skill_router/test_index.py`
+
+**Interfaces:**
+- Consumes: enabled canonical `CatalogEntry` records, `CandidateScore`, and `SearchResult`.
+- Produces `tokenize(text: str) -> tuple[str, ...]`.
+- Produces `LexicalIndex.build(entries: Sequence[CatalogEntry]) -> LexicalIndex` and `.search(query: str, limit: int) -> tuple[CandidateScore, ...]`.
+- Produces `SemanticProvider` protocol with immutable `provider_id`, `model_revision`, `dimension`, and `embed(texts: Sequence[str]) -> Sequence[Sequence[float]]`.
+- Produces `SemanticIndex.build(entries: Sequence[CatalogEntry], provider: SemanticProvider) -> SemanticIndex`.
+- Produces `HybridIndex(lexical: LexicalIndex, semantic: SemanticIndex | None)` and `.search(query: str, limit: int = 12) -> SearchResult`.
+- Produces `serialize_index(index: HybridIndex) -> Mapping[str, object]` and `load_index(document: Mapping[str, object], provider: SemanticProvider | None = None) -> HybridIndex` with deterministic JSON-compatible data validated against `index.schema.json`.
+
+- [ ] **Step 1: Write failing retrieval tests**
+
+```python
+class IndexTests(TestCase):
+    def test_lexical_search_matches_exact_technical_terms(self) -> None:
+        index = LexicalIndex.build(self.entries)
+        results = index.search("SocVersion DAV_3510", limit=3)
+        self.assertEqual(results[0].skill_id, "local:npu-arch-capability-check")
+
+    def test_hybrid_search_uses_lexical_when_semantic_is_unavailable(self) -> None:
+        index = HybridIndex(LexicalIndex.build(self.entries), semantic=None)
+        result = index.search("检查 NPU 架构能力", limit=3)
+        self.assertEqual(result.candidates[0].skill_id, "local:npu-arch-capability-check")
+        self.assertEqual(result.modes, ("lexical",))
+```
+
+- [ ] **Step 2: Run tests and verify missing index**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_index -v`
+
+Expected: FAIL because `skill_router.index` does not exist.
+
+- [ ] **Step 3: Implement deterministic multilingual tokenization**
+
+Normalize Unicode with NFKC, lowercase Latin text, retain technical tokens containing `_`, `-`, `+`, and `.`, and emit overlapping CJK bigrams in addition to complete contiguous CJK strings. Sort no tokens; preserve query and document occurrence order.
+
+- [ ] **Step 4: Implement lexical scoring**
+
+Build a BM25-style index over weighted fields: name 4.0, aliases 3.0, description 2.0, tags 2.0, `scope_summary` 2.0, and remaining normalized metadata 1.0. Exclude disabled, quarantined, and non-canonical duplicate entries before indexing. Resolve equal scores by `skill_id` for deterministic output.
+
+- [ ] **Step 5: Implement optional semantic index and reciprocal-rank fusion**
+
+Persist normalized vectors only when a provider is configured. Validate provider identity, model revision, vector dimension, finite numeric values, and deterministic cache keys based on provider revision plus catalog content hashes. Fuse lexical and semantic ranks with configurable weights and deterministic reciprocal-rank fusion. If provider construction or query embedding fails and semantic mode is optional, return lexical candidates in a `SearchResult` marked `degraded` with a stable non-secret diagnostic code. Serialize field weights, tokenization version, entry hashes, provider metadata, vectors, and fusion parameters so runtime loading never silently rebuilds a different index. A provider revision change invalidates the semantic cache and changes the build ID.
+
+- [ ] **Step 6: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_index -v`
+
+Expected: exact-term, Chinese alias, deterministic tie, semantic fusion, invalid-vector, and fallback tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 7: Commit Task 6**
+
+```bash
+git add skill_router/index.py skill-system/schemas/index.schema.json tests/skill_router/test_index.py
+git commit -m "feat: add hybrid skill retrieval"
+```
+
+---
+
+### Task 7: Candidate Inspection and Model Selection Contract
+
+**Files:**
+- Create: `skill_router/selector.py`
+- Create: `skill-system/router-instructions.md`
+- Create: `tests/skill_router/test_selector.py`
+
+**Interfaces:**
+- Consumes: `CatalogEntry`, `CandidateScore`, `SelectionItem`, `SelectionResult`, `SkillLoader.inspect()` from Task 8 through a `SkillInspector` protocol.
+- Produces `CandidateInspection` and `SelectionRequest`.
+- Produces `prepare_selection_request(task: str, candidates: Sequence[CandidateScore], catalog: Mapping[str, CatalogEntry], inspector: SkillInspector, inspect_limit: int = 5, dependency_limit: int = 12) -> SelectionRequest`.
+- Produces `render_selector_prompt(request: SelectionRequest) -> str`; serialized requests validate against `selection-request.schema.json`.
+- Produces `validate_selection_response(document: Mapping[str, object], request: SelectionRequest, schema_dir: Path) -> SelectionResult`.
+
+- [ ] **Step 1: Write failing selection-contract tests with a fake inspector**
+
+```python
+class SelectorTests(TestCase):
+    def test_response_cannot_select_skill_outside_candidates(self) -> None:
+        request = self.make_request(candidate_ids=("local:one",))
+        response = {
+            "decision": "selected",
+            "skills": [{"skill_id": "local:other", "role": "primary", "order": 1, "reason": "wrong"}],
+            "confidence": "high",
+            "clarification": None,
+        }
+        with self.assertRaisesRegex(SelectionValidationError, "selection.unknown_candidate"):
+            validate_selection_response(response, request, self.schema_dir)
+
+    def test_no_match_requires_empty_skills(self) -> None:
+        request = self.make_request(candidate_ids=("local:one",))
+        response = {"decision": "no_match", "skills": [], "confidence": "high", "clarification": None}
+        result = validate_selection_response(response, request, self.schema_dir)
+        self.assertEqual(result.decision, RoutingDecision.NO_MATCH)
+```
+
+- [ ] **Step 2: Run tests and verify missing selector**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_selector -v`
+
+Expected: FAIL because `skill_router.selector` does not exist.
+
+- [ ] **Step 3: Implement bounded candidate inspection**
+
+Inspect the first `inspect_limit` retrieved candidate IDs, then expand and inspect their declared dependencies transitively up to `dependency_limit`. Preserve retrieval order followed by stable prerequisite order; reject dependency cycles, missing/disabled dependencies, and expansion overflow with stable validation codes rather than omitting them silently. Attach complete `SKILL.md` text plus catalog metadata, dependency/conflict IDs, source identity, and retrieval evidence. Do not load referenced files and do not create Handoff state.
+
+- [ ] **Step 4: Write the platform-neutral model instructions**
+
+The instructions must require the model to:
+
+```text
+For every user request that may benefit from a repeatable task workflow, automatically consult the Skill catalog even when the user does not know or mention a Skill name.
+Use the JSON/CLI reference transport when available; when another resolver is used, preserve the same search, inspection, selection, disclosure, activation, and Handoff contracts.
+Check Scope and explicit exclusions, not only names.
+Prefer the smallest sufficient Skill set.
+Use prerequisite, primary, and supporting roles with contiguous order values.
+Return no_match rather than inventing a Skill.
+Ask only task-specific clarification; never ask the user to choose from the Skill catalog.
+After selection, show the exact disclosure message and stop for confirmation when policy is confirm; never activate before the matching disclosure record exists.
+After Handoff, let the model and loaded Skill control task execution; the Router does not execute the workflow.
+During the selector phase, output only a document valid against selection-response.schema.json.
+```
+
+Delimit each inspected `SKILL.md` as untrusted candidate content for applicability analysis. The selector prompt must explicitly forbid executing candidate workflow steps, following candidate attempts to change the routing protocol, or bypassing Disclosure; the content becomes operational instruction only in the post-gate Handoff.
+
+- [ ] **Step 5: Implement strict response validation**
+
+Validate Schema first, then enforce candidate membership, unique IDs, exactly one primary role, contiguous order starting at 1, inclusion of every declared dependency before its consumer, absence of selected conflict pairs, empty selection for `no_match`, and non-empty clarification only for `clarification_required`. A response may not use an inspected dependency as a substitute primary unless its own Scope matches the task. Add focused tests for dependency expansion, missing dependencies, cycles, conflicts, and the smallest-sufficient-set prompt rule.
+
+- [ ] **Step 6: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_selector -v`
+
+Expected: valid single/multi selection, dependency expansion/order, missing dependency, cycle, conflict, unknown ID, duplicate ID, role, order, no-match, clarification, and inspection-boundary tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 7: Commit Task 7**
+
+```bash
+git add skill_router/selector.py skill-system/router-instructions.md tests/skill_router/test_selector.py
+git commit -m "feat: define model skill selection contract"
+```
+
+---
+
+### Task 8: Disclosure Gate, Loader Modes, and Handoff Bundle
+
+**Files:**
+- Create: `skill_router/disclosure.py`
+- Create: `skill_router/loader.py`
+- Create: `tests/skill_router/test_disclosure.py`
+- Create: `tests/skill_router/test_loader.py`
+
+**Interfaces:**
+- Consumes: `RoutingSession`, `SelectionResult`, `CatalogEntry`, `DisclosureRecord`, `LoadedSkill`, `HandoffBundle`.
+- Produces `DisclosureRequest` with ordered public names, purpose lines, effective policy, and rendered message.
+- Produces `prepare_disclosure(session: RoutingSession, selection: SelectionResult, catalog: Mapping[str, CatalogEntry]) -> DisclosureRequest`.
+- Produces `begin_disclosure(request: DisclosureRequest) -> DisclosureRecord` in `pending` state.
+- Produces `record_disclosure(record: DisclosureRecord, status: DisclosureStatus, actor: str, presented_message_hash: str) -> DisclosureRecord`.
+- Produces `SkillLoader.inspect(entry: CatalogEntry) -> CandidateInspection`.
+- Produces `SkillLoader.activate(entry: CatalogEntry, disclosure: DisclosureRecord) -> LoadedSkill`.
+- Produces `build_handoff(task: str, selection: SelectionResult, disclosure: DisclosureRecord, loaded: Sequence[LoadedSkill]) -> HandoffBundle`.
+
+- [ ] **Step 1: Write failing disclosure and activation tests**
+
+```python
+class DisclosureTests(TestCase):
+    def test_notify_message_names_skills_in_execution_order(self) -> None:
+        request = prepare_disclosure(self.session, self.selection, self.catalog)
+        self.assertIn("first-skill", request.message)
+        self.assertLess(request.message.index("first-skill"), request.message.index("second-skill"))
+
+    def test_confirm_skill_cannot_activate_while_pending(self) -> None:
+        record = begin_disclosure(self.confirm_request)
+        with self.assertRaisesRegex(DisclosureError, "disclosure.confirmation_required"):
+            self.loader.activate(self.confirm_entry, record)
+```
+
+- [ ] **Step 2: Run tests and verify missing modules**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_disclosure tests.skill_router.test_loader -v`
+
+Expected: FAIL because disclosure and loader modules do not exist.
+
+- [ ] **Step 3: Implement disclosure policy aggregation and messages**
+
+Use `confirm` if any selected Skill requires confirmation; otherwise use `notify`. Render every public Skill name, one-sentence selection reason, execution order, and whether approval is required. Same-name Skills in one selection must append `[source_id]`. Compute a canonical `selection_hash` from session ID, task hash, ordered IDs/roles/reasons, and policy, plus a `message_hash` from the exact rendered disclosure text.
+
+- [ ] **Step 4: Implement disclosure state transitions**
+
+Allow:
+
+```text
+notify: pending -> notified
+confirm: pending -> confirmed
+confirm: pending -> rejected
+```
+
+Reject `notify -> confirmed`, `confirm -> notified`, transitions after `rejected`, records that omit or reorder a selected Skill ID, mismatched selection/message hashes, and disclosure records reused across sessions. For `notified`, require actor `assistant` after the exact message was presented; for `confirmed` or `rejected`, require actor `user` and an explicit user decision supplied by the caller. This is an auditable platform-neutral contract, not a claim that the core can inspect a UI.
+
+- [ ] **Step 5: Implement Loader `inspect` and `activate` modes**
+
+`inspect` reads and verifies only the `SKILL.md` `content_hash`. `activate` requires a disclosure record bound to the exact current selection, verifies source and submodule revisions, `content_hash`, and `bundle_hash`, loads ordered explicit references within limits, and returns immutable `LoadedSkill` content. UTF-8 resources remain text; other resources use deterministic base64 plus media type. Neither mode executes scripts, imports code, follows network URLs, or mutates the source checkout.
+
+- [ ] **Step 6: Implement Handoff validation**
+
+Build ordered Handoff JSON only when all selected Skills loaded, hashes match, and disclosure is `notified` or `confirmed` according to policy. Include the verified `SKILL.md` text and loaded resource payloads for each selected Skill, together with IDs, revisions, roles, order, and hashes. Validate the serialized bundle against `handoff.schema.json`; never return a partial bundle.
+
+- [ ] **Step 7: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_disclosure tests.skill_router.test_loader -v`
+
+Expected: notify, confirm, reject, actor, selection/message binding, cross-session replay rejection, order, same-name, tampered revision/hash, partial load, binary encoding, no-execution, and self-contained Handoff tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 8: Commit Task 8**
+
+```bash
+git add skill_router/disclosure.py skill_router/loader.py tests/skill_router/test_disclosure.py tests/skill_router/test_loader.py
+git commit -m "feat: gate and load selected skills"
+```
+
+---
+
+### Task 9: Routing Session, Rejection, Bounded Rerouting, and Model-Facing CLI
+
+**Files:**
+- Create: `skill_router/router.py`
+- Create: `skill_router/cli.py`
+- Create: `skill_router/__main__.py`
+- Create: `skill-system/schemas/route-outcome.schema.json`
+- Create: `tests/skill_router/test_router.py`
+- Create: `tests/skill_router/test_cli.py`
+
+**Interfaces:**
+- Consumes: catalog, index, selector contract, disclosure, loader, `RoutingSession`.
+- Produces `RouteStatus` and `RouteOutcome`; every outcome contains the updated `session` plus only the candidates, selection request, disclosure request, or Handoff appropriate for its status.
+- Produces `SkillRouter.start(task: str) -> RouteOutcome`.
+- Produces `SkillRouter.apply_selection(session: RoutingSession, response: Mapping[str, object]) -> RouteOutcome`.
+- Produces `SkillRouter.record_disclosure(session: RoutingSession, status: DisclosureStatus, actor: str, presented_message_hash: str) -> RouteOutcome`.
+- Produces `SkillRouter.activate(session: RoutingSession) -> RouteOutcome`.
+- Produces `SkillRouter.reroute(subtask: str, session: RoutingSession, completed_skill_ids: Sequence[str] = ()) -> RouteOutcome`.
+- CLI commands: `search`, `prepare`, `select`, `disclose`, `activate`, `reroute`, each returning JSON on stdout and errors on stderr.
+
+- [ ] **Step 1: Write failing route-state and rejection tests**
+
+```python
+class RouterTests(TestCase):
+    def test_rejected_skill_is_excluded_from_reroute(self) -> None:
+        started = self.router.start("inspect environment")
+        selected = self.router.apply_selection(started.session, self.select_first)
+        rejected = self.router.record_disclosure(
+            selected.session,
+            DisclosureStatus.REJECTED,
+            actor="user",
+            presented_message_hash=selected.disclosure.message_hash,
+        )
+        rerouted = self.router.reroute("inspect environment", rejected.session)
+        self.assertNotIn("local:first", [item.skill_id for item in rerouted.candidates])
+
+    def test_repeated_state_stops_before_maximum_depth(self) -> None:
+        session = self.make_repeated_session(depth=2)
+        outcome = self.router.reroute("same subtask", session)
+        self.assertEqual(outcome.status, RouteStatus.LOOP_STOPPED)
+```
+
+- [ ] **Step 2: Run tests and verify missing router**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_router tests.skill_router.test_cli -v`
+
+Expected: FAIL because Router and CLI modules do not exist.
+
+- [ ] **Step 3: Implement explicit route state transitions**
+
+Support only:
+
+```text
+new -> candidates_ready
+candidates_ready -> selection_ready | no_match | clarification_required
+selection_ready -> disclosure_pending
+disclosure_pending -> disclosure_complete | rejected
+disclosure_complete -> handoff_ready
+rejected -> candidates_ready | no_match
+handoff_ready -> candidates_ready for a new bounded subtask
+```
+
+Persist original task, current subtask, selected/completed/rejected IDs, visited state hashes, and depth. Default maximum reroute depth is 4 and configurable. Because execution happens outside the Router, accept completed IDs only as explicit caller input to `reroute`; validate they were in the latest `handoff_ready` selection before adding them to session state.
+
+`apply_selection` must stop at `disclosure_pending` and return the exact disclosure message plus `display_to_user` or `ask_user_confirmation` as the next action. `activate` must reject every session that has not recorded the matching notification or confirmation; there is no combined select-and-activate shortcut.
+
+- [ ] **Step 4: Implement route filtering and bounded rerouting**
+
+Exclude disabled, quarantined, canonical duplicates, rejected IDs, and already completed Skills that are not repeatable. Hash `(subtask, selected, completed, rejected)` to detect loops before incrementing depth.
+
+- [ ] **Step 5: Implement model-facing JSON CLI commands**
+
+Examples:
+
+```bash
+python -m skill_router search --task "检查昇腾环境" --limit 12
+python -m skill_router prepare --task "检查昇腾环境" --session-out /tmp/skill-session.json
+python -m skill_router select --session /tmp/skill-session.json --response /tmp/selection.json
+python -m skill_router disclose --session /tmp/skill-session.json --status notified --actor assistant --message-hash <hash-from-select-output>
+python -m skill_router activate --session /tmp/skill-session.json
+python -m skill_router reroute --session /tmp/skill-session.json --subtask "验证新的独立问题" --completed <skill-id>
+```
+
+For a confirmation decision, use `--status confirmed|rejected --actor user` only after the caller has captured explicit user input. Every command must emit a document valid against `route-outcome.schema.json` with `schema_version`, stable `status`, and next required action. Validate session JSON against `routing-session.schema.json` before every transition. It must never print credentials or full external repository paths in user-facing disclosure messages.
+
+- [ ] **Step 6: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_router tests.skill_router.test_cli -v`
+
+Expected: state transition, rejection, depth, loop, CLI JSON, stderr, and exit-code tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 7: Commit Task 9**
+
+```bash
+git add skill_router/router.py skill_router/cli.py skill_router/__main__.py skill-system/schemas/route-outcome.schema.json tests/skill_router/test_router.py tests/skill_router/test_cli.py
+git commit -m "feat: orchestrate automatic skill routing"
+```
+
+---
+
+### Task 10: Routing Evaluations, Regression Baseline, and Release Gates
+
+**Files:**
+- Create: `skill_router/evaluation.py`
+- Create: `skill-system/schemas/evaluation-report.schema.json`
+- Create: `skill-system/evals/routing-cases.yaml`
+- Create: `skill-system/evals/regression-baseline.json`
+- Create: `tests/skill_router/test_evaluation.py`
+- Create: `tests/fixtures/skill_router/evals/routing-cases.yaml`
+
+**Interfaces:**
+- Consumes: `RoutingCase`, `HybridIndex`, validated `SelectionResult` records.
+- Produces `RetrievalMetrics`, `SelectionMetrics`, `EvaluationReport`.
+- Produces `evaluate_retrieval(index: HybridIndex, cases: Sequence[RoutingCase], k: int = 10) -> RetrievalMetrics`.
+- Produces `evaluate_selections(cases: Sequence[RoutingCase], results: Mapping[str, SelectionResult]) -> SelectionMetrics`.
+- Produces `enforce_quality_gates(report: EvaluationReport, baseline: Mapping[str, object], profile: Literal["catalog", "production"]) -> None`.
+
+- [ ] **Step 1: Write failing metric and threshold tests**
+
+```python
+class EvaluationTests(TestCase):
+    def test_no_match_false_positive_rate(self) -> None:
+        metrics = evaluate_selections(self.cases, self.results_with_one_false_positive)
+        self.assertEqual(metrics.no_match_false_selection_rate, 0.5)
+
+    def test_release_gate_rejects_recall_below_threshold(self) -> None:
+        report = self.report(recall_at_10=0.94, top1=0.95, false_selection=0.0)
+        with self.assertRaisesRegex(PublishError, "quality.recall_at_10"):
+            enforce_quality_gates(report, self.baseline, profile="catalog")
+```
+
+- [ ] **Step 2: Run tests and verify missing evaluator**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_evaluation -v`
+
+Expected: FAIL because `skill_router.evaluation` does not exist.
+
+- [ ] **Step 3: Implement deterministic routing-case parsing**
+
+Require case ID, task, expected Skill IDs or allowed set, forbidden IDs, no-match flag, allowed order, and evidence terms. Validate against `routing-case.schema.json` and reject duplicate case IDs.
+
+- [ ] **Step 4: Implement metrics**
+
+Calculate Recall@10, Top-1, no-match false selection, forbidden selection, multi-Skill order, Disclosure completion, and selected-bundle load success. Use exact fractions and serialize rounded values only in a document validated against `evaluation-report.schema.json`; represent unavailable metrics with explicit status and `value: null`, never zero.
+
+- [ ] **Step 5: Implement baseline comparison and hard gates**
+
+Fail when absolute spec thresholds are missed or when any existing case changes from pass to fail without a reviewed baseline update. The `catalog` profile gates deterministic parse/load/disclosure contracts and Recall@10, allowing the catalog/index to become active while recording model-dependent metrics as `not_run`. The `production` profile additionally requires captured results from every selector adapter declared for deployment and enforces final Top-1, no-match false selection, forbidden selection, and multi-Skill order thresholds. Never interpret `not_run` as passed, and never describe a catalog-only publication as production-qualified.
+
+- [ ] **Step 6: Add fixture gold cases**
+
+Include positive local NPU architecture queries, ambiguous task clarification, a multi-Skill ordered case, and unrelated no-match queries. Include at least one Chinese paraphrase that uses no Skill name.
+
+- [ ] **Step 7: Run focused and full tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_evaluation -v`
+
+Expected: metric, threshold, baseline regression, missing adapter, and ordering tests PASS.
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 8: Commit Task 10**
+
+```bash
+git add skill_router/evaluation.py skill-system/schemas/evaluation-report.schema.json skill-system/evals tests/skill_router/test_evaluation.py tests/fixtures/skill_router/evals
+git commit -m "test: add skill routing quality gates"
+```
+
+---
+
+### Task 11: Maintenance CLI, Real Source Configuration, and End-to-End Build
+
+**Files:**
+- Modify: `skill_router/cli.py`
+- Modify: `skill_router/source_registry.py`
+- Modify: `skill_router/publishing.py`
+- Modify: `skill-system/sources.yaml`
+- Create: `skill-system/schemas/candidate-pointer.schema.json`
+- Create: `skill-system/overrides/ascend-agent-skills/metadata.yaml`
+- Create: `skill-system/overrides/cannbot/metadata.yaml`
+- Create: `tests/skill_router/test_end_to_end.py`
+- Create: `tests/fixtures/skill_router/aggregate-source/official/CANNBot/ops/duplicate/SKILL.md`
+- Create: `tests/fixtures/skill_router/direct-cannbot/ops/duplicate/SKILL.md`
+
+**Interfaces:**
+- Adds CLI commands: `validate`, `sync`, `build`, `status`, `eval`, `rollback`.
+- `validate` performs Schema and local-path checks without network.
+- `sync` resolves configured sources into `skill-system/state/candidates/<candidate-id>/`, where `candidate-id` is the candidate lock content hash, and writes its `sources.lock.json` only after all sources and configured submodules resolve. It then validates and atomically updates the small `skill-system/state/candidate.json` pointer against `candidate-pointer.schema.json`; it never edits the public active lock, and a partial candidate directory is never pointed to.
+- Produces high-level `stage_build(config_path: Path, candidate_lock_path: Path, workspace_root: Path, system_root: Path, semantic_provider: SemanticProvider | None = None) -> StagedVersion` by composing Tasks 2-6 and placing serialized indexes in the version. Candidate Git checkouts live at sibling `sources/<source-id>/` paths derived from the candidate lock location; the lock itself contains no machine-specific absolute paths. The build requires at least `index/manifest.json` and `index/lexical.json`; semantic artifacts are required only when the configured semantic mode is mandatory. It materializes exactly the candidate lock commits and never re-resolves floating revisions during build; a changed local-source fingerprint invalidates the candidate lock and requires another `sync`.
+- `build --check` creates and verifies a staged version without publishing.
+- `build --publish` publishes only after the `catalog` quality profile passes; it records production qualification separately.
+- `status` reports active, previous, stale, degraded, quarantine, public-export consistency, and `production_qualification: passed|failed|not_run` state.
+
+- [ ] **Step 1: Write failing end-to-end fixture test**
+
+```python
+class EndToEndTests(TestCase):
+    def test_additional_skill_is_discovered_without_router_change(self) -> None:
+        first = self.build_fixture_catalog()
+        self.add_skill("new-skill", "Use when checking a new subsystem.")
+        second = self.build_fixture_catalog()
+        self.assertNotIn("fixture:new-skill", {entry.skill_id for entry in first.entries})
+        self.assertIn("fixture:new-skill", {entry.skill_id for entry in second.entries})
+
+    def test_aggregate_cannbot_copy_is_excluded(self) -> None:
+        result = self.build_aggregate_and_direct_sources()
+        matches = [entry for entry in result.entries if entry.name == "duplicate"]
+        self.assertEqual([entry.source_id for entry in matches], ["cannbot"])
+```
+
+- [ ] **Step 2: Run test and verify CLI gaps**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_end_to_end -v`
+
+Expected: FAIL because maintenance commands and complete build orchestration are missing.
+
+- [ ] **Step 3: Implement maintenance commands with stable exit codes**
+
+Use exit code 0 for success, 2 for configuration/validation failure, 3 for source sync failure, 4 for quality gate failure, and 5 for publish/rollback failure. JSON reports go to stdout; diagnostic text goes to stderr.
+
+- [ ] **Step 4: Configure the three initial sources**
+
+Configure:
+
+```yaml
+sources:
+  - source_id: local-aikg
+    type: local
+    location: skills
+    enabled: true
+    priority: 100
+  - source_id: ascend-agent-skills
+    type: git
+    location: https://gitcode.com/Ascend/agent-skills.git
+    revision: master
+    submodules: recursive
+    enabled: true
+    priority: 50
+    exclude:
+      - official/CANNBot/**
+  - source_id: cannbot
+    type: git
+    location: https://gitcode.com/cann/cannbot-skills.git
+    revision: master
+    enabled: true
+    priority: 80
+```
+
+The generated lock must replace both `master` references with immutable commits and record the aggregate repository's initialized submodule commits. The `official/CANNBot/**` exclude prevents its content from entering discovery while the direct `cannbot` source remains canonical; the direct source's lock is independent of the aggregate gitlink.
+
+- [ ] **Step 5: Add reviewed aliases and activation policies only where needed**
+
+Keep upstream names and descriptions unchanged. Add Chinese aliases only for high-value initial routing cases that otherwise miss lexical retrieval. Do not invent dependencies or confirmation policies without evidence from the Skill or a documented local policy.
+
+- [ ] **Step 6: Run fixture end-to-end tests**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_end_to_end -v`
+
+Expected: new-Skill discovery, aggregate exclusion, same-name preservation, staged failure, publish, and rollback tests PASS without network.
+
+- [ ] **Step 7: Resolve real source locks and build the real catalog**
+
+Run: `.venv/bin/python -m skill_router validate`
+
+Expected: source configuration and local files validate.
+
+Run: `.venv/bin/python -m skill_router sync`
+
+Expected: both GitCode sources and aggregate submodules resolve to immutable commits, a complete versioned candidate directory is written, and `skill-system/state/candidate.json` changes only after all succeed; `skill-system/sources.lock.json` remains unchanged.
+
+Run: `.venv/bin/python -m skill_router build --check`
+
+Expected: staged catalog, deduplication report, quarantine report, and indexes validate without changing active state.
+
+Review every new Quarantine item. Fix a local error, add an exact reviewed acknowledgement, or disable the affected entry; never use a wildcard acknowledgement.
+
+Run: `.venv/bin/python -m skill_router build --publish`
+
+Expected: the catalog profile gates pass, the active pointer switches to the complete lock/catalog/index version, and public mirrors update coherently. If no evaluated model selector adapter is configured, status must say `production_qualification: not_run`; this is a usable catalog publication but must not be represented as a production-qualified routing release.
+
+If selector-adapter results are available, run `.venv/bin/python -m skill_router eval --strict --profile production --selection-results <reviewed-results.json>` and require the production profile before claiming end-to-end model selection quality. The core does not call a platform or model API to manufacture this evidence.
+
+- [ ] **Step 8: Run the complete suite**
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures.
+
+- [ ] **Step 9: Commit Task 11**
+
+```bash
+git add skill_router/cli.py skill_router/source_registry.py skill_router/publishing.py skill-system/sources.yaml skill-system/sources.lock.json skill-system/schemas/candidate-pointer.schema.json skill-system/overrides skill-system/generated tests/skill_router/test_end_to_end.py tests/fixtures/skill_router/aggregate-source tests/fixtures/skill_router/direct-cannbot
+git commit -m "feat: onboard extensible skill sources"
+```
+
+---
+
+### Task 12: Newcomer and AI Maintenance Documentation plus LLM Index Integration
+
+**Files:**
+- Create: `skill-system/README.md`
+- Create: `docs/11-knowledge-index/skill-routing-system.md`
+- Create: `docs/11-knowledge-index/skill-maintenance-runbook.md`
+- Modify: `README.md`
+- Modify: `skills/README.md`
+- Modify: `AI_CONTINUATION_GUIDE.md`
+- Modify: `docs/11-knowledge-index/index.md`
+- Modify: `docs/knowledge-map.md`
+- Modify: `mkdocs.yml`
+- Modify: `scripts/generate_llms_files.py`
+- Create: `tests/skill_router/test_llms_integration.py`
+
+**Interfaces:**
+- Consumes: generated catalog and router instructions.
+- Produces dynamic Skill sections in `llms.txt` and compact catalog/protocol sections in `llms-full.txt`.
+- Produces complete human/AI procedures for add, update, disable, override, evaluate, publish, troubleshoot, and rollback.
+- Changes generator interfaces to `build_llms_txt(paths: list[str], catalog: list[dict[str, object]]) -> str` and `build_llms_full(paths: list[str], catalog: list[dict[str, object]], local_skill_paths: list[str]) -> str`.
+
+- [ ] **Step 1: Write failing LLM-index integration tests**
+
+```python
+class LLMIndexIntegrationTests(TestCase):
+    def test_llms_txt_contains_routing_protocol_before_skill_catalog(self) -> None:
+        text = build_llms_txt(self.docs, self.catalog_entries)
+        self.assertLess(text.index("## Skill Routing Protocol"), text.index("## Skill Catalog"))
+
+    def test_external_skill_bodies_are_not_inlined_in_full_dump(self) -> None:
+        text = build_llms_full(self.docs, self.catalog_entries, self.local_skill_paths)
+        self.assertIn("cannbot:ops/ascendc-env-check", text)
+        self.assertNotIn(self.external_skill_full_body, text)
+```
+
+- [ ] **Step 2: Run test and verify static index behavior fails**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_llms_integration -v`
+
+Expected: FAIL because `generate_llms_files.py` still expects `PRIORITY_SKILLS` and inlines discovered local Skill bodies directly.
+
+- [ ] **Step 3: Implement dynamic catalog loading in the generator**
+
+Add:
+
+```python
+def catalog_entries(catalog_path: Path) -> list[dict[str, object]]:
+    if not catalog_path.exists():
+        return []
+    entries = [json.loads(line) for line in catalog_path.read_text(encoding="utf-8").splitlines() if line]
+    return sorted(entries, key=lambda item: str(item["skill_id"]))
+```
+
+Remove `PRIORITY_SKILLS`; catalog order is the stable generated order and routing quality must not depend on a hand-maintained list. Derive `local_skill_paths` only from enabled canonical catalog entries whose source is `local-aikg`, then verify each resolved path remains under the repository `skills/` root. Generate a routing-protocol section before the compact catalog. Keep those local Skill bodies available as current repository sources; list external Skill IDs, names, descriptions, scope summaries, locked parent/submodule revisions, and the model-facing `prepare` resolver command without inlining every external body. Fail with a clear message if an active catalog exists but is malformed; an entirely absent catalog may generate a documented empty catalog during first-time bootstrap only.
+
+- [ ] **Step 4: Write the architecture guide and exact maintenance Runbook**
+
+Every Runbook scenario must contain these literal headings:
+
+```text
+目的
+前置条件
+允许修改的文件
+禁止修改的文件
+精确操作步骤
+成功时的预期输出
+失败原因与处理
+验证命令
+回滚方法
+提交前检查
+```
+
+Cover local Skill addition, external Source addition, source update, disable/restore/delete, Override, duplicates, Quarantine, index rebuild, routing evaluation, regression analysis, publish, and rollback. Include exact commands and exit-code meanings from Task 11.
+
+Start the Runbook with a newcomer quick start, glossary, source-of-truth table, generated-file table, decision tree for choosing a scenario, and a copy-paste AI maintainer prompt. The AI protocol must require: identify one primary Runbook scenario and any explicitly chained scenarios; list intended files before editing; stop on unknown Schema fields, unexplained generated diffs, new quarantine, or missing model evidence; run each scenario's focused checks and the global checks; compare the final diff against the combined allowlist; and report immutable source revisions and gate status without overstating `not_run` metrics.
+
+- [ ] **Step 5: Update AI continuation rules and all navigation entry points**
+
+Add explicit instructions that AI maintainers must read the design and Runbook, never edit generated/cache state, never hardcode Skill names, stop on ambiguity, run all gates, disclose selected Skill names, and preserve source locks. Add both documentation pages to the Knowledge Index nav and knowledge map.
+
+- [ ] **Step 6: Regenerate AI-readable indexes**
+
+Run: `.venv/bin/python scripts/generate_llms_files.py`
+
+Expected: root and `docs/` copies of `llms.txt` and `llms-full.txt` update consistently and include the routing protocol plus compact catalog.
+
+- [ ] **Step 7: Run documentation and integration checks**
+
+Run: `.venv/bin/python -m unittest tests.skill_router.test_llms_integration -v`
+
+Expected: routing protocol ordering, catalog inclusion, local body inclusion, external non-inlining, and stable path tests PASS.
+
+Run: `spec_site_dir=$(mktemp -d /tmp/aikg-skill-router-docs.XXXXXX) && .venv/bin/mkdocs build --strict --site-dir "$spec_site_dir"`
+
+Expected: MkDocs strict build exits 0.
+
+Run: `git diff --check`
+
+Expected: no whitespace errors.
+
+- [ ] **Step 8: Commit Task 12**
+
+```bash
+git add README.md skills/README.md AI_CONTINUATION_GUIDE.md docs/11-knowledge-index docs/knowledge-map.md mkdocs.yml scripts/generate_llms_files.py llms.txt llms-full.txt docs/llms.txt docs/llms-full.txt skill-system/README.md tests/skill_router/test_llms_integration.py
+git commit -m "docs: document automatic skill routing operations"
+```
+
+---
+
+### Task 13: Full Verification and Acceptance Evidence
+
+**Files:**
+- Modify only if verification exposes a concrete defect in files created by Tasks 1-12.
+
+**Interfaces:**
+- Consumes the complete implementation and acceptance scenarios from the design.
+- Produces fresh acceptance evidence in the implementation handoff containing command, exit code, test counts, source revisions, catalog counts, routing metrics, disclosure checks, build ID, and active version.
+
+- [ ] **Step 1: Run the full unit and contract suite**
+
+Run: `.venv/bin/python -m unittest discover -s tests -v`
+
+Expected: zero failures and zero errors.
+
+- [ ] **Step 2: Verify deterministic catalog generation**
+
+Run twice without source changes:
+
+```bash
+.venv/bin/python -m skill_router build --check --report /tmp/skill-build-first.json
+.venv/bin/python -m skill_router build --check --report /tmp/skill-build-second.json
+```
+
+Expected: both reports contain the same build ID, catalog hash, bundle counts, and source lock hash.
+
+- [ ] **Step 3: Run catalog and production qualification gates**
+
+Run: `.venv/bin/python -m skill_router eval --strict --profile catalog --report /tmp/skill-routing-eval.json`
+
+Expected: Recall@10 at least 0.95, forbidden deterministic contract violations 0, Disclosure completion 1.0, and selected-bundle load success 1.0. The report must explicitly mark model-dependent metrics `not_run` when no captured adapter results are supplied.
+
+When a selector adapter is part of the intended deployment, also run:
+
+```bash
+.venv/bin/python -m skill_router eval --strict --profile production --selection-results <reviewed-results.json> --report /tmp/skill-routing-production-eval.json
+```
+
+Expected: final Top-1 at least 0.90, no-match false selection at most 0.05, forbidden selection 0, and ordered multi-Skill cases pass for every declared deployment adapter. If these results are unavailable, core implementation can be complete and the catalog can be active, but the handoff must state `production_qualification: not_run`; it must not claim production model-selection quality.
+
+- [ ] **Step 4: Exercise disclosure and rejection acceptance cases**
+
+Run the CLI fixture sequence for one `notify` Skill, one `confirm` Skill, and one rejected Skill. Expected results:
+
+```text
+notify -> notified -> handoff_ready
+confirm -> pending -> confirmed -> handoff_ready
+confirm -> pending -> rejected -> reroute excludes rejected skill_id
+```
+
+- [ ] **Step 5: Exercise failure and rollback acceptance cases**
+
+Introduce a malformed Skill only inside a temporary fixture source, run `build --check`, verify exit code 2 or 4 and unchanged active build ID, then remove the temporary fixture. Publish a valid second fixture version, roll back to the first, and verify the lock, catalog, index, and active build ID all match the first version.
+
+- [ ] **Step 6: Regenerate indexes and build documentation**
+
+Run:
+
+```bash
+.venv/bin/python scripts/generate_llms_files.py
+final_site_dir=$(mktemp -d /tmp/aikg-skill-router-final.XXXXXX)
+.venv/bin/mkdocs build --strict --site-dir "$final_site_dir"
+git diff --check
+git status --short --branch
+```
+
+Expected: index generation exits 0, MkDocs exits 0, whitespace check is clean, and status contains only intended implementation artifacts plus the pre-existing untracked `sanitize-for-intranet.patch`.
+
+- [ ] **Step 7: Report acceptance evidence from fresh command outputs**
+
+In the implementation handoff, report exact command strings, exit codes, test totals, parent and submodule source commits, build ID, catalog enabled/disabled/quarantined/duplicate counts, catalog metrics, production qualification status and metrics when available, disclosure state results, rollback result, and documentation build result. Do not claim a gate passed without fresh output from Steps 1-6. If verification required a code or documentation fix, rerun the affected focused test and the complete suite, then commit only that focused fix before reporting.
+
+---
+
+## Execution Notes
+
+- Work task-by-task; do not start Task N+1 while Task N tests or review findings remain open.
+- Use a fresh failing test before each production behavior and retain that test as a regression guard.
+- Stage only the files named in the current task. Never stage `sanitize-for-intranet.patch`.
+- When a real GitCode sync requires network approval, request it directly for the exact Git operation; do not replace the source with an unverified copy.
+- If an upstream Skill fails validation, preserve the evidence in the build report and follow the exact Quarantine procedure instead of weakening global validation.
+- A model-specific selector adapter is optional in the platform-neutral core, but a production release cannot claim the model-dependent Top-1 gate until that adapter has supplied evaluated results.
+
+---
+
+# Document: 自动 Skill 发现、选择与按需加载系统设计
+
+Source: docs/superpowers/specs/2026-08-03-automatic-skill-routing-design.md
+URL: https://amoursec.github.io/superpowers/specs/2026-08-03-automatic-skill-routing-design/
+status: superseded
+owner: maintainers
+updated: 2026-08-03
+
+# 自动 Skill 发现、选择与按需加载系统设计
+
+> **[已取代 / SUPERSEDED]** 本设计描述的 `skill-system/` 大型架构（语义索引、事务化发布、模型质量门等）从未实现，也不在本项目计划内。当前唯一有效的 Skill 路由设计是 `automatic-skill-routing/AUTOMATIC_SKILL_ROUTING_DESIGN.md` 与 `automatic-skill-routing/skills-router/ROUTING_PROTOCOL.md`（仓库根相对路径，非本目录内链接）。本文仅作历史记录保留，勿据此实施。
+
+## 1. 摘要
+
+本设计为 AI Knowledge Graph 增加一层与模型、Agent 应用和 API 平台无关的 Skill 路由能力。用户只需描述任务，不需要预先知道有哪些 Skill。系统负责发现 Skill、检索候选、验证适用性、选择最小必要集合、向用户披露即将使用的 Skill 名称，然后按需加载完整 `SKILL.md` 及其明确引用的资源。完成交接后，具体追问、执行和验证由大模型与已选择的 Skill 共同处理。
+
+系统采用三级渐进式披露：
+
+1. 用轻量目录召回候选；
+2. 读取少量候选的完整 `SKILL.md`，验证适用范围；
+3. 向用户知会或请求确认后，加载最终 Skill 的必要资源并交给大模型。
+
+本设计把可扩展性和可维护性作为硬性约束：新增一个标准 Skill 不修改路由代码；新增一个 Skills 仓库只修改来源配置；文档、Schema、示例和测试共同定义维护契约；任何失败都不能发布半成品目录。
+
+## 2. 背景与现状
+
+当前仓库已经建立了清晰分层：
+
+- `docs/` 保存供人和 AI 检索的知识；
+- `skills/` 保存可重复执行的 AI 工作流；
+- `llms.txt` 和 `llms-full.txt` 提供 AI 可读入口；
+- `scripts/generate_llms_files.py` 生成 AI 索引；
+- `AI_CONTINUATION_GUIDE.md` 约束后续人工或 AI 维护行为。
+
+仓库已有 `skills/npu-arch-capability-check/SKILL.md` 样例，但 Skill 入口仍通过 `PRIORITY_SKILLS` 静态列举。这个方式适合少量本地 Skill，不适合接入 `Ascend/agent-skills`、`cann/cannbot-skills` 以及未来持续增长的第三方来源。系统需要从“静态列举 Skill”演进为“动态发现、标准化建库、检索选择、按需加载”。
+
+## 3. 目标
+
+系统必须满足以下目标：
+
+1. 用户不需要知道 Skill 名称，只需描述任务。
+2. 系统自动寻找、选择并使用合适的 Skill。
+3. 在实际启用具体 Skill 前，必须向用户披露 Skill 名称和用途；被标记为需要确认的 Skill 必须等待用户同意。
+4. 新增标准 `SKILL.md` 后，无需修改路由代码即可参与检索。
+5. 新增外部 Skills 仓库时，只需增加来源配置。
+6. 支持选择单个 Skill，也支持按明确顺序组合最小必要 Skill 集合。
+7. 支持关键词检索与语义检索；语义检索不可用时仍能降级工作。
+8. 对重复、同名、损坏、断链和版本漂移给出确定、可审计的处理结果。
+9. 构建、校验、评测和发布必须可重复、可回滚、可由新人或 AI 严格执行。
+10. 核心目录、选择与交接协议不绑定特定模型、Embedding 服务、Agent App 或工具调用框架。
+
+## 4. 非目标
+
+本阶段不负责：
+
+- 设计 Skill 内部的具体业务流程；
+- 代替 Skill 决定应该运行哪些命令或修改哪些文件；
+- 实现通用 Shell、文件、网络、NPU 或代码执行沙箱；
+- 统一所有第三方 Skill 的写作风格；
+- 把几百个完整 Skill 永久塞入每次模型上下文；
+- 要求用户从 Skill 列表中人工挑选；
+- 建设复杂的领域知识图谱或通用工作流编排语言。
+
+路由系统只负责发现、选择、披露、加载和交接。交接之后的执行行为由大模型、Skill、本地策略和实际运行环境共同决定。
+
+## 5. 术语
+
+| 术语 | 定义 |
+| --- | --- |
+| Source | 一个本地目录或固定版本的外部 Git 仓库，可能包含多个 Skill。 |
+| Skill | 以一个 `SKILL.md` 为入口的任务工作流目录。 |
+| Catalog Entry | 路由系统为一个 Skill 生成的规范化轻量记录。 |
+| Override | 不修改上游仓库、只在本仓补充或纠正 Skill 元数据的受控配置。 |
+| Source Lock | 记录每个来源实际解析到的不可变版本。 |
+| Candidate | 轻量检索召回、尚未最终启用的 Skill。 |
+| Selected Skill | 已通过完整 `SKILL.md` 适用性验证的 Skill。 |
+| Activation | 将已选 Skill 的指令交给大模型并开始遵循其工作流。 |
+| Disclosure Gate | Activation 前向用户披露 Skill 名称并按策略知会或请求确认。 |
+| Handoff | 路由器把原始任务、已选 Skill 和加载结果交给大模型。 |
+| Quarantine | Skill 存在格式、引用或完整性错误，暂不允许参与路由的状态。 |
+
+候选验证阶段读取 `SKILL.md` 仅用于判断是否适用，不算 Activation。只有通过 Disclosure Gate 并把指令加入任务执行上下文后，才视为开始使用具体 Skill。
+
+## 6. 不变量
+
+实现和维护不得破坏以下不变量：
+
+1. 路由代码中不得出现具体业务 Skill 名称的判断分支。
+2. 生成目录和缓存不得手工修改。
+3. 相同来源版本与配置必须生成字节一致的规范化目录。
+4. 未通过完整适用性验证的候选不得进入 Activation。
+5. 未完成用户披露的 Skill 不得进入 Activation。
+6. `activation_policy: confirm` 的 Skill 未获得同意不得进入 Activation。
+7. 部分构建结果不得替换上一版可用目录。
+8. 路由器不得虚构不存在的 Skill、路径、依赖或来源版本。
+9. Skill 引用只允许在其受信任来源根目录内解析，不允许路径越界。
+10. 用户拒绝某个 Skill 后，本次任务不得再次选择同一 Skill，除非用户明确撤销拒绝。
+11. 新增 Skill 或来源不得要求修改选择算法。
+
+## 7. 方案比较与决策
+
+### 7.1 全量提示词
+
+把所有 Skill 名称、描述或正文直接写入系统提示词。实现简单，但 Skill 数量增长后会显著占用上下文，更新成本高，候选之间容易互相干扰，无法满足长期扩展要求。
+
+### 7.2 两阶段检索与按需加载
+
+先检索轻量目录，再读取少量候选正文完成适用性验证，最后加载被选中的资源。该方案支持渐进式披露、增量索引、无语义服务降级和来源扩展，是本设计采用的方案。
+
+### 7.3 Skill 知识图谱
+
+显式建模任务、能力、前置条件、冲突和组合关系。它适合未来处理非常复杂的跨领域编排，但初期需要大量人工维护，且第三方 Skill 元数据不完整，因此不在首期范围内。
+
+## 8. 总体架构
+
+系统由五个边界清晰的组件组成。
+
+### 8.1 Skill Source Registry
+
+Source Registry 读取 `skill-system/sources.yaml`，提供所有来源的声明配置。它只负责描述来源，不负责理解任何具体 Skill。
+
+来源至少包含：
+
+- 稳定 `source_id`；
+- `local` 或 `git` 类型；
+- 本地路径或仓库 URL；
+- 期望分支、标签或提交；
+- include/exclude 路径规则；
+- 是否启用；
+- 来源优先级；
+- 可选 canonical 来源关系。
+
+Git 来源还可以声明是否递归初始化 submodule。对于 `Ascend/agent-skills` 这类聚合仓库，Source Registry 必须同时锁定父仓提交与每个实际初始化的 submodule 路径、URL 和提交；只锁父仓分支名或只克隆父仓而不物化 submodule 都不算完成同步。
+
+解析后的不可变提交先写入 staging 中的候选 lock。构建和运行使用 lock 中的版本，而不是每次隐式追踪浮动分支。仓库根部的 `sources.lock.json` 是 active 版本的公开镜像，只有完整构建通过并切换 active 后才更新；同步或构建失败不得提前覆盖它。
+
+### 8.2 Catalog Builder
+
+Catalog Builder 在每个启用来源中递归发现严格命名的 `SKILL.md`，完成：
+
+- Front Matter 解析；
+- 名称、描述和 Scope 提取；
+- 稳定 `skill_id` 生成；
+- 内容哈希与引用清单生成；
+- Override 合并；
+- 重复和同名检测；
+- 引用边界与完整性检查；
+- Catalog Entry 输出；
+- 隔离清单与构建报告输出。
+
+Builder 不根据领域或目录名硬编码业务分类。
+
+### 8.3 Retrieval Index
+
+Retrieval Index 为规范化 Catalog Entry 建立两类索引：
+
+- 关键词索引：覆盖名称、描述、Scope 摘要、别名、标签和关键技术词；
+- 语义索引：覆盖描述与适用范围的语义表示。
+
+关键词与语义后端都通过稳定接口接入。语义后端不可用时，系统必须回退到关键词索引，而不是停止整个 Skill 路由能力。
+
+### 8.4 Skill Router
+
+Skill Router 接收用户原始任务，完成候选召回、完整适用性验证、最小集合选择、顺序确定和结构化决策输出。Router 不执行 Skill 工作流。
+
+### 8.5 Lazy Loader
+
+Lazy Loader 提供两个严格分离的只读模式：
+
+- `inspect`：候选验证时只读取候选的 `SKILL.md`，不加载引用资源、不执行工作流，也不产生 Handoff；
+- `activate`：通过 Disclosure Gate 后，校验已选 Skill，加载允许的显式引用并生成 Handoff Bundle。
+
+Loader 负责路径安全、循环检测、大小控制、内容与资源哈希校验，不运行引用中的脚本。`inspect` 的读取不算 Activation，`activate` 才会把指令交给大模型。
+
+“显式引用”只包括能够确定解析的来源内相对路径：Markdown 链接或图片目标、标准资源清单中的路径，以及反引号包裹且实际存在的相对文件路径。Loader 不根据自然语言猜测文件名，也不自动加载整个目录；需要整目录时，Skill 必须明确声明目录或具体文件清单。
+
+## 9. 建议目录结构
+
+```text
+skill-system/
+  README.md
+  sources.yaml
+  sources.lock.json
+  router-instructions.md
+  schemas/
+    sources.schema.json
+    source-lock.schema.json
+    override.schema.json
+    quarantine-ack.schema.json
+    catalog-entry.schema.json
+    routing-case.schema.json
+  overrides/
+    <source-id>/
+      quarantine-ack.yaml
+  examples/
+    sources.valid.yaml
+    sources.invalid.yaml
+    overrides.valid.yaml
+    sample-catalog-entry.json
+  generated/
+    catalog.jsonl
+    catalog-summary.md
+    quarantine.json
+    build-report.json
+    index/
+  cache/
+    sources/
+    staging/
+  evals/
+    routing-cases.yaml
+    regression-baseline.json
+docs/11-knowledge-index/
+  skill-routing-system.md
+  skill-maintenance-runbook.md
+```
+
+`cache/` 是可删除的同步缓存，`generated/` 是确定性构建产物。两者都不得成为手工维护的事实来源。
+
+## 10. 数据契约
+
+### 10.1 Source 配置
+
+规范化 Source 配置示例：
+
+```yaml
+schema_version: 1
+sources:
+  - source_id: local-aikg
+    type: local
+    location: skills
+    enabled: true
+    priority: 100
+  - source_id: ascend-agent-skills
+    type: git
+    location: https://gitcode.com/Ascend/agent-skills.git
+    revision: master
+    submodules: recursive
+    enabled: true
+    priority: 50
+    exclude:
+      - official/CANNBot/**
+  - source_id: cannbot
+    type: git
+    location: https://gitcode.com/cann/cannbot-skills.git
+    revision: master
+    enabled: true
+    priority: 80
+```
+
+同时登记两个仓库时，从聚合仓库排除 `official/CANNBot/**`，以直接 CANNBot 仓库为 canonical 来源。这个关系存在于配置中，不进入路由代码。如果只登记 `agent-skills`，则可以不排除其 CANNBot 子目录。聚合仓库通过 submodule 提供内容时，lock 必须记录父仓与实际 submodule 提交，Catalog Entry 同时保留父仓 revision 以及所属 submodule 路径和 revision。
+
+凭证不得写入来源文件。私有来源的鉴权由外部环境提供。
+
+### 10.2 Catalog Entry
+
+每个有效 Skill 生成一个 Catalog Entry：
+
+```json
+{
+  "schema_version": 1,
+  "skill_id": "cannbot:ops/ascendc-env-check",
+  "name": "ascendc-env-check",
+  "description": "...",
+  "scope_summary": "...",
+  "source_id": "cannbot",
+  "source_revision": "immutable-commit",
+  "submodule_path": null,
+  "submodule_revision": null,
+  "relative_path": "ops/ascendc-env-check/SKILL.md",
+  "content_hash": "sha256:...",
+  "bundle_hash": "sha256:...",
+  "status": "enabled",
+  "activation_policy": "notify",
+  "repeatable": false,
+  "aliases": [],
+  "tags": [],
+  "dependencies": [],
+  "conflicts": [],
+  "references": [],
+  "canonical_skill_id": "cannbot:ops/ascendc-env-check"
+}
+```
+
+`skill_id` 使用 `source_id` 与相对目录组合，保证同名 Skill 可共存。`name` 保留上游名称，用于向用户披露。`source_revision` 是父来源不可变提交；Skill 位于 submodule 时同时记录 `submodule_path` 与 `submodule_revision`。`content_hash` 只覆盖规范化后的 `SKILL.md`；`bundle_hash` 覆盖 `SKILL.md` 与全部已解析显式引用相对于 Skill bundle 的路径、内容和顺序，用于完整加载校验与跨聚合路径的 exact duplicate 判断。用于实际加载的 source-relative 路径另行保留，不能混入 bundle-relative 去重哈希。
+
+### 10.3 Override
+
+Override 只用于：
+
+- 补充别名、标签和跨语言触发词；
+- 显式声明依赖、冲突或 canonical 关系；
+- 禁用已知损坏或不适用 Skill；
+- 设置 `activation_policy`；
+- 在有明确证据时声明同一路由链中是否允许重复调用，默认不允许；
+- 在不修改上游的情况下修正可验证的元数据错误。
+
+自动生成的模型推断不得直接成为生效 Override。任何会改变选择、依赖、冲突、启用状态或确认策略的 Override 必须作为版本化文件提交。
+
+### 10.4 Activation Policy
+
+Activation Policy 有且只有两种：
+
+- `notify`：向用户知会名称和用途后立即启用；这是默认值。
+- `confirm`：向用户披露名称和用途，等待明确同意后启用。
+
+本系统不根据 Skill 名称猜测确认策略。策略来自标准元数据或受版本控制的 Override。
+
+## 11. 构建与更新流程
+
+一次目录更新必须按以下顺序进行：
+
+1. 校验 `sources.yaml` 和 Override Schema；
+2. 将所有来源同步到独立 staging 目录；
+3. 把浮动 revision 以及启用的 submodule 解析为不可变提交，生成 staging 候选 lock；
+4. 递归发现 `SKILL.md`；
+5. 解析、标准化并校验每个 Skill；
+6. 验证显式引用、路径边界和循环；
+7. 合并已审核 Override；
+8. 处理 exact duplicate、canonical 关系和同名冲突；
+9. 生成候选 Catalog、lock、隔离清单和构建报告；
+10. 构建关键词与语义索引；
+11. 运行契约测试和路由回归评测；
+12. 检查生成差异与退化报告；
+13. 所有目录发布门禁通过后原子发布包含 lock、Catalog 和索引的完整版本；
+14. 保存上一版可回滚快照。
+
+任一步失败都不得修改当前 active lock、Catalog 和索引。单独执行 source sync 只生成候选 lock，不改变根部 active lock 镜像。
+
+## 12. 路由运行流程
+
+### 12.1 第一级：轻量召回
+
+Router 保留用户原始任务，分别进行关键词与语义召回。建议默认各召回 12 条，合并去重后进入下一阶段。数量是配置项，不影响协议。
+
+召回前必须过滤：
+
+- disabled；
+- quarantined；
+- 被 canonical Entry 替代的副本；
+- 用户在本次任务中已拒绝的 Skill；
+- 已在当前路由链中完成且不应重复调用的 Skill。
+
+### 12.2 第二级：完整适用性验证
+
+Router 对排序靠前的少量候选调用 Loader 的 `inspect` 模式，只读取完整 `SKILL.md` 进行判断。建议默认最多检查 5 个候选。此时不加载引用资源、不通过 Disclosure Gate、不产生 Handoff。Selector 输出结构化决策：
+
+```json
+{
+  "decision": "selected",
+  "skills": [
+    {
+      "skill_id": "cannbot:ops/ascendc-env-check",
+      "role": "primary",
+      "order": 1,
+      "reason": "任务要求验证 Ascend C 环境，符合该 Skill 的 Scope"
+    }
+  ],
+  "confidence": "high",
+  "clarification": null
+}
+```
+
+`decision` 允许：
+
+- `selected`：已有足够证据选择 Skill；
+- `no_match`：没有适用 Skill，交回普通模型能力；
+- `clarification_required`：任务边界不足，只能询问任务细节。
+
+澄清问题不得要求用户了解或挑选 Skill。
+
+### 12.3 选择规则
+
+Selector 必须遵守：
+
+1. 不得只根据名称相似选择。
+2. 必须检查 Scope、触发条件和排除条件。
+3. 具体 Skill 优先于宽泛 Skill。
+4. 一个 Skill 足以覆盖任务时不得增加冗余 Skill。
+5. 只有不同步骤或明确依赖才组合多个 Skill。
+6. 组合顺序必须解释为 prerequisite、primary 或 supporting。
+7. 来源优先级只能用于匹配质量相当时的稳定决胜，不能覆盖适用性。
+8. Skill 描述不足以确认时，必须读取正文；仍不足则返回 `no_match` 或询问任务细节。
+9. 不得推断不存在的依赖、冲突或引用。
+
+### 12.4 Disclosure Gate
+
+选择完成后、Activation 之前，系统必须向用户披露：
+
+- Skill 的公开 `name`；
+- 每个 Skill 在当前任务中的一句话用途；
+- 多 Skill 的使用顺序；
+- 是否需要确认。
+
+默认知会文案：
+
+```text
+我将使用以下 Skill 完成任务：
+- ascendc-env-check：检查 NPU 设备与 CANN/Ascend C 环境。
+现在开始执行该 Skill 的工作流。
+```
+
+确认文案：
+
+```text
+计划使用以下 Skill：
+- <skill-name>：<当前任务中的用途>。
+该 Skill 配置为使用前确认。是否继续？
+```
+
+多 Skill 时按 `order` 列出。用户只负责知情或批准，不需要从目录中选择。
+
+Disclosure 记录必须绑定当前 session、任务、按顺序排列的 Skill ID、选择哈希和实际展示文案哈希，不能跨任务复用。`notify` 只有在调用方已把原文展示给用户后才能记为 `notified`；`confirm` 的 `confirmed` 或 `rejected` 必须来自调用方捕获的明确用户决定。核心协议不假装能够观察某个 UI，但 Loader 必须拒绝缺失、错序、哈希不符或跨 session 的记录。
+
+若用户拒绝：
+
+1. 将被拒绝 Skill 加入本次任务排除集；
+2. 重新路由一次，寻找真正适用的替代 Skill；
+3. 没有替代项时，以无 Skill 模式继续或说明无法按 Skill 工作流完成；
+4. 不得暗中重新启用被拒绝 Skill。
+
+二次路由发现新的辅助 Skill 时，也必须在 Activation 前单独通过 Disclosure Gate。
+
+### 12.5 第三级：按需加载与 Handoff
+
+Disclosure Gate 通过后，Lazy Loader 才进入 `activate` 模式：
+
+1. 校验已选 Skill 的来源版本、`content_hash` 和 `bundle_hash`；
+2. 加载完整 `SKILL.md`；
+3. 只跟随正文明确引用的资源；
+4. 检测断链、循环、越界和内容上限；
+5. 生成 Handoff Bundle；
+6. 将任务控制权交给大模型与 Skill。
+
+Handoff Bundle 至少包含：
+
+```json
+{
+  "task": "用户原始任务",
+  "decision": "selected",
+  "skills": [
+    {
+      "skill_id": "cannbot:ops/ascendc-env-check",
+      "name": "ascendc-env-check",
+      "source_revision": "immutable-commit",
+      "role": "primary",
+      "order": 1
+    }
+  ],
+  "disclosure": {
+    "policy": "notify",
+    "status": "notified"
+  },
+  "handoff_status": "ready"
+}
+```
+
+上例只展示控制字段。实际 Handoff 还必须包含每个已选 Skill 经哈希校验的完整 `SKILL.md` 文本，以及已加载显式资源的稳定路径、内容哈希、媒体类型、编码和内容，保证接手模型不依赖未声明的本地文件读取。任一资源失败时不得交付部分 Bundle。
+
+确认型 Skill 的 `disclosure.status` 必须为 `confirmed`。Loader 不得接受 `pending`、`rejected` 或缺失状态。
+
+### 12.6 子任务再路由
+
+Skill 执行中出现新的独立子任务时，大模型可以再次调用 Router。再路由输入必须包含：
+
+- 原始任务；
+- 当前子任务；
+- 已选择和已完成 Skill；
+- 被拒绝 Skill；
+- 当前执行状态；
+- 当前路由深度。
+
+系统必须设置可配置的最大路由深度和已访问集合。达到上限、重复状态或检测到循环时，停止再路由并返回当前执行上下文，不进行隐式无限递归。
+
+## 13. 去重与来源关系
+
+### 13.1 完全重复
+
+规范化内容与资源哈希完全一致时，折叠为一个 canonical Entry，同时记录全部来源。优先级更高或显式声明为 canonical 的来源负责实际加载。
+
+### 13.2 聚合仓库重复
+
+`Ascend/agent-skills` 通过 `official/CANNBot` 引用 CANNBot。两个来源同时启用时，通过 Source 的 exclude 规则排除聚合仓中的重复子树，使用直接 CANNBot 仓库作为 canonical 来源。这个规则记录在 `sources.yaml` 示例与维护 Runbook 中。
+
+### 13.3 同名不同内容
+
+同名但内容不同的 Skill 保留为不同 Entry。Router 依据 Scope、来源和任务匹配选择；内部日志使用完整 `skill_id`，用户披露使用 `name`。如果同一轮披露中出现同名 Skill，必须附加来源简称避免歧义。
+
+## 14. 可扩展性设计
+
+### 14.1 新增本地 Skill
+
+把含有效 `SKILL.md` 的目录放入已登记的本地 Source，重新构建即可。不得增加路由条件分支。
+
+### 14.2 新增外部仓库
+
+只在 `sources.yaml` 增加 Source，生成 lock，并运行全套门禁。解析、检索、选择和加载协议不变。
+
+### 14.3 新增元数据能力
+
+Catalog Entry 通过 `schema_version` 演进。新增可选字段必须保持旧记录可读取；新增必填字段必须提供迁移器和版本升级文档。
+
+### 14.4 更换检索实现
+
+关键词、Embedding、重排和 Selector 通过接口替换。Catalog、Disclosure 和 Handoff 数据契约保持稳定。
+
+### 14.5 跨语言扩展
+
+上游描述保留原文。中文别名、术语和触发表达可通过受审核 Override 补充。自动翻译或模型生成标签只能作为建议，不能未经审核改变生效目录。
+
+## 15. 异常处理
+
+### 15.1 Source 同步失败
+
+首次同步失败时不创建该来源。更新同步失败时保留上一版 lock 和 active Catalog，报告 stale 状态并使本次发布失败。
+
+### 15.2 无效 Skill
+
+以下情况进入 Quarantine：
+
+- 缺失或无法解析的 Front Matter；
+- 缺少有效 `name` 或 `description`；
+- 路径与名称违反基本契约；
+- 显式引用不存在；
+- 引用循环或越界；
+- 内容无法按声明编码读取。
+
+默认 strict 模式下，新增校验错误阻止发布。批量首次接入外部来源时，可以通过 `overrides/<source-id>/quarantine-ack.yaml` 明确接受已知隔离项；该文件必须列出稳定 Skill 路径、预期错误码、来源 revision 范围、理由和审核日期，并通过 `quarantine-ack.schema.json`。任何未被精确列出的新隔离仍阻止发布。不得用忽略全部错误的全局开关绕过门禁。
+
+### 15.3 索引失败
+
+任一必需索引构建失败时不发布。语义后端明确配置为 optional 且关键词索引通过时，可以发布降级版本，并在报告中标记 degraded。
+
+### 15.4 候选不明确
+
+Selector 返回 `clarification_required`，只询问任务事实。用户回答后重新路由。不得展示目录要求用户挑选。
+
+### 15.5 Loader 失败
+
+Loader 不得交付残缺 Skill。失败后可以重新评估仍通过验证的独立候选；如果没有可靠替代项，返回无 Skill 或明确失败，不得拼接部分指令继续。
+
+### 15.6 用户拒绝
+
+拒绝只影响当前任务路由状态，不修改全局 Catalog。拒绝事件写入任务日志，用于解释为什么选择替代路径。
+
+## 16. 文档与 AI 维护契约
+
+文档是系统的一部分，必须与实现共同通过测试。
+
+### 16.1 文档职责
+
+- 根 `README.md`：系统价值、最短入口和文档链接；
+- `AI_CONTINUATION_GUIDE.md`：AI 接手前必读、禁止事项和完成门禁；
+- `docs/11-knowledge-index/skill-routing-system.md`：面向人和 AI 的架构与运行协议；
+- `docs/11-knowledge-index/skill-maintenance-runbook.md`：新增、更新、删除、禁用、回滚与排障；
+- `skill-system/README.md`：精确命令、参数、预期输出和快速检查；
+- `schemas/`：机器可执行的数据契约；
+- `examples/`：同时服务文档和自动化测试的正反例。
+
+### 16.2 Runbook 固定章节结构
+
+每个操作场景必须包含：
+
+```text
+目的
+前置条件
+允许修改的文件
+禁止修改的文件
+精确操作步骤
+成功时的预期输出
+失败原因与处理
+验证命令
+回滚方法
+提交前检查
+```
+
+Runbook 必须覆盖：
+
+1. 新增本地 Skill；
+2. 新增外部 Source；
+3. 更新外部版本；
+4. 禁用、恢复或删除 Skill；
+5. 添加 Override；
+6. 处理重名与重复；
+7. 处理 Quarantine；
+8. 重建目录与索引；
+9. 添加路由评测；
+10. 分析路由退化；
+11. 回滚错误发布。
+
+### 16.3 AI 强制维护协议
+
+`AI_CONTINUATION_GUIDE.md` 必须明确：
+
+```text
+修改 Skill 系统前，先阅读系统设计和维护 Runbook。
+不得手工编辑 generated/ 和 cache/。
+不得通过硬编码具体 Skill 名称修复路由问题。
+新增或更新 Skill 后必须重建目录并运行路由回归测试。
+遇到来源、重复、引用或评测结果不明确时停止并报告，不得猜测。
+只有所有门禁通过后才能宣称更新完成。
+```
+
+### 16.4 防止文档漂移
+
+- 文档中的配置样例直接作为 Schema 测试数据；
+- 文档引用的命令必须有对应 CLI 帮助或 smoke test；
+- 生成文件包含“禁止手工修改”和生成器版本；
+- Schema、命令或工作流改变时，相关文档必须在同一变更中更新；
+- AI 索引必须包含 Skill Routing Protocol 和维护文档入口；
+- 外部 Skill 正文不全部内联进每次上下文，Catalog 和逐文件来源必须保持可寻址。
+
+## 17. 测试策略
+
+### 17.1 单元测试
+
+覆盖：
+
+- Front Matter 解析；
+- 稳定 ID；
+- 内容与资源哈希；
+- include/exclude；
+- Override 合并；
+- 路径边界、断链和循环；
+- exact duplicate 与同名不同内容；
+- lock 解析；
+- 增量更新；
+- 确定性输出；
+- Disclosure 状态机；
+- 再路由循环检测。
+
+### 17.2 契约测试
+
+- Source、lock、Override、Quarantine acknowledgement、Catalog 和 Routing Case 必须通过对应 JSON Schema；
+- 正例必须通过，反例必须以预期错误码失败；
+- 相同输入两次构建的输出必须字节一致；
+- 所有 enabled Entry 必须可以完整加载；
+- `confirm` Entry 的未确认 Handoff 必须被拒绝。
+
+### 17.3 路由评测
+
+每个 Routing Case 至少包含：
+
+- 用户原始问题；
+- 预期 Skill 或允许集合；
+- 明确禁止选择的 Skill；
+- 是否预期无匹配；
+- 多 Skill 时的允许顺序；
+- 选择理由所需的关键证据。
+
+评测指标：
+
+- Recall@K；
+- Top-1 最终选择准确率；
+- 无匹配误选率；
+- 禁止 Skill 选择率；
+- 多 Skill 顺序准确率；
+- Disclosure 完成率；
+- 完整加载成功率；
+- 新 Skill 对既有样例的抢占回归。
+
+### 17.4 扩展性测试
+
+必须自动验证：
+
+- 新增 Skill 后不修改 Router 也能发现；
+- 新增 Source 后只改配置即可发现；
+- 删除 Source 不影响其他来源；
+- 语义后端不可用时关键词路径可工作；
+- 更换检索后端不改变 Catalog 和 Handoff 契约；
+- Skill 总量扩大后仍采用有限候选和渐进加载，不全量注入上下文。
+
+## 18. 质量门槛
+
+首期完整生产资格必须达到：
+
+- enabled Skill 目录解析成功率 100%；
+- Selected Skill 完整加载成功率 100%；
+- Disclosure Gate 完成率 100%；
+- Routing Gold Set Recall@10 不低于 95%；
+- 最终 Top-1 选择准确率不低于 90%；
+- 无匹配误选率不高于 5%；
+- 明确禁止 Skill 的选择率为 0%；
+- 所有显式引用可解析且不越界；
+- 相同输入生成结果字节一致；
+- 门禁失败时 active 版本保持不变。
+
+门禁分为两个明确层级：
+
+- `catalog` 发布门禁：校验来源、解析、引用、Disclosure/Loader 契约、确定性和 Recall@10。该层通过后可以发布可用的 active 目录与索引；
+- `production` 模型资格门禁：在具体部署所用模型或 Selector adapter 的已捕获结果上，额外校验最终 Top-1、无匹配误选、禁止选择和多 Skill 顺序。
+
+核心系统不绑定模型 API，因此没有部署模型结果时，模型相关指标必须记录为 `not_run`，不能伪装为通过。此时可以说明“目录已发布”，但不得说明“模型选择效果已通过生产资格”。一旦声明某个模型或 adapter 用于生产，就必须提供其评测结果并通过 `production` 门禁。
+
+本地新增或实质修改 Skill 时，必须增加正向和负向路由样例。批量同步外部来源时，至少为发生变化且可能与现有能力重叠的 Skill 增加回归样例。
+
+## 19. 发布与回滚
+
+发布使用版本化 staging 和 active 指针或等价的原子替换机制：
+
+1. 在 staging 中生成完整候选版本；
+2. 运行全部测试和评测；
+3. 生成差异、来源版本和指标报告；
+4. `catalog` 门禁通过后切换 active；若要声明生产可用，还必须同时满足 `production` 模型资格门禁；
+5. 保留上一版 lock、Catalog 和索引用于回滚。
+
+active 指针指向包含 lock、Catalog、索引和报告的完整版本目录，该目录是运行时一致性的唯一事实来源；根部 `sources.lock.json` 和 `generated/` 是可由 active 版本重建的公开镜像。回滚恢复上一版完整集合，不允许只回滚索引或手工修改缓存。回滚后必须运行 active 版本一致性检查并重建公开镜像。
+
+## 20. 构建报告
+
+每次构建输出机器可读和人类可读报告，至少包含：
+
+- 生成器与 Schema 版本；
+- 各 Source 的请求 revision 和实际提交；
+- 发现、启用、禁用、隔离和折叠数量；
+- 新增、修改和删除 Skill；
+- 重名、重复和 canonical 决策；
+- 断裂、循环与越界引用；
+- 索引模式和降级状态；
+- 路由指标及相对基线变化；
+- 是否通过发布门禁；
+- active 版本与可回滚版本。
+
+## 21. 当前仓库集成要求
+
+实现时需要同步调整现有知识库入口：
+
+1. `scripts/generate_llms_files.py` 不再依赖手工维护的完整 Skill 名单，而从有效 Catalog 动态生成 Skill 入口；
+2. `llms.txt` 在靠前位置声明 Skill Routing Protocol，并链接紧凑目录；
+3. `llms-full.txt` 包含路由协议与紧凑目录，但不盲目内联所有外部 Skill 正文；
+4. 每个 Skill 正文和资源必须在知识摄取或 Resolver 中按稳定 ID 与锁定版本可寻址；
+5. `skills/README.md` 说明本地 Skill 如何自动进入目录；
+6. `AI_CONTINUATION_GUIDE.md` 加入强制维护协议；
+7. `docs/knowledge-map.md` 和 MkDocs 导航加入路由系统及维护 Runbook；
+8. 现有 `npu-arch-capability-check` 必须作为首个本地回归样例保留。
+
+仅把 `catalog.jsonl` 作为普通文本喂给模型不足以实现按需加载。知识摄取系统必须同时保证 Catalog Entry 与对应 `SKILL.md` 可通过稳定标识解析；具体使用文件读取、RAG 文档检索或其他机制属于平台适配层，不改变本设计协议。
+
+## 22. 验收场景
+
+实现完成后必须通过以下端到端场景：
+
+1. 新维护者只按 Runbook 新增一个本地 Skill，不修改 Router；目录自动发现，未知 Skill 名称的用户问题能够选中它。
+2. 只在 `sources.yaml` 新增一个外部仓库；生成 lock 后，其有效 Skill 自动进入候选。
+3. 同时启用 `agent-skills` 和 CANNBot；CANNBot 子树不产生重复候选。
+4. 上游增加一个损坏 Skill；构建进入隔离并阻止未确认的新错误发布，active 目录保持可用。
+5. 用户用自然语言描述 Ascend 环境检查但不提 Skill 名；系统选中正确 Skill，并在启用前告知 `ascendc-env-check` 名称和用途。
+6. 一个 `confirm` Skill 被选中；未收到用户同意时 Handoff 被拒绝。
+7. 用户拒绝已选 Skill；本次任务重新路由时不会再次选择它。
+8. 没有合适 Skill；系统使用普通模型能力，不虚构 Skill。
+9. 新 Skill 与旧 Skill 描述相近并错误抢占任务；路由回归评测阻止发布。
+10. 语义索引不可用；系统报告降级并使用关键词检索完成既有回归样例。
+11. 构建中途失败；active Catalog、lock 和索引完全不变。
+12. AI 维护者只读维护文档即可完成一次来源更新、验证、发布或回滚，并能解释每个生成差异。
+
+## 23. 实施边界
+
+该设计适合拆成一个实现计划，但必须按依赖顺序交付：
+
+1. 数据契约、Source Registry、Catalog Builder 与测试夹具；
+2. 去重、Override、lock、隔离和事务式发布；
+3. 关键词检索、可选语义检索与结构化 Selector；
+4. Disclosure Gate、Lazy Loader、Handoff 和再路由状态；
+5. 路由评测、质量门禁和构建报告；
+6. 完整维护文档、AI 续作协议和现有 `llms` 索引集成。
+
+任何阶段都不得用硬编码具体 Skill 名称替代通用数据契约。
 
 ---
 

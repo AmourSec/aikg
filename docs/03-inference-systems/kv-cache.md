@@ -86,7 +86,7 @@ KV Cache 保存的是模型中间状态，不是原始文本。它的大小和�
 | batch size / 并发请求数 | 同时服务的请求越多，总 KV Cache 越大 |
 | sequence length | 输入越长、输出越长，每个请求缓存越大 |
 | 模型层数 | 每层都要保存 K 和 V，层数越多越大 |
-| hidden size / attention heads | 每个 token 的 K/V 向量越大，缓存越大 |
+| num_kv_heads × head_dim | 每个 token 每层的 K/V 向量大小；GQA/MQA 模型 num_kv_heads 小于 num_attention_heads，KV Cache 显著缩小 |
 | precision | FP16、BF16、FP8、INT8 等精度会影响每个元素占用 |
 
 一个直观估算是：
@@ -95,10 +95,12 @@ KV Cache 保存的是模型中间状态，不是原始文本。它的大小和�
 KV Cache 大小
   约等于 batch 中的总 token 数
   × 模型层数
-  × 每层 K/V 的向量大小
+  × num_kv_heads × head_dim    （每层 K 或 V 的向量大小）
   × 2（K 和 V）
   × 每个元素的字节数
 ```
+
+写成完整公式即 `2 × num_layers × num_kv_heads × head_dim × seq_len × batch × dtype_bytes`。注意 MHA 模型 `num_kv_heads == num_attention_heads`，此时 `num_kv_heads × head_dim == hidden_size`；但 Llama 2/3、Mixtral、Qwen2 等主流模型使用 GQA，`num_kv_heads` 远小于 `num_attention_heads`，直接用 hidden size 估算会高估 4-8 倍。
 
 这个估算不需要死记，重要的是理解增长方向：**并发越高、上下文越长、模型越大，KV Cache 越容易成为显存瓶颈。**
 

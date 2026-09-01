@@ -1,6 +1,6 @@
 ---
 title: AI 系统论文与架构：从论文贡献到可复现实验
-domain: ai-system-papers
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0

@@ -96,7 +96,7 @@ flowchart TB
 | Cube Core | 面向矩阵乘、卷积等 dense tensor 计算的专用矩阵单元。 | MatMul、Conv、MLP、QKV projection、Attention score。 | Transformer 主要 FLOPs 都来自矩阵乘，Cube 利用率直接影响吞吐。 |
 | Vector Core | 面向逐元素、归一化、激活、类型转换、部分 reduction 的向量单元。 | Add、Mul、Cast、RMSNorm、Softmax 局部步骤、量化/反量化。 | 很多算子不是算不动，而是 Vector 和数据搬运没有跟 Cube 配好。 |
 | Scalar / 控制单元 | 处理控制、地址、循环、同步和少量标量逻辑。 | 分支、offset 计算、mask、flag、pipeline 控制。 | 动态 shape、尾块、mask 和同步会增加控制成本。 |
-| MTE / DataCopy | 负责在 Global Memory 和片上 Local Memory 之间搬数据。 | `DataCopy`、GM 到 UB/L1、L1 到 L0、L0C 写回。 | 数据供不上，Cube/Vector 就会等待。 |
+| MTE / DataCopy | 负责在 Global Memory 和片上 Local Memory 之间搬数据。 | `DataCopy`、GM 到 UB、GM 到 L1、UB/L1 到 GM。 | 数据供不上，Cube/Vector 就会等待。 |
 | Local Memory | 靠近计算单元的片上工作区，包含 UB、L1、L0A/L0B/L0C 等具体层次。 | tiling、双缓冲、缓存输入 tile、保存中间结果。 | 片上容量小但快，决定数据复用和 fusion 能做到什么程度。 |
 | Global Memory / HBM | 设备侧大容量内存。 | 存权重、activation、KV Cache、optimizer state、输入输出。 | 大模型经常受 HBM 容量和带宽限制。 |
 | L2 / 片上缓存 | 多 core 共享或靠近 device 的缓存层。 | 跨 core 复用、缓存权重或中间数据。 | 影响长上下文、权重读取、KV 读取和多核访存效率。 |
@@ -114,7 +114,7 @@ flowchart TB
 
 可以把 AI Core 内部理解成几条并行工作线：
 
-- `MTE` 负责搬数据：从 Global Memory 搬到 UB/L1/L0，或把结果搬回 Global Memory。
+- `MTE` 负责搬数据：从 Global Memory 搬到 UB/L1，或把 UB/L1 中的结果搬回 Global Memory；L1 到 L0A/L0B 由 Cube 内部 LoadData 完成，L0C 写回由 Fixpipe 完成，都不属于 MTE。
 - `Cube` 负责大块矩阵乘：例如 GEMM、Conv、QKV projection、MLP。
 - `Vector` 负责向量计算：例如 elementwise、Cast、Norm、Softmax、量化/反量化。
 - `Scalar` 负责控制：例如循环、地址、mask、同步和分支。
@@ -122,17 +122,19 @@ flowchart TB
 
 这也是为什么 NPU 文档里经常出现“流水”“Tiling”“搬入、计算、搬出”“双缓冲”“bank conflict”。它们都在解决同一个问题：不要让昂贵的计算单元等数据，也不要把中间结果频繁写回 HBM。
 
-一个典型矩阵算子的简化数据流如下：
+一个典型矩阵算子的简化数据流如下（2201 架构下 Vector 后处理需经 GM 中转，3510 架构新增 L0C→UB 直达通路）：
 
 ```mermaid
 flowchart LR
   A["Global Memory / HBM\n输入、权重、输出"] --> B["MTE / DataCopy\n搬入 tile"]
-  B --> C["L1 / UB\n片上缓存与工作区"]
+  B --> C["L1\nCube 输入缓存"]
   C --> D["L0A / L0B\nCube 输入操作数"]
   D --> E["Cube Core\n矩阵乘累加"]
   E --> F["L0C\n累加结果"]
-  F --> G["Vector / FixPipe\n后处理、格式转换、搬出准备"]
+  F --> G["FixPipe\nAIC 侧后处理、格式转换、搬出"]
   G --> H["Global Memory / HBM\n写回输出或中间结果"]
+  H -.可经 GM 中转.-> I["UB / Vector\n向量后处理（2201）"]
+  F -.3510 直达.-> I
 ```
 
 一个典型向量算子的简化数据流则更像：
@@ -233,7 +235,7 @@ flowchart TB
 | --- | --- | --- |
 | `GlobalTensor` | 指向 Global Memory 中的数据。 | 读输入、权重、KV，写输出。 |
 | `LocalTensor` | 指向 Local Memory 中的数据。 | 在 UB/L1/L0 等片上空间里计算。 |
-| `DataCopy` | 触发数据搬运，通常对应 MTE/DMA 能力。 | GM 到 UB、GM 到 L1、L0C 到 GM 等。 |
+| `DataCopy` | 触发数据搬运，通常对应 MTE/DMA 能力。 | GM 到 UB、GM 到 L1、UB 到 GM、L1 到 GM。 |
 | `TPipe` | 管理 kernel 内的流水资源。 | 初始化队列、buffer 和异步流水。 |
 | `TQue` | 管理输入、输出或临时 tensor 队列。 | 双缓冲、多 stage pipeline。 |
 | `TBuf` | 管理一块临时 buffer。 | 临时工作区、scratch buffer。 |

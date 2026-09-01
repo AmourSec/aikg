@@ -106,15 +106,16 @@ AI Infra 里的 benchmark 很容易误导人。
 
 ## 结果可信度
 
-建议给 benchmark report 标注证据等级。
+建议给 benchmark report 标注证据等级（与 `docs/11-knowledge-index/index.md` 中的权威定义保持一致）。
 
 | 等级 | 含义 |
 | --- | --- |
-| E0 | 手动临时观察，没有可复现记录 |
-| E1 | 有命令和摘要结果，但缺少 raw data、manifest 或重复实验 |
-| E2 | 有 workload、baseline、metrics、环境、raw data 和 run manifest |
-| E3 | 有多次重复、sweep、profiler、误差分析和 guardrail metrics |
-| E4 | 有生产灰度、真实 trace replay、SLO 和成本闭环验证 |
+| E0 | 经验、观点、博客、口头判断 |
+| E1 | 论文、官方文档、源码说明 |
+| E2 | 小规模本地实验 |
+| E3 | 可复现 benchmark + raw data + manifest |
+| E4 | production trace replay、shadow、canary |
+| E5 | 线上长期运行数据、SLO、incident 和成本闭环 |
 
 知识库中的 benchmark report 至少应达到 E2。
 

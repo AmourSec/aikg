@@ -72,7 +72,7 @@ flowchart TB
 
 - `AIC` 主要负责 Cube 矩阵计算。
 - `AIV` 主要负责 Vector 和新增 SIMT/SIMD-Regbase 相关路径。
-- AIC 与 AIV 常见配比仍可按 `1:2` 理解。
+- AIC 与 AIV 常见配比仍可按 `1:2` 理解；3510 的实际配比以 `GetCoreNumAic()` / `GetCoreNumAiv()` 返回值为准，不要硬编码。
 - 每个核仍有 Scalar 控制能力。
 
 但 3510 相对 2201 的关键变化在于：它补了很多“让数据少绕路”的能力，也增加了更接近通用线程模型的 SIMT 能力。
@@ -104,7 +104,7 @@ flowchart TB
 | L1 | AIC 侧矩阵路径的重要缓存层。 | GM/UB 数据进入 L1，再供给 L0A/L0B。 | 3510 删除 GM->L0A/L0B 后，L1 更像必经入口。 |
 | L0A / L0B | Cube 输入操作数 buffer。 | L0A 放左矩阵 tile，L0B 放右矩阵 tile。 | 3510 中 L0A 推荐 `FRACTAL_NZ`，与 2201 不同。 |
 | L0C | Cube 累加结果 buffer。 | 保存 GEMM 输出，可经 Fixpipe 到 GM/L1/UB。 | L0C->UB 让 MatMul epilogue 有更强融合空间。 |
-| Fixpipe | Cube 结果搬出和随路后处理。 | 量化、反量化、激活、NZ2ND/NZ2DN、L0C 搬出。 | 低精度和 epilogue 融合路径更关键。 |
+| Fixpipe | Cube 结果搬出和随路后处理。 | 量化、反量化、激活、NZ2ND/ND2NZ、L0C 搬出。 | 低精度和 epilogue 融合路径更关键。 |
 | SSBuffer | AIC/AIV 核间通信相关存储路径。 | CV 通信、UB->L1 等硬通道场景。 | 减少 GM 中转，降低融合算子通信成本。 |
 | HCCL / 通信 | 多 NPU 通信。 | AllReduce、AllToAll、ReduceScatter、通信任务下发。 | 训练扩展、MoE 和分布式推理仍可能被通信主导。 |
 
@@ -187,8 +187,8 @@ flowchart TB
 | AIC/AIV 通信 | 常见数据交换依赖 GM 中转。 | 增加 SSBuffer 等通信能力。 | CV 融合不必总按 GM 中转设计。 |
 | L0C 到 UB | 通常需要通过 GM 或其他绕行路径给 AIV。 | 增加 L0C->UB 通路。 | MatMul epilogue 后接 Vector 后处理更有优化空间。 |
 | UB 到 L1 | 不是主路径。 | 增加 UB->L1 硬通道。 | AIV 预处理后进入 Cube 路径更灵活。 |
-| GM 到 L0A/L0B | 可作为部分搬运路径考虑。 | 删除 GM->L0A/L0B 直达路径。 | 要先 GM->L1，再 L1->L0A/L0B。 |
-| L1 到 GM | 可作为部分搬运路径考虑。 | 删除 L1->GM 通路。 | 迁移旧算子时要改搬出路径。 |
+| GM 到 L0A/L0B | 2201 标准路径为 GM→L1→L0A/L0B，无 GM 直达 L0 的常规通路。 | 删除 GM->L0A/L0B 直达路径。 | 3510 统一走 GM→L1→L0A/L0B。 |
+| L1 到 GM | 2201 中 L1 数据不直接写回 GM，需经 L0C/Fixpipe 间接搬出。 | 删除 L1->GM 通路。 | 迁移旧算子时要改搬出路径。 |
 | L0A 分形 | 2201 推荐 `FRACTAL_ZZ`。 | 3510 推荐 `FRACTAL_NZ`。 | 矩阵搬入和 layout 迁移要重查。 |
 | Vector 中间结果 | 更偏 MemBase，UB 往返更常见。 | Regbase 支持寄存器中间结果。 | 一串向量操作可减少 UB 写回。 |
 | SIMT | 不是主线能力。 | 增加 SIMT 硬件单元。 | 离散类算子可考虑更接近线程级的写法。 |

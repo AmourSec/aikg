@@ -1,6 +1,6 @@
 ---
 title: 技术决策记录：从 Benchmark 证据到可追溯选择
-domain: technical-decision-records
+domain: papers-cases
 status: draft
 owner: maintainers
 license: CC-BY-4.0
@@ -236,12 +236,15 @@ ADR 不是一次性文档。
 
 | 状态 | 含义 |
 | --- | --- |
-| Proposed | 已提出，等待评审 |
-| Accepted | 已接受，成为当前决策 |
-| Rejected | 已拒绝，但保留拒绝原因 |
-| Superseded | 被新的 ADR 替代 |
-| Deprecated | 不再推荐，但历史系统可能仍使用 |
-| Revisit Required | 触发复审条件，等待重新评估 |
+| proposed | 已提出，等待评审 |
+| accepted | 已接受，成为当前决策 |
+| rejected | 已拒绝，但保留拒绝原因 |
+| deferred | 暂缓，等待更多证据或条件成熟（含触发复审等待重新评估） |
+| superseded | 被新的 ADR 替代 |
+| deprecated | 不再推荐，但历史系统可能仍使用 |
+| abandoned | 决策未完成，且不再推进 |
+
+状态枚举与 `docs/99-templates/adr.md` 保持一致，统一使用小写形式。
 
 建议使用不可变原则：
 
