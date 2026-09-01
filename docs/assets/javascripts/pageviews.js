@@ -1,8 +1,6 @@
 ((global) => {
   "use strict"
 
-  const SNAPSHOT_URL = "/assets/data/pageviews.json"
-
   function normalizePath(value) {
     const path = new URL(value || "/", "https://amoursec.github.io").pathname || "/"
     return path === "/" || path.endsWith("/") ? path : `${path}/`
@@ -18,7 +16,11 @@
     if (!heading) return
 
     try {
-      const response = await fetch(SNAPSHOT_URL, { cache: "no-store" })
+      const script = document.querySelector('script[src$="/assets/javascripts/pageviews.js"]')
+      const snapshotUrl = script?.src
+        ? new URL("../data/pageviews.json", script.src).href
+        : "/assets/data/pageviews.json"
+      const response = await fetch(snapshotUrl, { cache: "no-store" })
       if (!response.ok) return
       const snapshot = await response.json()
       const count = snapshot.pages?.[normalizePath(global.location.pathname)]

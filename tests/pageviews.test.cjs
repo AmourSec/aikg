@@ -28,6 +28,11 @@ async function main() {
     querySelector(selector) {
       if (selector === "[data-pageviews]") return inserted
       if (selector === ".md-content__inner > h1") return heading
+      if (selector === 'script[src$="/assets/javascripts/pageviews.js"]') {
+        return {
+          src: "https://amoursec.github.io/aikg/assets/javascripts/pageviews.js",
+        }
+      }
       return null
     },
     createElement(tagName) {
@@ -36,7 +41,7 @@ async function main() {
     },
   }
   globalThis.fetch = async (url, options) => {
-    assert.equal(url, "/assets/data/pageviews.json")
+    assert.equal(url, "https://amoursec.github.io/aikg/assets/data/pageviews.json")
     assert.deepEqual(options, { cache: "no-store" })
     return {
       ok: true,
@@ -54,6 +59,7 @@ async function main() {
 
   // Then one subdued counter is inserted immediately after the title
   assert.equal(inserted, firstCounter)
+  assert.ok(inserted)
   assert.equal(inserted.className, "page-views")
   assert.equal(inserted.textContent, "浏览量：12,345")
   assert.ok(Object.hasOwn(inserted.dataset, "pageviews"))
