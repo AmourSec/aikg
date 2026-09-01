@@ -23,7 +23,7 @@ async function main() {
       inserted = element
     },
   }
-  globalThis.location = { pathname: "/docs" }
+  globalThis.location = { pathname: "/aikg/docs" }
   globalThis.document = {
     querySelector(selector) {
       if (selector === "[data-pageviews]") return inserted

@@ -17,13 +17,18 @@
 
     try {
       const script = document.querySelector('script[src$="/assets/javascripts/pageviews.js"]')
-      const snapshotUrl = script?.src
-        ? new URL("../data/pageviews.json", script.src).href
+      const scriptUrl = script?.src ? new URL(script.src) : null
+      const snapshotUrl = scriptUrl
+        ? new URL("../data/pageviews.json", scriptUrl).href
         : "/assets/data/pageviews.json"
       const response = await fetch(snapshotUrl, { cache: "no-store" })
       if (!response.ok) return
       const snapshot = await response.json()
-      const count = snapshot.pages?.[normalizePath(global.location.pathname)]
+      const siteRoot = scriptUrl ? new URL("../../", scriptUrl).pathname : "/"
+      const pagePath = global.location.pathname.startsWith(siteRoot)
+        ? `/${global.location.pathname.slice(siteRoot.length)}`
+        : global.location.pathname
+      const count = snapshot.pages?.[normalizePath(pagePath)]
       if (!Number.isInteger(count) || count <= 0) return
 
       const counter = document.createElement("p")
