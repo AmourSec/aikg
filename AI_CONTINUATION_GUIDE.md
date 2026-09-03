@@ -19,7 +19,7 @@
 ## 目录与职责
 
 - `docs/`：文档站源文件，是给人阅读、也给 AI 检索的主要 Markdown 内容。
-- `mkdocs.yml`：MkDocs Material 站点配置和导航结构，站点根地址是 `https://amoursec.github.io/`。
+- `mkdocs.yml`：MkDocs Material 站点配置和导航结构，站点地址是 `https://amoursec.github.io/aikg/`。
 - `docs/knowledge-map.md`：知识地图和导航型总览。章节结构、学习路径或重点主题变化时要同步更新。
 - `llms.txt`：给 AI 的入口索引，列出重点文档、skills 和原始 Markdown 地址。
 - `llms-full.txt`：给 AI 的单文件聚合上下文。
@@ -133,19 +133,15 @@ http://127.0.0.1:8801/
 git@github.com:AmourSec/aikg.git
 ```
 
-公开站点根地址：
+公开站点地址：
 
 ```text
-https://amoursec.github.io/
+https://amoursec.github.io/aikg/
 ```
 
-当前根站点部署使用 `AmourSec/AmourSec.github.io` 仓库。构建后把 `site/` 同步到 Pages 仓库，再提交和推送：
+站点由本仓库的 `.github/workflows/deploy-pages.yml` 自动部署：推送到 `master` 即构建并发布到 GitHub Pages 项目地址（`/aikg` 子路径），每日定时任务还会刷新文章浏览量快照。
 
-```bash
-rsync -a --delete --exclude .git --exclude .nojekyll /Users/alan/work/codex-demo/AIKnowledgeGraph/site/ /private/tmp/aikg-pages-deploy-615cb87/
-```
-
-只有影响网页内容或站点配置时才需要部署 Pages。只改根目录维护文档或 README 时，通常只需要推送源码仓库。
+旧的根域名 `https://amoursec.github.io/` 由 `AmourSec/AmourSec.github.io` 仓库托管，其内容已替换为跳转页（`index.html` 整页跳转、`404.html` 按原始路径跳转到 `/aikg` 下对应页面），不再承载站点内容。不要再用 rsync 手动同步站点到 Pages 仓库；只改根目录维护文档或 README 时，通常只需要推送源码仓库。
 
 ## 质量检查清单
 
