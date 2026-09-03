@@ -135,6 +135,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 99-templates/benchmark-report.md - 基准实验报告模板：从问题设计到可复现实验
 - superpowers/plans/2026-08-03-automatic-skill-routing.md - Automatic Skill Routing Implementation Plan
 - superpowers/specs/2026-08-03-automatic-skill-routing-design.md - 自动 Skill 发现、选择与按需加载系统设计
+- superpowers/specs/2026-09-01-umami-pageviews-design.md - GoatCounter 文章浏览量设计
 
 ## Skill Index
 
@@ -474,11 +475,75 @@ domain: getting-started
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-07-07
+updated: 2026-09-02
 
 # 入门导读
 
 本目录面向 AI Infra / AI Systems / Efficient AI Computing 方向的新生。入门目标不是系统学习所有模型算法，而是建立一个性能视角：一个 AI workload 为什么慢、为什么贵、为什么不稳定，以及可以从哪些层面改进。
+
+## 这个仓库能为你做什么
+
+本仓库不只是一个文章库，它同时服务人和 AI，有两个主要功能；其中 skills 自动路由还预留了一个默认关闭的远程检索扩展点。第一次来可以先看这一节，再决定往哪里走。
+
+| 功能 | 在哪里 | 给谁用 |
+| --- | --- | --- |
+| AI 基础知识文章库 | `docs/`（渲染为 MkDocs 站点） | 人和 AI |
+| Skills 库与自动技能路由 | `skills/` + `automatic-skill-routing/` | AI Agent |
+
+### 功能一：AI 基础知识文章库
+
+`docs/` 下是按学习顺序组织的 AI 系统与 Infra 文章，从 AI 基础概念一路讲到硬件、推理系统、训练系统、Kernel 优化和集群，渲染成 MkDocs 站点，并附带给 AI 用的索引文件。
+
+- **怎么用**：人从本页下方的学习路径往下读即可；AI 助手则把仓库 GitHub 链接和入口索引 `https://amoursec.github.io/llms.txt` 一起给它，AI 会按索引检索文章并引用原文路径。
+- **能做什么**：建立性能视角的共同语言；在写方案、调性能、排查问题时，作为可引用的背景知识来源。
+
+### 功能二：Skills 库与自动技能路由（告诉 AI 仓库链接即可自动找到合适的 skill）
+
+`skills/` 里存放的是面向 AI 执行的 SKILL.md——不是给人读的文章，而是可重复执行的工作流手册（例如"判断昇腾 NPU 型号与架构能力"）。`automatic-skill-routing/` 是配套的自动路由系统：它把所有来源的 skill 扫描成一份轻量目录（catalog），AI 拿到目录后按"召回 → 选择 → 知会 → 确认 → 加载 → 执行"的协议，根据你的自然语言任务自动判断该用哪些 skill。
+
+- **怎么用**：把本仓库的 GitHub 链接告诉 AI 助手即可；AI 从 `llms.txt` 定位 skills 与路由说明。维护者也可以运行 `python3 automatic-skill-routing/skills-router/scripts/build_catalog.py` 生成目录，再把 `router-context.md` 注入给 AI。
+- **能做什么**：你不需要记住 skill 的名字，用一句话描述任务，AI 就能自动匹配并加载对应工作流；新增一个 skill 也不需要修改任何路由代码。
+
+#### 可选扩展：远程技能检索（默认关闭的预留扩展点）
+
+自动技能路由还预留了一个运行期扩展点：`automatic-skill-routing/skills-router/runtime/`（可执行入口 `python3 -m runtime`）。它的设想是：当本地 skill 不够用时，在征得你同意后联网检索远程技能知识图谱（Ascend KG），把远程候选与本地目录合并后再路由。
+
+诚实地说，它今天不是开箱即用的功能——远程服务端（ascend.wiki）从未实测过（仓库文档明确注明），仓库也不随附任何密钥。它的价值在于把同意门、隐私边界、降级回退这些容易写错的部分提前实现并测试好，等真实服务可用时即可激活。接口设计仅参照上游 [agent0/kg-tools](https://gitcode.com/agent0/kg-tools)——未集成其任何代码，也不调用 kg-tools 官方服务，整个运行时全部自研。
+
+**若将来要启用，维护者需要两步配置**（环境前置：Python 3.10+，已安装 `pyyaml`）：
+
+1. 生成本地目录（远程候选会和它合并）：
+
+   ```bash
+   python3 automatic-skill-routing/skills-router/scripts/build_catalog.py
+   ```
+
+2. 设置 Ascend KG 服务密钥（需先向 ascend.wiki 服务方申请）：
+
+   ```bash
+   export ASCEND_KG_API_KEY=<你的密钥>
+   ```
+
+   不设置或留空即为纯本地模式：完全不联网，也不影响本地路由。
+
+**配置好后，由宿主 Agent 按任务调用**（一进程一任务的 NDJSON 会话，通常由 Agent 平台适配器自动驱动，不需要手动输入）：
+
+```bash
+cd automatic-skill-routing/skills-router
+python3 -m runtime \
+  --catalog catalog.json \
+  --workspace-root ../.. \
+  --native-skill <已安装的本地skill名>   # 可重复，声明宿主原生 skill 工具里已装的 skill
+```
+
+**任务执行过程中，你会被询问两次**，两次都拒绝也可以继续：
+
+1. **网络同意**：先展示将精确发送到 `ascend.wiki` 的请求内容（只有当前任务文本，不含对话历史和文件内容），你同意后才发起检索；
+2. **激活确认**：选中远程 skill 后、加载其内容前，再单独确认一次。
+
+- **不启用会怎样**：完全不联网，自动路由照常基于本地目录工作，功能二不受任何影响。
+- **启用后能做什么**：把 skill 的查找范围从本地目录扩展到远程知识图谱；密钥缺失、你拒绝同意、网络或服务出错时，自动回退为纯本地模式并向你说明原因，任务不会中断。远程内容只临时内联展示，不会安装到本地、不会落盘。
+- **想先试试**：不设密钥跑 `python3 -m runtime --help` 可离线自检；纯本地完整流程见 `automatic-skill-routing/skills-router/opencode-adapter.md`。
 
 ## 建议先建立的共同语言
 
@@ -103417,6 +103482,181 @@ active 指针指向包含 lock、Catalog、索引和报告的完整版本目录�
 6. 完整维护文档、AI 续作协议和现有 `llms` 索引集成。
 
 任何阶段都不得用硬编码具体 Skill 名称替代通用数据契约。
+
+---
+
+# Document: GoatCounter 文章浏览量设计
+
+Source: docs/superpowers/specs/2026-09-01-umami-pageviews-design.md
+URL: https://amoursec.github.io/superpowers/specs/2026-09-01-umami-pageviews-design/
+
+# GoatCounter 文章浏览量设计
+
+## 背景
+
+AI Knowledge Graph 是通过 Material for MkDocs 构建并部署到 GitHub Pages 的纯静态站点。GitHub Pages 不提供可供站点使用的逐页面访问日志，也不能在请求期间写入数据库，因此文章浏览量需要由外部统计服务采集，再转换成站点可读取的静态快照。
+
+本设计使用 GoatCounter Cloud 采集页面访问，由 GitHub Actions 每晚把累计浏览量同步到仓库，并在文章标题下展示最近一次成功同步的结果。整个流程不依赖用户电脑常驻运行。本文件最初记录 Umami Cloud 方案；由于其 API 需要 Pro 套餐，现已由本方案取代。
+
+## 目标
+
+- 为每个 MkDocs 页面采集累计 pageview。
+- 在文章标题下展示截至最近一次成功同步的浏览量。
+- 每天 23:17（Asia/Taipei）自动同步统计数据。
+- 仅在统计数据发生变化时提交生成文件。
+- API 密钥只存在于 GitHub Actions Secret，不进入仓库或浏览器。
+- 同步失败时保留上一版数据和已部署站点。
+- 保持现有 GitHub Pages 构建和部署方式。
+
+## 非目标
+
+- 不实现实时更新的公开计数器；公开数字最多滞后一天。
+- 不修改每篇 Markdown 的正文或 front matter。
+- 不在仓库中保存访客级事件、IP、User-Agent 或会话信息。
+- 不构建自定义统计后台；详细分析继续使用 GoatCounter 控制台。
+- 不迁移文章 URL 之间的历史数据；URL 改名时需另行维护别名映射。
+
+## 架构
+
+系统包含三个相互独立的部分：
+
+1. **浏览器采集**：线上生成页面加载 GoatCounter 的 `count.js`，并使用公开站点代码 `amoursec` 上报页面访问。站点代码不是密钥，可以出现在生成的 HTML 中。
+2. **每日同步**：GitHub Actions 使用私密 API Key 调用 GoatCounter API，将逐路径累计 pageview 转换为稳定、排序后的 JSON 快照。
+3. **页面展示**：本地 JavaScript 读取随站点一起部署的 JSON，根据当前规范化路径查找并渲染浏览量。
+
+数据流：
+
+```text
+访客浏览文章
+  -> GoatCounter Cloud 记录访问
+  -> GitHub Actions 每晚读取逐路径累计 pageview
+  -> 更新 docs/assets/data/pageviews.json
+  -> 同一次工作流构建并部署 GitHub Pages
+  -> 页面从本地 JSON 展示最近一次快照
+```
+
+## 组件与文件
+
+### `mkdocs.yml`
+
+- 注册 GoatCounter 跟踪脚本和页面浏览量展示脚本。
+- 继续使用现有 Material 主题和构建配置。
+- 不包含 API Key。
+
+### `docs/assets/javascripts/analytics.js`
+
+- 仅在 `amoursec.github.io` 加载 GoatCounter 官方跟踪脚本，本地预览不发送统计请求。
+- 使用公开站点代码 `amoursec`，上报端点为 `https://amoursec.goatcounter.com/count`。
+- 每次完整页面加载只上报一次。
+- 当前站点未启用 `navigation.instant`；如果未来启用，需要改为监听 Material 的导航 observable，避免漏报或重复上报。
+
+### `scripts/update_pageviews.py`
+
+- 从环境变量读取 `GOATCOUNTER_API_KEY` 和 `GOATCOUNTER_SITE_CODE`。
+- 调用 `/api/v0/stats/hits` 获取从 1970-01-01 到当前 UTC 整点的累计统计，每页最多 100 条。
+- 当响应的 `more` 为真时，把已返回的 `path_id` 作为 `exclude_paths` 继续请求，直到读取全部路径。
+- 忽略 GoatCounter 事件记录；GoatCounter 已关闭 Sessions，因此每次页面加载计为一次浏览量。
+- 规范化路径、过滤非页面记录、按路径排序。
+- 先在内存中验证完整响应，再以确定性格式写入目标文件。
+- 网络、鉴权、JSON 结构或分页异常时以非零状态退出，不覆盖旧快照。
+- 日志不得输出 API Key 或完整请求头。
+
+使用的 GoatCounter API 根地址为 `https://amoursec.goatcounter.com/api/v0`。统计接口使用 Bearer API Key 认证。
+
+### `docs/assets/data/pageviews.json`
+
+生成文件采用以下结构：
+
+```json
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-01T23:17:00+08:00",
+  "pages": {
+    "/03-inference-systems/kv-cache/": 926,
+    "/03-inference-systems/vllm/": 1382
+  }
+}
+```
+
+- `updated_at` 只在页面计数发生变化时更新，因此无访问变化时不会制造空提交。
+- `pages` 的键为规范化后的站内绝对路径，值为非负整数 pageview。
+- 初始文件使用 `{"schema_version": 1, "updated_at": null, "pages": {}}`，使首次部署不依赖 GoatCounter 已有数据。
+
+### `docs/assets/javascripts/pageviews.js`
+
+- 使用 `fetch` 读取站内 `assets/data/pageviews.json`，不直接调用 GoatCounter API。
+- 从 `location.pathname` 移除查询字符串和片段，并统一目录尾部 `/`。
+- 找到 `.md-content__inner > h1` 后插入浏览量文本。
+- 没有对应计数、JSON 不可用或 DOM 结构不匹配时静默隐藏，不影响正文。
+- 使用 `textContent` 渲染数字，不拼接不可信 HTML。
+- 数字通过 `Intl.NumberFormat("zh-CN")` 格式化。
+
+### `docs/assets/stylesheets/extra.css`
+
+- 为浏览量文本增加使用 Material 现有颜色变量的低强调样式。
+- 不引入新的字体、颜色体系或布局组件。
+
+### `.github/workflows/deploy-pages.yml`
+
+- 保留现有 `push` 和 `workflow_dispatch` 入口，增加每天 23:17、`Asia/Taipei` 的 `schedule`。
+- `schedule` 和手动运行在构建前同步浏览量；普通内容 push 不访问 GoatCounter API。
+- 将 `contents` 权限调整为 `write`，保留 `pages: write` 和 `id-token: write`。
+- 快照变化时，以 `github-actions[bot]` 身份提交唯一生成文件。
+- 无变化时跳过提交。
+- 无论是否生成提交，当前工作流继续构建当前工作树并部署；不能依赖机器人提交再次触发 Pages 工作流。
+- 同步失败时终止构建和部署，线上继续保留上一版成功产物。
+
+## 路径规则
+
+- 统计键只使用 URL pathname，不含 scheme、host、query 或 fragment。
+- 空路径规范化为 `/`。
+- 非根目录路径统一以 `/` 结尾，与 MkDocs 默认目录 URL 对齐。
+- 同一个页面的 `/path` 与 `/path/` 合并到 `/path/`。
+- 第一版同步所有 GoatCounter 返回的非事件路径，不增加一次预构建来过滤 sitemap。已删除页面的历史键可能继续存在于 JSON 中，但没有页面会读取它们，不影响显示；未来仅在文件规模成为实际问题时再增加清理策略。
+
+## 安全与隐私
+
+- `GOATCOUNTER_API_KEY` 存放在 GitHub Repository Actions Secret。
+- `GOATCOUNTER_SITE_CODE` 是公开标识，工作流固定为 `amoursec`。
+- Action 权限遵循最小化原则：仅需要仓库内容写入、Pages 部署和 OIDC。
+- 浏览器永远不获得 GoatCounter API Key。
+- 仓库只保存聚合后的路径与数字，不保存用户级记录。
+- 所有外部请求必须使用 HTTPS，并设置有限超时。
+
+## 失败处理
+
+- GoatCounter API 返回非 2xx：同步脚本失败，旧快照不变。
+- API 返回未知结构或非整数 pageview：同步脚本失败，不发布部分数据。
+- 分页中途失败：整次同步失败，不写入目标文件。
+- Git 提交或推送失败：工作流失败，不部署未被仓库记录的快照。
+- 页面加载 JSON 失败：不显示浏览量，文章其余内容正常工作。
+- 某路径尚无数据：不显示 `0`，避免把“尚未同步”误解成真实零访问。
+
+## 验证方案
+
+### 自动验证
+
+- 为同步脚本提供标准库单元测试，覆盖分页、路径规范化、无变化、错误响应和确定性 JSON 输出。
+- 对展示脚本至少执行语法检查；如仓库没有现成 JavaScript 测试框架，不为该小功能引入新的前端工具链。
+- 执行 `mkdocs build --strict`，确保资源路径和配置有效。
+
+### 手动验证
+
+1. 本地启动 MkDocs，确认文章页在空快照下正常显示且无控制台错误。
+2. 使用测试快照确认标题下显示正确的格式化数字，并验证不存在路径时静默隐藏。
+3. 在 GitHub 手动运行部署工作流，确认 GoatCounter API 拉取成功并只修改快照文件。
+4. 访问线上文章产生页面浏览，再次手动同步，确认 GoatCounter、仓库 JSON 和页面显示形成完整闭环。
+5. 临时使用无效凭据运行受控测试，确认旧快照未被覆盖且线上站点不受影响。
+
+## 验收标准
+
+- GoatCounter 控制台能看到线上文章访问。
+- 每晚定时工作流能在无本地电脑参与的情况下执行。
+- 有浏览量变化时，仅生成预期的快照提交并完成 Pages 部署。
+- 没有变化时不生成提交。
+- 每个已有统计记录的文章页显示对应累计 pageview。
+- API Key 不出现在 Git 历史、构建产物、页面源码或工作流日志中。
+- 任一外部依赖失败都不会破坏现有文章访问。
 
 ---
 

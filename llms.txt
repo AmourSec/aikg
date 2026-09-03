@@ -150,6 +150,7 @@ This repository is a public Markdown knowledge base rendered as a MkDocs site. H
 - [基准实验报告模板：从问题设计到可复现实验](https://amoursec.github.io/99-templates/benchmark-report/): 基准实验报告模板说明如何撰写 AI Infra benchmark report，覆盖 benchmark 类型、证据等级、最小模板、完整推荐模板、benchmark question、hypothesis、validity scope、workload contract、hardware/software/runtime environment、baseline、variants、primary/guardrail/debugging metrics、experiment design、warmup、repetitions、sweep、stop conditions、commands、run manifest、raw data、summary data、results、statistical treatment、profiler and bottleneck analysis、correctness and quality guardrails、cost and energy、conclusion、artifact index、AI-readable benchmark card、字段说明、写作规则、常见误区和质量门禁。
 - [Automatic Skill Routing Implementation Plan](https://amoursec.github.io/superpowers/plans/2026-08-03-automatic-skill-routing/): 补充文档或模板。
 - [自动 Skill 发现、选择与按需加载系统设计](https://amoursec.github.io/superpowers/specs/2026-08-03-automatic-skill-routing-design/): 补充文档或模板。
+- [GoatCounter 文章浏览量设计](https://amoursec.github.io/superpowers/specs/2026-09-01-umami-pageviews-design/): 补充文档或模板。
 
 ## AI Skill Samples
 
@@ -286,6 +287,7 @@ Prefer Markdown source when exact wording, metadata, or citations are needed.
 - [99-templates/benchmark-report.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/99-templates/benchmark-report.md)
 - [superpowers/plans/2026-08-03-automatic-skill-routing.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/superpowers/plans/2026-08-03-automatic-skill-routing.md)
 - [superpowers/specs/2026-08-03-automatic-skill-routing-design.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/superpowers/specs/2026-08-03-automatic-skill-routing-design.md)
+- [superpowers/specs/2026-09-01-umami-pageviews-design.md](https://raw.githubusercontent.com/AmourSec/aikg/master/docs/superpowers/specs/2026-09-01-umami-pageviews-design.md)
 - [skills/npu-arch-capability-check/SKILL.md](https://raw.githubusercontent.com/AmourSec/aikg/master/skills/npu-arch-capability-check/SKILL.md)
 
 ## AI Usage Notes
