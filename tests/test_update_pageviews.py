@@ -14,12 +14,12 @@ from scripts import update_pageviews
 
 
 class UpdatePageviewsTests(unittest.TestCase):
-    def test_request_json_exposes_goatcounter_http_error_details(self) -> None:
+    def test_request_json_exposes_non_retryable_http_error_details(self) -> None:
         # Given GoatCounter returns a structured HTTP error
         response = HTTPError(
             "https://amoursec.goatcounter.com/api/v0/stats/hits",
-            404,
-            "Not Found",
+            401,
+            "Unauthorized",
             {},
             BytesIO(b'{"error":"site not found"}'),
         )
@@ -27,7 +27,11 @@ class UpdatePageviewsTests(unittest.TestCase):
         # When the API request is made
         # Then the failure retains the status and safe response detail
         with (
-            patch.object(update_pageviews, "urlopen", side_effect=response),
+            patch.object(
+                update_pageviews,
+                "urlopen",
+                side_effect=response,
+            ) as opener,
             self.assertRaises(update_pageviews.GoatCounterHttpError) as caught,
         ):
             update_pageviews.request_json(
@@ -36,7 +40,8 @@ class UpdatePageviewsTests(unittest.TestCase):
                 "secret",
             )
 
-        self.assertEqual(caught.exception.status_code, 404)
+        self.assertEqual(opener.call_count, 1)
+        self.assertEqual(caught.exception.status_code, 401)
         self.assertEqual(caught.exception.detail, "site not found")
 
     def test_normalize_path_merges_clean_urls(self) -> None:

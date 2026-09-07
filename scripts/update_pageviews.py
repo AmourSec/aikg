@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -31,6 +32,7 @@ from zoneinfo import ZoneInfo
 API_ROOT: Final = "https://{site_code}.goatcounter.com/api/v0"
 PAGE_SIZE: Final = 100
 ALL_TIME_START: Final = "1970-01-01T00:00:00Z"
+RETRY_DELAYS: Final = (2.0, 5.0)
 SNAPSHOT_PATH: Final = Path("docs/assets/data/pageviews.json")
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
@@ -78,19 +80,26 @@ def request_json(
             "Authorization": f"Bearer {api_key}",
         },
     )
-    try:
-        with urlopen(request, timeout=20) as response:
-            return json.load(response)
-    except HTTPError as error:
-        body = error.read().decode("utf-8", errors="replace").strip()
-        detail = body or str(error.reason)
+    attempt = 0
+    while True:
         try:
-            payload = json.loads(body)
-        except json.JSONDecodeError:
-            payload = None
-        if isinstance(payload, dict) and isinstance(payload.get("error"), str):
-            detail = payload["error"]
-        raise GoatCounterHttpError(error.code, detail[:500]) from error
+            with urlopen(request, timeout=20) as response:
+                return json.load(response)
+        except HTTPError as error:
+            body = error.read().decode("utf-8", errors="replace").strip()
+            detail = body or str(error.reason)
+            try:
+                payload = json.loads(body)
+            except json.JSONDecodeError:
+                payload = None
+            if isinstance(payload, dict) and isinstance(payload.get("error"), str):
+                detail = payload["error"]
+            retryable = error.code in {404, 429} or error.code >= 500
+            if retryable and attempt < len(RETRY_DELAYS):
+                time.sleep(RETRY_DELAYS[attempt])
+                attempt += 1
+                continue
+            raise GoatCounterHttpError(error.code, detail[:500]) from error
 
 
 def _utc_hour(value: datetime) -> str:
