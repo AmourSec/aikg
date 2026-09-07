@@ -64,6 +64,16 @@ async function main() {
   assert.equal(inserted.textContent, "浏览量：12,345")
   assert.ok(Object.hasOwn(inserted.dataset, "pageviews"))
 
+  // Given an article without a snapshot entry
+  // When rendering that article
+  inserted = null
+  globalThis.location = { pathname: "/aikg/missing" }
+
+  // Then the page still exposes an explicit zero count
+  await globalThis.AIKGPageviews.render()
+  assert.ok(inserted)
+  assert.equal(inserted.textContent, "浏览量：0")
+
   console.log("pageviews browser helpers and rendering: PASS")
 }
 

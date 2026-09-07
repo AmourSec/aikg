@@ -28,8 +28,9 @@
       const pagePath = global.location.pathname.startsWith(siteRoot)
         ? `/${global.location.pathname.slice(siteRoot.length)}`
         : global.location.pathname
-      const count = snapshot.pages?.[normalizePath(pagePath)]
-      if (!Number.isInteger(count) || count <= 0) return
+      const storedCount = snapshot.pages?.[normalizePath(pagePath)]
+      const count = storedCount === undefined ? 0 : storedCount
+      if (!Number.isInteger(count) || count < 0) return
 
       const counter = document.createElement("p")
       counter.className = "page-views"
