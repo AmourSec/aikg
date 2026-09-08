@@ -28,9 +28,16 @@
       const pagePath = global.location.pathname.startsWith(siteRoot)
         ? `/${global.location.pathname.slice(siteRoot.length)}`
         : global.location.pathname
-      const storedCount = snapshot.pages?.[normalizePath(pagePath)]
-      const count = storedCount === undefined ? 0 : storedCount
-      if (!Number.isInteger(count) || count < 0) return
+      const paths = new Set([
+        normalizePath(pagePath),
+        normalizePath(global.location.pathname),
+      ])
+      const counts = [...paths].map((path) => {
+        const storedCount = snapshot.pages?.[path]
+        return storedCount === undefined ? 0 : storedCount
+      })
+      if (counts.some((count) => !Number.isInteger(count) || count < 0)) return
+      const count = counts.reduce((total, value) => total + value, 0)
 
       const counter = document.createElement("p")
       counter.className = "page-views"

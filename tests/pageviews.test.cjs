@@ -40,13 +40,14 @@ async function main() {
       return { className: "", dataset: {}, textContent: "" }
     },
   }
+  let pageCounts = { "/docs/": 12345 }
   globalThis.fetch = async (url, options) => {
     assert.equal(url, "https://amoursec.github.io/aikg/assets/data/pageviews.json")
     assert.deepEqual(options, { cache: "no-store" })
     return {
       ok: true,
       async json() {
-        return { pages: { "/docs/": 12345 } }
+        return { pages: pageCounts }
       },
     }
   }
@@ -73,6 +74,30 @@ async function main() {
   await globalThis.AIKGPageviews.render()
   assert.ok(inserted)
   assert.equal(inserted.textContent, "浏览量：0")
+
+  globalThis.location = { pathname: "/aikg/docs/" }
+  for (const [pages, expected] of [
+    [{ "/aikg/docs/": 7 }, "浏览量：7"],
+    [{ "/docs/": 5, "/aikg/docs/": 7 }, "浏览量：12"],
+  ]) {
+    inserted = null
+    pageCounts = pages
+    await globalThis.AIKGPageviews.render()
+    assert.equal(inserted.textContent, expected)
+  }
+
+  for (const invalid of [-1, 1.5, true, "7", null]) {
+    inserted = null
+    pageCounts = { "/docs/": 5, "/aikg/docs/": invalid }
+    await globalThis.AIKGPageviews.render()
+    assert.equal(inserted, null)
+  }
+
+  inserted = null
+  globalThis.location = { pathname: "/docs/" }
+  pageCounts = { "/docs/": 5 }
+  await globalThis.AIKGPageviews.render()
+  assert.equal(inserted.textContent, "浏览量：5")
 
   console.log("pageviews browser helpers and rendering: PASS")
 }
