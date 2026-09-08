@@ -169,6 +169,8 @@ domain: technical-decision-records
 doc_type: adr
 status: proposed
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 decision_status: proposed

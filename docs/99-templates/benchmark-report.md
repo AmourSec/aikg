@@ -134,6 +134,8 @@ domain: benchmark-capacity
 doc_type: benchmark-report
 status: draft
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 benchmark_type: ""

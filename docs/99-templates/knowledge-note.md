@@ -81,6 +81,8 @@ domain: ""
 doc_type: concept
 status: draft
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 workload: []
