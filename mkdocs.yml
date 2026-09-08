@@ -59,9 +59,7 @@ markdown_extensions:
 nav:
   - 首页: index.md
   - 知识地图: knowledge-map.md
-  - 贡献榜单:
-      - 每日排行榜: 13-contribution-leaderboard/index.md
-      - 榜单维护说明: 13-contribution-leaderboard/maintenance.md
+  - 贡献排行榜: contribution-leaderboard.md
   - 入门导读:
       - 概览: 01-getting-started/index.md
   - AI 计算工作负载基础:

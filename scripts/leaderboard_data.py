@@ -114,6 +114,8 @@ def _article_source(value: str, root: Path) -> str | None:
         return None
     if source.name == "index.md" or value == "knowledge-map.md":
         return None
+    if value == "contribution-leaderboard.md":
+        return None
     if EXCLUDED_DIRECTORIES.intersection(source.parts):
         return None
     docs = (root / "docs").resolve()

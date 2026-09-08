@@ -129,6 +129,7 @@ class LeaderboardDataTests(unittest.TestCase):
         paths = (
             "index.md",
             "knowledge-map.md",
+            "contribution-leaderboard.md",
             "topic/index.md",
             "99-templates/note.md",
             "superpowers/plan.md",

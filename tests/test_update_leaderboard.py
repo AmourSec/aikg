@@ -15,6 +15,7 @@ from scripts.update_leaderboard import (
     PAGE_PATH,
     rank_articles,
     rank_contributors,
+    rank_contributors_by_articles,
     render_page,
     update_leaderboard,
 )
@@ -33,8 +34,12 @@ class LeaderboardTests(unittest.TestCase):
         )
         self.assertEqual(len(rank_articles(articles)), 10)
         self.assertEqual(rank_articles(articles)[0].title, "Bob")
+        self.assertEqual(
+            [row.name for row in rank_contributors_by_articles(articles)],
+            ["alice", "bob"],
+        )
 
-    def test_both_rankings_limit_ten_and_break_ties_stably(self) -> None:
+    def test_all_rankings_limit_ten_and_break_ties_stably(self) -> None:
         articles = tuple(
             Article(f"a/{i:02}.md", str(i), (f"author{i:02}",), 0)
             for i in reversed(range(15))
@@ -46,6 +51,22 @@ class LeaderboardTests(unittest.TestCase):
         self.assertEqual(
             [a.name for a in rank_contributors(articles)],
             [f"author{i:02}" for i in range(10)],
+        )
+        self.assertEqual(
+            [a.name for a in rank_contributors_by_articles(articles)],
+            [f"author{i:02}" for i in range(10)],
+        )
+
+    def test_article_count_ranking_uses_views_then_name_for_ties(self) -> None:
+        articles = (
+            Article("a.md", "A", ("alice",), 1),
+            Article("b.md", "B", ("alice",), 1),
+            Article("c.md", "C", ("bob",), 100),
+            Article("d.md", "D", ("carol",), 100),
+        )
+        self.assertEqual(
+            [row.name for row in rank_contributors_by_articles(articles)],
+            ["alice", "bob", "carol"],
         )
 
     def test_shared_article_counts_once_for_each_author_and_unknown_is_excluded(
@@ -78,8 +99,8 @@ class LeaderboardTests(unittest.TestCase):
             "html.parser",
         )
         tables = soup.find_all("table")
-        self.assertEqual(len(tables), 2)
-        cells = tables[1].select("tbody td")
+        self.assertEqual(len(tables), 3)
+        cells = tables[2].select("tbody td")
         self.assertEqual(
             [td.get_text() for td in cells], ["1", title, author, "12,345"]
         )
@@ -87,9 +108,14 @@ class LeaderboardTests(unittest.TestCase):
         assert link is not None
         self.assertEqual(
             link["href"],
-            "../02-ai-workloads/%E4%B8%AD%E6%96%87%20%28%E6%B5%8B%E8%AF%95%29.md",
+            "02-ai-workloads/%E4%B8%AD%E6%96%87%20%28%E6%B5%8B%E8%AF%95%29.md",
         )
         self.assertIsNone(soup.find("script"))
+        self.assertGreater(
+            rendered.index("## 榜单维护说明"),
+            rendered.index("## 文章浏览量排行榜 Top 10"),
+        )
+        self.assertNotIn("榜单维护说明](maintenance.md)", rendered)
 
     def test_unknown_authors_are_visible_in_article_ranking(self) -> None:
         rendered = render_page(
@@ -112,6 +138,7 @@ class LeaderboardTests(unittest.TestCase):
     def test_daily_regeneration_is_stable_and_invalid_data_preserves_last_page(
         self,
     ) -> None:
+        self.assertEqual(PAGE_PATH, Path("docs/contribution-leaderboard.md"))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _ = subprocess.run(["git", "init", "-q", str(root)], check=True)

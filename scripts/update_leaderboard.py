@@ -29,7 +29,13 @@ from scripts.leaderboard_data import (
     load_snapshot,
 )
 
-PAGE_PATH: Final = Path("docs/13-contribution-leaderboard/index.md")
+PAGE_PATH: Final = Path("docs/contribution-leaderboard.md")
+MAINTENANCE_MARKDOWN: Final = (
+    Path(__file__)
+    .with_name("leaderboard_maintenance.md")
+    .read_text(encoding="utf-8")
+    .rstrip()
+)
 TIMEZONE: Final = ZoneInfo("Asia/Taipei")
 TOP_LIMIT: Final = 10
 
@@ -41,19 +47,33 @@ class Contributor:
     views: int
 
 
-def rank_contributors(articles: tuple[Article, ...]) -> tuple[Contributor, ...]:
+def contributor_totals(articles: tuple[Article, ...]) -> tuple[Contributor, ...]:
     counts: Counter[str] = Counter()
     views: Counter[str] = Counter()
     for article in articles:
         for author in dict.fromkeys(article.authors):
             counts[author] += 1
             views[author] += article.views
-    contributors = (
+    return tuple(
         Contributor(name, count, views[name]) for name, count in counts.items()
     )
-    return tuple(sorted(contributors, key=lambda item: (-item.views, item.name)))[
-        :TOP_LIMIT
-    ]
+
+
+def rank_contributors(articles: tuple[Article, ...]) -> tuple[Contributor, ...]:
+    return tuple(
+        sorted(contributor_totals(articles), key=lambda item: (-item.views, item.name))
+    )[:TOP_LIMIT]
+
+
+def rank_contributors_by_articles(
+    articles: tuple[Article, ...],
+) -> tuple[Contributor, ...]:
+    return tuple(
+        sorted(
+            contributor_totals(articles),
+            key=lambda item: (-item.articles, -item.views, item.name),
+        )
+    )[:TOP_LIMIT]
 
 
 def rank_articles(articles: tuple[Article, ...]) -> tuple[Article, ...]:
@@ -82,19 +102,19 @@ def render_page(
     contributor_count = len({name for article in articles for name in article.authors})
     lines = [
         "---",
-        "title: 贡献榜单",
-        "description: 每日更新的贡献者和文章累计浏览量 Top 10",
+        "title: 贡献排行榜",
+        "description: 每日更新的贡献者浏览量、贡献文章数和文章浏览量 Top 10",
         "status: reviewed",
         "owner: maintainers",
         "license: CC-BY-4.0",
         f"updated: {day}",
         "---",
         "",
-        "# 贡献榜单",
+        "# 贡献排行榜",
         "",
         '<div class="contribution-leaderboard" markdown="1">',
         "",
-        "看看哪些贡献者的文章被读得最多，以及知识库中最受关注的文章。",
+        "查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。",
         "",
         f"榜单更新：**{day}**（台北时间，UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。",
         "",
@@ -105,7 +125,7 @@ def render_page(
         "",
         f"浏览量快照最近变更：{snapshot_time}（台北时间）；浏览量未变化时保留该时间。",
         "",
-        "## 贡献者排行榜 Top 10",
+        "## 贡献者浏览量排行榜 Top 10",
         "",
         "按每位贡献者名下**全部文章**的累计浏览量之和排序。",
         "",
@@ -130,7 +150,31 @@ def render_page(
     lines.extend(
         [
             "",
-            "## 文章排行榜 Top 10",
+            "## 贡献文章数排行榜 Top 10",
+            "",
+            "按每位贡献者名下的知识文章数量排序。",
+            "",
+        ]
+    )
+    article_contributors = rank_contributors_by_articles(articles)
+    if article_contributors:
+        lines.extend(["| 排名 | 贡献者 | 文章数 |", "| ---: | --- | ---: |"])
+        lines.extend(
+            f"| {rank} | {cell(item.name)} | {item.articles:,} |"
+            for rank, item in enumerate(article_contributors, 1)
+        )
+        if len(article_contributors) < TOP_LIMIT:
+            lines.extend(
+                ["", f"目前共有 {contributor_count} 位贡献者，按实际人数展示。"]
+            )
+    else:
+        lines.append(
+            "暂无可归属的贡献者；文章补充作者署名或可追溯的 Git 创建记录后自动入榜。"
+        )
+    lines.extend(
+        [
+            "",
+            "## 文章浏览量排行榜 Top 10",
             "",
             "按单篇文章的累计浏览量排序。点击文章标题阅读全文。",
             "",
@@ -142,7 +186,7 @@ def render_page(
             ["| 排名 | 文章 | 作者 | 累计浏览量 |", "| ---: | --- | --- | ---: |"]
         )
         for rank, article in enumerate(ranked, 1):
-            url = quote(f"../{article.source}", safe="/.-_")
+            url = quote(article.source, safe="/.-_")
             authors = "、".join(cell(name) for name in article.authors) or "作者未标注"
             lines.append(
                 f"| {rank} | [{cell(article.title)}]({url}) | {authors} | {article.views:,} |"
@@ -158,9 +202,9 @@ def render_page(
             "- 只统计站点导航中的知识文章；首页、知识地图、主题概览、模板和榜单自身不参与排名。未有访问记录的文章按 0 计入。",
             "- 作者优先使用文章元数据中的 `authors`（兼容单作者 `author`）；历史未署名文章按 Git 首次提交者归属，文件重命名会追溯原记录。该归属代表仓库贡献记录。",
             "- 多作者文章的完整浏览量分别计入各位作者，因此贡献者浏览量相加可能超过文章总浏览量。同一作者在同篇文章中只计一次。",
-            "- 同分时按贡献者名称或文章路径稳定排序，各榜最多展示 10 项。无法确认作者的文章显示“作者未标注”，不计入个人榜。",
+            "- 浏览量榜同分时按贡献者名称或文章路径稳定排序；贡献文章数榜同分时先按累计浏览量、再按贡献者名称排序。各榜最多展示 10 项。无法确认作者的文章显示“作者未标注”，不计入个人榜。",
             "",
-            "作者补充、姓名合并与本地更新方法见[榜单维护说明](maintenance.md)。",
+            MAINTENANCE_MARKDOWN,
             "",
             "</div>",
             "",

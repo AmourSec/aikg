@@ -56,13 +56,13 @@ jobs:
 
       - name: Commit statistics and leaderboard
         run: |
-          if git diff --quiet -- docs/assets/data/pageviews.json docs/13-contribution-leaderboard/index.md; then
+          if git diff --quiet -- docs/assets/data/pageviews.json docs/contribution-leaderboard.md; then
             echo "Statistics and leaderboard unchanged"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/assets/data/pageviews.json docs/13-contribution-leaderboard/index.md
+          git add docs/assets/data/pageviews.json docs/contribution-leaderboard.md
           git commit -m "chore: update page views and contribution leaderboard [skip ci]"
           git push
 
