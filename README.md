@@ -80,6 +80,28 @@ git remote add origin git@github.com:AmourSec/aikg.git
 git push -u origin master
 ```
 
+## Article comments
+
+Every documentation page includes a Chinese-language giscus comment section and
+article reactions, backed by GitHub Discussions in `AmourSec/aikg`.
+Readers sign in with GitHub to participate. The site does not contain an API token.
+
+Before publishing, enable Discussions and install the
+[giscus GitHub App](https://github.com/apps/giscus) with access to **only this repository**.
+The repository and Announcements category IDs are configured under `extra.giscus`
+in `mkdocs.yml`. If the repository or category changes, obtain the new IDs from
+[the giscus configuration page](https://giscus.app/zh-CN).
+
+The shared template is `overrides/partials/comments.html`. Discussions use the
+source Markdown path (for example, `03-inference-systems/vllm.md`) as their exact
+mapping key, so local preview and the `/aikg/` deployment share the same thread.
+Renaming a Markdown file requires migrating its discussion mapping; changing an
+article title does not. A discussion is created upon the first comment or reaction.
+Use a separate repository when testing submissions locally to avoid production data.
+
+To disable comments on an individual page, add `comments: false` to its YAML front
+matter. The GitHub Discussions link remains available when the widget cannot load.
+
 ## License
 
 Documentation content is licensed under Creative Commons Attribution 4.0 International. Code, configuration, and automation files are licensed under the MIT License. See `LICENSE`.

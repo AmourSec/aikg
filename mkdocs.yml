@@ -11,6 +11,7 @@ extra_javascript:
   - assets/javascripts/pageviews.js
 theme:
   name: material
+  custom_dir: overrides
   language: zh
   features:
     - navigation.expand
@@ -22,6 +23,12 @@ theme:
     - scheme: default
       primary: indigo
       accent: blue
+extra:
+  giscus:
+    repo: AmourSec/aikg
+    repo_id: R_kgDOSr5Z2g
+    category: Announcements
+    category_id: DIC_kwDOSr5Z2s4DFMKg
 plugins:
   - search:
       lang:
