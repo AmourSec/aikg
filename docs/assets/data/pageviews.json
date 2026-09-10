@@ -1,24 +1,26 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-10T02:39:19+08:00",
+  "updated_at": "2026-09-11T02:30:45+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 22,
+    "/aikg/": 27,
     "/aikg/01-getting-started/": 8,
     "/aikg/02-ai-workloads/": 4,
     "/aikg/02-ai-workloads/ai-fundamentals/": 3,
     "/aikg/02-ai-workloads/inference-primer/": 1,
-    "/aikg/02-ai-workloads/multimodal-primer/": 1,
+    "/aikg/02-ai-workloads/multimodal-primer/": 4,
     "/aikg/02-ai-workloads/training-primer/": 1,
     "/aikg/02-ai-workloads/transformer/": 2,
     "/aikg/04-training-systems/": 1,
     "/aikg/04-training-systems/pipeline-parallel/": 1,
     "/aikg/05-kernels-compilers/": 2,
-    "/aikg/05-kernels-compilers/attention-computation-patterns/": 2,
+    "/aikg/05-kernels-compilers/attention-computation-patterns/": 3,
+    "/aikg/05-kernels-compilers/tilelang/": 1,
+    "/aikg/12-hardware-basics/npu-basics/": 1,
     "/aikg/13-contribution-leaderboard/": 2,
     "/aikg/13-contribution-leaderboard/maintenance/": 1,
-    "/aikg/contribution-leaderboard/": 3,
-    "/aikg/knowledge-map/": 8
+    "/aikg/contribution-leaderboard/": 4,
+    "/aikg/knowledge-map/": 10
   }
 }
