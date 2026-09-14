@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-12T02:35:45+08:00",
+  "updated_at": "2026-09-15T03:51:41+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 28,
+    "/aikg/": 31,
     "/aikg/01-getting-started/": 8,
     "/aikg/02-ai-workloads/": 4,
     "/aikg/02-ai-workloads/ai-fundamentals/": 3,
@@ -18,12 +18,13 @@
     "/aikg/04-training-systems/pipeline-parallel/": 1,
     "/aikg/05-kernels-compilers/": 3,
     "/aikg/05-kernels-compilers/attention-computation-patterns/": 4,
+    "/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/": 1,
     "/aikg/05-kernels-compilers/tilelang/": 1,
     "/aikg/05-kernels-compilers/torchinductor/": 1,
-    "/aikg/12-hardware-basics/npu-basics/": 4,
+    "/aikg/12-hardware-basics/npu-basics/": 5,
     "/aikg/13-contribution-leaderboard/": 2,
     "/aikg/13-contribution-leaderboard/maintenance/": 1,
-    "/aikg/contribution-leaderboard/": 4,
+    "/aikg/contribution-leaderboard/": 5,
     "/aikg/knowledge-map/": 10
   }
 }
