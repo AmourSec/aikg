@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T03:04:05+08:00",
+  "updated_at": "2026-09-19T02:31:26+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
@@ -14,7 +14,7 @@
     "/aikg/02-ai-workloads/transformer/": 5,
     "/aikg/03-inference-systems/prefill-decode-disaggregation/": 1,
     "/aikg/03-inference-systems/prefill-decode/": 1,
-    "/aikg/03-inference-systems/speculative-decoding/": 1,
+    "/aikg/03-inference-systems/speculative-decoding/": 2,
     "/aikg/04-training-systems/": 1,
     "/aikg/04-training-systems/pipeline-parallel/": 2,
     "/aikg/05-kernels-compilers/": 3,
