@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:03:33+08:00",
+  "updated_at": "2026-09-21T02:13:03+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 45,
+    "/aikg/": 48,
     "/aikg/01-getting-started/": 9,
     "/aikg/02-ai-workloads/": 7,
-    "/aikg/02-ai-workloads/ai-fundamentals/": 5,
+    "/aikg/02-ai-workloads/ai-fundamentals/": 6,
     "/aikg/02-ai-workloads/inference-primer/": 1,
     "/aikg/02-ai-workloads/multimodal-primer/": 4,
     "/aikg/02-ai-workloads/training-primer/": 1,
-    "/aikg/02-ai-workloads/transformer/": 5,
+    "/aikg/02-ai-workloads/transformer/": 6,
     "/aikg/03-inference-systems/prefill-decode-disaggregation/": 1,
     "/aikg/03-inference-systems/prefill-decode/": 1,
     "/aikg/03-inference-systems/speculative-decoding/": 2,
@@ -29,7 +29,7 @@
     "/aikg/12-hardware-basics/npu-basics/": 8,
     "/aikg/13-contribution-leaderboard/": 2,
     "/aikg/13-contribution-leaderboard/maintenance/": 1,
-    "/aikg/contribution-leaderboard/": 6,
-    "/aikg/knowledge-map/": 12
+    "/aikg/contribution-leaderboard/": 7,
+    "/aikg/knowledge-map/": 14
   }
 }
