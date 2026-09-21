@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T02:13:03+08:00",
+  "updated_at": "2026-09-22T04:00:31+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 48,
+    "/aikg/": 50,
     "/aikg/01-getting-started/": 9,
     "/aikg/02-ai-workloads/": 7,
     "/aikg/02-ai-workloads/ai-fundamentals/": 6,
