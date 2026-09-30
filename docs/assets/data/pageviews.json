@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-29T05:16:37+08:00",
+  "updated_at": "2026-10-01T04:05:00+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 68,
+    "/aikg/": 73,
     "/aikg/01-getting-started/": 11,
     "/aikg/02-ai-workloads/": 9,
     "/aikg/02-ai-workloads/ai-fundamentals/": 7,
@@ -26,8 +26,8 @@
     "/aikg/04-training-systems/muon-optimizer/": 1,
     "/aikg/04-training-systems/pipeline-parallel/": 2,
     "/aikg/04-training-systems/training-data-mixing-sampling-effective-tokens/": 1,
-    "/aikg/05-kernels-compilers/": 3,
-    "/aikg/05-kernels-compilers/attention-computation-patterns/": 4,
+    "/aikg/05-kernels-compilers/": 4,
+    "/aikg/05-kernels-compilers/attention-computation-patterns/": 5,
     "/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/": 1,
     "/aikg/05-kernels-compilers/tilelang/": 1,
     "/aikg/05-kernels-compilers/torchinductor/": 1,
@@ -44,6 +44,7 @@
     "/aikg/13-contribution-leaderboard/": 2,
     "/aikg/13-contribution-leaderboard/maintenance/": 1,
     "/aikg/contribution-leaderboard/": 8,
-    "/aikg/knowledge-map/": 15
+    "/aikg/knowledge-map/": 15,
+    "/aikg/map/": 1
   }
 }
