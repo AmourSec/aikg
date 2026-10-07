@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-01T04:05:00+08:00",
+  "updated_at": "2026-10-08T04:39:17+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
@@ -20,7 +20,7 @@
     "/aikg/03-inference-systems/request-lifecycle/": 1,
     "/aikg/03-inference-systems/speculative-decoding/": 2,
     "/aikg/04-training-systems/": 1,
-    "/aikg/04-training-systems/evaluation-validation-checkpoint-selection/": 1,
+    "/aikg/04-training-systems/evaluation-validation-checkpoint-selection/": 2,
     "/aikg/04-training-systems/flux-kernel-fusion/": 1,
     "/aikg/04-training-systems/hybrid-parallelism-composition/": 1,
     "/aikg/04-training-systems/muon-optimizer/": 1,
