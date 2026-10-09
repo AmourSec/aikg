@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-09T04:42:51+08:00",
+  "updated_at": "2026-10-10T04:08:22+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 76,
-    "/aikg/01-getting-started/": 11,
-    "/aikg/02-ai-workloads/": 9,
-    "/aikg/02-ai-workloads/ai-fundamentals/": 7,
+    "/aikg/": 78,
+    "/aikg/01-getting-started/": 12,
+    "/aikg/02-ai-workloads/": 10,
+    "/aikg/02-ai-workloads/ai-fundamentals/": 8,
     "/aikg/02-ai-workloads/inference-primer/": 3,
     "/aikg/02-ai-workloads/multimodal-primer/": 6,
     "/aikg/02-ai-workloads/training-primer/": 2,
@@ -44,7 +44,7 @@
     "/aikg/13-contribution-leaderboard/": 2,
     "/aikg/13-contribution-leaderboard/maintenance/": 1,
     "/aikg/contribution-leaderboard/": 8,
-    "/aikg/knowledge-map/": 15,
+    "/aikg/knowledge-map/": 16,
     "/aikg/map/": 1
   }
 }
