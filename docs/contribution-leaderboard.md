@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-10-10
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-10-10**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-10-11**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**108 篇文章** · **1 位贡献者** · **79 次累计浏览**。
+统计范围：**108 篇文章** · **1 位贡献者** · **83 次累计浏览**。
 
-浏览量快照最近变更：2026-10-10 04:08:22（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-10-11 03:19:02（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-10-10
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 108 | 79 |
+| 1 | alan | 108 | 83 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -45,16 +45,16 @@ updated: 2026-10-10
 
 | 排名 | 文章 | 作者 | 累计浏览量 |
 | ---: | --- | --- | ---: |
-| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 13 |
+| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 14 |
 | 2 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 10 |
 | 3 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 7 |
 | 4 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 6 |
 | 5 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 6 |
 | 6 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 5 |
 | 7 | [推理过程与原理](02-ai-workloads/inference-primer.md) | alan | 3 |
-| 8 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 3 |
-| 9 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 2 |
-| 10 | [Prefill 与 Decode](03-inference-systems/prefill-decode.md) | alan | 2 |
+| 8 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 3 |
+| 9 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 3 |
+| 10 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 3 |
 
 ## 统计口径
 
