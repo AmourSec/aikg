@@ -130,10 +130,11 @@ updated: 2026-07-07
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li class="kg-node-child"><a href="../08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/">Profiler 工具链</a></li>
+        <li class="kg-node-child"><a href="../08-benchmark-capacity/ascend-profiling-msprof/">昇腾 Profiling：msprof</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/observability-overview-signals/">可观测性信号</a></li>
         <li class="kg-node-child"><a href="../10-papers-cases/ai-system-architecture/">系统论文与架构分析</a></li>
         <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt</span></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt / msprof / torch_npu.profiler / MindStudio Insight / op_summary / step_trace_time</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -220,7 +221,7 @@ updated: 2026-07-07
 
 - 方法论：[性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md)、[Benchmark 负载设计与 Trace Replay](08-benchmark-capacity/benchmark-workload-design-trace-replay.md)、[Benchmark 数据治理与实验记录](08-benchmark-capacity/benchmark-data-governance-run-records.md)
 - 容量建模：[推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md)、[训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md)、[排队模型与尾延迟](08-benchmark-capacity/queueing-model-tail-latency.md)
-- 瓶颈定位：[Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md)、[Roofline 分析](08-benchmark-capacity/roofline-analysis-compute-bandwidth.md)
+- 瓶颈定位：[Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md)、[昇腾 Profiling：msprof 与 CANN 性能数据采集分析](08-benchmark-capacity/ascend-profiling-msprof.md)、[Roofline 分析](08-benchmark-capacity/roofline-analysis-compute-bandwidth.md)
 - 工程决策：[能效、功耗与热限制](08-benchmark-capacity/energy-power-thermal-benchmark.md)、[A/B 对比、消融实验与性能回归检测](08-benchmark-capacity/ab-testing-ablation-regression-detection.md)、[成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md)
 
 ### 9 可靠性、可观测性与故障复盘
@@ -276,7 +277,7 @@ updated: 2026-07-07
 | 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、Ascend C 单算子开发、MegaKernel、算子实现、图优化和自动调优 |
 | 6 AI 加速器与计算架构 | 2、5、8、硬件基础 | 计算、存储、互连、精度、功耗、体系结构取舍和 workload mapping |
 | 7 集群、网络、存储与调度 | 3、4、6、8 | 资源调度、拓扑、网络、存储、环境、隔离、容量治理和节点生命周期 |
-| 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |
+| 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling（GPU 与昇腾 msprof）、roofline、容量估算、trace replay、A/B、能效和成本模型 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、故障模式、事故响应、runbook 和复盘 |
 | 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、ADR、failure case 和 evidence pack |
 | 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱、AI Skills 编写指南和 AI skills 样例 |

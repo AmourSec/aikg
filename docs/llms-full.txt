@@ -87,6 +87,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 05-kernels-compilers/torchinductor.md - TorchInductor 与 PyTorch 编译栈
 - 05-kernels-compilers/mlir-ai-compiler-ir.md - MLIR 与 AI 编译 IR
 - 05-kernels-compilers/tilelang.md - TileLang：面向 AI Kernel 的 Tile 编程模型
+- 05-kernels-compilers/ascendc-operator-development.md - Ascend C 单算子开发流程与验证
 - 05-kernels-compilers/megakernel-persistent-automatic-generation.md - MegaKernel、Persistent Kernel 与自动生成
 - 06-accelerators-architecture/index.md - AI 加速器与计算架构
 - 06-accelerators-architecture/performance-model-roofline.md - AI 加速器性能模型：算力、带宽与 Roofline
@@ -112,6 +113,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 08-benchmark-capacity/inference-capacity-modeling.md - 推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数
 - 08-benchmark-capacity/training-capacity-scaling-efficiency.md - 训练容量建模：Tokens/s、Step Time、MFU 与扩展效率
 - 08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md - Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF
+- 08-benchmark-capacity/ascend-profiling-msprof.md - 昇腾 Profiling：msprof 与 CANN 性能数据采集分析
 - 08-benchmark-capacity/roofline-analysis-compute-bandwidth.md - Roofline 分析：算力、带宽与瓶颈上限
 - 08-benchmark-capacity/queueing-model-tail-latency.md - 排队模型与尾延迟：QPS、并发、利用率和 p99
 - 08-benchmark-capacity/energy-power-thermal-benchmark.md - 能效、功耗与热限制：Power、Energy per Token 与持续吞吐
@@ -133,6 +135,7 @@ Use this file as a compact ingestion target when an AI system cannot crawl the f
 - 99-templates/knowledge-note.md - 知识点模板：从概念解释到 AI 可读卡片
 - 99-templates/adr.md - 技术决策模板：从问题、证据到可追溯决策
 - 99-templates/benchmark-report.md - 基准实验报告模板：从问题设计到可复现实验
+- contribution-leaderboard.md - 贡献排行榜
 - superpowers/plans/2026-08-03-automatic-skill-routing.md - Automatic Skill Routing Implementation Plan
 - superpowers/specs/2026-08-03-automatic-skill-routing-design.md - 自动 Skill 发现、选择与按需加载系统设计
 - superpowers/specs/2026-09-01-umami-pageviews-design.md - GoatCounter 文章浏览量设计
@@ -235,6 +238,8 @@ python3 -m runtime \
 - 临时讨论不要直接进入知识库，先沉淀成可复用的知识点、系统论文笔记、实验记录或技术决策。
 
 ## 推荐阅读路径
+
+想看看大家贡献的文章和热门内容，可以访问[贡献排行榜](contribution-leaderboard.md)，查看每日更新的贡献者浏览量、贡献文章数和文章浏览量 Top 10。
 
 1. 从 `知识地图` 理解整体结构。
 2. 新生先阅读 `入门导读`、`AI 基础概念`、`Transformer 流程与原理`、`训练过程与原理`、`推理过程与原理`、`多模态原理`。
@@ -344,8 +349,9 @@ updated: 2026-07-07
         <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">TorchInductor 与 PyTorch 编译栈</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/mlir-ai-compiler-ir/">MLIR 与 AI 编译 IR</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">TileLang</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/ascendc-operator-development/">Ascend C 单算子开发流程与验证</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">MegaKernel 与 Persistent Kernel</a></li>
-        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Persistent Kernel / MegaKernel</span></li>
+        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Ascend C / Tiling / aclnn / Persistent Kernel / MegaKernel</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -378,10 +384,11 @@ updated: 2026-07-07
         <li class="kg-node-main"><a href="../10-papers-cases/">10 论文复现与系统案例</a></li>
         <li class="kg-node-main"><a href="../11-knowledge-index/">11 知识组织、模板与 AI 可读索引</a></li>
         <li class="kg-node-child"><a href="../08-benchmark-capacity/profiler-toolchain-bottleneck-analysis/">Profiler 工具链</a></li>
+        <li class="kg-node-child"><a href="../08-benchmark-capacity/ascend-profiling-msprof/">昇腾 Profiling：msprof</a></li>
         <li class="kg-node-child"><a href="../09-reliability-observability/observability-overview-signals/">可观测性信号</a></li>
         <li class="kg-node-child"><a href="../10-papers-cases/ai-system-architecture/">系统论文与架构分析</a></li>
         <li class="kg-node-child"><a href="../11-knowledge-index/skills-authoring-guide/">AI Skills 编写指南</a></li>
-        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt</span></li>
+        <li class="kg-node-note"><span>关键词：profiling / roofline / capacity / SLO / failure modes / runbook / paper card / ADR / metadata / provenance / llms.txt / msprof / torch_npu.profiler / MindStudio Insight / op_summary / step_trace_time</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -447,7 +454,7 @@ updated: 2026-07-07
 ### 5 Kernel、算子与编译优化
 
 - 计算模式：[Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md)
-- Kernel 编程：[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)
+- Kernel 编程：[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)、[Ascend C 单算子开发流程与验证](05-kernels-compilers/ascendc-operator-development.md)
 - 编译栈与 IR：[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md)
 - 激进融合与自动生成：[MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md)
 
@@ -468,7 +475,7 @@ updated: 2026-07-07
 
 - 方法论：[性能分析与 Benchmark 方法论](08-benchmark-capacity/performance-analysis-benchmark-methodology.md)、[Benchmark 负载设计与 Trace Replay](08-benchmark-capacity/benchmark-workload-design-trace-replay.md)、[Benchmark 数据治理与实验记录](08-benchmark-capacity/benchmark-data-governance-run-records.md)
 - 容量建模：[推理容量建模](08-benchmark-capacity/inference-capacity-modeling.md)、[训练容量建模](08-benchmark-capacity/training-capacity-scaling-efficiency.md)、[排队模型与尾延迟](08-benchmark-capacity/queueing-model-tail-latency.md)
-- 瓶颈定位：[Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md)、[Roofline 分析](08-benchmark-capacity/roofline-analysis-compute-bandwidth.md)
+- 瓶颈定位：[Profiler 工具链与瓶颈定位](08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md)、[昇腾 Profiling：msprof 与 CANN 性能数据采集分析](08-benchmark-capacity/ascend-profiling-msprof.md)、[Roofline 分析](08-benchmark-capacity/roofline-analysis-compute-bandwidth.md)
 - 工程决策：[能效、功耗与热限制](08-benchmark-capacity/energy-power-thermal-benchmark.md)、[A/B 对比、消融实验与性能回归检测](08-benchmark-capacity/ab-testing-ablation-regression-detection.md)、[成本模型与单位经济性](08-benchmark-capacity/cost-model-unit-economics.md)
 
 ### 9 可靠性、可观测性与故障复盘
@@ -521,10 +528,10 @@ updated: 2026-07-07
 | 硬件基础 | 2、5、6、8 | GPU/NPU 架构基础、GPU/NPU 对比、Ascend 型号与 NpuArch、Ascend 910/950、CANN 软件栈、平台证据收集和硬件适配 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
 | 4 训练系统与优化 | 2、5、6、7、8、硬件基础 | 数据、batch、loss、backward、并行策略、通信、显存、稳定性、优化器、后训练、checkpoint 和 benchmark |
-| 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化和自动调优 |
+| 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、Ascend C 单算子开发、MegaKernel、算子实现、图优化和自动调优 |
 | 6 AI 加速器与计算架构 | 2、5、8、硬件基础 | 计算、存储、互连、精度、功耗、体系结构取舍和 workload mapping |
 | 7 集群、网络、存储与调度 | 3、4、6、8 | 资源调度、拓扑、网络、存储、环境、隔离、容量治理和节点生命周期 |
-| 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |
+| 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling（GPU 与昇腾 msprof）、roofline、容量估算、trace replay、A/B、能效和成本模型 |
 | 9 可靠性、可观测性与故障复盘 | 3、4、7、8 | 监控、告警、SLO、错误预算、故障模式、事故响应、runbook 和复盘 |
 | 10 论文复现与系统案例 | 全部模块 | 系统论文阅读框架、paper card、机制卡片、复现协议、ADR、failure case 和 evidence pack |
 | 11 知识组织、模板与 AI 可读索引 | 全部模块 | 文档类型、元数据、标签、引用溯源、证据等级、llms.txt、向量索引、知识图谱、AI Skills 编写指南和 AI skills 样例 |
@@ -12658,7 +12665,7 @@ domain: inference-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-08
+updated: 2026-10-12
 
 # vLLM
 
@@ -12952,6 +12959,58 @@ Speculative Decoding 的目标是减少目标模型严格逐 token 生成带来�
 - 节点间网络。
 - p95/p99 延迟。
 
+## vllm-ascend：vLLM 在昇腾 NPU 上的官方路径
+
+以上内容以 GPU 为主要背景。当硬件换成华为昇腾 NPU 时，vLLM 官方推荐的路径是 **vllm-ascend**：一个由 vLLM 社区维护（Community maintained）的昇腾硬件插件，托管在 vllm-project 组织下。
+
+### 插件架构：如何与 vLLM core 解耦
+
+vllm-ascend 遵循 vLLM 的 [Hardware Pluggable RFC](https://github.com/vllm-project/vllm/issues/11162)：vLLM core 定义平台抽象接口，各硬件后端以独立 pip 包实现。vllm-ascend 安装后通过 vLLM 的 `vllm.platform_plugins` 插件组自动注册（启动日志会出现 `Platform plugin ascend is activated`），按 vLLM 的平台抽象组织代码：
+
+| 模块 | 职责 | 对应 vLLM 抽象 |
+| --- | --- | --- |
+| `vllm_ascend/platform.py` | 平台识别与配置 | Platform |
+| `worker/` | NPU 上的模型执行 | Worker |
+| `attention/` | 注意力后端（attention_v1、MLA、SFA 等） | Attention backend |
+| `distributed/` | HCCL 集合通信 | Communicator |
+| `quantization/` `spec_decode/` `eplb/` | 量化、投机解码、专家负载均衡 | 各自的扩展点 |
+
+这个设计的意义：vLLM 的调度、KV Cache 管理、continuous batching、API server 等核心逻辑保持硬件无关，昇腾适配集中在"怎么在 NPU 上执行模型"这一层。学习时可以先掌握 vLLM 核心概念（本文前面各节），再看 vllm-ascend 如何替换执行层。
+
+### 版本与安装
+
+两个要点：
+
+1. **版本号与 vLLM 严格对齐**：vllm-ascend vN 对应 vLLM vN（例如写作时最新的 v0.23.0 ↔ vLLM v0.23.0），main 分支跟踪 vLLM main。选版本时先定 vLLM，再装同号插件。
+2. **依赖链较长**：除 vLLM 和插件本身，还需要 torch、torch_npu、CANN、NNAL（libatb.so）、triton-ascend 版本互相匹配，具体以[官方安装文档](https://docs.vllm.ai/projects/ascend/en/latest/installation.html)为准。
+
+安装方式三种：pip（插件从华为云 PyPI 源安装）、源码（先装 vLLM 空设备版再装插件）、官方 Docker 镜像（`quay.io/ascend/vllm-ascend`，按 Atlas A2/A3/950DT/300I DUO 等芯片型号选择变体）。生产部署建议直接用官方镜像，避免手工对齐依赖链。
+
+### 支持范围
+
+- **硬件**：Atlas A2 训练系列 / 800I A2 推理系列、Atlas A3 系列、Atlas 950DT；Atlas 300I DUO 为实验性支持。
+- **模型**：覆盖主流开源模型，包括 Qwen 全系、DeepSeek 系列、GLM 系列、LLaMA、Kimi、MiniMax 等，含生成、Embedding/Reranker 与多模态，详见[支持矩阵](https://docs.vllm.ai/projects/ascend/en/latest/user_guide/support_matrix/supported_models.html)。
+- **特性**：vLLM 核心能力大部分可用——Chunked Prefill、Prefix Caching、TP/PP/EP/DP/Context Parallel、投机解码（MTP/EAGLE 等）、PD 分离（xPyD）、EPLB、W8A8 量化、LoRA（实验）等。
+- **昇腾特有优化**：Graph Mode（ACLGraph 捕获回放 + npugraph_ex 编译期算子融合，作用类似 CUDA Graph）、FlashComm 通信融合等，通过 `--additional-config` 传入。
+
+### 启动示例
+
+对使用者来说，vllm-ascend 的目标是"像用 vLLM 一样用昇腾"：
+
+```bash
+# 指定 NPU 卡并启动 OpenAI 兼容服务
+export ASCEND_RT_VISIBLE_DEVICES=0,1,2,3
+vllm serve Qwen/Qwen3-8B --tensor-parallel-size 4
+```
+
+昇腾侧常用环境变量：`ASCEND_RT_VISIBLE_DEVICES`（相当于 `CUDA_VISIBLE_DEVICES`）、`PYTORCH_NPU_ALLOC_CONF=expandable_segments:True`（缓解显存碎片 OOM）、`VLLM_USE_MODELSCOPE=True`（国内模型下载）。
+
+### 使用前注意
+
+- **特性矩阵要按芯片型号核对**：同一特性在不同 Atlas 型号上支持度不同。例如 300I DUO 不支持 triton-ascend 和 npugraph_ex；MLA + 图模式对 TP 切分后的 head 数有约束。
+- **报错先查 FAQ**：`libatb.so` 缺失（需 source NNAL 环境）、OOM、图捕获资源不足等都是高频问题，[官方 FAQ](https://docs.vllm.ai/projects/ascend/en/latest/faqs.html) 有标准解法。
+- **生态分工**：华为自研的企业级推理引擎是 MindIE；vllm-ascend 是 vLLM 开源生态在昇腾上的官方路径。两者是并行的昇腾推理方案，选型取决于团队技术栈（PyTorch/vLLM 生态 vs 华为全栈）。
+
 ## 与单机推理服务架构的关系
 
 如果把单机推理服务拆开看，vLLM 覆盖了其中很大一部分核心组件。
@@ -13173,6 +13232,9 @@ vLLM 是现代 LLM 推理系统的一个重要案例。它的核心不在于某�
 - [vLLM GitHub Repository](https://github.com/vllm-project/vllm)
 - [vLLM PagedAttention design documentation](https://docs.vllm.ai/en/latest/design/kernel/paged_attention.html)
 - [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [vllm-ascend GitHub Repository](https://github.com/vllm-project/vllm-ascend)：vLLM 社区维护的昇腾 NPU 硬件插件。
+- [vllm-ascend 官方文档](https://docs.vllm.ai/projects/ascend/en/latest/)：安装、快速开始、支持矩阵、Graph Mode 与 FAQ。
+- [vLLM Hardware Pluggable RFC](https://github.com/vllm-project/vllm/issues/11162)：硬件插件架构的设计讨论。
 
 ---
 
@@ -45880,7 +45942,7 @@ domain: kernels-compilers
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-10-12
 
 # Kernel、算子与编译优化
 
@@ -45890,7 +45952,7 @@ updated: 2026-06-25
 
 ```text
 先理解 Attention 等核心 workload 的计算模式
--> 再理解 Triton / TileLang 这类 kernel 编程方式
+-> 再理解 Triton / TileLang / Ascend C 这类 kernel 编程方式
 -> 再理解 TorchInductor / MLIR 这类编译表示和生成路径
 -> 最后评估 Persistent Kernel / MegaKernel / 自动生成
 ```
@@ -45900,7 +45962,7 @@ updated: 2026-06-25
 | 层级 | 关注问题 | 代表技术 |
 | --- | --- | --- |
 | 算子语义 | workload 需要什么计算和数据访问模式 | GEMM、Attention、LayerNorm、Softmax、Embedding、MoE dispatch |
-| 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS |
+| 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS、Ascend C |
 | Tile 与 Schedule | 如何表达 tile、layout、pipeline、tensorization 和 autotuning | TileLang、Triton、CUTLASS、TVM |
 | 图编译与代码生成 | 如何从 PyTorch graph 自动融合、调度和生成代码 | TorchDynamo、AOTAutograd、TorchInductor、Triton backend |
 | 编译 IR 与 Lowering | 如何在多层抽象中表达、验证和降低计算 | MLIR、StableHLO、Linalg、MemRef、Vector、GPU dialect |
@@ -45916,6 +45978,7 @@ updated: 2026-06-25
 - Triton、CUDA、ROCm、CUTLASS、cuDNN、cuBLAS
 - TorchDynamo、AOTAutograd、TorchInductor、XLA、TVM、MLIR、ONNX Runtime
 - TileLang、OpenTileIR / open tile IR、tile DSL、schedule、pipeline、tensorization
+- Ascend C、tiling、SPMD、三级流水、aclnn 单算子验证
 - graph capture、operator fusion、layout transform、auto-tuning、lowering
 - Triton 编译器、Triton AI 算子生成、MegaKernel、persistent kernel、device-side scheduling、automatic kernel generation
 - kernel profiling、roofline、SASS/PTX/IR inspection
@@ -45938,6 +46001,7 @@ updated: 2026-06-25
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
 - [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：理解为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、vector/GPU 后端，以及它和 Triton、TorchInductor、TileLang、MegaKernel 的关系。
 - [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：理解 tile、layout、pipeline、tensorization、autotuning、OpenTileIR / open tile IR 如何共同决定 GEMM、Attention、Dequant GEMM、Sparse MM 等 kernel 的硬件效率。
+- [Ascend C 单算子开发流程与验证](ascendc-operator-development.md)：理解昇腾 NPU 上自定义算子的官方开发主线——算子分析、msOpGen 工程、kernel 侧三级流水、host 侧 tiling 与注册、编译部署、msOpST/aclnn 精度验证，以及与 Triton/CUDA 编程模型的差异。
 - [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：区分普通 fusion、persistent kernel、CUDA Graph 和 MegaKernel，理解 Triton MegaKernel、Ascend C MegaKernel-style 实现和自动生成路径的收益与风险。
 
 ---
@@ -50352,6 +50416,290 @@ TileLang 是性能研发工具，不是免 benchmark 的捷径。
 - [TileLang: A Composable Tiled Programming Model for AI Systems](https://arxiv.org/abs/2504.17577)
 - [TVM 官方文档](https://tvm.apache.org/docs/)
 - [Triton 官方文档](https://triton-lang.org/main/index.html)
+
+---
+
+# Document: Ascend C 单算子开发流程与验证
+
+Source: docs/05-kernels-compilers/ascendc-operator-development.md
+URL: https://amoursec.github.io/aikg/05-kernels-compilers/ascendc-operator-development/
+domain: kernels-compilers
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-10-12
+
+# Ascend C 单算子开发流程与验证
+
+当模型在昇腾 NPU 上遇到"某个算子不支持"或"某个算子太慢"时，最终的解决路径通常落在 Ascend C 自定义算子上。Ascend C 是 CANN 面向算子开发的原生 C/C++ 编程语言，也是理解 NPU 执行模型的最好入口。
+
+本篇回答：
+
+> 在昇腾 NPU 上开发一个 Ascend C 自定义算子，从算子分析到编译部署、精度验证，官方推荐的完整流程是什么？每一步的关键概念和产物是什么？
+
+本篇是官方入门流程的精简版，不复制官方示例代码。目标是让读者建立完整流程的地图，再按需深入官方文档。
+
+## 一张总图：单算子开发全流程
+
+官方快速入门（以 Add 算子为例）给出的链路是：
+
+```mermaid
+flowchart LR
+    A["环境准备\nCANN / NPU / 工具链"] --> B["算子分析\n数学表达 / shape / dtype"]
+    B --> C["工程创建\nmsOpGen"]
+    C --> D["Kernel 侧\n核函数 + 三级流水"]
+    C --> E["Host 侧\nTiling + 原型注册"]
+    D --> F["编译出包\nbuild.sh -> run 包"]
+    E --> F
+    F --> G["部署安装\nvendors/customize"]
+    G --> H["验证\nmsOpST / aclnn 对标"]
+```
+
+这条链路可以概括成三个问题：
+
+1. **算子做什么**：算子分析，明确数学语义和输入输出规格。
+2. **算子怎么实现**：kernel 侧写计算，host 侧写切分和注册。
+3. **算子对不对、快不快**：与标杆实现做精度比对，必要时用 profiler 看性能。
+
+## 背景：为什么是这套流程
+
+Ascend C 的设计动机决定了这套流程的形态：
+
+| 设计目标 | 对流程的影响 |
+| --- | --- |
+| 原生 C/C++ 规范 | 开发者用标准 C++ 写 kernel，不学新语法（除少量限定符） |
+| 自动并行调度 | SPMD 模型，host 一次启动多核，kernel 内用核 ID 区分数据 |
+| CPU/NPU 孪生调试 | 同一份代码可以在 CPU 侧模拟执行，先验证逻辑再上 NPU |
+| Local Memory 容量有限 | 必须有 Tiling 机制，把大 tensor 切成片上放得下的小块 |
+
+前三点降低了入门门槛，第四点引入了 GPU kernel 开发中没有显式暴露的独立环节：host 侧 tiling。
+
+## 基本概念
+
+阅读后续流程前，先建立这些概念。它们在 [NPU 架构基础](../12-hardware-basics/npu-basics.md) 中有更架构化的解释。
+
+| 概念 | 含义 | 为什么重要 |
+| --- | --- | --- |
+| 核函数 | 用 `extern "C" __global__ __aicore__` 修饰的设备函数 | kernel 侧的入口，host 侧通过 `<<<blockDim, l2ctrl, stream>>>` 语法启动 |
+| SPMD | 多核共享同一份指令代码 | 每个核用 `GetBlockIdx()` 区分身份，决定自己处理哪段数据 |
+| blockDim | 启动的核实例数 | host 侧设置，一般等于物理核数，决定并行度 |
+| GlobalTensor | 指向 Global Memory（HBM）数据的tensor | 输入、权重和输出都在这里，大但远 |
+| LocalTensor | 指向片上存储（UB/L1/L0）的 tensor | 计算发生在这里，小但快 |
+| DataCopy | 数据搬运接口 | GM 与 Local 之间搬数据，对应 MTE/DMA 能力 |
+| TPipe / TQue / TBuf | 流水管理对象 | TPipe 分配 buffer，TQue 用队列做生产者-消费者同步 |
+| Tiling | 把大 tensor 切成小块的切分方案 | 决定每次搬运块大小和循环次数 |
+
+一个关键区别：CUDA 里 tiling 信息通常写在 kernel 内部或由编译器处理；Ascend C 把它独立成 host 侧的一个函数，在算子下发前执行。原因是 tiling 全是标量计算，AI Core 不擅长，交给 host CPU 更合理。
+
+## 第一步：算子分析
+
+写任何代码前，官方要求先明确四件事：
+
+1. **数学表达式**：算子做什么计算，例如 `z = x + y`。
+2. **输入输出规格**：每个 tensor 的 shape、dtype、format，以及是否支持动态 shape。
+3. **核函数定义**：函数名、参数列表（哪些是输入、输出、属性）。
+4. **所需接口清单**：要用哪些 Ascend C 接口，例如 `DataCopy`、计算 API（如 `Add`）、`AllocTensor`、`EnQue` 等。
+
+这一步的产物是一张"算子规格表"。后面 kernel 侧、host 侧、验证用例都从这张表推导。
+
+## 第二步：工程创建
+
+官方提供两种入门路径：
+
+| 路径 | 适用场景 | 特点 |
+| --- | --- | --- |
+| Kernel 直调（Kernel Launch） | 快速验证 kernel 逻辑 | 用 `<<<>>>` 直接调核函数；CPU 侧用 `ICPU_RUN_KF` 宏孪生调试；不涉及框架注册 |
+| 自定义算子工程（msOpGen） | 正式交付的算子 | 生成标准工程结构，走完编译、部署、注册、验证全流程 |
+
+正式开发用 `msOpGen` 创建工程。生成的标准结构和职责分工：
+
+```text
+add_custom/
+├── op_host/
+│   ├── add_custom_tiling.h    # TilingData 结构定义
+│   └── add_custom.cpp         # 算子原型注册、shape 推导、tiling 实现
+├── op_kernel/
+│   └── add_custom.cpp         # 核函数实现（三级流水）
+├── framework/                 # AI 框架插件适配目录
+├── CMakePresets.json          # 编译配置（芯片型号、CANN 路径）
+├── build.sh                   # 编译入口
+├── cmake/ scripts/            # 编译与打包脚本
+```
+
+开发者主要修改 `op_host/` 和 `op_kernel/` 下的文件。
+
+## 第三步：Kernel 侧实现
+
+Ascend C 核函数的标准范式是"三级流水"：
+
+```text
+CopyIn：GM -> Local（搬入）
+Compute：在 Local 上计算（算）
+CopyOut：Local -> GM（搬出）
+```
+
+三段任务通过队列（TQue）通信同步，流水线重叠后，搬入下一块数据时上一块正在计算。用一个极简的伪代码结构表达（不是可运行代码）：
+
+```text
+kernel(add) {
+  pipe.InitBuffer(inQue, outQue, ...)      # 分配队列和 buffer
+  for 每个 tile:
+    xLocal = inQueX.AllocTensor()          # 申请输入空间
+    DataCopy(xLocal, xGm, tileLen)         # 搬入
+    inQueX.EnQue(xLocal)                   # 入队
+    ...
+    yLocal = inQueX.DeQue()                # 计算任务取数据
+    Add(zLocal, xLocal, yLocal, tileLen)   # 计算
+    outQue.EnQue(zLocal)
+    ...
+    zLocal = outQue.DeQue()                # 搬出任务取数据
+    DataCopy(zGm, zLocal, tileLen)         # 搬出
+    FreeTensor / 释放
+}
+```
+
+进阶方向是 Matmul 高阶 API：它封装了矩阵乘的 tiling、搬运和计算的通用逻辑，配套 `REGIST_MATMUL_OBJ`、`SetTensorA/B`、`IterateAll` 等接口和预置的 `TCubeTiling`。写融合算子（如 MatMul + LeakyReLU）时从它开始，而不是手写全部搬运逻辑。
+
+## 第四步：Host 侧 Tiling 与注册
+
+`op_host/` 下要完成两件事。
+
+### Tiling 实现
+
+tiling 函数从 `TilingContext*` 上下文读取算子的输入、输出和属性，计算并写回四类结果：
+
+| 产物 | 含义 | 要点 |
+| --- | --- | --- |
+| TilingData | 切分参数结构体 | 每次搬运块多大、循环多少次；host/kernel 两侧共用同一结构定义 |
+| BlockDim | 核函数启动的核数 | 逻辑核数范围 [1, 65535]，一般设为物理核数 |
+| TilingKey | kernel 实现分支的标识 | 类似 C++ 模板机制：一个算子可有多个 kernel 实现，host 侧按条件选一个下发 |
+| WorkspaceSize | 中间工作空间大小 | kernel 需要的 GM 临时空间 |
+
+kernel 侧用 `GET_TILING_DATA` 宏解码这些数据。TilingData 的定义支持宏定义（`BEGIN_TILING_DATA_DEF`）和标准 C++ 类两种方式，后者用 `REGISTER_TILING_DEFAULT` / `REGISTER_TILING_FOR_TILINGKEY` 注册。
+
+### 原型注册
+
+`op_host/*.cpp` 中同时完成算子原型注册（算子名、输入输出规格、shape 推导函数、信息库），让框架和 CANN 认识这个算子。
+
+## 第五步：编译与部署
+
+流程很短，但有两个易错点：
+
+1. 修改 `CMakePresets.json`：设置 `ASCEND_COMPUTE_UNIT`（芯片型号，用 `npu-smi info` 查询）和 `ASCEND_CANN_PACKAGE_PATH`（CANN 安装路径）。
+2. 执行 `./build.sh`，在 `build_out/` 下生成自定义算子 run 包，形如 `CANN-custom_ops-<version>-linux.<arch>.run`。
+
+部署时先 source CANN 环境，再安装 run 包。默认安装到 `opp/vendors/customize/`，按安装提示更新 `LD_LIBRARY_PATH`（包含 `op_api/lib`）。
+
+## 第六步：验证
+
+官方提供两类互补的验证方法。
+
+### 方法一：msOpST 算子测试
+
+编写用例定义 json（case 名、算子名、输入的 format/type/shape/data 分布/取值范围，正交组合生成用例），执行：
+
+```text
+msopst run -i case.json -soc <soc_version> -out <目录>
+```
+
+在真实硬件上运行，输出 `st_report.json`。可以提供 `calc_expect_func` 标杆函数（例如一个 Python 参考实现），msOpST 会自动做输出与标杆的精度比对。
+
+### 方法二：aclnn 单算子调用验证
+
+CANN 开源算子仓 cann-ops 中每个算子自带 `examples/`，其中 AclNNInvocationNaive 示例的"三步法"是社区事实标准：
+
+```text
+1. gen_data.py       # 按 shape/范围生成输入，计算标杆结果，存 .bin
+2. main.cpp (编译执行) # 调 aclnn 接口在 NPU 上执行，保存实际输出
+3. verify_result.py  # 比对标杆与实际输出
+```
+
+无论自定义算子还是内置算子，通常都通过 `aclnn` 前缀的单算子 API 调用，这是最简单灵活的直调方式。通常配套 `run.sh` 一键执行三步。
+
+### 精度判定口径
+
+比对脚本采用 numpy 风格容差：`|a - b| <= atol + rtol * |b|`。容差取值取决于 dtype 和算子语义，建议参考同类官方算子示例的取值。社区实践中还常用误差分布统计（如千分位误差）辅助判断，属于补充口径而不是官方要求。
+
+### 与 PyTorch 集成验证
+
+要让算子在 PyTorch/torch_npu 里可用，有两条官方路径：
+
+| 路径 | 做法 | 适用 |
+| --- | --- | --- |
+| Kernel Launch 直调 | `TORCH_LIBRARY` 注册算子，`TORCH_LIBRARY_IMPL` 绑定到 NPU 的 `PrivateUse1` DispatchKey，实现函数内取 `c10_npu::getCurrentNPUStream()` 后 `<<<>>>` 直调；Python 侧 `torch.ops.load_library` 加载 | 快速实验、不走完整算子工程 |
+| aclnn + 框架适配插件 | 算子走完整工程出包，再开发 OpPlugin 适配，以 aclnn API 形式被框架调用 | 正式交付 |
+
+MindSpore 侧对应做法是 `ops.Custom`（func_type="aot"），单算子执行模式同样推荐 aclnn 调用。
+
+## 性能验证思路
+
+精度通过后，性能验证回到本知识库的通用方法：
+
+- 用 msprof 或 `torch_npu.profiler` 采集算子耗时，方法见 [昇腾 Profiling](../08-benchmark-capacity/ascend-profiling-msprof.md)。
+- 和标杆实现（官方内置算子、CPU 参考或竞品实现）在相同 shape/dtype 下对比。
+- 关注算子是 compute-bound 还是 memory-bound，判断 tiling 是否合理（块太小导致搬运次数多，块太大导致片上放不下）。
+
+## 适用范围
+
+适用于：
+
+- 框架不支持的算子需要自己实现。
+- 已有算子性能不满足要求，需要手工优化。
+- 想深入理解 NPU 执行模型（tiling、片上存储、流水线）。
+- 学习昇腾生态的算子开发工程化流程（注册、出包、部署、验证）。
+
+需要谨慎：
+
+- 简单的元素级操作优先考虑组合已有算子或用 torch.compile 生成，自定义算子维护成本高。
+- 性能问题先 profiling 确认瓶颈确实在算子本身，再决定重写。
+- CANN 版本迭代较快（文档已从 7.x 演进到 9.x），具体 API 和工程配置以所用版本的官方文档为准。
+
+## 常见误区
+
+### 误区一：把 tiling 写进 kernel
+
+tiling 是标量计算，放在 kernel 里浪费 AI Core，且切分参数需要 host 侧在算子下发前决定。正确姿势是 host 侧 tiling 函数算好，通过 TilingData 传给 kernel。
+
+### 误区二：跳过 CPU 孪生调试直接上 NPU
+
+Ascend C 支持 CPU/NPU 孪生调试。先用 `ICPU_RUN_KF` 在 CPU 侧验证逻辑正确性，再上 NPU 调性能，排错成本低得多。
+
+### 误区三：验证只看"能跑通"
+
+算子验证必须包含与标杆的精度比对（rtol/atol），且要在多个 shape（含动态 shape 边界）下验证。只跑通一个 shape 就交付，动态 shape 场景会出问题。
+
+### 误区四：硬编码芯片参数
+
+核数、UB/L1/L0 大小不要写死。不同 SKU、vNPU 切分会让可见资源变化，应通过平台接口（如 `PlatformAscendC`）查询，详见 [Ascend 910 系列平台要点](../12-hardware-basics/ascend-910-series.md)。
+
+## 与相关技术的关系
+
+| 相关技术 | 关系 |
+| --- | --- |
+| [NPU 架构基础](../12-hardware-basics/npu-basics.md) | 上游概念：存储层级、执行模型、编程模型的架构解释 |
+| [Ascend/CANN 软件栈与开发入口](../12-hardware-basics/cann-stack.md) | Ascend C 在 CANN 软件栈中的位置 |
+| [Triton Kernel 编程](triton.md) | 同层对比：Triton 在 GPU（及 Triton-Ascend 路径）上的编程模型 |
+| [TileLang](tilelang.md) | 同层对比：tile-oriented DSL 的另一种表达 |
+| [昇腾 Profiling](../08-benchmark-capacity/ascend-profiling-msprof.md) | 下游：算子性能验证的工具方法 |
+
+## 小结
+
+- Ascend C 单算子开发的官方主线是：**算子分析 → msOpGen 建工程 → kernel 侧三级流水 + host 侧 tiling/注册 → build.sh 出包部署 → msOpST/aclnn 对标验证**。
+- 与 GPU kernel 开发最大的结构差异是 **host 侧 tiling 独立成环节**：Local Memory 容量有限决定了必须先切分再下发。
+- 验证的社区事实标准是 **aclnn 三步法**：生成数据与标杆 → NPU 执行 → 精度比对（rtol/atol）。
+- 入门样例建议按官方路径：Add（快速入门双路径）→ LeakyRelu（矢量 API）→ MatMul + LeakyReLU 融合（Matmul 高阶 API）。
+
+## 参考资料
+
+- [Ascend C 自定义算子开发（基于自定义算子工程的开发全流程）](https://www.hiascend.com/document/detail/zh/canncommercial/800/developmentguide/opdevg/Ascendcopdevg/atlas_ascendc_10_0006.html)：官方快速入门主文档。
+- [算子分析（AddCustom 示例）](https://www.hiascend.com/document/detail/en/canncommercial/800/opdevg/Ascendcopdevg/atlas_ascendc_10_0005.html)：kernel 直调路径与算子分析方法。
+- [Tiling 实现（host 侧）](https://www.hiascend.com/document/detail/en/canncommercial/850/opdevg/Ascendcopdevg/atlas_ascendc_10_0031.html)：tiling 的动机、输入输出与实现。
+- [Matmul 高阶 API（MatMul+LeakyReLU 示例）](https://www.hiascend.com/document/detail/en/canncommercial/850/opdevg/Ascendcopdevg/atlas_ascendc_10_0050.html)
+- [PyTorch 两条适配路径](https://www.hiascend.com/document/detail/en/canncommercial/850/opdevg/Ascendcopdevg/atlas_ascendc_10_0057.html)：Kernel Launch 与 aclnn/OpPlugin。
+- [cann-ops 开源算子仓 QuickStart](https://gitee.com/ascend/cann-ops/blob/master/QuickStart.md)：工程结构、build.sh、aclnn 三步法验证。
+- [msOpST 快速开始](https://github.com/Ascend/msopgen/blob/26.0.0/docs/en/quick_start/msopst_quick_start.md)：算子 ST 测试方法。
+- [Ascend C 官网学习地图](https://www.hiascend.com/cann/ascend-c)：快速上手、进阶开发、深度驾驭课程。
+- [我的第一份 Ascend C 代码](https://www.cnblogs.com/huaweiyun/p/17669701.html)：华为云官方博客，流程与三级流水图解。
 
 ---
 
@@ -70392,7 +70740,7 @@ domain: benchmark-capacity
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-10-12
 
 # 性能分析、Benchmark 与容量建模
 
@@ -70405,6 +70753,7 @@ updated: 2026-05-30
 - GPU utilization、SM occupancy、HBM bandwidth、memory footprint
 - power、energy per token、thermal、frequency throttling
 - profiler：Nsight、PyTorch Profiler、NVIDIA DCGM、perf、eBPF
+- 昇腾 profiler：msprof、torch_npu.profiler、MindStudio Insight、msprof-analyze
 - Roofline model、queueing model、capacity planning
 - Benchmark workload design、warmup、sample size、confidence interval
 - A/B comparison、ablation、regression detection
@@ -70423,6 +70772,7 @@ updated: 2026-05-30
 - [推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数](inference-capacity-modeling.md)：解释如何用 Capacity Contract、请求分布、SLA、offered load/throughput/goodput、单副本 goodput 曲线、请求分桶、KV Cache 预算、prefill/decode 约束、headroom、故障域、rolling update、autoscaling 滞后、路由效率、多模型、过载保护、成本和生产反馈推导推理副本数。
 - [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](training-capacity-scaling-efficiency.md)：解释如何用 Capacity Contract、训练目标、token 口径、global batch、step time、sustained/effective throughput、goodput、MFU、强/弱扩展曲线、边际收益、并行策略、checkpoint、eval、故障恢复、资源准入、headroom、成本、能效和生产校准推导训练 GPU 需求与总完成时间。
 - [Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF](profiler-toolchain-bottleneck-analysis.md)：解释如何用 Profiling Contract、证据链分层、工具选择矩阵、PyTorch Profiler、Nsight Systems、Nsight Compute、DCGM、perf/eBPF、NVTX、时间对齐、分布式 trace、瓶颈模式、结论分级、报告模板和回归防线建立可复现的 AI 系统瓶颈定位方法。
+- [昇腾 Profiling：msprof 与 CANN 性能数据采集分析](ascend-profiling-msprof.md)：解释昇腾 NPU 侧如何用 msprof CLI、torch_npu.profiler、框架封装（MindSpeed-LLM、vllm-ascend）采集性能数据，解读 PROF_XXX/ascend_pt 产物（trace_view、op_summary、step_trace_time、communication），以及迭代拆解、memory_bound/cube_utilization 判断 bound 类型、时间线空泡分析、多卡慢卡定位和 GPU 工具对照。
 - [Roofline 分析：算力、带宽与瓶颈上限](roofline-analysis-compute-bandwidth.md)：解释如何用 Roofline Analysis Contract、对象层级、FLOPs/bytes 口径、arithmetic intensity、ridge point、理论/实测 roof、多重 roof、profiler 指标、bound efficiency、端到端收益上限、AI 算子案例、推理/训练场景、硬件评估和 before/after benchmark 判断 AI workload 更接近算力、带宽、通信、launch 还是系统开销瓶颈。
 - [排队模型与尾延迟：QPS、并发、利用率和 p99](queueing-model-tail-latency.md)：解释如何用 Queueing Contract、offered load/throughput/goodput、Little's Law、Kingman/VUT 直觉、多阶段队列、Prefill/Decode、KV Cache、batching、head-of-line blocking、deadline-aware scheduling、retry amplification、load shedding、open-loop benchmark、goodput 曲线、队列上限和分桶指标分析 AI 推理服务的 p95/p99 与容量边界。
 - [能效、功耗与热限制：Power、Energy per Token 与持续吞吐](energy-power-thermal-benchmark.md)：解释如何用 Energy Benchmark Contract 定义 GPU-only、node-level、rack/facility-level 测量边界、idle baseline、telemetry 和热稳态窗口，采集 power、energy、clocks、temperature、throttle reason，并用 power cap sweep、Pareto frontier、prefill/decode 分阶段能耗、cache hit/miss、energy to target、goodput at SLA 和 power-aware scheduling 分析 AI 训练与推理系统能效。
@@ -75970,6 +76320,296 @@ monitoring 发现症状
 - [NVIDIA DCGM Documentation](https://docs.nvidia.com/datacenter/dcgm/latest/)
 - [Linux perf Wiki](https://perf.wiki.kernel.org/index.php/Main_Page)
 - [eBPF Introduction](https://ebpf.io/what-is-ebpf/)
+
+---
+
+# Document: 昇腾 Profiling：msprof 与 CANN 性能数据采集分析
+
+Source: docs/08-benchmark-capacity/ascend-profiling-msprof.md
+URL: https://amoursec.github.io/aikg/08-benchmark-capacity/ascend-profiling-msprof/
+domain: benchmark-capacity
+status: draft
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-10-12
+
+# 昇腾 Profiling：msprof 与 CANN 性能数据采集分析
+
+本篇是 [Profiler 工具链与瓶颈定位](profiler-toolchain-bottleneck-analysis.md)（GPU 视角：Nsight、PyTorch Profiler、DCGM、perf、eBPF）的昇腾姊妹篇。
+
+本篇回答：
+
+> 在昇腾 NPU 上，应该用哪些工具采集性能数据（msprof、torch_npu.profiler、MindStudio Insight），采到的数据文件里有什么，以及如何用它们回答"慢在哪、为什么慢"？
+
+和 GPU 侧一样，核心原则不变：
+
+```text
+先定义要证明什么，再决定采什么。
+```
+
+## 一张总图：从问题到结论
+
+```mermaid
+flowchart LR
+    A["性能现象\nstep 慢 / TPOT 高 / 扩展差"] --> B["选择采集方式\nmsprof CLI / torch_npu.profiler / 框架开关"]
+    B --> C["采集产物\nPROF_XXX / ascend_pt"]
+    C --> D["解析导出\nmsprof --export / analyse"]
+    D --> E["分析定位\n迭代拆解 / 算子统计 / 通信矩阵"]
+    E --> F["结论\ncompute/memory/communication bound"]
+    F --> G["最小变更 + 复测验证"]
+```
+
+## 工具全景
+
+| 工具 | 定位 | 适用场景 |
+| --- | --- | --- |
+| msprof CLI | CANN Toolkit 自带的采集/解析命令行工具，可拉起任意脚本 | 通用入口，训练/推理脚本均可；算子级采集 |
+| torch_npu.profiler | Python API，与 `torch.profiler` 用法对齐，底层复用 CANN Profiling | PyTorch/torch_npu 代码，希望按 step 调度采集 |
+| MindStudio Insight | GUI 可视化分析 | 时间线观察、通信矩阵、概览页等交互式分析 |
+| msprof-analyze | 命令行深度分析 | 通信瓶颈定位、集群耗时拆解（多卡） |
+| 框架封装 | MindSpeed-LLM `--profile` 系列、vllm-ascend `/start_profile` 接口 | 用对应框架训练/推理时最省事 |
+
+选择建议：写 PyTorch 代码用 torch_npu.profiler；跑任意脚本或做算子级采集用 msprof；拿到数据后用 MindStudio Insight 看时间线；多卡通信问题再上 msprof-analyze。
+
+## 采集方法
+
+### msprof CLI
+
+基本用法是让 msprof 拉起目标脚本：
+
+```bash
+msprof --output=./prof_data --task-time=l1 python3 train.py
+```
+
+常用开关：
+
+| 开关 | 作用 |
+| --- | --- |
+| `--task-time=l0/l1` | 采集级别；**l1 才有 AI Core PMU 指标**（指令占比、利用率） |
+| `--aicpu` | AI CPU 数据开关 |
+| `--aic-metrics` | AI Core 指标类型，如 `PipeUtilization` |
+| `--sys-hardware-mem` | DDR/LLC 带宽 |
+| `--sys-profiling` | CPU/内存利用率 |
+| `--runtime-api` `--model-execution` | Runtime API、模型执行信息 |
+
+离线解析已采集的目录：
+
+```bash
+msprof --export=on --output=PROF_XXXX/          # 导出文本/db
+msprof --analyze=on --rule=communication_matrix --output=PROF_XXXX/  # 解析通信数据
+```
+
+**算子级采集**（对标 GPU 上的 micro-benchmark）：用 `msprof op` 以"预热 + 多次执行"的方式循环采集单个算子：
+
+```bash
+msprof op --output=./op_data --kernel-name=<算子名> \
+  --warm-up=20 --launch-count=20 python3 test_op.py
+```
+
+结果中的 `Task Duration(us)` 是算子耗时，适合自定义算子与标杆算子的对比（见 [Ascend C 单算子开发流程与验证](../05-kernels-compilers/ascendc-operator-development.md)）。
+
+### torch_npu.profiler
+
+用法与 `torch.profiler` 对齐，典型模式是 schedule 控制采集窗口：
+
+```python
+import torch, torch_npu
+
+with torch_npu.profiler.profile(
+    activities=[torch_npu.profiler.ProfilerActivity.CPU,
+                torch_npu.profiler.ProfilerActivity.NPU],
+    schedule=torch_npu.profiler.schedule(
+        wait=1, warmup=1, active=2, repeat=1, skip_first=1),
+    on_trace_ready=torch_npu.profiler.tensorboard_trace_handler("./result"),
+) as prof:
+    for step in range(steps):
+        train_one_step()
+        prof.step()   # 驱动 schedule 状态机
+```
+
+昇腾特有的扩展通过 `_ExperimentalConfig` 传入：
+
+| 配置 | 作用 |
+| --- | --- |
+| `profiler_level` | 采集级别 Level0/1/2，级别越高信息越多、开销越大 |
+| `aic_metrics` | AI Core 指标：`PipeUtilization`、`ArithmeticUtilization`、`Memory`、`L2Cache` 等 |
+| `export_type` | 导出 Text/Db |
+| `record_op_args` | 记录算子参数（方便对齐到代码，开销大） |
+| `msprof_tx` / mstx | 自定义打点标注，相当于 GPU 侧 NVTX |
+
+离线解析：`analyse(path, export_type=["db"])`，或直接把落盘目录交给 MindStudio Insight。
+
+### 框架封装
+
+- MindSpeed-LLM：`--profile --profile-step-start 5 --profile-step-end 10` 类参数，自动按 step 采集。
+- vllm-ascend：服务运行中调 `/start_profile`、`/stop_profile` 接口在线采集，无需重启服务。
+
+## 采集产物长什么样
+
+torch_npu.profiler 产出 `{host}_{pid}_{time}_ascend_pt/` 目录，内含两部分：`ASCEND_PROFILER_OUTPUT/`（分析结果）和 `PROF_XXX/`（CANN 层原始数据）。msprof 直采则直接得到 `PROF_XXX/`。
+
+关键文件（`ASCEND_PROFILER_OUTPUT` 或 `mindstudio_profiler_output` 下）：
+
+| 文件 | 内容 | 回答什么问题 |
+| --- | --- | --- |
+| `trace_view.json` | Chrome Trace 时间线（MindStudio Insight / perfetto / `chrome://tracing` 可打开） | 全局时间线：谁在什么时候执行 |
+| `kernel_details.csv` | 每个 NPU 算子明细：Task/Stream ID、Duration、Wait Time、Accelerator Core（AI Core/AI CPU）、输入输出 shape | 单个算子为什么慢 |
+| `op_statistic.csv` | 按算子类型聚合的调用次数与总耗时 | 哪类算子吃掉了时间 |
+| `operator_details.csv` | Host/Device 侧 Self/Total Duration | host 开销 vs device 执行 |
+| `step_trace_time.csv` | 迭代级拆解（计算/通信/空闲等） | 一个 step 的时间去哪了 |
+| `communication.json` / `communication_matrix.json` | 通信矩阵：带宽、传输大小、链路（Level1+、多卡） | 通信是否是瓶颈 |
+| `memory_record.csv` 等 | 内存记录（需 `profile_memory=True`） | 显存申请与释放 |
+
+`op_summary` 类文件的关键字段：
+
+| 字段 | 含义 |
+| --- | --- |
+| `Task Duration(us)` | 算子任务耗时（含调度 + 执行 + 结束响应） |
+| `Task Type` | AI_CORE / AI_VECTOR_CORE / AI_CPU / CCU / DPU |
+| `Task Wait Time(us)` | 任务排队等待时间 |
+| `*_mac_ratio` / `*_vec_ratio` | Cube / Vector 指令占比（需 `--aic-metrics=PipeUtilization`） |
+| `*_mte1/2/3_ratio` | 搬运指令占比 |
+| `cube_utilization` | Cube 利用率 |
+
+## 分析方法：从现象到瓶颈
+
+按下面的顺序看数据，可以覆盖大部分性能问题。
+
+### 第一步：迭代拆解，看 step 时间去哪了
+
+`step_trace_time.csv` 把每个迭代拆成：
+
+| 分量 | 含义 | 判断 |
+| --- | --- | --- |
+| Computing | 计算时间 | 占比高 → 进入第二步看算子 |
+| Communication(Not Overlapped) | 未被计算掩盖的通信时间 | 占比高 → 通信瓶颈 |
+| Overlapped | 计算通信重叠部分 | **越多越好** |
+| Free | 迭代总时间减计算和通信 | 大 → 数据加载、host 下发慢、空泡 |
+| Bubble | 流水并行空泡（receive 算子时间之和） | PP 场景大 → 流线安排问题 |
+
+训练场景先看这张表，再决定往算子细节还是通信方向深挖。
+
+### 第二步：算子统计，找热点和 bound 类型
+
+在 `op_statistic.csv` 按总耗时排序，得到 top 算子；再到 `kernel_details.csv` / `op_summary` 看这些算子的执行细节。
+
+判断单个算子是 compute-bound 还是 memory-bound，官方给出一个直接可算的指标：
+
+```text
+memory_bound = mte2_ratio / max(mac_ratio, vec_ratio)
+```
+
+- 大于 1：大部分时间在搬数而不是计算，越大 memory-bound 越严重。
+- `cube_utilization` 接近 100%：计算已接近理论上限，优化方向只能减少计算量或换精度。
+
+这一步相当于 GPU 侧 Nsight Compute 的occupancy/memory throughput 分析，但可以用 CSV 直接算。
+
+同时注意 `Task Type` 分布：如果高耗时算子大量落在 **AI CPU** 而不是 AI Core，说明很多算子没有真正下放到 NPU 计算单元执行，需要从算子支持或调度层面解决。
+
+### 第三步：时间线，看空泡和下发瓶颈
+
+用 MindStudio Insight 打开 `trace_view.json` 或 PROF 目录。时间线泳道从上到下分三层：
+
+```text
+Python 层       API 调用
+CANN 层         AscendCL / GE / Runtime
+Ascend Hardware Stream 任务流 + Step Trace 迭代轨迹
+```
+
+重点观察**算子之间的间隙**：device 侧有空隙，通常是 host 下发不及时（launch 瓶颈）、同步等待或数据未就绪；这对应 GPU 侧用 Nsight Systems 找 CPU launch gap 的方法。
+
+多卡场景看概览（Summary）页，它按 TP/PP/DP/CP 通信域拆解计算、通信、空闲时间；通信页给出通信矩阵，可以看带宽是否达到链路上限。
+
+### 第四步：多卡通信，定位慢卡
+
+多卡训练扩展差时，用 msprof-analyze 的 communication bottleneck 分析：
+
+```bash
+msprof-analyze communication_bottleneck -d=PROF_XXXX/
+```
+
+它用 **Wait Time Ratio**（阈值 0.2）判定慢卡，并区分 Host Bound（通信任务下发慢）和 Device Bound（通信执行慢），直接给出"哪张卡拖后腿、卡在 host 还是 device"。
+
+### GPU 工具对照
+
+从 GPU 迁移过来的读者可以按这张表对号入座：
+
+| GPU 侧 | 昇腾侧 | 说明 |
+| --- | --- | --- |
+| Nsight Systems（整机时间线） | msprof 采集 + MindStudio Insight Timeline | 找空泡、下发间隙、同步等待 |
+| Nsight Compute（单 kernel 指标） | op_summary 的 PMU 指标（l1 级别）/ `msprof op` | occupancy、指令占比、利用率 |
+| PyTorch Profiler | torch_npu.profiler | 同一套 API 语义 |
+| NVTX 自定义标注 | msprof_tx / mstx | 标记代码区间 |
+| DCGM（设备监控） | npu-smi / msprof `--sys-profiling` | 利用率、功耗、带宽、健康状态 |
+| NCCL 日志分析 | communication 矩阵 + msprof-analyze | 通信带宽、慢卡定位 |
+
+## 采集注意事项
+
+| 事项 | 说明 |
+| --- | --- |
+| 采集开销 | `with_stack`、`with_memory`、`record_shapes` 会显著膨胀数据、劣化性能；确认瓶颈分析不需要时关闭 |
+| 跳过冷启动 | 用 schedule 的 `wait`/`skip_first` 或框架参数（如 MindSpeed `--profile-step-start 5`）跳过前几步，避免初始化污染 |
+| warmup 步的污染 | warmup 窗口内异步算子完成时间可能被计入下一个 step，解读 step 归属时要小心 |
+| 多次取平均 | 正式结论基于 Task Duration 的多次采集均值，不要用单次 wall-clock 计时 |
+| 数据规模 | Timeline 默认最多展示约 3 分钟数据；`data_simplification=True` 可只保留原始数据省空间 |
+| 多卡分析 | 建议 export 为 db 格式，供 msprof-analyze 做集群级分析 |
+
+## 适用范围
+
+适用于：
+
+- 昇腾 NPU 上的训练 step 时间拆解与 MFU 分析。
+- 推理服务（含 vllm-ascend）的 TTFT/TPOT 瓶颈定位。
+- 自定义算子的性能验证与对标。
+- 多卡/多机扩展效率问题、慢卡定位。
+
+需要谨慎：
+
+- 采集本身有开销，profiling 期间的性能数字不能直接当作线上性能。
+- 结论要和 benchmark 复测闭环：profiler 给出"慢在哪"，改完后用同一 workload 复测验证。
+- CANN 版本间字段和开关名可能变化，以所用版本的官方文档为准。
+
+## 常见误区
+
+### 误区一：只看 NPU 利用率
+
+和 GPU utilization 一样，NPU 利用率高不代表没瓶颈：可能大量算子跑在 AI CPU 上，或 Cube 利用率低但整体"忙碌"。要看 `Task Type` 分布和 PMU 指标。
+
+### 误区二：拿 wall-clock 时间做算子结论
+
+单次脚本前后计时包含了 host 开销和缓存效应。算子耗时应以 op_summary 的 Task Duration、多次采集均值为准，算子级用 `msprof op` 的 warm-up + 多次执行模式。
+
+### 误区三：一上来就开全部采集项
+
+Level2 + with_stack + memory + record_op_args 全开，数据膨胀到难以分析，性能劣化也改变了被测系统。按假设选最小采集集，不够再加。
+
+## 与相关技术的关系
+
+| 相关主题 | 关系 |
+| --- | --- |
+| [Profiler 工具链与瓶颈定位](profiler-toolchain-bottleneck-analysis.md) | GPU 视角的姊妹篇，方法论（证据链、Profiling Contract）通用 |
+| [Ascend C 单算子开发流程与验证](../05-kernels-compilers/ascendc-operator-development.md) | 下游：自定义算子的性能验证用 `msprof op` |
+| [NPU 架构基础](../12-hardware-basics/npu-basics.md) | AI Core/AI CPU、Cube/Vector、存储层级等概念基础 |
+| [训练性能剖析与 Benchmark](../04-training-systems/training-benchmark-profiling.md) | 训练侧的通用 profiling 方法 |
+| [通信与计算重叠](../04-training-systems/communication-computation-overlap.md) | Overlapped/Not Overlapped 分量的优化方向 |
+
+## 小结
+
+- 昇腾 profiling 的三个入口：**msprof CLI**（任意脚本、算子级）、**torch_npu.profiler**（PyTorch 代码、按 step）、**框架封装**（MindSpeed/vllm-ascend 开关），数据统一落到 `PROF_XXX` / `ascend_pt` 目录。
+- 分析顺序：**step_trace_time 迭代拆解 → op_statistic 算子热点 + memory_bound/cube_utilization 判断 bound 类型 → 时间线看空泡和下发 → 多卡用 msprof-analyze 定位慢卡**。
+- 最重要的两个可算指标：`memory_bound = mte2_ratio / max(mac_ratio, vec_ratio)` 判断访存瓶颈，`cube_utilization` 判断计算上限。
+- 采集纪律和 GPU 侧一致：先定假设、跳过冷启动、最小采集集、多次取平均、结论用 benchmark 复测闭环。
+
+## 参考资料
+
+- [msprof 快速入门（官方文档仓）](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/quick_start/msprof_quick_start.md)：CLI 用法与开关。
+- [msprof 数据文件参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md)：op_summary 字段、memory_bound 判据。
+- [msprof 解析指令](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/msprof_parsing_instruct.md)：export / analyze 用法。
+- [Ascend PyTorch Profiler 用户指南](https://gitcode.com/Ascend/pytorch/blob/master/docs/zh/developer_notes/ascend_pytorch_profiler_user_guide.md)：torch_npu.profiler 用法与产物。
+- [MindStudio Insight 系统调优指南](https://gitcode.com/Ascend/msinsight/blob/master/docs/zh/user_guide/system_tuning.md)：时间线、概览、通信分析。
+- [msprof-analyze 通信瓶颈分析](https://gitcode.com/Ascend/msprof-analyze/blob/master/docs/zh/advanced_features/communication_bottleneck_instruct.md)：慢卡定位方法。
+- [MindSpeed-LLM profiling 工具](https://gitcode.com/Ascend/MindSpeed-LLM/blob/master/docs/zh/pytorch/tools/profiling.md)：训练框架封装。
+- [vllm-ascend 服务级 profiling 指南](https://github.com/vllm-project/vllm-ascend/blob/main/docs/source/developer_guide/performance_and_debug/service_profiling_guide.md)：推理服务在线采集。
 
 ---
 
@@ -96043,6 +96683,18 @@ related:
 
 ## 元数据字段规范
 
+### authors
+
+一篇文章可以署名多位实际贡献者。请在 front matter 中使用 `authors` 列表，并在不同文章中保持姓名或账号写法一致：
+
+```yaml
+authors:
+  - alice
+  - bob
+```
+
+多人反复修改同一篇文章时，把希望在贡献榜显示的作者都列入这个列表。系统不会把每次 Git 修改者自动合并为作者；没有显式 `authors` 或单人 `author` 时，只按 Git 首次创建文件的作者归属，后续修改者不会自动入榜。`authors` 优先于 `author`，同一篇文章中重复的姓名只计一次。
+
 ### title
 
 标题要清晰表达主题，不要太营销化。
@@ -98075,6 +98727,8 @@ domain: ""
 doc_type: concept
 status: draft
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 workload: []
@@ -99065,6 +99719,8 @@ domain: technical-decision-records
 doc_type: adr
 status: proposed
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 decision_status: proposed
@@ -100127,6 +100783,8 @@ domain: benchmark-capacity
 doc_type: benchmark-report
 status: draft
 owner: maintainers
+authors:
+  - author-name
 license: CC-BY-4.0
 updated: 2026-06-12
 benchmark_type: ""
@@ -101367,6 +102025,143 @@ Benchmark report 不应该替代 ADR。
 - [TensorRT-LLM Benchmarking](https://nvidia.github.io/TensorRT-LLM/performance/perf-benchmarking.html)
 - [PyTorch Profiler](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html)
 - [NVIDIA Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html)
+
+---
+
+# Document: 贡献排行榜
+
+Source: docs/contribution-leaderboard.md
+URL: https://amoursec.github.io/aikg/contribution-leaderboard/
+status: reviewed
+owner: maintainers
+license: CC-BY-4.0
+updated: 2026-10-12
+
+# 贡献排行榜
+
+<div class="contribution-leaderboard" markdown="1">
+
+查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
+
+榜单更新：**2026-10-12**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+
+统计范围：**108 篇文章** · **1 位贡献者** · **83 次累计浏览**。
+
+浏览量快照最近变更：2026-10-11 03:19:02（UTC+8）；浏览量未变化时保留该时间。
+
+## 贡献者浏览量排行榜 Top 10
+
+按每位贡献者名下**全部文章**的累计浏览量之和排序。
+
+| 排名 | 贡献者 | 文章数 | 累计浏览量 |
+| ---: | --- | ---: | ---: |
+| 1 | alan | 108 | 83 |
+
+目前共有 1 位贡献者，按实际人数展示。
+
+## 贡献文章数排行榜 Top 10
+
+按每位贡献者名下的知识文章数量排序。
+
+| 排名 | 贡献者 | 文章数 |
+| ---: | --- | ---: |
+| 1 | alan | 108 |
+
+目前共有 1 位贡献者，按实际人数展示。
+
+## 文章浏览量排行榜 Top 10
+
+按单篇文章的累计浏览量排序。点击文章标题阅读全文。
+
+| 排名 | 文章 | 作者 | 累计浏览量 |
+| ---: | --- | --- | ---: |
+| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 14 |
+| 2 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 10 |
+| 3 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 7 |
+| 4 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 6 |
+| 5 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 6 |
+| 6 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 5 |
+| 7 | [推理过程与原理](02-ai-workloads/inference-primer.md) | alan | 3 |
+| 8 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 3 |
+| 9 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 3 |
+| 10 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 3 |
+
+## 统计口径
+
+- 浏览量来自 GoatCounter，与文章页面使用同一份每日快照；为接入统计以来的累计浏览次数，并非独立访客数或当日增量。
+- 只统计站点导航中的知识文章；首页、知识地图、主题概览、模板和榜单自身不参与排名。未有访问记录的文章按 0 计入。
+- 作者优先使用文章元数据中的 `authors`（兼容单作者 `author`）；历史未署名文章按 Git 首次提交者归属，文件重命名会追溯原记录。该归属代表仓库贡献记录。
+- 多作者文章的完整浏览量分别计入各位作者，因此贡献者浏览量相加可能超过文章总浏览量。同一作者在同篇文章中只计一次。
+- 浏览量榜同分时按贡献者名称或文章路径稳定排序；贡献文章数榜同分时先按累计浏览量、再按贡献者名称排序。各榜最多展示 10 项。无法确认作者的文章显示“作者未标注”，不计入个人榜。
+
+## 榜单维护说明
+
+榜单由仓库内的浏览量快照和文章作者信息自动生成，不需要手动维护排行行数或顺序。
+
+### 给文章标注作者
+
+在文章开头的 YAML 元数据区域添加 `authors`，使用稳定的姓名或账号。同一个人在所有文章中使用完全相同的名字，才能正确合并统计。
+
+```yaml
+---
+title: 文章标题
+authors:
+  - alan
+  - contributor-name
+owner: maintainers
+license: CC-BY-4.0
+---
+```
+
+单人文章也推荐使用列表。已有单作者字段 `author: alan` 同样可用；同时存在时以 `authors` 为准。`authors` 必须是非空字符串列表，空姓名或错误格式会让生成任务报错，避免错误归属悄悄上线。
+
+一篇文章可以署名多位实际贡献者。多人反复修改同一篇文章时，请把希望在贡献榜显示的作者都列入 `authors`；系统不会把每次 Git 修改者自动合并为作者。没有显式 `authors` 或 `author` 时，只按 Git 首次创建文件的作者归属，后续修改者不会自动入榜。
+
+`owner` 继续表示维护责任，`sources` 或论文的作者表示参考来源，它们都不用于文章贡献者排行。正文代码块里的 `authors` 示例也不会被当作文章署名。
+
+### 历史文章如何归属
+
+没有 `authors` 或 `author` 的文章，采用 Git 历史中首次新增该文件的提交作者；重命名会追溯原始文件，后续修改者不会替换这个归属。Git 首次提交者是仓库贡献记录，若与实际作者不同，请直接补充文章署名。
+
+Git 历史中的同一人若用了不同姓名或邮箱，可通过仓库根目录的 `.mailmap` 归一化；显示时只使用姓名，不展示邮箱。显式 `authors` 则始终使用填写的姓名，需要由维护者保持一致。两位同名贡献者应使用不同账号作为署名，避免合并。
+
+无署名且无可追溯创建记录的文章会显示“作者未标注”，其浏览量仍进入文章浏览量榜，但不进入贡献者榜。
+
+### 排行与统计范围
+
+- 贡献者浏览量榜：先汇总该贡献者名下所有文章的累计浏览量，再取 Top 10；不是只汇总文章榜上的 10 篇。
+- 贡献文章数榜：按该贡献者名下的知识文章数量取 Top 10；多作者文章分别计入每位作者。
+- 文章浏览量榜：按文章累计浏览量取 Top 10，同时显示文章标题、全部作者和浏览量。
+- 多作者文章的完整浏览量计入每位作者，每位作者在同篇文章里只计一次。贡献者榜总和可能大于文章浏览量总和。
+- 只纳入 `mkdocs.yml` 导航中的知识文章。首页、知识地图、主题 `index.md` 概览、模板、内部计划与榜单自身不参与统计。
+- 未访问文章按 0 计入。各榜不足 10 项时显示实际数量。
+
+浏览量与文章页面共用 `docs/assets/data/pageviews.json`，由 GoatCounter 提供接入以来的累计次数，不是独立访客数，也不是当天增量。无效访问量会中止生成，保留上次页面。
+
+### 每日自动更新
+
+现有 `Deploy Docs` 工作流每天 23:17（UTC+8）触发，依次获取浏览量、生成榜单、运行测试、构建站点、提交统计文件并部署 GitHub Pages。GitHub Actions 调度可能延迟，实际完成时间以工作流为准。
+
+推送文章或作者修改时也会使用已有快照重新生成榜单。没有新的浏览量变化时，快照的“最近变更”时间保持不变，但榜单更新日期会在下一次每日任务后更新。生成日期使用 UTC+8。
+
+任务需要完整 Git 历史，因此 checkout 设置 `fetch-depth: 0`。继续使用已有的 `GOATCOUNTER_API_KEY` 仓库 Secret，无需增加密钥或本地定时任务。API、作者解析、测试或构建失败时任务中止，线上保留上次成功部署。
+
+### 本地生成与检查
+
+在仓库根目录使用 Python 3.12 或以上版本，安装 `requirements.txt` 中的项目依赖后运行：
+
+```bash
+python -m scripts.update_leaderboard
+python -m unittest discover -s tests -p 'test_*.py'
+node --test tests/*.test.cjs
+mkdocs build --strict
+```
+
+本地生成只读取现有快照，不调用 GoatCounter API。`python -m scripts.update_leaderboard --help` 可查看命令帮助。生成的 `docs/contribution-leaderboard.md` 会被覆盖；修改榜单说明请编辑 `scripts/leaderboard_maintenance.md`，修改统计与生成逻辑请编辑 `scripts/update_leaderboard.py`，修改作者读取规则请编辑 `scripts/leaderboard_data.py`。
+
+需要立刻同步最新浏览量并部署时，可在 GitHub Actions 的 `Deploy Docs` 页面执行 `Run workflow`。
+
+</div>
 
 ---
 

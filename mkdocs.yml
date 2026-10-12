@@ -182,6 +182,7 @@ nav:
       - 推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数: 08-benchmark-capacity/inference-capacity-modeling.md
       - 训练容量建模：Tokens/s、Step Time、MFU 与扩展效率: 08-benchmark-capacity/training-capacity-scaling-efficiency.md
       - Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF: 08-benchmark-capacity/profiler-toolchain-bottleneck-analysis.md
+      - 昇腾 Profiling：msprof 与 CANN 性能数据采集分析: 08-benchmark-capacity/ascend-profiling-msprof.md
       - Roofline 分析：算力、带宽与瓶颈上限: 08-benchmark-capacity/roofline-analysis-compute-bandwidth.md
       - 排队模型与尾延迟：QPS、并发、利用率和 p99: 08-benchmark-capacity/queueing-model-tail-latency.md
       - 能效、功耗与热限制：Power、Energy per Token 与持续吞吐: 08-benchmark-capacity/energy-power-thermal-benchmark.md

@@ -4,7 +4,7 @@ domain: benchmark-capacity
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-05-30
+updated: 2026-10-12
 ---
 
 # 性能分析、Benchmark 与容量建模
@@ -18,6 +18,7 @@ updated: 2026-05-30
 - GPU utilization、SM occupancy、HBM bandwidth、memory footprint
 - power、energy per token、thermal、frequency throttling
 - profiler：Nsight、PyTorch Profiler、NVIDIA DCGM、perf、eBPF
+- 昇腾 profiler：msprof、torch_npu.profiler、MindStudio Insight、msprof-analyze
 - Roofline model、queueing model、capacity planning
 - Benchmark workload design、warmup、sample size、confidence interval
 - A/B comparison、ablation、regression detection
@@ -36,6 +37,7 @@ updated: 2026-05-30
 - [推理容量建模：QPS、并发、TTFT、TPOT 与 GPU 副本数](inference-capacity-modeling.md)：解释如何用 Capacity Contract、请求分布、SLA、offered load/throughput/goodput、单副本 goodput 曲线、请求分桶、KV Cache 预算、prefill/decode 约束、headroom、故障域、rolling update、autoscaling 滞后、路由效率、多模型、过载保护、成本和生产反馈推导推理副本数。
 - [训练容量建模：Tokens/s、Step Time、MFU 与扩展效率](training-capacity-scaling-efficiency.md)：解释如何用 Capacity Contract、训练目标、token 口径、global batch、step time、sustained/effective throughput、goodput、MFU、强/弱扩展曲线、边际收益、并行策略、checkpoint、eval、故障恢复、资源准入、headroom、成本、能效和生产校准推导训练 GPU 需求与总完成时间。
 - [Profiler 工具链与瓶颈定位：Nsight、PyTorch Profiler、DCGM、perf 与 eBPF](profiler-toolchain-bottleneck-analysis.md)：解释如何用 Profiling Contract、证据链分层、工具选择矩阵、PyTorch Profiler、Nsight Systems、Nsight Compute、DCGM、perf/eBPF、NVTX、时间对齐、分布式 trace、瓶颈模式、结论分级、报告模板和回归防线建立可复现的 AI 系统瓶颈定位方法。
+- [昇腾 Profiling：msprof 与 CANN 性能数据采集分析](ascend-profiling-msprof.md)：解释昇腾 NPU 侧如何用 msprof CLI、torch_npu.profiler、框架封装（MindSpeed-LLM、vllm-ascend）采集性能数据，解读 PROF_XXX/ascend_pt 产物（trace_view、op_summary、step_trace_time、communication），以及迭代拆解、memory_bound/cube_utilization 判断 bound 类型、时间线空泡分析、多卡慢卡定位和 GPU 工具对照。
 - [Roofline 分析：算力、带宽与瓶颈上限](roofline-analysis-compute-bandwidth.md)：解释如何用 Roofline Analysis Contract、对象层级、FLOPs/bytes 口径、arithmetic intensity、ridge point、理论/实测 roof、多重 roof、profiler 指标、bound efficiency、端到端收益上限、AI 算子案例、推理/训练场景、硬件评估和 before/after benchmark 判断 AI workload 更接近算力、带宽、通信、launch 还是系统开销瓶颈。
 - [排队模型与尾延迟：QPS、并发、利用率和 p99](queueing-model-tail-latency.md)：解释如何用 Queueing Contract、offered load/throughput/goodput、Little's Law、Kingman/VUT 直觉、多阶段队列、Prefill/Decode、KV Cache、batching、head-of-line blocking、deadline-aware scheduling、retry amplification、load shedding、open-loop benchmark、goodput 曲线、队列上限和分桶指标分析 AI 推理服务的 p95/p99 与容量边界。
 - [能效、功耗与热限制：Power、Energy per Token 与持续吞吐](energy-power-thermal-benchmark.md)：解释如何用 Energy Benchmark Contract 定义 GPU-only、node-level、rack/facility-level 测量边界、idle baseline、telemetry 和热稳态窗口，采集 power、energy、clocks、temperature、throttle reason，并用 power cap sweep、Pareto frontier、prefill/decode 分阶段能耗、cache hit/miss、energy to target、goodput at SLA 和 power-aware scheduling 分析 AI 训练与推理系统能效。
