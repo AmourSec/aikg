@@ -4,7 +4,7 @@ domain: inference-systems
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-08
+updated: 2026-10-12
 ---
 
 # vLLM
@@ -299,6 +299,58 @@ Speculative Decoding 的目标是减少目标模型严格逐 token 生成带来�
 - 节点间网络。
 - p95/p99 延迟。
 
+## vllm-ascend：vLLM 在昇腾 NPU 上的官方路径
+
+以上内容以 GPU 为主要背景。当硬件换成华为昇腾 NPU 时，vLLM 官方推荐的路径是 **vllm-ascend**：一个由 vLLM 社区维护（Community maintained）的昇腾硬件插件，托管在 vllm-project 组织下。
+
+### 插件架构：如何与 vLLM core 解耦
+
+vllm-ascend 遵循 vLLM 的 [Hardware Pluggable RFC](https://github.com/vllm-project/vllm/issues/11162)：vLLM core 定义平台抽象接口，各硬件后端以独立 pip 包实现。vllm-ascend 安装后通过 vLLM 的 `vllm.platform_plugins` 插件组自动注册（启动日志会出现 `Platform plugin ascend is activated`），按 vLLM 的平台抽象组织代码：
+
+| 模块 | 职责 | 对应 vLLM 抽象 |
+| --- | --- | --- |
+| `vllm_ascend/platform.py` | 平台识别与配置 | Platform |
+| `worker/` | NPU 上的模型执行 | Worker |
+| `attention/` | 注意力后端（attention_v1、MLA、SFA 等） | Attention backend |
+| `distributed/` | HCCL 集合通信 | Communicator |
+| `quantization/` `spec_decode/` `eplb/` | 量化、投机解码、专家负载均衡 | 各自的扩展点 |
+
+这个设计的意义：vLLM 的调度、KV Cache 管理、continuous batching、API server 等核心逻辑保持硬件无关，昇腾适配集中在"怎么在 NPU 上执行模型"这一层。学习时可以先掌握 vLLM 核心概念（本文前面各节），再看 vllm-ascend 如何替换执行层。
+
+### 版本与安装
+
+两个要点：
+
+1. **版本号与 vLLM 严格对齐**：vllm-ascend vN 对应 vLLM vN（例如写作时最新的 v0.23.0 ↔ vLLM v0.23.0），main 分支跟踪 vLLM main。选版本时先定 vLLM，再装同号插件。
+2. **依赖链较长**：除 vLLM 和插件本身，还需要 torch、torch_npu、CANN、NNAL（libatb.so）、triton-ascend 版本互相匹配，具体以[官方安装文档](https://docs.vllm.ai/projects/ascend/en/latest/installation.html)为准。
+
+安装方式三种：pip（插件从华为云 PyPI 源安装）、源码（先装 vLLM 空设备版再装插件）、官方 Docker 镜像（`quay.io/ascend/vllm-ascend`，按 Atlas A2/A3/950DT/300I DUO 等芯片型号选择变体）。生产部署建议直接用官方镜像，避免手工对齐依赖链。
+
+### 支持范围
+
+- **硬件**：Atlas A2 训练系列 / 800I A2 推理系列、Atlas A3 系列、Atlas 950DT；Atlas 300I DUO 为实验性支持。
+- **模型**：覆盖主流开源模型，包括 Qwen 全系、DeepSeek 系列、GLM 系列、LLaMA、Kimi、MiniMax 等，含生成、Embedding/Reranker 与多模态，详见[支持矩阵](https://docs.vllm.ai/projects/ascend/en/latest/user_guide/support_matrix/supported_models.html)。
+- **特性**：vLLM 核心能力大部分可用——Chunked Prefill、Prefix Caching、TP/PP/EP/DP/Context Parallel、投机解码（MTP/EAGLE 等）、PD 分离（xPyD）、EPLB、W8A8 量化、LoRA（实验）等。
+- **昇腾特有优化**：Graph Mode（ACLGraph 捕获回放 + npugraph_ex 编译期算子融合，作用类似 CUDA Graph）、FlashComm 通信融合等，通过 `--additional-config` 传入。
+
+### 启动示例
+
+对使用者来说，vllm-ascend 的目标是"像用 vLLM 一样用昇腾"：
+
+```bash
+# 指定 NPU 卡并启动 OpenAI 兼容服务
+export ASCEND_RT_VISIBLE_DEVICES=0,1,2,3
+vllm serve Qwen/Qwen3-8B --tensor-parallel-size 4
+```
+
+昇腾侧常用环境变量：`ASCEND_RT_VISIBLE_DEVICES`（相当于 `CUDA_VISIBLE_DEVICES`）、`PYTORCH_NPU_ALLOC_CONF=expandable_segments:True`（缓解显存碎片 OOM）、`VLLM_USE_MODELSCOPE=True`（国内模型下载）。
+
+### 使用前注意
+
+- **特性矩阵要按芯片型号核对**：同一特性在不同 Atlas 型号上支持度不同。例如 300I DUO 不支持 triton-ascend 和 npugraph_ex；MLA + 图模式对 TP 切分后的 head 数有约束。
+- **报错先查 FAQ**：`libatb.so` 缺失（需 source NNAL 环境）、OOM、图捕获资源不足等都是高频问题，[官方 FAQ](https://docs.vllm.ai/projects/ascend/en/latest/faqs.html) 有标准解法。
+- **生态分工**：华为自研的企业级推理引擎是 MindIE；vllm-ascend 是 vLLM 开源生态在昇腾上的官方路径。两者是并行的昇腾推理方案，选型取决于团队技术栈（PyTorch/vLLM 生态 vs 华为全栈）。
+
 ## 与单机推理服务架构的关系
 
 如果把单机推理服务拆开看，vLLM 覆盖了其中很大一部分核心组件。
@@ -520,3 +572,6 @@ vLLM 是现代 LLM 推理系统的一个重要案例。它的核心不在于某�
 - [vLLM GitHub Repository](https://github.com/vllm-project/vllm)
 - [vLLM PagedAttention design documentation](https://docs.vllm.ai/en/latest/design/kernel/paged_attention.html)
 - [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [vllm-ascend GitHub Repository](https://github.com/vllm-project/vllm-ascend)：vLLM 社区维护的昇腾 NPU 硬件插件。
+- [vllm-ascend 官方文档](https://docs.vllm.ai/projects/ascend/en/latest/)：安装、快速开始、支持矩阵、Graph Mode 与 FAQ。
+- [vLLM Hardware Pluggable RFC](https://github.com/vllm-project/vllm/issues/11162)：硬件插件架构的设计讨论。
