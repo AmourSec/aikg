@@ -95,8 +95,9 @@ updated: 2026-07-07
         <li class="kg-node-child"><a href="../05-kernels-compilers/torchinductor/">TorchInductor 与 PyTorch 编译栈</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/mlir-ai-compiler-ir/">MLIR 与 AI 编译 IR</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/tilelang/">TileLang</a></li>
+        <li class="kg-node-child"><a href="../05-kernels-compilers/ascendc-operator-development/">Ascend C 单算子开发流程与验证</a></li>
         <li class="kg-node-child"><a href="../05-kernels-compilers/megakernel-persistent-automatic-generation/">MegaKernel 与 Persistent Kernel</a></li>
-        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Persistent Kernel / MegaKernel</span></li>
+        <li class="kg-node-note"><span>关键词：Dense Attention / Sparse Attention / FlashAttention / Triton / Triton 编译器 / Triton AI 算子生成 / TorchInductor / MLIR / TileLang / OpenTileIR / Ascend C / Tiling / aclnn / Persistent Kernel / MegaKernel</span></li>
       </ul>
     </section>
     <section class="kg-mindmap-branch">
@@ -198,7 +199,7 @@ updated: 2026-07-07
 ### 5 Kernel、算子与编译优化
 
 - 计算模式：[Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md)
-- Kernel 编程：[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)
+- Kernel 编程：[Triton Kernel 编程](05-kernels-compilers/triton.md)、[TileLang：面向 AI Kernel 的 Tile 编程模型](05-kernels-compilers/tilelang.md)、[Ascend C 单算子开发流程与验证](05-kernels-compilers/ascendc-operator-development.md)
 - 编译栈与 IR：[TorchInductor 与 PyTorch 编译栈](05-kernels-compilers/torchinductor.md)、[MLIR 与 AI 编译 IR](05-kernels-compilers/mlir-ai-compiler-ir.md)
 - 激进融合与自动生成：[MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md)
 
@@ -272,7 +273,7 @@ updated: 2026-07-07
 | 硬件基础 | 2、5、6、8 | GPU/NPU 架构基础、GPU/NPU 对比、Ascend 型号与 NpuArch、Ascend 910/950、CANN 软件栈、平台证据收集和硬件适配 AI skill 样例 |
 | 3 推理系统与优化 | 2、5、6、8、硬件基础 | 推理链路、KV Cache、调度、缓存、量化、MoE、部署架构、推理引擎和 benchmark |
 | 4 训练系统与优化 | 2、5、6、7、8、硬件基础 | 数据、batch、loss、backward、并行策略、通信、显存、稳定性、优化器、后训练、checkpoint 和 benchmark |
-| 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、MegaKernel、算子实现、图优化和自动调优 |
+| 5 Kernel、算子与编译优化 | 2、6、8、硬件基础 | Attention 计算模式、Triton Kernel、TorchInductor、MLIR、TileLang、Ascend C 单算子开发、MegaKernel、算子实现、图优化和自动调优 |
 | 6 AI 加速器与计算架构 | 2、5、8、硬件基础 | 计算、存储、互连、精度、功耗、体系结构取舍和 workload mapping |
 | 7 集群、网络、存储与调度 | 3、4、6、8 | 资源调度、拓扑、网络、存储、环境、隔离、容量治理和节点生命周期 |
 | 8 性能分析、Benchmark 与容量建模 | 2、3、4、5、6、7 | 指标体系、profiling、roofline、容量估算、trace replay、A/B、能效和成本模型 |

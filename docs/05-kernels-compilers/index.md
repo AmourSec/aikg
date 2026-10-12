@@ -4,7 +4,7 @@ domain: kernels-compilers
 status: draft
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-06-25
+updated: 2026-10-12
 ---
 
 # Kernel、算子与编译优化
@@ -15,7 +15,7 @@ updated: 2026-06-25
 
 ```text
 先理解 Attention 等核心 workload 的计算模式
--> 再理解 Triton / TileLang 这类 kernel 编程方式
+-> 再理解 Triton / TileLang / Ascend C 这类 kernel 编程方式
 -> 再理解 TorchInductor / MLIR 这类编译表示和生成路径
 -> 最后评估 Persistent Kernel / MegaKernel / 自动生成
 ```
@@ -25,7 +25,7 @@ updated: 2026-06-25
 | 层级 | 关注问题 | 代表技术 |
 | --- | --- | --- |
 | 算子语义 | workload 需要什么计算和数据访问模式 | GEMM、Attention、LayerNorm、Softmax、Embedding、MoE dispatch |
-| 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS |
+| 手写 Kernel | 如何针对具体 shape 和硬件写出高效实现 | Triton、CUDA、CUTLASS、Ascend C |
 | Tile 与 Schedule | 如何表达 tile、layout、pipeline、tensorization 和 autotuning | TileLang、Triton、CUTLASS、TVM |
 | 图编译与代码生成 | 如何从 PyTorch graph 自动融合、调度和生成代码 | TorchDynamo、AOTAutograd、TorchInductor、Triton backend |
 | 编译 IR 与 Lowering | 如何在多层抽象中表达、验证和降低计算 | MLIR、StableHLO、Linalg、MemRef、Vector、GPU dialect |
@@ -41,6 +41,7 @@ updated: 2026-06-25
 - Triton、CUDA、ROCm、CUTLASS、cuDNN、cuBLAS
 - TorchDynamo、AOTAutograd、TorchInductor、XLA、TVM、MLIR、ONNX Runtime
 - TileLang、OpenTileIR / open tile IR、tile DSL、schedule、pipeline、tensorization
+- Ascend C、tiling、SPMD、三级流水、aclnn 单算子验证
 - graph capture、operator fusion、layout transform、auto-tuning、lowering
 - Triton 编译器、Triton AI 算子生成、MegaKernel、persistent kernel、device-side scheduling、automatic kernel generation
 - kernel profiling、roofline、SASS/PTX/IR inspection
@@ -63,4 +64,5 @@ updated: 2026-06-25
 - [TorchInductor 与 PyTorch 编译栈](torchinductor.md)：面向 `torch.compile`、TorchDynamo、FX/ATen 图、AOTAutograd、Inductor lowering/fusion/scheduler/codegen、guard/recompile、dynamic shape、CUDA Graph、AOTInductor、生产上线和性能调试。
 - [MLIR 与 AI 编译 IR](mlir-ai-compiler-ir.md)：理解为什么 AI 编译需要多层 IR、dialect、lowering、bufferization、vector/GPU 后端，以及它和 Triton、TorchInductor、TileLang、MegaKernel 的关系。
 - [TileLang：面向 AI Kernel 的 Tile 编程模型](tilelang.md)：理解 tile、layout、pipeline、tensorization、autotuning、OpenTileIR / open tile IR 如何共同决定 GEMM、Attention、Dequant GEMM、Sparse MM 等 kernel 的硬件效率。
+- [Ascend C 单算子开发流程与验证](ascendc-operator-development.md)：理解昇腾 NPU 上自定义算子的官方开发主线——算子分析、msOpGen 工程、kernel 侧三级流水、host 侧 tiling 与注册、编译部署、msOpST/aclnn 精度验证，以及与 Triton/CUDA 编程模型的差异。
 - [MegaKernel、Persistent Kernel 与自动生成](megakernel-persistent-automatic-generation.md)：区分普通 fusion、persistent kernel、CUDA Graph 和 MegaKernel，理解 Triton MegaKernel、Ascend C MegaKernel-style 实现和自动生成路径的收益与风险。
