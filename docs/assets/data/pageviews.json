@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-16T03:11:24+08:00",
+  "updated_at": "2026-10-17T02:49:57+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 96,
+    "/aikg/": 97,
     "/aikg/01-getting-started/": 12,
-    "/aikg/02-ai-workloads/": 10,
+    "/aikg/02-ai-workloads/": 11,
     "/aikg/02-ai-workloads/ai-fundamentals/": 11,
     "/aikg/02-ai-workloads/inference-primer/": 4,
     "/aikg/02-ai-workloads/multimodal-primer/": 7,
