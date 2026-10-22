@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-10-22
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-10-22**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-10-23**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**110 篇文章** · **1 位贡献者** · **132 次累计浏览**。
+统计范围：**110 篇文章** · **1 位贡献者** · **134 次累计浏览**。
 
-浏览量快照最近变更：2026-10-22 03:19:42（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-10-23 03:14:37（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-10-22
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 110 | 132 |
+| 1 | alan | 110 | 134 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -50,9 +50,9 @@ updated: 2026-10-22
 | 3 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 11 |
 | 4 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 11 |
 | 5 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 7 |
-| 6 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 6 |
-| 7 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 5 |
-| 8 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 5 |
+| 6 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 6 |
+| 7 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 6 |
+| 8 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 5 |
 | 9 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 5 |
 | 10 | [推理过程与原理](02-ai-workloads/inference-primer.md) | alan | 4 |
 
