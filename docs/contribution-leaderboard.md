@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-10-23
+updated: 2026-10-24
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-10-23
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-10-23**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-10-24**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**110 篇文章** · **1 位贡献者** · **134 次累计浏览**。
+统计范围：**110 篇文章** · **1 位贡献者** · **136 次累计浏览**。
 
-浏览量快照最近变更：2026-10-23 03:14:37（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-10-24 03:17:13（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-10-23
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 110 | 134 |
+| 1 | alan | 110 | 136 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -47,7 +47,7 @@ updated: 2026-10-23
 | ---: | --- | --- | ---: |
 | 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 18 |
 | 2 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 12 |
-| 3 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 11 |
+| 3 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 12 |
 | 4 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 11 |
 | 5 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 7 |
 | 6 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 6 |

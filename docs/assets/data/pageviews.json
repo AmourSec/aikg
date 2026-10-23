@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-23T03:14:37+08:00",
+  "updated_at": "2026-10-24T03:17:13+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
@@ -35,6 +35,7 @@
     "/aikg/05-kernels-compilers/megakernel-persistent-automatic-generation/": 2,
     "/aikg/05-kernels-compilers/tilelang/": 2,
     "/aikg/05-kernels-compilers/torchinductor/": 1,
+    "/aikg/06-accelerators-architecture/precision-formats-low-bit-compute/": 1,
     "/aikg/07-cluster-infra/": 2,
     "/aikg/07-cluster-infra/ai-cluster-architecture-overview/": 4,
     "/aikg/07-cluster-infra/gpu-topology-numa-mig-mps-isolation/": 1,
@@ -48,7 +49,7 @@
     "/aikg/12-hardware-basics/ascend-910-series/": 2,
     "/aikg/12-hardware-basics/ascend-950-series/": 6,
     "/aikg/12-hardware-basics/ascend-npu-models/": 4,
-    "/aikg/12-hardware-basics/gpu-architecture-basics/": 11,
+    "/aikg/12-hardware-basics/gpu-architecture-basics/": 12,
     "/aikg/12-hardware-basics/gpu-npu-comparison/": 1,
     "/aikg/12-hardware-basics/npu-basics/": 11,
     "/aikg/13-contribution-leaderboard/": 2,
