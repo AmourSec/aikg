@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24T03:17:13+08:00",
+  "updated_at": "2026-10-25T02:11:41+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 109,
+    "/aikg/": 112,
     "/aikg/01-getting-started/": 13,
     "/aikg/02-ai-workloads/": 13,
     "/aikg/02-ai-workloads/ai-fundamentals/": 13,
@@ -40,7 +40,7 @@
     "/aikg/07-cluster-infra/ai-cluster-architecture-overview/": 4,
     "/aikg/07-cluster-infra/gpu-topology-numa-mig-mps-isolation/": 1,
     "/aikg/07-cluster-infra/node-lifecycle-health-maintenance/": 2,
-    "/aikg/07-cluster-infra/rdma-network-nccl-topology-congestion/": 2,
+    "/aikg/07-cluster-infra/rdma-network-nccl-topology-congestion/": 3,
     "/aikg/08-benchmark-capacity/roofline-analysis-compute-bandwidth/": 2,
     "/aikg/09-reliability-observability/ai-failure-modes-gpu-nccl-network-storage/": 2,
     "/aikg/10-papers-cases/adr/": 1,
