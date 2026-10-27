@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-10-27
+updated: 2026-10-28
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-10-27
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-10-27**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-10-28**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**110 篇文章** · **1 位贡献者** · **142 次累计浏览**。
+统计范围：**110 篇文章** · **1 位贡献者** · **174 次累计浏览**。
 
-浏览量快照最近变更：2026-10-27 04:31:15（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-10-28 04:07:27（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-10-27
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 110 | 142 |
+| 1 | alan | 110 | 174 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -45,16 +45,16 @@ updated: 2026-10-27
 
 | 排名 | 文章 | 作者 | 累计浏览量 |
 | ---: | --- | --- | ---: |
-| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 18 |
-| 2 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 12 |
-| 3 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 12 |
-| 4 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 11 |
-| 5 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 7 |
-| 6 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 6 |
-| 7 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 6 |
-| 8 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 6 |
+| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 19 |
+| 2 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 14 |
+| 3 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 14 |
+| 4 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 13 |
+| 5 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 9 |
+| 6 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 7 |
+| 7 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 6 |
+| 8 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 6 |
 | 9 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 5 |
-| 10 | [MegaKernel、Persistent Kernel 与自动生成](05-kernels-compilers/megakernel-persistent-automatic-generation.md) | alan | 5 |
+| 10 | [vLLM](03-inference-systems/vllm.md) | alan | 5 |
 
 ## 统计口径
 
