@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-28T04:07:27+08:00",
+  "updated_at": "2026-10-29T04:18:27+08:00",
   "pages": {
     "/": 1,
     "/02-ai-workloads/ai-fundamentals/": 5,
-    "/aikg/": 122,
+    "/aikg/": 123,
     "/aikg/01-getting-started/": 13,
     "/aikg/02-ai-workloads/": 13,
     "/aikg/02-ai-workloads/ai-fundamentals/": 14,
@@ -25,7 +25,7 @@
     "/aikg/03-inference-systems/speculative-decoding/": 2,
     "/aikg/03-inference-systems/vllm/": 5,
     "/aikg/04-training-systems/": 1,
-    "/aikg/04-training-systems/evaluation-validation-checkpoint-selection/": 6,
+    "/aikg/04-training-systems/evaluation-validation-checkpoint-selection/": 7,
     "/aikg/04-training-systems/expert-parallel-moe-training/": 3,
     "/aikg/04-training-systems/flux-kernel-fusion/": 1,
     "/aikg/04-training-systems/hybrid-parallelism-composition/": 1,
