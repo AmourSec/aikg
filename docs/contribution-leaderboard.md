@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-11-05
+updated: 2026-11-06
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-11-05
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-11-05**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-11-06**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**110 篇文章** · **1 位贡献者** · **255 次累计浏览**。
+统计范围：**110 篇文章** · **1 位贡献者** · **264 次累计浏览**。
 
-浏览量快照最近变更：2026-11-05 05:21:48（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-11-06 05:29:36（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-11-05
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 110 | 255 |
+| 1 | alan | 110 | 264 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -45,9 +45,9 @@ updated: 2026-11-05
 
 | 排名 | 文章 | 作者 | 累计浏览量 |
 | ---: | --- | --- | ---: |
-| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 22 |
-| 2 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 20 |
-| 3 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 20 |
+| 1 | [AI 基础概念](02-ai-workloads/ai-fundamentals.md) | alan | 24 |
+| 2 | [NPU 架构基础](12-hardware-basics/npu-basics.md) | alan | 21 |
+| 3 | [GPU 架构基础](12-hardware-basics/gpu-architecture-basics.md) | alan | 20 |
 | 4 | [Transformer 流程与原理](02-ai-workloads/transformer.md) | alan | 15 |
 | 5 | [Ascend 950 系列平台要点](12-hardware-basics/ascend-950-series.md) | alan | 10 |
 | 6 | [Ascend 910 系列平台要点](12-hardware-basics/ascend-910-series.md) | alan | 9 |
