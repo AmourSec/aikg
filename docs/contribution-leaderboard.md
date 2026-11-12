@@ -4,7 +4,7 @@ description: 每日更新的贡献者浏览量、贡献文章数和文章浏览�
 status: reviewed
 owner: maintainers
 license: CC-BY-4.0
-updated: 2026-11-12
+updated: 2026-11-13
 ---
 
 # 贡献排行榜
@@ -13,11 +13,11 @@ updated: 2026-11-12
 
 查看贡献者浏览量、贡献文章数和热门文章三张每日榜单。
 
-榜单更新：**2026-11-12**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
+榜单更新：**2026-11-13**（UTC+8）。每天 23:17 自动更新，任务执行可能略有延迟。
 
-统计范围：**110 篇文章** · **1 位贡献者** · **296 次累计浏览**。
+统计范围：**110 篇文章** · **1 位贡献者** · **314 次累计浏览**。
 
-浏览量快照最近变更：2026-11-12 06:00:14（UTC+8）；浏览量未变化时保留该时间。
+浏览量快照最近变更：2026-11-13 05:52:10（UTC+8）；浏览量未变化时保留该时间。
 
 ## 贡献者浏览量排行榜 Top 10
 
@@ -25,7 +25,7 @@ updated: 2026-11-12
 
 | 排名 | 贡献者 | 文章数 | 累计浏览量 |
 | ---: | --- | ---: | ---: |
-| 1 | alan | 110 | 296 |
+| 1 | alan | 110 | 314 |
 
 目前共有 1 位贡献者，按实际人数展示。
 
@@ -54,7 +54,7 @@ updated: 2026-11-12
 | 7 | [训练过程与原理](02-ai-workloads/training-primer.md) | alan | 9 |
 | 8 | [多模态原理](02-ai-workloads/multimodal-primer.md) | alan | 8 |
 | 9 | [Attention 机制与计算模式](05-kernels-compilers/attention-computation-patterns.md) | alan | 8 |
-| 10 | [Evaluation、Validation 与 Checkpoint Selection](04-training-systems/evaluation-validation-checkpoint-selection.md) | alan | 7 |
+| 10 | [vLLM](03-inference-systems/vllm.md) | alan | 7 |
 
 ## 统计口径
 
